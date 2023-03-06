@@ -48,7 +48,6 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.ComponentModel;
 
 namespace ClassicUO.Game.UI.Gumps
 {
