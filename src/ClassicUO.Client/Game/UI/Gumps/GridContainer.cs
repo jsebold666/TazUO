@@ -69,8 +69,8 @@ namespace ClassicUO.Game.UI.Gumps
         private int _lastWidth = DEFAULT_WIDTH;
         private int _lastHeight = DEFAULT_HEIGHT;
         private readonly StbTextBox _searchBox;
-        private readonly NiceButton _openRegularGump;
-        private readonly NiceButton _helpToolTip;
+        private readonly Button _openRegularGump;
+        private readonly GumpPic _helpToolTip;
         private ushort _ogContainer;
 
         private Item _dragSlotItem;
@@ -129,22 +129,26 @@ namespace ClassicUO.Game.UI.Gumps
             _searchBox.TextChanged += (sender, e) => { updateItems(); };
             _searchBox.DragBegin += (sender, e) => { InvokeDragBegin(e.Location); };
 
-            _openRegularGump = new NiceButton(_background.Width - 20 - BORDER_WIDTH, BORDER_WIDTH, 20, 20, ButtonAction.Activate, "[X]", 1, TEXT_ALIGN_TYPE.TS_CENTER, 0x0481)
+            _openRegularGump = new Button(99, 0x16CD, 0x16CE, 0, "Open the original style container")
             {
-                ButtonParameter = 1,
-                IsSelectable = false,
-            };
-            _openRegularGump.MouseUp += (sender, e) =>
-            {
-                OpenOldContainer(_container);
+                X = Width - 20 - BORDER_WIDTH,
+                Y = BORDER_WIDTH
             };
             _openRegularGump.SetTooltip("Open the original style container");
-
-            _helpToolTip = new NiceButton(_background.Width - 20 - BORDER_WIDTH, BORDER_WIDTH, 20, 20, ButtonAction.Default, "[?]", 1, TEXT_ALIGN_TYPE.TS_CENTER, 0x0481);
-            _helpToolTip.SetTooltip(
-                "Ctrl + Click a slot -> Click another slot to lock that item into a specific slot." +
-                "<br>Use the [X] button to open the original style gump."
-                );
+            _openRegularGump.MouseDown += (sender, e) =>
+            {
+                if (_openRegularGump.IsClicked)
+                {
+                    OpenOldContainer(_container);
+                }
+            };
+            _helpToolTip = new GumpPic(_background.Width - 80 - BORDER_WIDTH, BORDER_WIDTH, 0x5689, 0);
+            _helpToolTip.MouseDown += (sender, e) =>
+            {
+                return;
+            };
+            _helpToolTip.SetTooltip("Ctrl + Click a slot -> Click another slot to lock that item into a specific slot." +
+                "<br>Use the [X] button to open the original style gump.");
 
             #endregion
 
@@ -374,8 +378,9 @@ namespace ClassicUO.Game.UI.Gumps
 
             UIManager.Add(container);
             UIManager.RemovePosition(serial);
-            this.Dispose();
-
+            container.X = this.X + Width + 25;
+            container.Y = this.Y;
+            //this.Dispose();
         }
 
         private void updateItems()
