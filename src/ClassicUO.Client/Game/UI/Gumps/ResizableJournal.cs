@@ -8,6 +8,7 @@ using ClassicUO.Utility.Collections;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -42,6 +43,7 @@ namespace ClassicUO.Game.UI.Gumps
         #region OTHER
         private static int _lastX = 100, _lastY = 100;
         private static int _lastWidth = MIN_WIDTH, _lastHeight = MIN_HEIGHT;
+        private Deque<uint> _journalEntryIds;
         #endregion
         public ResizableJournal() : base(_lastWidth, _lastHeight, MIN_WIDTH, MIN_HEIGHT, 0, 0)
         {
@@ -49,6 +51,7 @@ namespace ClassicUO.Game.UI.Gumps
             AcceptMouseInput = true;
             WantUpdateSize = true;
             CanCloseWithRightClick = true;
+            _journalEntryIds = new Deque<uint>();
 
             X = _lastX;
             Y = _lastY;
@@ -155,6 +158,12 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (journalEntry == null)
                 return;
+            if (journalEntry.MessageType == MessageType.Global)
+            {
+                journalEntry.hashCode = JournalManager.GetUInt32HashCode(journalEntry);
+                if (_journalEntryIds.Contains(journalEntry.hashCode))
+                    return;
+            }
             byte font = journalEntry.Font;
             bool unicode = journalEntry.IsUnicode;
             if (ProfileManager.CurrentProfile.ForceUnicodeJournal)
@@ -164,6 +173,8 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
             _journalArea.AddEntry($"{journalEntry.Name}: {journalEntry.Text}", font, journalEntry.Hue, unicode, journalEntry.Time, journalEntry.TextType, journalEntry.MessageType);
+            if (journalEntry.MessageType == MessageType.Global)
+                _journalEntryIds.AddToBack(journalEntry.hashCode);
         }
 
         private void InitJournalEntries()
@@ -199,6 +210,12 @@ namespace ClassicUO.Game.UI.Gumps
                 _journalArea.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
                 _scrollBarBase.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
             }
+        }
+
+        public override void Dispose()
+        {
+            _journalEntryIds.Clear();
+            base.Dispose();
         }
 
         private class RenderedTextList : Control

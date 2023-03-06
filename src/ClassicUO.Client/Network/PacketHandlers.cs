@@ -51,6 +51,7 @@ using ClassicUO.Utility.Collections;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
+using System.Text.RegularExpressions;
 
 namespace ClassicUO.Network
 {
@@ -6312,6 +6313,12 @@ namespace ClassicUO.Network
             else
             {
                 UIManager.SavePosition(gumpID, new Point(x, y));
+            }
+
+            if (gumpID == 864546439) //GlobalChat
+            {
+                var lstLine = lines[0].Split(new[] { "<BR>" }, StringSplitOptions.RemoveEmptyEntries).Reverse().ToArray();
+                World.Journal.ProcessGlobalChatLines(lstLine);
             }
 
             if (gump == null)

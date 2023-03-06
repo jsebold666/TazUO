@@ -32,11 +32,14 @@
 
 using System;
 using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using ClassicUO.Utility.Logging;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicUO.Game.Managers
 {
@@ -49,7 +52,9 @@ namespace ClassicUO.Game.Managers
 
         public event EventHandler<JournalEntry> EntryAdded;
 
-        public void Add(string text, ushort hue, string name, TextType type, bool isunicode = true, MessageType messageType = MessageType.Regular)
+        private static System.Security.Cryptography.SHA1 hash = new System.Security.Cryptography.SHA1CryptoServiceProvider();
+
+        public void Add(string text, ushort hue, string name, TextType type, bool isunicode = true, MessageType messageType = MessageType.Regular, DateTime? time = null)
         {
             JournalEntry entry = Entries.Count >= Constants.MAX_JOURNAL_HISTORY_COUNT ? Entries.RemoveFromFront() : new JournalEntry();
 
@@ -62,6 +67,10 @@ namespace ClassicUO.Game.Managers
             }
 
             DateTime timeNow = DateTime.Now;
+            if (time.HasValue)
+            {
+                timeNow = time.Value;
+            }
 
             entry.Text = text;
             entry.Font = font;
@@ -87,6 +96,50 @@ namespace ClassicUO.Game.Managers
             }
 
             _fileWriter?.WriteLine($"[{timeNow:g}]  {name}: {text}");
+        }
+        public static uint GetUInt32HashCode(JournalEntry entry)
+        {
+            if (entry == null)
+            {
+                return 0;
+            }
+            return GetUInt32HashCode($"{entry.TextType}|{entry.MessageType}[{entry.Time:g}]  {entry.Name}: {entry.Text}");
+        }
+        public static uint GetUInt32HashCode(string strText)
+        {
+            if (string.IsNullOrEmpty(strText)) return 0;
+
+            //Unicode Encode Covering all characterset
+            byte[] byteContents = Encoding.Unicode.GetBytes(strText);
+            byte[] hashText = hash.ComputeHash(byteContents);
+            uint hashCodeStart = BitConverter.ToUInt32(hashText, 0);
+            uint hashCodeMedium = BitConverter.ToUInt32(hashText, 8);
+            uint hashCodeEnd = BitConverter.ToUInt32(hashText, 16);
+            var hashCode = hashCodeStart ^ hashCodeMedium ^ hashCodeEnd;
+            return uint.MaxValue - hashCode;
+        }
+        public void ProcessGlobalChatLines(string[] lines)
+        {
+            foreach (var line in lines)
+            {
+                var text = Regex.Replace(line, "<[^>]*>", string.Empty).Trim();
+                var parts = text.Split(new[] { ": " }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 1)
+                {
+                    var timeNameSpilt = parts[0].Split(' ');
+                    var ts = TimeSpan.Parse(timeNameSpilt[0].Replace("[", string.Empty).Replace("]", string.Empty));
+                    var name = timeNameSpilt[1];
+                    var message = $"{name}: {parts[1]}";
+
+                    var time = DateTime.UtcNow.Date.Add(ts);
+                    var offSet = (DateTime.UtcNow.Hour - DateTime.Now.Hour) * -1;
+
+                    time = time.AddHours(offSet);
+
+                    Add(message, 0x0973, "Global", TextType.SYSTEM, messageType: MessageType.Global, time: time);
+                }
+
+            }
         }
 
         private void CreateWriter()
@@ -151,5 +204,6 @@ namespace ClassicUO.Game.Managers
         public TextType TextType;
         public DateTime Time;
         public MessageType MessageType;
+        public uint hashCode;
     }
 }
