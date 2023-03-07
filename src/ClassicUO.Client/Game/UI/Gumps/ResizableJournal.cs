@@ -7,7 +7,7 @@ using ClassicUO.Renderer;
 using ClassicUO.Utility.Collections;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -122,6 +122,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             InitJournalEntries();
             World.Journal.EntryAdded += (sender, e) => { AddJournalEntry(e); };
+            LoadSettings();
         }
 
         public override GumpType GumpType => GumpType.Journal;
@@ -199,7 +200,23 @@ namespace ClassicUO.Game.UI.Gumps
                 _background.Height = Height - (BORDER_WIDTH * 2);
                 _journalArea.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
                 _scrollBarBase.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
+                ProfileManager.CurrentProfile?.Save(ProfileManager.ProfilePath);
             }
+        }
+        public void SaveSettings()
+        {
+            if (ProfileManager.CurrentProfile == null)
+            {
+                return;
+            }
+            ProfileManager.CurrentProfile.ResizeJournalSize = new Point(Width, Height);
+        }
+        private void LoadSettings()
+        {
+            Width = ProfileManager.CurrentProfile.ResizeJournalSize.X;
+            Height = ProfileManager.CurrentProfile.ResizeJournalSize.Y;
+
+            ResizeWindow(new Point(Width, Height));
         }
 
         private class RenderedTextList : Control
