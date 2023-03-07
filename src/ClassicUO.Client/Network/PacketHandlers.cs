@@ -6414,6 +6414,12 @@ namespace ClassicUO.Network
                 UIManager.SavePosition(gumpID, new Point(x, y));
             }
 
+            if (gumpID == 864546439) //GlobalChat
+            {
+                //Intercept UOAlive GlobalChat Command to build gump.
+                World.Journal.ProcessGlobalChatLines(lines);
+            }
+
             if (gump == null)
             {
                 gump = new Gump(sender, gumpID)

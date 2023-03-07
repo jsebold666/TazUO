@@ -14,7 +14,7 @@ namespace ClassicUO.Game.UI.Gumps
     internal class ResizableJournal : ResizableGump
     {
         #region CONSTANTS
-        private const int MIN_WIDTH = 410;
+        private const int MIN_WIDTH = 500;
         private const int MIN_HEIGHT = 350;
         private const int BORDER_WIDTH = 4;
         private const int SCROLL_BAR_WIDTH = 18;
@@ -42,6 +42,7 @@ namespace ClassicUO.Game.UI.Gumps
         #region OTHER
         private static int _lastX = 100, _lastY = 100;
         private static int _lastWidth = MIN_WIDTH, _lastHeight = MIN_HEIGHT;
+        private Deque<uint> _journalEntryIds;
         #endregion
         public ResizableJournal() : base(_lastWidth, _lastHeight, MIN_WIDTH, MIN_HEIGHT, 0, 0)
         {
@@ -49,6 +50,7 @@ namespace ClassicUO.Game.UI.Gumps
             AcceptMouseInput = true;
             WantUpdateSize = true;
             CanCloseWithRightClick = true;
+            _journalEntryIds = new Deque<uint>();
 
             X = _lastX;
             Y = _lastY;
@@ -82,11 +84,12 @@ namespace ClassicUO.Game.UI.Gumps
                 MessageType.Encoded, MessageType.Focus, MessageType.Guild,
                 MessageType.Label, MessageType.Limit3Spell, MessageType.Party,
                 MessageType.Regular, MessageType.Spell, MessageType.System,
-                MessageType.Whisper, MessageType.Yell
+                MessageType.Whisper, MessageType.Yell, MessageType.Global
             });
             AddTab("Chat", new MessageType[] { MessageType.Regular, MessageType.Guild, MessageType.Alliance, MessageType.Emote, MessageType.Party, MessageType.Whisper, MessageType.Yell });
             AddTab("Guild|Party", new MessageType[] { MessageType.Guild, MessageType.Alliance, MessageType.Party });
             AddTab("System", new MessageType[] { MessageType.System });
+            AddTab("Global", new MessageType[] { MessageType.Global });
             #endregion
 
             #region Journal Area
@@ -156,6 +159,14 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (journalEntry == null)
                 return;
+            uint entryHash = 0;
+            var isGlobalChat = journalEntry.MessageType == MessageType.Global;
+            if (isGlobalChat)
+            {
+                entryHash = JournalManager.GetUInt32HashCode(journalEntry);
+                if (_journalEntryIds.IndexOf(entryHash) != -1)
+                    return;
+            }
             byte font = journalEntry.Font;
             bool unicode = journalEntry.IsUnicode;
             if (ProfileManager.CurrentProfile.ForceUnicodeJournal)
@@ -165,6 +176,8 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
             _journalArea.AddEntry($"{journalEntry.Name}: {journalEntry.Text}", font, journalEntry.Hue, unicode, journalEntry.Time, journalEntry.TextType, journalEntry.MessageType);
+            if (isGlobalChat && entryHash != 0)
+                _journalEntryIds.AddToBack(entryHash);
         }
 
         private void InitJournalEntries()
@@ -200,6 +213,11 @@ namespace ClassicUO.Game.UI.Gumps
                 _journalArea.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
                 _scrollBarBase.Height = Height - (BORDER_WIDTH * 2) - TAB_HEIGHT;
             }
+        }
+        public override void Dispose()
+        {
+            _journalEntryIds.Clear();
+            base.Dispose();
         }
 
         private class RenderedTextList : Control
@@ -476,7 +494,17 @@ namespace ClassicUO.Game.UI.Gumps
                         MessageType currentfilter = _resizableJournal._currentFilter[i];
 
                         if (type == TextType.SYSTEM && currentfilter == MessageType.System)
+                        {
+                            if (messageType == MessageType.Global)
+                            {
+                                if (currentfilter == messageType) { return true; }
+                                continue;
+                            }
                             return true;
+                        }
+
+                        if (type == TextType.SYSTEM && currentfilter == MessageType.Global)
+                            return currentfilter == messageType;
 
                         if (type == TextType.SYSTEM && currentfilter != MessageType.System)
                             continue;
