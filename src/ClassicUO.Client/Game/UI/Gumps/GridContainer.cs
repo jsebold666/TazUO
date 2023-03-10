@@ -399,7 +399,9 @@ namespace ClassicUO.Game.UI.Gumps
             List<Item> contents = new List<Item>();
             for (LinkedObject i = _container.Items; i != null; i = i.Next)
             {
-                contents.Add((Item)i);
+                if (!((Item)i).IsHidden) {
+                    contents.Add((Item)i);
+                }                
             }
             List<Item> sortedContents = contents.OrderBy((x) => x.Graphic).ToList();
             #endregion
@@ -638,8 +640,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     return;
                 }
-
-                if (!Keyboard.Ctrl && ProfileManager.CurrentProfile.DoubleClickToLootInsideContainers && _item != null && !_item.IsDestroyed && !_item.ItemData.IsContainer && _container != World.Player.FindItemByLayer(Layer.Backpack))
+                if (!Keyboard.Ctrl && ProfileManager.CurrentProfile.DoubleClickToLootInsideContainers && _item != null && !_item.IsDestroyed && !_item.ItemData.IsContainer && !_item.IsLocked && _item.IsLootable && _container != World.Player.FindItemByLayer(Layer.Backpack))
                 {
                     GameActions.GrabItem(_item, _item.Amount);
                 }
