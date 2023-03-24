@@ -129,6 +129,8 @@ namespace ClassicUO.Configuration
         public bool BandageSelfOld { get; set; } = true;
         public bool EnableDeathScreen { get; set; } = true;
         public bool EnableBlackWhiteEffect { get; set; } = true;
+        public ushort HiddenBodyHue { get; set; } = 0x038E;
+        public byte HiddenBodyAlpha { get; set; } = 40;
 
         // tooltip
         public bool UseTooltip { get; set; } = true;
@@ -273,7 +275,6 @@ namespace ClassicUO.Configuration
         public bool DoubleClickToLootInsideContainers { get; set; }
 
         public bool UseLargeContainerGumps { get; set; } = false;
-        public bool UseGridLayoutContainerGumps { get; set; } = true;
 
         public bool RelativeDragAndDropItems { get; set; }
 
@@ -314,7 +315,54 @@ namespace ClassicUO.Configuration
         public string WorldMapHiddenZoneFiles { get; set; } = string.Empty;
         public bool WorldMapShowGridIfZoomed { get; set; } = true;
 
+        public int AutoFollowDistance { get; set; } = 2;
         public Point ResizeJournalSize { get; set; } = new Point(410, 350);
+        public bool FollowingMode { get; set; } = false;
+        public uint FollowingTarget { get; set; }
+        public bool NamePlateHealthBar { get; set; } = true;
+        public byte NamePlateOpacity { get; set; } = 75;
+        public byte NamePlateHealthBarOpacity { get; set; } = 50;
+
+
+
+        public bool DisableSystemChat { get; set; } = false;
+
+        #region GRID CONTAINER
+        public bool UseGridLayoutContainerGumps { get; set; } = true;
+        public int GridContainerSearchMode { get; set; } = 1;
+        public bool EnableGridContainerAnchor { get; set; } = false;
+        public byte GridBorderAlpha { get; set; } = 75;
+        public ushort GridBorderHue { get; set; } = 0;
+        public byte GridContainersScale { get; set; } = 100;
+        public bool GridContainerScaleItems { get; set; } = true;
+        public bool GridEnableContPreview { get; set; } = true;
+        public bool Grid_EnableBGTexture { get; set; } = true;
+        public int Grid_BorderStyle { get; set; } = 0;
+        #endregion
+
+        #region COOLDOWNS
+        public int CoolDownX { get; set; } = 50;
+        public int CoolDownY { get; set; } = 50;
+
+        public List<ushort> Condition_Hue { get; set; } = new List<ushort>();
+        public List<string> Condition_Label { get; set; } = new List<string>();
+        public List<int> Condition_Duration { get; set; } = new List<int>();
+        public List<string> Condition_Trigger { get; set; } = new List<string>();
+        public List<int> Condition_Type { get; set; } = new List<int>();
+        public int CoolDownConditionCount
+        {
+            get
+            {
+                return Condition_Hue.Count;
+            }
+            set { }
+        }
+        #endregion
+
+        #region IMPROVED BUFF BAR
+        public bool UseImprovedBuffBar { get; set; } = true;
+        public ushort ImprovedBuffBarHue { get; set; } = 905;
+        #endregion
 
         public static uint GumpsVersion { get; private set; }
 
@@ -356,7 +404,7 @@ namespace ClassicUO.Configuration
                         gumps.AddLast(gump);
                     }
                 }
-                
+
                 LinkedListNode<Gump> first = gumps.First;
 
                 while (first != null)
@@ -413,11 +461,11 @@ namespace ClassicUO.Configuration
             {
                 SaveItemsGump(parent, xml, list);
 
-                Item first = (Item) parent.Items;
+                Item first = (Item)parent.Items;
 
                 while (first != null)
                 {
-                    Item next = (Item) first.Next;
+                    Item next = (Item)first.Next;
 
                     SaveItemsGumpRecursive(first, xml, list);
 
@@ -491,7 +539,7 @@ namespace ClassicUO.Configuration
 
                         try
                         {
-                            GumpType type = (GumpType) int.Parse(xml.GetAttribute(nameof(type)));
+                            GumpType type = (GumpType)int.Parse(xml.GetAttribute(nameof(type)));
                             int x = int.Parse(xml.GetAttribute(nameof(x)));
                             int y = int.Parse(xml.GetAttribute(nameof(y)));
                             uint serial = uint.Parse(xml.GetAttribute(nameof(serial)));
@@ -501,7 +549,10 @@ namespace ClassicUO.Configuration
                             switch (type)
                             {
                                 case GumpType.Buff:
-                                    gump = new BuffGump();
+                                    if (ProfileManager.CurrentProfile.UseImprovedBuffBar)
+                                        gump = new ImprovedBuffGump();
+                                    else
+                                        gump = new BuffGump(100, 100);
 
                                     break;
 
@@ -660,7 +711,7 @@ namespace ClassicUO.Configuration
                         {
                             try
                             {
-                                GumpType type = (GumpType) int.Parse(xml.GetAttribute("type"));
+                                GumpType type = (GumpType)int.Parse(xml.GetAttribute("type"));
                                 int x = int.Parse(xml.GetAttribute("x"));
                                 int y = int.Parse(xml.GetAttribute("y"));
                                 uint serial = uint.Parse(xml.GetAttribute("serial"));
@@ -702,6 +753,16 @@ namespace ClassicUO.Configuration
                                     case GumpType.MacroButton:
                                         gump = new MacroButtonGump();
 
+                                        break;
+                                    case GumpType.GridContainer:
+                                        ushort ogContainer = ushort.Parse(xml.GetAttribute("ogContainer"));
+                                        gump = new GridContainer(serial, ogContainer);
+                                        break;
+                                    case GumpType.Journal:
+                                        gump = new ResizableJournal();
+                                        break;
+                                    case GumpType.WorldMap:
+                                        gump = new WorldMapGump();
                                         break;
                                 }
 

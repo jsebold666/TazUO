@@ -73,14 +73,14 @@ namespace ClassicUO.Game.UI.Gumps
 
         // containers
         private HSliderBar _containersScale;
-        private ColorBox _altGridContainerBackgroundHue;
+        private ColorBox _altGridContainerBackgroundHue, _gridBorderHue;
         private Combobox _cotType;
         private DataBox _databox;
         private HSliderBar _delay_before_display_tooltip, _tooltip_zoom, _tooltip_background_opacity;
-        private Combobox _dragSelectModifierKey;
-        private Combobox _backpackStyle;
-        private Checkbox _hueContainerGumps;
-        private HSliderBar _containerOpacity;
+        private Combobox _dragSelectModifierKey, _backpackStyle, _gridContainerSearchAlternative, _gridBorderStyle;
+        private Checkbox _hueContainerGumps, _gridContainerItemScale, _gridContainerPreview, _gridContainerAnchorable;
+        private HSliderBar _containerOpacity, _gridBorderOpacity, _gridContainerScale;
+        private Checkbox _gridUseBGTexture;
 
 
         //counters
@@ -134,9 +134,9 @@ namespace ClassicUO.Game.UI.Gumps
         private Combobox _infoBarHighlightType;
 
         // combat & spells
-        private ClickableColorBox _innocentColorPickerBox, _friendColorPickerBox, _crimialColorPickerBox, _canAttackColorPickerBox, _enemyColorPickerBox, _murdererColorPickerBox, _neutralColorPickerBox, _beneficColorPickerBox, _harmfulColorPickerBox;
+        private ClickableColorBox _innocentColorPickerBox, _friendColorPickerBox, _crimialColorPickerBox, _canAttackColorPickerBox, _enemyColorPickerBox, _murdererColorPickerBox, _neutralColorPickerBox, _beneficColorPickerBox, _harmfulColorPickerBox, _improvedBuffBarHue;
         private HSliderBar _lightBar;
-        private Checkbox _buffBarTime, _uiButtonsSingleClick, _queryBeforAttackCheckbox, _queryBeforeBeneficialCheckbox, _spellColoringCheckbox, _spellFormatCheckbox, _enableFastSpellsAssign;
+        private Checkbox _buffBarTime, _uiButtonsSingleClick, _queryBeforAttackCheckbox, _queryBeforeBeneficialCheckbox, _spellColoringCheckbox, _spellFormatCheckbox, _enableFastSpellsAssign, _enableImprovedBuffGump;
 
         // macro
         private MacroControl _macroControl;
@@ -160,13 +160,15 @@ namespace ClassicUO.Game.UI.Gumps
         private HSliderBar _sliderSpeechDelay;
         private HSliderBar _sliderZoom;
         private HSliderBar _soundsVolume, _musicVolume, _loginMusicVolume;
+        private HSliderBar _hiddenBodyAlpha;
+        private ClickableColorBox _hiddenBodyHue;
         private ClickableColorBox _speechColorPickerBox, _emoteColorPickerBox, _yellColorPickerBox, _whisperColorPickerBox, _partyMessageColorPickerBox, _guildMessageColorPickerBox, _allyMessageColorPickerBox, _chatMessageColorPickerBox, _partyAuraColorPickerBox;
-        private InputField _spellFormatBox;
+        private InputField _spellFormatBox, _autoFollowDistance;
         private ClickableColorBox _tooltip_font_hue;
         private FontSelector _tooltip_font_selector;
         private HSliderBar _dragSelectStartX, _dragSelectStartY;
-        private Checkbox _dragSelectAsAnchor;
-        private HSliderBar _journalOpacity;
+        private Checkbox _dragSelectAsAnchor, _namePlateHealthBar, _disableSystemChat;
+        private HSliderBar _journalOpacity, _namePlateOpacity, _namePlateHealthBarOpacity;
         private ClickableColorBox _journalBackgroundColor;
 
         // video
@@ -179,6 +181,10 @@ namespace ClassicUO.Game.UI.Gumps
         private Checkbox _useStandardSkillsGump, _showMobileNameIncoming, _showCorpseNameIncoming;
         private Checkbox _showStatsMessage, _showSkillsMessage;
         private HSliderBar _showSkillsMessageDelta;
+
+        #region Cooldowns
+        private InputField _coolDownX, _coolDownY;
+        #endregion
 
 
         private Profile _currentProfile = ProfileManager.CurrentProfile;
@@ -386,6 +392,22 @@ namespace ClassicUO.Game.UI.Gumps
 
             Add
             (
+                new NiceButton
+                (
+                    10,
+                    10 + 30 * i++,
+                    140,
+                    25,
+                    ButtonAction.SwitchPage,
+                    "Cooldowns"
+                )
+                {
+                    ButtonParameter = 8787 //They didn't use enums so putting this here until I fix it
+                }
+            );
+
+            Add
+            (
                 new Line
                 (
                     160,
@@ -467,6 +489,7 @@ namespace ClassicUO.Game.UI.Gumps
             BuildInfoBar();
             BuildContainers();
             BuildExperimental();
+            BuildCooldowns();
 
             ChangePage(1);
         }
@@ -714,33 +737,46 @@ namespace ClassicUO.Game.UI.Gumps
 
             _use_smooth_boat_movement.IsVisible = Client.Version >= ClientVersion.CV_7090;
 
-            section.Add(AddLabel(null, "Journal Opacity", startX, startY));
+            {
+                section.Add(AddLabel(null, "Journal Opacity", startX, startY));
 
-            section.AddRight
-            (
-                _journalOpacity = AddHSlider(
-                    null,
-                    0,
-                    100,
-                    _currentProfile.JournalOpacity,
-                    startX,
-                    startY,
-                    200
-                ),
-                2
-            );
+                section.AddRight
+                (
+                    _journalOpacity = AddHSlider(
+                        null,
+                        0,
+                        100,
+                        _currentProfile.JournalOpacity,
+                        startX,
+                        startY,
+                        200
+                    ),
+                    2
+                );
+                section.PushIndent();
+                section.Add
+                (
+                    _journalBackgroundColor = AddColorBox(
+                        null,
+                        startX,
+                        startY,
+                        _currentProfile.AltJournalBackgroundHue,
+                        ""
+                        )
+                );
+                section.AddRight(AddLabel(null, "Journal Background", startX, startY));
+                section.PopIndent();
+            } //Journal opac and hue
 
-            section.Add
-            (
-                _journalBackgroundColor = AddColorBox(
-                    null, 
-                    startX,
-                    startY,
-                    _currentProfile.AltJournalBackgroundHue,
-                    ""
-                    )
-            );
-            section.AddRight(AddLabel(null, "Journal Background", startX, startY));
+            {
+                section.Add(_disableSystemChat = AddCheckBox(
+                        null,
+                        "",
+                        _currentProfile.DisableSystemChat,
+                        0, 0
+                    ));
+                section.AddRight(AddLabel(null, "Disable system chat", 0, 0));
+            } //Disable system chat
 
             SettingsSection section2 = AddSettingsSection(box, "Mobiles");
             section2.Y = section.Bounds.Bottom + 40;
@@ -961,8 +997,67 @@ namespace ClassicUO.Game.UI.Gumps
             );
 
             section2.AddRight(AddLabel(null, ResGumps.PartyAuraColor, 0, 0));
+
             section2.PopIndent();
             section2.PopIndent();
+
+            section2.Add(AddLabel(null, "Hidden Body Opacity", startX, startY));
+
+            section2.AddRight
+            (
+                _hiddenBodyAlpha = AddHSlider(
+                    null,
+                    0,
+                    100,
+                    _currentProfile.HiddenBodyAlpha,
+                    startX,
+                    startY,
+                    200
+                ),
+                2
+            );
+
+            section2.Add
+            (
+                _hiddenBodyHue = AddColorBox(
+                    null,
+                    startX,
+                    startY,
+                    _currentProfile.HiddenBodyHue,
+                    ""
+                    )
+            );
+            section2.AddRight(AddLabel(null, "Hidden Body Hue", startX, startY));
+
+            {
+                section2.Add(
+                    _namePlateHealthBar = AddCheckBox(null, "", _currentProfile.NamePlateHealthBar, startX, startY)
+                    );
+
+                section2.AddRight(AddLabel(null, "Name plates also act as health bar", startX, startY));
+
+                section2.PushIndent();
+                section2.Add(AddLabel(null, "HP opacity", 0, 0));
+                section2.AddRight(_namePlateHealthBarOpacity = AddHSlider(
+                        null,
+                        0, 100,
+                        _currentProfile.NamePlateHealthBarOpacity,
+                        0, 0,
+                        200
+                    ));
+                section2.PopIndent();
+            } //Name plate health bar
+
+            {
+                section2.Add(AddLabel(null, "Name plate background opacity", 0, 0));
+                section2.AddRight(_namePlateOpacity = AddHSlider(
+                        null,
+                        0, 100,
+                        _currentProfile.NamePlateOpacity,
+                        0, 0,
+                        200
+                    ));
+            } //Name plate background opacity
 
             SettingsSection section3 = AddSettingsSection(box, "Gumps & Context");
             section3.Y = section2.Bounds.Bottom + 40;
@@ -1184,7 +1279,7 @@ namespace ClassicUO.Game.UI.Gumps
             section4.PushIndent();
             section4.Add(AddLabel(null, ResGumps.CircleTransType, startX, startY));
             int cottypeindex = _currentProfile.CircleOfTransparencyType;
-            string[] cotTypes = { ResGumps.CircleTransType_Full, ResGumps.CircleTransType_Gradient };
+            string[] cotTypes = { ResGumps.CircleTransType_Full, ResGumps.CircleTransType_Gradient, "Modern" };
 
             if (cottypeindex < 0 || cottypeindex > cotTypes.Length)
             {
@@ -1352,6 +1447,23 @@ namespace ClassicUO.Game.UI.Gumps
             );
 
             section4.PopIndent();
+
+            Label autoFollowLabel;
+            section4.Add(
+                autoFollowLabel = AddLabel(null, "Auto Follow Distance", startX, startY)
+                );
+            section4.AddRight(
+                _autoFollowDistance = AddInputField(
+                    null,
+                    startX,
+                    startY,
+                    50,
+                    TEXTBOX_HEIGHT,
+                    numbersOnly: true,
+                    maxCharCount: 10
+                    )
+                );
+            _autoFollowDistance.SetText(_currentProfile.AutoFollowDistance.ToString());
 
 
             SettingsSection section5 = AddSettingsSection(box, "Terrain & Statics");
@@ -1948,7 +2060,6 @@ namespace ClassicUO.Game.UI.Gumps
 
             Add(rightArea, PAGE);
         }
-
 
         private void BuildCommands()
         {
@@ -2764,6 +2875,24 @@ namespace ClassicUO.Game.UI.Gumps
 
             startY += _buffBarTime.Height + 2;
 
+            {
+                _enableImprovedBuffGump = AddCheckBox(
+                    rightArea,
+                    "Enable improved buff gump",
+                    _currentProfile.UseImprovedBuffBar,
+                    startX, startY
+                    );
+                startY += _enableImprovedBuffGump.Height + 2;
+
+                _improvedBuffBarHue = AddColorBox(
+                    rightArea,
+                    startX + 30, startY,
+                    _currentProfile.ImprovedBuffBarHue,
+                    "Buff Bar Hue"
+                    );
+                startY += _improvedBuffBarHue.Height + 2;
+            }//Improved buff gump
+
             _enableFastSpellsAssign = AddCheckBox
             (
                 rightArea,
@@ -3142,7 +3271,6 @@ namespace ClassicUO.Game.UI.Gumps
             Add(rightArea, PAGE);
         }
 
-
         private void BuildInfoBar()
         {
             const int PAGE = 10;
@@ -3320,34 +3448,6 @@ namespace ClassicUO.Game.UI.Gumps
                 startY += _backpackStyle.Height + 2 + 10;
             }
 
-            text = AddLabel(rightArea, "Grid container opacity", startX, startY);
-            startX += text.Width + 5;
-
-            _containerOpacity = AddHSlider
-            (
-                rightArea,
-                0,
-                100,
-                _currentProfile.ContainerOpacity,
-                startX,
-                startY,
-                200
-            );
-
-            startY += text.Height + 2;
-            startX = 5;
-
-            _altGridContainerBackgroundHue = AddColorBox(
-                rightArea,
-                startX,
-                startY,
-                _currentProfile.AltGridContainerBackgroundHue,
-                "Grid container background hue"
-                );
-
-            startY += _altGridContainerBackgroundHue.Height + 2;
-            startX = 5;
-
             text = AddLabel(rightArea, ResGumps.ContainerScale, startX, startY);
             startX += text.Width + 5;
 
@@ -3363,7 +3463,7 @@ namespace ClassicUO.Game.UI.Gumps
             );
 
             startX = 5;
-            startY += text.Height + 2;
+            startY += _containersScale.Height + 2;
 
             _containerScaleItems = AddCheckBox
             (
@@ -3389,15 +3489,6 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 startY += _useLargeContianersGumps.Height + 2;
             }
-
-            _useGridLayoutContainerGumps = AddCheckBox(
-                rightArea,
-                ResGumps.UseGridLayoutContainerGump,
-                _currentProfile.UseGridLayoutContainerGumps,
-                startX,
-                startY
-            );
-            startY += _useGridLayoutContainerGumps.Height + 2;
 
             _containerDoubleClickToLoot = AddCheckBox
             (
@@ -3489,9 +3580,325 @@ namespace ClassicUO.Game.UI.Gumps
             button.MouseUp += (sender, e) => { ContainerManager.BuildContainerFile(true); };
             rightArea.Add(button);
 
+            startX = 5;
+            startY += button.Height + 2;
+
+            #region Grid Container Settings
+            SettingsSection gridSection = new SettingsSection("Grid Containers", rightArea.Width);
+            gridSection.X = startX;
+            gridSection.Y = startY;
+
+            {
+                gridSection.Add(_useGridLayoutContainerGumps = AddCheckBox(
+                    null,
+                    "Use grid containers",
+                    _currentProfile.UseGridLayoutContainerGumps,
+                    0,
+                    0
+                ));
+            } //Use grid containers
+
+            {
+                gridSection.Add(AddLabel(null, "Grid container scale", 0, 0));
+
+                gridSection.AddRight(_gridContainerScale = AddHSlider(
+                        null,
+                        50, 200,
+                        _currentProfile.GridContainersScale,
+                        0, 0,
+                        200
+                    ));
+            } //Grid container scale
+
+            {
+                gridSection.PushIndent();
+
+                gridSection.Add(_gridContainerItemScale = AddCheckBox(
+                    null,
+                    "",
+                    _currentProfile.GridContainerScaleItems,
+                    0, 0
+                    ));
+
+                gridSection.AddRight(AddLabel(null, "Also scale items", 0, 0));
+
+                gridSection.PopIndent();
+            } //Grid container item scales
+
+            {
+                gridSection.Add(AddLabel(null, "Border opacity", 0, 0));
+                gridSection.AddRight
+                    (
+                        _gridBorderOpacity = AddHSlider
+                        (
+                            null,
+                            0,
+                            100,
+                            _currentProfile.GridBorderAlpha,
+                            0,
+                            0,
+                            200
+                        )
+                    );
+            } //Grid border opacity
+
+            {
+                gridSection.PushIndent();
+                gridSection.Add
+                    (
+                        _gridBorderHue = AddColorBox
+                        (
+                            null, 0, 0,
+                            _currentProfile.GridBorderHue,
+                            ""
+                        )
+                    );
+                gridSection.AddRight(AddLabel(null, "Border hue", 0, 0));
+                gridSection.PopIndent();
+            } //Grid border hue
+
+            {
+                gridSection.Add(AddLabel(null, "Background opacity", 0, 0));
+                gridSection.AddRight(_containerOpacity = AddHSlider
+                (
+                    null,
+                    0,
+                    100,
+                    _currentProfile.ContainerOpacity,
+                    0,
+                    0,
+                    200
+                ));
+            } //Grid container opacity
+
+            {
+                gridSection.PushIndent();
+                gridSection.Add(_altGridContainerBackgroundHue = AddColorBox(
+                        null,
+                        0,
+                        0,
+                        _currentProfile.AltGridContainerBackgroundHue,
+                        ""
+                    )
+                );
+                gridSection.AddRight(AddLabel(null, "Background hue", 0, 0));
+                gridSection.PopIndent();
+            } //Grid container background hue
+
+            {
+                gridSection.Add(
+                        AddLabel(null, "Search Style", 0, 0)
+                    );
+
+                gridSection.AddRight(
+                    _gridContainerSearchAlternative = AddCombobox(
+                            null,
+                            new string[] {
+                                "Only show",
+                                "Highlight"
+                            },
+                            _currentProfile.GridContainerSearchMode,
+                            0,
+                            0,
+                            200
+                        )
+                    );
+            } //Grid container search mode
+
+            {
+                gridSection.Add(_gridContainerPreview = AddCheckBox(
+                        null,
+                        "Enable container preview",
+                        _currentProfile.GridEnableContPreview,
+                        0,
+                        0
+                    ));
+                _gridContainerPreview.SetTooltip("This only works on containers that you have opened, otherwise the client does not have that information yet.");
+            } //Grid preview
+
+            {
+                gridSection.Add(_gridContainerAnchorable = AddCheckBox(
+                        null, "Make anchorable",
+                        _currentProfile.EnableGridContainerAnchor,
+                        0, 0
+                    ));
+                _gridContainerAnchorable.SetTooltip("This will allow grid containers to be anchored to other containers/world map/journal");
+            } //Grid anchors
+
+            {
+                gridSection.Add(_gridUseBGTexture = AddCheckBox(
+                        null, "Use BG Texture",
+                        ProfileManager.CurrentProfile.Grid_EnableBGTexture,
+                        0, 0
+                    ));
+            } //Grid BG Texture
+
+            {
+                gridSection.Add(AddLabel(null, "Border Style", 0, 0));
+
+                gridSection.AddRight(_gridBorderStyle = AddCombobox(
+                        null,
+                        Enum.GetNames(typeof(GridContainer.BorderStyle)),
+                        _currentProfile.Grid_BorderStyle,
+                        0, 0,
+                        200
+                    ));
+            } //Grid border style
+
+            rightArea.Add(gridSection);
+            #endregion
+
             Add(rightArea, PAGE);
         }
 
+        private void BuildCooldowns()
+        {
+            const int PAGE = 8787;
+
+            ScrollArea rightArea = new ScrollArea
+            (
+                190,
+                20,
+                WIDTH - 210,
+                420,
+                true
+            );
+
+
+            SettingsSection _coolDowns = new SettingsSection("Cooldown bars", rightArea.Width);
+
+            {
+                _coolDowns.Add(AddLabel(null, "Position", 0, 0));
+                _coolDowns.AddRight(_coolDownX = AddInputField(
+                        null, 0, 0,
+                        50, TEXTBOX_HEIGHT,
+                        numbersOnly: true
+                    ));
+                _coolDownX.SetText(_currentProfile.CoolDownX.ToString());
+
+                _coolDowns.AddRight(_coolDownY = AddInputField(
+                        null, 0, 0,
+                        50, TEXTBOX_HEIGHT,
+                        numbersOnly: true
+                    ));
+                _coolDownY.SetText(_currentProfile.CoolDownY.ToString());
+
+            }//Cooldown position
+            rightArea.Add(_coolDowns);
+
+            #region Cooldown conditions
+            SettingsSection conditions = new SettingsSection("Condition", rightArea.Width);
+            conditions.Y = _coolDowns.Y + _coolDowns.Height + 5;
+
+            {
+                NiceButton _button;
+                conditions.Add(_button = new NiceButton(
+                        0, 0,
+                        100, TEXTBOX_HEIGHT,
+                        ButtonAction.Activate,
+                        "+ Condition"
+                    ));
+                _button.IsSelectable = false;
+                _button.MouseUp += (sender, e) =>
+                {
+                    conditions.Add(GenConditionControl(_currentProfile.CoolDownConditionCount, WIDTH - 240, true));
+                };
+
+                int count = _currentProfile.CoolDownConditionCount;
+                for (int i = 0; i < count; i++)
+                {
+                    conditions.Add(GenConditionControl(i, WIDTH - 240, false));
+                }
+            } //Add condition
+
+            rightArea.Add(conditions);
+            #endregion
+
+            Add(rightArea, PAGE);
+        }
+
+        public Control GenConditionControl(int key, int width, bool createIfNotExists)
+        {
+            CoolDownBar.CoolDownConditionData data = CoolDownBar.CoolDownConditionData.GetConditionData(key, createIfNotExists);
+            Area main = new Area();
+            main.Width = width;
+            main.Height = 60;
+
+            AlphaBlendControl _background = new AlphaBlendControl();
+            _background.Width = width;
+            _background.Height = main.Height;
+            main.Add(_background);
+
+
+            NiceButton _delete = new NiceButton(1, 1, 22, TEXTBOX_HEIGHT, ButtonAction.Activate, "X");
+            _delete.SetTooltip("Delete this cooldown bar");
+            _delete.MouseUp += (sender, e) =>
+            {
+                if (e.Button == MouseButtonType.Left)
+                {
+                    CoolDownBar.CoolDownConditionData.RemoveCondition(key);
+                    main.Dispose();
+                }
+            };
+            main.Add(_delete);
+
+
+            Label _hueLabel = new Label("Hue:", true, HUE_FONT, 25, FONT);
+            _hueLabel.X = _delete.X + _delete.Width + 5;
+            _hueLabel.Y = 1;
+            main.Add(_hueLabel);
+
+            ClickableColorBox _hueSelector = new ClickableColorBox(_hueLabel.X + _hueLabel.Width + 2, 1, 13, 14, data.hue);
+            main.Add(_hueSelector);
+
+
+            InputField _name = AddInputField(null, _hueSelector.X + _hueSelector.Width + 10, 1, 100, TEXTBOX_HEIGHT);
+            _name.SetText(data.label);
+            main.Add(_name);
+
+
+
+            Label _cooldownLabel = new Label("Cooldown:", true, HUE_FONT, 52, FONT);
+            _cooldownLabel.X = _name.X + _name.Width + 5;
+            _cooldownLabel.Y = 1;
+            main.Add(_cooldownLabel);
+
+            InputField _cooldown = AddInputField(
+                null, 0, 1,
+                25, TEXTBOX_HEIGHT,
+                numbersOnly: true
+                );
+            _cooldown.X = _cooldownLabel.X + _cooldownLabel.Width + 5;
+            _cooldown.SetText(data.cooldown.ToString());
+            main.Add(_cooldown);
+
+            Combobox _message_type = AddCombobox(null, new string[] { "All", "Self", "Other" }, data.message_type, _cooldown.X + _cooldown.Width + 5, 1, 80);
+            main.Add(_message_type);
+
+            InputField _conditionText = AddInputField(
+                null, 1, _delete.Height + 5,
+                main.Width, TEXTBOX_HEIGHT
+                );
+            _conditionText.SetText(data.trigger);
+            main.Add(_conditionText);
+
+            NiceButton _save = new NiceButton(main.Width - 37, 1, 37, TEXTBOX_HEIGHT, ButtonAction.Activate, "Save");
+            _save.IsSelectable = false;
+            _save.MouseUp += (s, e) =>
+            {
+                CoolDownBar.CoolDownConditionData.SaveCondition(key, _hueSelector.Hue, _name.Text, _conditionText.Text, int.Parse(_cooldown.Text), false, _message_type.SelectedIndex);
+            };
+            main.Add(_save);
+
+            NiceButton _preview = new NiceButton(_save.X - 54, 1, 54, TEXTBOX_HEIGHT, ButtonAction.Activate, "Preview");
+            _preview.IsSelectable = false;
+            _preview.MouseUp += (s, e) =>
+            {
+                CoolDownBarManager.AddCoolDownBar(TimeSpan.FromSeconds(int.Parse(_cooldown.Text)), _name.Text, _hueSelector.Hue);
+            };
+            main.Add(_preview);
+            return main;
+        }
 
         public override void OnButtonClick(int buttonID)
         {
@@ -3609,6 +4016,8 @@ namespace ClassicUO.Game.UI.Gumps
                     _dragSelectStartX.Value = 100;
                     _dragSelectStartY.Value = 100;
                     _dragSelectAsAnchor.IsChecked = false;
+                    _hiddenBodyAlpha.Value = 40;
+                    _hiddenBodyHue.Hue = 0x038E;
 
                     break;
 
@@ -3776,6 +4185,63 @@ namespace ClassicUO.Game.UI.Gumps
                 Client.Game.SetRefreshRate(_sliderFPS.Value);
             }
 
+
+            if (_currentProfile.EnableGridContainerAnchor != _gridContainerAnchorable.IsChecked)
+            {
+                _currentProfile.EnableGridContainerAnchor = _gridContainerAnchorable.IsChecked;
+                foreach (GridContainer _ in UIManager.Gumps.OfType<GridContainer>())
+                {
+                    _.AnchorType = _currentProfile.EnableGridContainerAnchor ? ANCHOR_TYPE.NONE : ANCHOR_TYPE.DISABLED;
+                }
+            }
+            if (_currentProfile.UseImprovedBuffBar != _enableImprovedBuffGump.IsChecked)
+            {
+                _currentProfile.UseImprovedBuffBar = _enableImprovedBuffGump.IsChecked;
+                if (_currentProfile.UseImprovedBuffBar)
+                {
+                    foreach (Gump g in UIManager.Gumps.OfType<BuffGump>())
+                        g.Dispose();
+                    UIManager.Add(new ImprovedBuffGump());
+                }
+                else
+                {
+                    foreach (Gump g in UIManager.Gumps.OfType<ImprovedBuffGump>())
+                        g.Dispose();
+                    UIManager.Add(new BuffGump(100, 100));
+                }
+            }
+
+            if(_currentProfile.Grid_BorderStyle != _gridBorderStyle.SelectedIndex)
+            {
+                _currentProfile.Grid_BorderStyle = _gridBorderStyle.SelectedIndex;
+                foreach(GridContainer gridContainer in UIManager.Gumps.OfType<GridContainer>())
+                {
+                    gridContainer.BuildBorder();
+                }
+            }
+
+            _currentProfile.ImprovedBuffBarHue = _improvedBuffBarHue.Hue;
+
+            _currentProfile.DisableSystemChat = _disableSystemChat.IsChecked;
+            _currentProfile.GridBorderAlpha = (byte)_gridBorderOpacity.Value;
+            _currentProfile.GridBorderHue = _gridBorderHue.Hue;
+            _currentProfile.GridContainersScale = (byte)_gridContainerScale.Value;
+            _currentProfile.NamePlateHealthBar = _namePlateHealthBar.IsChecked;
+            _currentProfile.NamePlateOpacity = (byte)_namePlateOpacity.Value;
+            _currentProfile.NamePlateHealthBarOpacity = (byte)_namePlateHealthBarOpacity.Value;
+            _currentProfile.GridContainerSearchMode = _gridContainerSearchAlternative.SelectedIndex;
+            _currentProfile.GridContainerScaleItems = _gridContainerItemScale.IsChecked;
+            _currentProfile.GridEnableContPreview = _gridContainerPreview.IsChecked;
+            _currentProfile.Grid_EnableBGTexture = _gridUseBGTexture.IsChecked;
+
+            {
+                _currentProfile.CoolDownX = int.Parse(_coolDownX.Text);
+                _currentProfile.CoolDownY = int.Parse(_coolDownY.Text);
+            } //Cooldown bars
+
+            int val = int.Parse(_autoFollowDistance.Text);
+            _currentProfile.AutoFollowDistance = val < 1 ? 1 : val;
+
             _currentProfile.HighlightGameObjects = _highlightObjects.IsChecked;
             _currentProfile.ReduceFPSWhenInactive = _reduceFPSWhenInactive.IsChecked;
             _currentProfile.EnablePathfind = _enablePathfind.IsChecked;
@@ -3801,6 +4267,9 @@ namespace ClassicUO.Game.UI.Gumps
             _currentProfile.HoldShiftToSplitStack = _holdShiftToSplitStack.IsChecked;
             _currentProfile.CloseHealthBarType = _healtbarType.SelectedIndex;
             _currentProfile.HideScreenshotStoredInMessage = _hideScreenshotStoredInMessage.IsChecked;
+
+            _currentProfile.HiddenBodyHue = _hiddenBodyHue.Hue;
+            _currentProfile.HiddenBodyAlpha = (byte)_hiddenBodyAlpha.Value;
 
             if (_currentProfile.DrawRoofs == _drawRoofs.IsChecked)
             {

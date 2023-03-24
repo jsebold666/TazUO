@@ -52,8 +52,6 @@ namespace ClassicUO.Game.Scenes
     {
         private bool _boatRun, _boatIsMoving;
         private readonly bool[] _flags = new bool[5];
-        private bool _followingMode;
-        private uint _followingTarget;
         private uint _holdMouse2secOverItemTime;
         private bool _isMouseLeftDown;
         private bool _isSelectionActive;
@@ -726,8 +724,8 @@ namespace ClassicUO.Game.Scenes
                                 TextType.CLIENT
                             );
 
-                            _followingMode = true;
-                            _followingTarget = ent;
+                            ProfileManager.CurrentProfile.FollowingMode = true;
+                            ProfileManager.CurrentProfile.FollowingTarget = ent;
                         }
                         else if (!DelayedObjectClickManager.IsEnabled)
                         {
@@ -1050,11 +1048,6 @@ namespace ClassicUO.Game.Scenes
                         {
                             BaseHealthBarGump customgump = UIManager.GetGump<BaseHealthBarGump>(obj);
                             customgump?.Dispose();
-
-                            if (obj == World.Player)
-                            {
-                                StatusGumpBase.GetStatusGump()?.Dispose();
-                            }
 
                             if (ProfileManager.CurrentProfile.CustomBarsToggled)
                             {
