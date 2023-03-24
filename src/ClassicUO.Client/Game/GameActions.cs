@@ -663,6 +663,7 @@ namespace ClassicUO.Game
             {
                 LastSpellIndex = index;
                 Socket.Send_CastSpellFromBook(index, bookSerial);
+                Client.Game.GetScene<GameScene>()?.CastingLineManager?.RegisterCasting(World.Player.Serial, index);
             }
         }
 
@@ -672,6 +673,7 @@ namespace ClassicUO.Game
             {
                 LastSpellIndex = index;
                 Socket.Send_CastSpell(index);
+                Client.Game.GetScene<GameScene>()?.CastingLineManager?.RegisterCasting(World.Player.Serial, index);
             }
         }
 

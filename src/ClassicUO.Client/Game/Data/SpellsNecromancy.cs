@@ -30,6 +30,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using ClassicUO.Game.Managers;
 
@@ -57,7 +58,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Neutral,
                         Reagents.DaemonBlood,
                         Reagents.GraveDust
-                    )
+                    ){ 
+                        CastDelayBase = TimeSpan.FromSeconds(1.75) 
+                    }
                 },
                 {
                     2,
@@ -71,7 +74,9 @@ namespace ClassicUO.Game.Data
                         20,
                         TargetType.Harmful,
                         Reagents.DaemonBlood
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.75)
+                    }
                 },
                 {
                     3,
@@ -86,7 +91,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Harmful,
                         Reagents.BatWing,
                         Reagents.GraveDust
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.75)
+                    }
                 },
                 {
                     4,
@@ -100,7 +107,9 @@ namespace ClassicUO.Game.Data
                         0,
                         TargetType.Neutral,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1)
+                    }
                 },
                 {
                     5,
@@ -115,7 +124,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Harmful,
                         Reagents.BatWing,
                         Reagents.NoxCrystal
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1)
+                    }
                 },
                 {
                     6,
@@ -130,7 +141,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Neutral,
                         Reagents.BatWing,
                         Reagents.DaemonBlood
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     7,
@@ -146,7 +159,9 @@ namespace ClassicUO.Game.Data
                         Reagents.DaemonBlood,
                         Reagents.GraveDust,
                         Reagents.NoxCrystal
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     8,
@@ -162,7 +177,9 @@ namespace ClassicUO.Game.Data
                         Reagents.BatWing,
                         Reagents.DaemonBlood,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.75)
+                    }
                 },
                 {
                     9,
@@ -177,7 +194,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Harmful,
                         Reagents.GraveDust,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.25)
+                    }
                 },
                 {
                     10,
@@ -191,7 +210,9 @@ namespace ClassicUO.Game.Data
                         50,
                         TargetType.Harmful,
                         Reagents.NoxCrystal
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2)
+                    }
                 },
                 {
                     11,
@@ -206,7 +227,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Harmful,
                         Reagents.DaemonBlood,
                         Reagents.NoxCrystal
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     12,
@@ -222,7 +245,9 @@ namespace ClassicUO.Game.Data
                         Reagents.BatWing,
                         Reagents.DaemonBlood,
                         Reagents.GraveDust
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     13,
@@ -238,7 +263,9 @@ namespace ClassicUO.Game.Data
                         Reagents.BatWing,
                         Reagents.NoxCrystal,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     14,
@@ -254,7 +281,9 @@ namespace ClassicUO.Game.Data
                         Reagents.BatWing,
                         Reagents.GraveDust,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     15,
@@ -270,7 +299,9 @@ namespace ClassicUO.Game.Data
                         Reagents.GraveDust,
                         Reagents.NoxCrystal,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.5)
+                    }
                 },
                 {
                     16,
@@ -285,7 +316,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Neutral,
                         Reagents.NoxCrystal,
                         Reagents.PigIron
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.25)
+                    }
                 },
                 {
                     17,
@@ -300,7 +333,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Neutral,
                         Reagents.NoxCrystal,
                         Reagents.GraveDust
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2)
+                    }
                 }
             };
         }

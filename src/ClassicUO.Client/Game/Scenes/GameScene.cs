@@ -87,6 +87,7 @@ namespace ClassicUO.Game.Scenes
         private long _alphaTimer;
         private bool _forceStopScene;
         private HealthLinesManager _healthLinesManager;
+        public CastingLineManager CastingLineManager { get; private set; }
 
         private Point _lastSelectedMultiPositionInHouseCustomization;
         private int _lightCount;
@@ -157,6 +158,7 @@ namespace ClassicUO.Game.Scenes
             InfoBars = new InfoBarManager();
             InfoBars.Load();
             _healthLinesManager = new HealthLinesManager();
+            CastingLineManager = new CastingLineManager();
             Weather = new Weather();
 
             WorldViewportGump viewport = new WorldViewportGump(this);
@@ -1191,6 +1193,7 @@ namespace ClassicUO.Game.Scenes
         public void DrawOverheads(UltimaBatcher2D batcher)
         {
             _healthLinesManager.Draw(batcher);
+            CastingLineManager.Draw(batcher);
 
             if (!UIManager.IsMouseOverWorld)
             {

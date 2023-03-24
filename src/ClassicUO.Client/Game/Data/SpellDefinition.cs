@@ -41,6 +41,7 @@ namespace ClassicUO.Game.Data
 {
     internal class SpellDefinition : IEquatable<SpellDefinition>
     {
+        public static double CastDelaySecondsPerTick => 0.25;
         public static SpellDefinition EmptySpell = new SpellDefinition
         (
             "",
@@ -146,6 +147,8 @@ namespace ClassicUO.Game.Data
         public readonly Reagents[] Regs;
         public readonly TargetType TargetType;
         public readonly int TithingCost;
+
+        public TimeSpan CastDelayBase { get; internal set; }
 
         private void AddToWatchedSpell()
         {

@@ -41,6 +41,8 @@ using ClassicUO.Assets;
 using ClassicUO.Network;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
+using System;
+using ClassicUO.Game.Scenes;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -57,8 +59,9 @@ namespace ClassicUO.Game.GameObjects
                 SkillEntry skill = SkillsLoader.Instance.Skills[i];
                 Skills[i] = new Skill(skill.Name, skill.Index, skill.HasAction);
             }
-        }
+        }       
 
+        
         public Skill[] Skills { get; }
         public override bool InWarMode { get; set; }
         public IReadOnlyDictionary<BuffIconType, BuffIcon> BuffIcons => _buffIcons;
@@ -66,7 +69,7 @@ namespace ClassicUO.Game.GameObjects
         public ref Ability PrimaryAbility => ref Abilities[0];
         public ref Ability SecondaryAbility => ref Abilities[1];
         protected override bool IsWalking => LastStepTime > Time.Ticks - Constants.PLAYER_WALKING_DELAY;
-
+        
         internal WalkerManager Walker { get; } = new WalkerManager();
         public Ability[] Abilities = new Ability[2]
         {
@@ -131,7 +134,7 @@ namespace ClassicUO.Game.GameObjects
         public uint TithingPoints;
         public ushort Weight;
         public ushort WeightMax;
-
+        
         public Item FindBandage()
         {
             Item backpack = FindItemByLayer(Layer.Backpack);
@@ -1601,6 +1604,12 @@ namespace ClassicUO.Game.GameObjects
 
             if ((oldDirection & Direction.Mask) == (direction & Direction.Mask))
             {
+                bool? isCasting = Client.Game.GetScene<GameScene>()?.CastingLineManager?.IsCasting(Serial);
+                if (isCasting.HasValue && isCasting.Value)
+                {
+                    return false;
+                }     
+
                 Direction newDir = direction;
                 int newX = x;
                 int newY = y;

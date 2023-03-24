@@ -30,6 +30,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using ClassicUO.Game.Managers;
 
@@ -59,6 +60,9 @@ namespace ClassicUO.Game.Data
                         TargetType.Beneficial,
                         Reagents.None
                     )
+                    {
+                        CastDelayBase = TimeSpan.FromSeconds(1.0)
+                    }
                 },
                 {
                     2,
@@ -74,7 +78,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Beneficial,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.5)
+                    }
                 },
                 {
                     3,
@@ -90,7 +96,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Neutral,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(0.5)
+                    }
                 },
                 {
                     4,
@@ -106,7 +114,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Neutral,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(0.25)
+                    }
                 },
                 {
                     5,
@@ -122,7 +132,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Neutral,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.0)
+                    }
                 },
                 {
                     6,
@@ -138,7 +150,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Neutral,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(0.5)
+                    }
                 },
                 {
                     7,
@@ -154,7 +168,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Harmful,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.75)
+                    }
                 },
                 {
                     8,
@@ -170,7 +186,9 @@ namespace ClassicUO.Game.Data
                         30,
                         TargetType.Beneficial,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.5)
+                    }
                 },
                 {
                     9,
@@ -186,7 +204,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Beneficial,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(2.0)
+                    }
                 },
                 {
                     10,
@@ -202,7 +222,9 @@ namespace ClassicUO.Game.Data
                         10,
                         TargetType.Neutral,
                         Reagents.None
-                    )
+                    ){
+                        CastDelayBase = TimeSpan.FromSeconds(1.5)
+                    }
                 }
             };
         }

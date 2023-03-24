@@ -30,6 +30,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ClassicUO.Game.Managers;
@@ -37,6 +38,22 @@ using ClassicUO.Utility;
 
 namespace ClassicUO.Game.Data
 {
+    internal class MagerySpellDefintiion: SpellDefinition
+    {
+        public MagerySpellDefintiion(
+            string name,
+            int index,
+            int gumpIconID,
+            string powerwords,
+            TargetType target,
+            params Reagents[] regs
+        ): base(name,index,gumpIconID,powerwords,target,regs)
+        {
+            Circle = (uint)(1 + (index / SpellsMagery.CircleNames.Length));
+            CastDelayBase = TimeSpan.FromSeconds((3 + (int)Circle) * CastDelaySecondsPerTick);
+        }
+        public uint Circle { get; set; }
+    }
     internal static class SpellsMagery
     {
         private static readonly Dictionary<int, SpellDefinition> _spellsDict;
@@ -50,7 +67,7 @@ namespace ClassicUO.Game.Data
                 // first circle
                 {
                     1,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Clumsy",
                         1,
@@ -63,7 +80,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     2,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Create Food",
                         2,
@@ -77,7 +94,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     3,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Feeblemind",
                         3,
@@ -90,7 +107,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     4,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Heal",
                         4,
@@ -104,7 +121,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     5,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Magic Arrow",
                         5,
@@ -116,7 +133,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     6,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Night Sight",
                         6,
@@ -129,7 +146,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     7,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Reactive Armor",
                         7,
@@ -143,7 +160,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     8,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Weaken",
                         8,
@@ -157,7 +174,7 @@ namespace ClassicUO.Game.Data
                 // second circle
                 {
                     9,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Agility",
                         9,
@@ -170,7 +187,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     10,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Cunning",
                         10,
@@ -183,7 +200,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     11,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Cure",
                         11,
@@ -196,7 +213,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     12,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Harm",
                         12,
@@ -209,7 +226,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     13,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Magic Trap",
                         13,
@@ -223,7 +240,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     14,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Magic Untrap",
                         14,
@@ -236,7 +253,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     15,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Protection",
                         15,
@@ -250,7 +267,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     16,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Strength",
                         16,
@@ -264,7 +281,7 @@ namespace ClassicUO.Game.Data
                 // third circle
                 {
                     17,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Bless",
                         17,
@@ -276,7 +293,7 @@ namespace ClassicUO.Game.Data
                     )
                 },
                 {
-                    18, new SpellDefinition
+                    18, new MagerySpellDefintiion
                     (
                         "Fireball",
                         18,
@@ -288,7 +305,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     19,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Magic Lock",
                         19,
@@ -301,7 +318,7 @@ namespace ClassicUO.Game.Data
                     )
                 },
                 {
-                    20, new SpellDefinition
+                    20, new MagerySpellDefintiion
                     (
                         "Poison",
                         20,
@@ -313,7 +330,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     21,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Telekinesis",
                         21,
@@ -326,7 +343,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     22,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Teleport",
                         22,
@@ -339,7 +356,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     23,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Unlock",
                         23,
@@ -352,7 +369,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     24,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Wall of Stone",
                         24,
@@ -366,7 +383,7 @@ namespace ClassicUO.Game.Data
                 // fourth circle
                 {
                     25,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Arch Cure",
                         25,
@@ -380,7 +397,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     26,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Arch Protection",
                         26,
@@ -395,7 +412,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     27,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Curse",
                         27,
@@ -409,7 +426,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     28,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Fire Field",
                         28,
@@ -423,7 +440,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     29,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Greater Heal",
                         29,
@@ -438,7 +455,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     30,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Lightning",
                         30,
@@ -451,7 +468,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     31,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mana Drain",
                         31,
@@ -465,7 +482,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     32,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Recall",
                         32,
@@ -480,7 +497,7 @@ namespace ClassicUO.Game.Data
                 // fifth circle
                 {
                     33,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Blade Spirits",
                         33,
@@ -494,7 +511,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     34,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Dispel Field",
                         34,
@@ -509,7 +526,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     35,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Incognito",
                         35,
@@ -523,7 +540,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     36,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Magic Reflection",
                         36,
@@ -537,7 +554,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     37,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mind Blast",
                         37,
@@ -552,7 +569,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     38,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Paralyze",
                         38,
@@ -566,7 +583,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     39,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Poison Field",
                         39,
@@ -580,7 +597,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     40,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Summon Creature",
                         40,
@@ -595,7 +612,7 @@ namespace ClassicUO.Game.Data
                 // sixth circle
                 {
                     41,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Dispel",
                         41,
@@ -609,7 +626,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     42,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Energy Bolt",
                         42,
@@ -622,7 +639,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     43,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Explosion",
                         43,
@@ -635,7 +652,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     44,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Invisibility",
                         44,
@@ -648,7 +665,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     45,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mark",
                         45,
@@ -662,7 +679,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     46,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mass Curse",
                         46,
@@ -677,7 +694,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     47,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Paralyze Field",
                         47,
@@ -691,7 +708,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     48,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Reveal",
                         48,
@@ -705,7 +722,7 @@ namespace ClassicUO.Game.Data
                 // seventh circle
                 {
                     49,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Chain Lightning",
                         49,
@@ -720,7 +737,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     50,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Energy Field",
                         50,
@@ -735,7 +752,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     51,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Flamestrike",
                         51,
@@ -748,7 +765,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     52,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Gate Travel",
                         52,
@@ -762,7 +779,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     53,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mana Vampire",
                         53,
@@ -777,7 +794,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     54,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Mass Dispel",
                         54,
@@ -792,7 +809,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     55,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Meteor Swarm",
                         55,
@@ -807,7 +824,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     56,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Polymorph",
                         56,
@@ -822,7 +839,7 @@ namespace ClassicUO.Game.Data
                 // eighth circle
                 {
                     57,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Earthquake",
                         57,
@@ -837,7 +854,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     58,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Energy Vortex",
                         58,
@@ -852,7 +869,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     59,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Resurrection",
                         59,
@@ -866,7 +883,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     60,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Air Elemental",
                         60,
@@ -880,7 +897,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     61,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Summon Daemon",
                         61,
@@ -895,7 +912,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     62,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Earth Elemental",
                         62,
@@ -909,7 +926,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     63,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Fire Elemental",
                         63,
@@ -924,7 +941,7 @@ namespace ClassicUO.Game.Data
                 },
                 {
                     64,
-                    new SpellDefinition
+                    new MagerySpellDefintiion
                     (
                         "Water Elemental",
                         64,

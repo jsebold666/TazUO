@@ -51,6 +51,7 @@ using ClassicUO.Utility.Collections;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
+using System.Reflection;
 
 namespace ClassicUO.Network
 {
@@ -266,6 +267,8 @@ namespace ClassicUO.Network
         {
             TargetManager.SetTargeting((CursorTarget)p.ReadUInt8(), p.ReadUInt32BE(), (TargetType)p.ReadUInt8());
 
+            Client.Game.GetScene<GameScene>()?.CastingLineManager?.StopCasting(World.Player.Serial, Time.Ticks);
+
             if (World.Party.PartyHealTimer < Time.Ticks && World.Party.PartyHealTarget != 0)
             {
                 TargetManager.Target(World.Party.PartyHealTarget);
@@ -373,6 +376,7 @@ namespace ClassicUO.Network
 
                 if (damage > 0)
                 {
+                    Client.Game.GetScene<GameScene>()?.CastingLineManager?.StopCasting(World.Player.Serial);
                     World.WorldTextManager.AddDamage(entity, damage);
                 }
             }
@@ -558,6 +562,7 @@ namespace ClassicUO.Network
                     UoAssist.SignalHits();
                     UoAssist.SignalStamina();
                     UoAssist.SignalMana();
+                    Client.Game.GetScene<GameScene>()?.CastingLineManager?.StopCasting(World.Player.Serial, Time.Ticks);
                 }
             }
         }
@@ -821,6 +826,12 @@ namespace ClassicUO.Network
             {
                 text = string.Empty;
             }
+
+            if (type == MessageType.Spell)
+            {
+                Client.Game.GetScene<GameScene>()?.CastingLineManager?.StartCasting(World.Player.Serial, text);
+            }
+ 
 
             if (serial == 0 && graphic == 0 && type == MessageType.Regular && font == 0xFFFF && hue == 0xFFFF && name.StartsWith("SYSTEM"))
             {
@@ -1604,6 +1615,7 @@ namespace ClassicUO.Network
                 }
 
                 GameActions.RequestWarMode(false);
+                Client.Game.GetScene<GameScene>()?.CastingLineManager?.StopCasting(World.Player.Serial);
             }
         }
 
@@ -4618,6 +4630,8 @@ namespace ClassicUO.Network
 
             string arguments = null;
 
+            Client.Game.GetScene<GameScene>()?.CastingLineManager?.HandleSpellCliloc(cliloc, serial);
+
             if (cliloc == 1008092 || cliloc == 1005445) // value for "You notify them you don't want to join the party" || "You have been added to the party"
             {
                 for (LinkedListNode<Gump> g = UIManager.Gumps.Last; g != null; g = g.Previous)
@@ -4649,6 +4663,7 @@ namespace ClassicUO.Network
             {
                 return;
             }
+
 
             if (!string.IsNullOrWhiteSpace(affix))
             {
@@ -6332,6 +6347,7 @@ namespace ClassicUO.Network
                 World.Player.CloseRangedGumps();
                 World.Player.SetInWorldTile(x, y, z);
                 World.Player.UpdateAbilities();
+                Client.Game.GetScene<GameScene>()?.CastingLineManager?.StopCasting(World.Player.Serial, Time.Ticks);
             }
         }
 
@@ -6833,7 +6849,6 @@ namespace ClassicUO.Network
 
             gump.Update();
             gump.SetInScreen();
-
             return gump;
         }
 
