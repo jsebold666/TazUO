@@ -35,7 +35,7 @@ namespace ClassicUO.Game.Managers
             1072060,    // You cannot cast a spell while calmed.
             1072112,    // You must have GM Spirit Speaking
         };
-        private readonly Dictionary<uint, SpellHandle> _mobileSpells = new Dictionary<uint, SpellHandle>();
+        private readonly Dictionary<uint, SpellState> _mobileSpells = new Dictionary<uint, SpellState>();
         public bool IsEnabled => ProfileManager.CurrentProfile != null;
 
         public void Draw(UltimaBatcher2D batcher)
@@ -134,10 +134,10 @@ namespace ClassicUO.Game.Managers
             {
                 return;
             }
-            SpellHandle spell = default;
+            SpellState spell = default;
             if (!_mobileSpells.TryGetValue(serial, out spell))
             {
-                _mobileSpells.Add(serial, spell = new SpellHandle(serial));
+                _mobileSpells.Add(serial, spell = new SpellState(serial));
             }
             //spell.Value = (SpellAction)spellId;            
         }
@@ -147,11 +147,11 @@ namespace ClassicUO.Game.Managers
             {
                 if (_mobileSpells.TryGetValue(serial, out var spell))
                 {
-                    spell.Spell = def;
+                    spell.Start(def);
                 }
             }            
         }
-        public void StopCasting(uint serial, uint? ticks)
+        public void StopCasting(uint serial, uint? ticks = null)
         {
             if (_mobileSpells.TryGetValue(serial, out var spell))
             {
@@ -187,8 +187,8 @@ namespace ClassicUO.Game.Managers
         public void HandleSpellCliloc(uint cliloc, uint serial)
         {
             SpellDefinition spell = default;
-            SpellHandle handle = default;
-            if (_mobileSpells.TryGetValue(serial, out handle))
+            SpellState spellState = default;
+            if (_mobileSpells.TryGetValue(serial, out spellState))
             {
                 if (_stopCastAtClilocs.Contains((int)cliloc))
                 {
@@ -197,16 +197,16 @@ namespace ClassicUO.Game.Managers
                 }
                 if (ClilocToSpell(cliloc, out spell))
                 {
-                    handle.Spell = spell;
+                    spellState.Start(spell);
                 }
                 return;
             }
             if (ClilocToSpell(cliloc, out spell))
             {
                 RegisterCasting(serial, spell.ID);
-                if (_mobileSpells.TryGetValue(serial, out handle))
+                if (_mobileSpells.TryGetValue(serial, out spellState))
                 {
-                    handle.Spell = spell;
+                    spellState.Start(spell);
                 }
             }
         }
@@ -297,14 +297,13 @@ namespace ClassicUO.Game.Managers
         }
             }
 
-    internal class SpellHandle
+    internal class SpellState
     {
-        public SpellHandle(uint serial) {
+        public SpellState(uint serial) {
             if (World.Mobiles.TryGetValue(serial, out var m)){
                 _caster = m;
             }
         }
-        private SpellDefinition _spell = SpellDefinition.EmptySpell;
         private Mobile _caster;
         private uint _lastCreation = Time.Ticks;
         private uint _castEnd = Time.Ticks;
@@ -319,15 +318,10 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        public SpellDefinition Spell
+        public void Start(SpellDefinition spell)
         {
-            get { return _spell; }
-            set
-            {
-                _spell = value;
-                _lastCreation = Time.Ticks;
-                _castEnd = _lastCreation + CastingLineManager.GetCastDelay(value.ID, (PlayerMobile)_caster);
-            }
+            _lastCreation = Time.Ticks;
+            _castEnd = _lastCreation + CastingLineManager.GetCastDelay(spell.ID, (PlayerMobile)_caster);
         }
     }
 }

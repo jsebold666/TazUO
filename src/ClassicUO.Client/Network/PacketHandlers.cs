@@ -51,7 +51,6 @@ using ClassicUO.Utility.Collections;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
-using System.Reflection;
 
 namespace ClassicUO.Network
 {
