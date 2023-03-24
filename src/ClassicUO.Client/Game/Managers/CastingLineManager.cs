@@ -36,7 +36,6 @@ namespace ClassicUO.Game.Managers
             1072112,    // You must have GM Spirit Speaking
         };
         private readonly Dictionary<uint, SpellHandle> _mobileSpells = new Dictionary<uint, SpellHandle>();
-        public IReadOnlyDictionary<uint, SpellHandle> MobileSpells { get { return _mobileSpells; } }
         public bool IsEnabled => ProfileManager.CurrentProfile != null;
 
         public void Draw(UltimaBatcher2D batcher)
@@ -152,22 +151,17 @@ namespace ClassicUO.Game.Managers
                 }
             }            
         }
-        public void StopCasting(uint serial, uint ticks)
+        public void StopCasting(uint serial, uint? ticks)
         {
             if (_mobileSpells.TryGetValue(serial, out var spell))
             {
-                if (spell.CastEndTime < ticks)
+                if (ticks.HasValue && spell.CastEndTime < ticks.Value)
                 {
                     _mobileSpells.Remove(serial);
+                    return;
                 }
-            }
-        }
-        public void StopCasting(uint serial)
-        {
-            if (_mobileSpells.TryGetValue(serial, out var _))
-            {
                 _mobileSpells.Remove(serial);
-            }         
+            }
         }
         public bool IsCasting(uint serial)
         {
@@ -233,79 +227,6 @@ namespace ClassicUO.Game.Managers
             return false;
         }
 
-        public static SpellBookType GetSpellBookTypeBySpell(int spell_id)
-        {
-            if (spell_id >= 1 && spell_id <= 64)
-            {
-                return SpellBookType.Magery;
-            }
-
-            if (spell_id >= 101 && spell_id <= 117)
-            {
-                return SpellBookType.Necromancy;
-            }
-
-            if (spell_id >= 201 && spell_id <= 210)
-            {
-                return SpellBookType.Chivalry;
-            }
-
-            if (spell_id >= 401 && spell_id <= 406)
-            {
-
-                return SpellBookType.Bushido;
-            }
-
-            if (spell_id >= 501 && spell_id <= 508)
-            {
-
-                return SpellBookType.Ninjitsu;
-            }
-
-            if (spell_id >= 601 && spell_id <= 616)
-            {
-
-                return SpellBookType.Spellweaving;
-            }
-
-            if (spell_id >= 678 && spell_id <= 693)
-            {
-                return SpellBookType.Mysticism;
-            }
-            return SpellBookType.Unknown;
-        }
-        public static SpellBookType GetSpellBookTypeByBookSerial(uint serial)
-        {
-            switch (serial)
-            {
-                default:
-                case 0x0EFA:
-                    return SpellBookType.Magery;
-                case 0x2253:
-                    return SpellBookType.Necromancy;
-                case 0x2252:
-                    return SpellBookType.Chivalry;
-                case 0x238C:
-                    if ((World.ClientFeatures.Flags & CharacterListFlags.CLF_SAMURAI_NINJA) == 0)
-                    {
-                        return SpellBookType.Unknown;
-                    }
-                    return SpellBookType.Bushido;
-                case 0x23A0:
-                    if ((World.ClientFeatures.Flags & CharacterListFlags.CLF_SAMURAI_NINJA) == 0)
-                    {
-                        return SpellBookType.Unknown;                        
-                    }
-                    return SpellBookType.Ninjitsu;
-                case 0x2D50:
-                    return SpellBookType.Spellweaving;
-                case 0x2D9D:
-                    return SpellBookType.Mysticism;
-                case 0x225A:
-                case 0x225B:
-                    return SpellBookType.Mastery;
-            }
-        }
         public static uint GetCastDelay(int spellId, PlayerMobile caster)
         {
             // Faster casting cap of 2 (if not using the protection spell) 
@@ -321,6 +242,7 @@ namespace ClassicUO.Game.Managers
             SpellDefinition spell = default;
             if (SpellsMagery.GetAllSpells.TryGetValue(spellId, out spell)){
                 baseDelay = spell.CastDelayBase;
+                fcMax = 2;
                 if (spellId == 33)  //bladeSpirit
                 {
                     multiplier = 3;
@@ -333,23 +255,25 @@ namespace ClassicUO.Game.Managers
             else if (SpellsNecromancy.GetAllSpells.TryGetValue(spellId - 100, out spell))
             {
                 baseDelay = spell.CastDelayBase;
+                fcMax = 2;
             }
             else if (SpellsChivalry.GetAllSpells.TryGetValue(spellId - 200, out spell))
             {
                 baseDelay = spell.CastDelayBase;
+                var magerySkill = caster.Skills.Where(s => s.Name.Equals(Enum.GetName(typeof(SpellBookType), SpellBookType.Magery))).FirstOrDefault();
+                var mysticism = caster.Skills.Where(s => s.Name.Equals(Enum.GetName(typeof(SpellBookType), SpellBookType.Mysticism))).FirstOrDefault();
+                if ((magerySkill != null && magerySkill.Value > 70.0) || (mysticism != null && mysticism.Value > 70.0))
+                {
+                    fcMax = 2;
+                }
+
             }
             else if (SpellsBushido.GetAllSpells.TryGetValue(spellId - 400, out spell))
             {
                 return (uint)TimeSpan.Zero.TotalMilliseconds;
             }
 
-            var magerySkill = caster.Skills.Where(s => s.Name.Equals(Enum.GetName(typeof(SpellBookType), SpellBookType.Magery))).FirstOrDefault();
-            var mysticism = caster.Skills.Where(s => s.Name.Equals(Enum.GetName(typeof(SpellBookType), SpellBookType.Mysticism))).FirstOrDefault();
-            if ((magerySkill != null && magerySkill.Value > 70.0) || (mysticism != null && mysticism.Value > 70.0))
-            {
-                fcMax = 2;
-            }
-
+            
             int fc = Math.Min(caster.FasterCasting, fcMax);
             if (caster.BuffIcons.TryGetValue(BuffIconType.Protection, out _))
             {
@@ -394,8 +318,6 @@ namespace ClassicUO.Game.Managers
                 return _castEnd;
             }
         }
-
-        public uint Elapsed { get { return _lastCreation - Time.Ticks; } }
 
         public SpellDefinition Spell
         {
