@@ -22,8 +22,9 @@ namespace ClassicUO.Game.UI.Gumps
         private GumpPic gumpPic;
 
         public BuffIconType buffIconType;
+        public string tooltip;
 
-        public CoolDownBar(TimeSpan _duration, string _name, ushort _hue, int x, int y, ushort graphic = ushort.MaxValue, BuffIconType type = BuffIconType.Unknown2) : base(0, 0)
+        public CoolDownBar(TimeSpan _duration, string _name, ushort _hue, int x, int y, ushort graphic = ushort.MaxValue, BuffIconType type = BuffIconType.Unknown2, string toolTip = "") : base(0, 0)
         {
             #region VARS
             Width = COOL_DOWN_WIDTH;
@@ -81,7 +82,9 @@ namespace ClassicUO.Game.UI.Gumps
             Add(background);
             Add(foreground);
             Add(textLabel);
+            SetTooltip(toolTip);
             Add(cooldownLabel);
+            SetTooltip(toolTip);
             #endregion
         }
 
