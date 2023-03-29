@@ -78,6 +78,10 @@ namespace ClassicUO.Game.UI.Gumps
             next.MouseUp += (sender, e) => { if (e.Button == Input.MouseButtonType.Left) { cPage++;  FillHueDisplays(cPage); page.Text = (cPage+1).ToString(); } };
             
         }
+        private void OnHueChange(ushort hue)
+        {
+            this.hueChanged?.Invoke(hue);
+        }
 
         private void FillHueDisplays(int page = 0)
         {
@@ -91,7 +95,7 @@ namespace ClassicUO.Game.UI.Gumps
                 for (int row = 1; row < ROWS + 1; row++)
                 {
                     int _ = row + ((col - 1) * ROWS);
-                    area.Add(new HueDisplay((ushort)(_ + (page * (ROWS * COLUMNS)) - 1), hueChanged) { X = (col - 1) * 18, Y = (row - 1) * 18 });
+                    area.Add(new HueDisplay((ushort)(_ + (page * (ROWS * COLUMNS)) - 1), OnHueChange) { X = (col - 1) * 18, Y = (row - 1) * 18 });
                 }
             }
         }
@@ -140,7 +144,7 @@ namespace ClassicUO.Game.UI.Gumps
                     if (isClickable)
                     {
                         UIManager.GetGump<ModernColorPicker>()?.Dispose();
-                        UIManager.Add(new ModernColorPicker(s => Hue = s) { X = 100, Y = 100 });
+                        UIManager.Add(new ModernColorPicker(OnHueChange) { X = 100, Y = 100 });
                     }
                     else
                     {
@@ -148,6 +152,11 @@ namespace ClassicUO.Game.UI.Gumps
                         flash = true;
                     }
                 }
+            }
+            private void OnHueChange(ushort hue)
+            {
+                Hue = hue;
+                this.hueChanged?.Invoke(hue);
             }
 
             public override bool Draw(UltimaBatcher2D batcher, int x, int y)
