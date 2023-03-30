@@ -78,10 +78,6 @@ namespace ClassicUO.Game.UI.Gumps
             next.MouseUp += (sender, e) => { if (e.Button == Input.MouseButtonType.Left) { cPage++;  FillHueDisplays(cPage); page.Text = (cPage+1).ToString(); } };
             
         }
-        private void OnHueChange(ushort hue)
-        {
-            this.hueChanged?.Invoke(hue);
-        }
 
         private void FillHueDisplays(int page = 0)
         {
@@ -95,7 +91,7 @@ namespace ClassicUO.Game.UI.Gumps
                 for (int row = 1; row < ROWS + 1; row++)
                 {
                     int _ = row + ((col - 1) * ROWS);
-                    area.Add(new HueDisplay((ushort)(_ + (page * (ROWS * COLUMNS)) - 1), OnHueChange) { X = (col - 1) * 18, Y = (row - 1) * 18 });
+                    area.Add(new HueDisplay((ushort)(_ + (page * (ROWS * COLUMNS)) - 1), hueChanged) { X = (col - 1) * 18, Y = (row - 1) * 18 });
                 }
             }
         }
@@ -113,7 +109,13 @@ namespace ClassicUO.Game.UI.Gumps
             private float flashAlpha = 1f;
             private bool rev = false;
 
-            public ushort Hue { get { return hue; } set { hue = value; } }
+            public ushort Hue { 
+                get { return hue; } 
+                set { 
+                    hue = value;
+                    hueChanged?.Invoke(value);
+                }
+            }
 
             public HueDisplay(ushort hue, Action<ushort> hueChanged, bool isClickable = false)
             {
