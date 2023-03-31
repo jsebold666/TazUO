@@ -207,8 +207,14 @@ namespace ClassicUO.Game.Scenes
 
             string name;
             string text;
+            uint? serial = null;
 
             ushort hue = e.Hue;
+
+            if (e.Parent != null && SerialHelper.IsMobile(e.Parent.Serial))
+            {
+                serial = e.Parent.Serial;
+            }
 
             switch (e.Type)
             {
@@ -311,7 +317,8 @@ namespace ClassicUO.Game.Scenes
                     name,
                     e.TextType,
                     e.IsUnicode,
-                    e.Type
+                    e.Type,
+                    serial
                 );
             }
         }

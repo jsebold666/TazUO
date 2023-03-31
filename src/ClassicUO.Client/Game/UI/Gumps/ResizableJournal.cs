@@ -8,6 +8,9 @@ using ClassicUO.Utility.Collections;
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using ClassicUO.Game.GameObjects;
+using System.Linq;
+using ClassicUO.Resources;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -15,7 +18,7 @@ namespace ClassicUO.Game.UI.Gumps
     {
         #region CONSTANTS
         private const int BORDER_WIDTH = 4;
-        private const int MIN_WIDTH = (BORDER_WIDTH * 2) + (TAB_WIDTH * 4);
+        private const int MIN_WIDTH = (BORDER_WIDTH * 2) + (TAB_WIDTH * 5);
         private const int MIN_HEIGHT = 100;
         private const int SCROLL_BAR_WIDTH = 18;
         #region TABS
@@ -88,6 +91,7 @@ namespace ClassicUO.Game.UI.Gumps
             });
             AddTab("Chat", new MessageType[] { MessageType.Regular, MessageType.Guild, MessageType.Alliance, MessageType.Emote, MessageType.Party, MessageType.Whisper, MessageType.Yell });
             AddTab("Guild|Party", new MessageType[] { MessageType.Guild, MessageType.Alliance, MessageType.Party });
+            AddTab("Friends", new MessageType[] { MessageType.System, MessageType.Regular, MessageType.Guild, MessageType.Alliance, MessageType.Emote, MessageType.Party, MessageType.Whisper, MessageType.Yell });
             AddTab("System", new MessageType[] { MessageType.System });
             _tab[0].IsSelected = true;
             #endregion
@@ -103,8 +107,7 @@ namespace ClassicUO.Game.UI.Gumps
                 BORDER_WIDTH + TAB_HEIGHT,
                 Width - SCROLL_BAR_WIDTH - (BORDER_WIDTH * 2),
                 Height - (BORDER_WIDTH * 2) - TAB_HEIGHT,
-                _scrollBarBase,
-                this);
+                _scrollBarBase);
             _journalArea.CanCloseWithRightClick = true;
             _journalArea.DragBegin += (sender, e) => { InvokeDragBegin(e.Location); };
             #endregion
@@ -135,7 +138,8 @@ namespace ClassicUO.Game.UI.Gumps
             if (_tab.Count >= buttonID)
             {
                 _tab[buttonID].IsSelected = true;
-                _currentFilter = _tabTypes[buttonID];
+                _journalArea.MessageTypes = _tabTypes[buttonID];
+                _journalArea.Serials = buttonID == 3 ? FriendManager.FriendsList.Keys.ToArray() : null;  // 3 = Friends
                 _journalArea.CalculateScrollBarMaxValue();
                 _journalArea.Update();
                 _scrollBarBase.Value = _scrollBarBase.MaxValue;
@@ -160,8 +164,12 @@ namespace ClassicUO.Game.UI.Gumps
                 font = ProfileManager.CurrentProfile.ChatFont;
                 unicode = true;
             }
-
-            _journalArea.AddEntry($"{journalEntry.Name}: {journalEntry.Text}", font, journalEntry.Hue, unicode, journalEntry.Time, journalEntry.TextType, journalEntry.MessageType);
+            var text = string.Join(": ", new[] { journalEntry.Name, journalEntry.Text }.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).Distinct());
+            if (journalEntry.MessageType == MessageType.Label && journalEntry.Name.Trim().Equals(journalEntry.Text.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                text = $"{ResGeneral.YouSee} {journalEntry.Name}";
+            }           
+            _journalArea.AddEntry(text, font, journalEntry.Hue, unicode, journalEntry.Time, journalEntry.TextType, journalEntry.MessageType, journalEntry.serial);
         }
 
         private void InitJournalEntries()
@@ -206,12 +214,16 @@ namespace ClassicUO.Game.UI.Gumps
             private readonly ScrollBarBase _scrollBar;
             private readonly Deque<TextType> _text_types;
             private readonly Deque<MessageType> _message_types;
+            private readonly Deque<uint?> _entities;
             private int lastWidth = 0, lastHeight = 0;
-            private ResizableJournal _resizableJournal;
+            private MessageType[] _messageTypeFilter;
+            private uint[] _serialFilter;
 
-            public RenderedTextList(int x, int y, int width, int height, ScrollBarBase scrollBarControl, ResizableJournal resizableJournal)
+            public MessageType[] MessageTypes {get => _messageTypeFilter; set => _messageTypeFilter = value; }
+            public uint[] Serials {get => _serialFilter; set => _serialFilter = value; }
+
+            public RenderedTextList(int x, int y, int width, int height, ScrollBarBase scrollBarControl)
             {
-                _resizableJournal = resizableJournal;
                 _scrollBar = scrollBarControl;
                 _scrollBar.IsVisible = false;
                 AcceptMouseInput = true;
@@ -225,6 +237,7 @@ namespace ClassicUO.Game.UI.Gumps
                 _hours = new Deque<RenderedText>();
                 _text_types = new Deque<TextType>();
                 _message_types = new Deque<MessageType>();
+                _entities = new Deque<uint?>();
 
                 WantUpdateSize = false;
             }
@@ -245,11 +258,23 @@ namespace ClassicUO.Game.UI.Gumps
                     RenderedText hour = _hours[i];
                     TextType type = _text_types[i];
                     MessageType messageType = _message_types[i];
+                    uint? serial = _entities[i];
 
 
                     if (!CanBeDrawn(type, messageType))
                     {
                         continue;
+                    }
+                    if (Serials != null)
+                    {
+                        if (!serial.HasValue)
+                        {
+                            continue;
+                        }
+                        if (!Serials.Contains(serial.Value))
+                        {
+                            continue;
+                        }
                     }
 
                     if (height + t.Height <= _scrollBar.Value)
@@ -383,6 +408,17 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     if (i < _text_types.Count && CanBeDrawn(_text_types[i], _message_types[i]))
                     {
+                        if (Serials != null)
+                        {
+                            if (!_entities[i].HasValue)
+                            {
+                                continue;
+                            }
+                            if (!Serials.Contains(_entities[i].Value))
+                            {
+                                continue;
+                            }
+                        }
                         height += _entries[i].Height;
                     }
                 }
@@ -413,7 +449,8 @@ namespace ClassicUO.Game.UI.Gumps
                 bool isUnicode,
                 DateTime time,
                 TextType text_type,
-                MessageType messageType
+                MessageType messageType,
+                uint? serial
             )
             {
                 bool maxScroll = _scrollBar.Value == _scrollBar.MaxValue;
@@ -427,6 +464,8 @@ namespace ClassicUO.Game.UI.Gumps
                     _text_types.RemoveFromFront();
 
                     _message_types.RemoveFromFront();
+                    
+                    _entities.RemoveFromFront();
                 }
 
                 RenderedText h = RenderedText.Create
@@ -439,6 +478,7 @@ namespace ClassicUO.Game.UI.Gumps
                 );
 
                 _hours.AddToBack(h);
+
 
                 RenderedText rtext = RenderedText.Create
                 (
@@ -456,6 +496,8 @@ namespace ClassicUO.Game.UI.Gumps
 
                 _message_types.AddToBack(messageType);
 
+                _entities.AddToBack(serial);
+
                 _scrollBar.MaxValue += rtext.Height;
 
                 if (maxScroll)
@@ -467,11 +509,11 @@ namespace ClassicUO.Game.UI.Gumps
 
             private bool CanBeDrawn(TextType type, MessageType messageType)
             {
-                if (_resizableJournal._currentFilter != null)
+                if (MessageTypes != null)
                 {
-                    for (int i = 0; i < _resizableJournal._currentFilter.Length; i++)
+                    for (int i = 0; i < MessageTypes.Length; i++)
                     {
-                        MessageType currentfilter = _resizableJournal._currentFilter[i];
+                        MessageType currentfilter = MessageTypes[i];
 
                         if (type == TextType.SYSTEM && currentfilter == MessageType.System)
                             return true;

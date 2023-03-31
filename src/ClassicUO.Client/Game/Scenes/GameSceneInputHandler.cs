@@ -628,6 +628,13 @@ namespace ClassicUO.Game.Scenes
                         }
                         TargetManager.CancelTarget();
                         break;
+                    case CursorTarget.FriendPlayerTarget:
+                        if (SelectedObject.Object is Entity friend)
+                        {
+                            FriendManager.AddFriend(friend);
+                        }
+                        TargetManager.CancelTarget();
+                        break;
                 }
             }
             else

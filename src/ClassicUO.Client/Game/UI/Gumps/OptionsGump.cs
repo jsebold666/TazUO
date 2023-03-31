@@ -389,6 +389,21 @@ namespace ClassicUO.Game.UI.Gumps
                     ButtonParameter = (int)Buttons.OpenIgnoreList
                 }
             );
+            Add
+            (
+                new NiceButton
+                (
+                    10,
+                    10 + 30 * i++,
+                    140,
+                    25,
+                    ButtonAction.Activate,
+                    "Friends List"
+                )
+                {
+                    ButtonParameter = (int)Buttons.OpenFriendList
+                }
+            );
 
             Add
             (
@@ -3975,6 +3990,12 @@ namespace ClassicUO.Game.UI.Gumps
                     // Open new
                     UIManager.Add(new IgnoreManagerGump());
                     break;
+                case Buttons.OpenFriendList:
+                    // If other IgnoreManagerGump exist - Dispose it
+                    UIManager.GetGump<FriendsManagerGump>()?.Dispose();
+                    // Open new
+                    UIManager.Add(new FriendsManagerGump());
+                    break;
             }
         }
 
@@ -5100,10 +5121,12 @@ namespace ClassicUO.Game.UI.Gumps
             MurdererColor,
 
             OpenIgnoreList,
+            OpenFriendList,
             NewMacro,
             DeleteMacro,
 
-            Last = DeleteMacro
+            Last = DeleteMacro,
+            
         }
 
 

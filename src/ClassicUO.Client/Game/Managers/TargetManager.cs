@@ -52,7 +52,8 @@ namespace ClassicUO.Game.Managers
         Grab,
         SetGrabBag,
         HueCommandTarget,
-        IgnorePlayerTarget
+        IgnorePlayerTarget,
+        FriendPlayerTarget
     }
 
     internal class CursorType
@@ -401,6 +402,13 @@ namespace ClassicUO.Game.Managers
                         if (SelectedObject.Object is Entity pmEntity)
                         {
                             IgnoreManager.AddIgnoredTarget(pmEntity);
+                        }
+                        CancelTarget();
+                        return;
+                    case CursorTarget.FriendPlayerTarget:
+                        if (SelectedObject.Object is Entity friend)
+                        {
+                            FriendManager.AddFriend(friend);
                         }
                         CancelTarget();
                         return;
