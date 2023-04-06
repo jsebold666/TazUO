@@ -45,6 +45,7 @@ using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SDL2;
+using ClassicUO.IO.Audio;
 
 namespace ClassicUO.Game
 {
@@ -74,6 +75,7 @@ namespace ClassicUO.Game
         private bool _needGraphicUpdate = true;
         private readonly List<Multi> _temp = new List<Multi>();
         private readonly Tooltip _tooltip;
+        private readonly List<GameObject> _spellAreaTiles = new List<GameObject>();
 
         public GameCursor()
         {
@@ -219,6 +221,7 @@ namespace ClassicUO.Game
                 }
             }
         }
+              
 
         public void Draw(UltimaBatcher2D sb)
         {
@@ -301,6 +304,8 @@ namespace ClassicUO.Game
                     _temp.Clear();
                 }
 
+               
+
                 if (ProfileManager.CurrentProfile.AuraOnMouse)
                 {
                     ushort id = Graphic;
@@ -359,6 +364,7 @@ namespace ClassicUO.Game
                 _temp.ForEach(s => s.Destroy());
                 _temp.Clear();
             }
+
 
             if (ItemHold.Enabled && !ItemHold.Dropped)
             {
@@ -459,6 +465,7 @@ namespace ClassicUO.Game
                     hueVec
                 );
             }
+
         }
 
         private void DrawToolTip(UltimaBatcher2D batcher, Point position)
@@ -651,6 +658,7 @@ namespace ClassicUO.Game
             return current_facing;
         }
 
+        
         private static int Sgn(int val)
         {
             int a = 0 < val ? 1 : 0;
