@@ -101,7 +101,7 @@ namespace ClassicUO.Game.Scenes
         private bool _useObjectHandles;
         private RenderTarget2D _world_render_target, _lightRenderTarget;
         private AnimatedStaticsManager _animatedStaticsManager;
-        private SpellManager _spellManager;
+        public SpellManager SpellManager;
 
 
         public bool UpdateDrawPosition { get; set; }
@@ -117,18 +117,6 @@ namespace ClassicUO.Game.Scenes
         public void DoubleClickDelayed(uint serial)
         {
             _useItemQueue.Add(serial);
-        }
-        public void SetCurrentSpell(int spellId)
-        {
-            _spellManager.SetCurrentSpell(spellId);
-        }
-        public SpellDefinition GetCurrentSpell()
-        {
-            return _spellManager.CurrentSpell;
-        }
-        public bool IsCasting()
-        {
-            return _spellManager.CurrentSpell != SpellDefinition.EmptySpell;
         }
 
         public override void Load()
@@ -167,7 +155,7 @@ namespace ClassicUO.Game.Scenes
 
             _animatedStaticsManager = new AnimatedStaticsManager();
             _animatedStaticsManager.Initialize();
-            _spellManager = new SpellManager();
+            SpellManager = new SpellManager();
             InfoBars = new InfoBarManager();
             InfoBars.Load();
             _healthLinesManager = new HealthLinesManager();
@@ -768,7 +756,7 @@ namespace ClassicUO.Game.Scenes
 
             World.Update();
             _animatedStaticsManager.Process();
-            _spellManager.Process();
+            SpellManager.Process();
             BoatMovingManager.Update();
             Pathfinder.ProcessAutoWalk();
             DelayedObjectClickManager.Update();

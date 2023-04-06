@@ -60,6 +60,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         NameOverHeadHandler,
         MacroButtonEditor = 6464,
+        SpellArea = 6650,
         GridContainer = 8787
     }
 }

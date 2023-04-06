@@ -704,6 +704,10 @@ namespace ClassicUO.Configuration
                                     ushort ogContainer = ushort.Parse(xml.GetAttribute("ogContainer"));
                                     gump = new GridContainer(serial, ogContainer);
                                     break;
+                                case GumpType.SpellArea:
+                                    gump = new SpellAreaGump();
+
+                                    break;
                             }
 
                             if (gump == null)

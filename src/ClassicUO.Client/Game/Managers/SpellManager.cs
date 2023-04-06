@@ -26,16 +26,38 @@ namespace ClassicUO.Game.Managers
     internal class SpellManager
     {
 
-        public SpellState State;
+        public SpellState State = SpellState.None;
         public SpellDefinition CurrentSpell = SpellDefinition.EmptySpell;
         public SpellBookType BookType = SpellBookType.Unknown;
         private readonly List<GameObject> _spellAreaTiles = new List<GameObject>();
         private readonly Dictionary<int, SpellArea> _spellAreas;
+
+        public IReadOnlyDictionary<int, SpellArea> GetAllSpellAreas => _spellAreas;
         public SpellManager() {
             _spellAreas = new Dictionary<int, SpellArea>();
             Load();
+            MessageManager.MessageReceived += MessageManager_MessageReceived;
         }
-        
+
+        public SpellArea[] SpellAreas { get { return _spellAreas.Values.ToArray(); } }
+
+        public void ClearSpellAreas()
+        {
+            _spellAreas.Clear();
+        }
+        public void AddSpellArea(SpellArea area)
+        {
+            _spellAreas.Add(area.Id, area);
+        }
+
+        private void MessageManager_MessageReceived(object sender, MessageEventArgs e)
+        {
+            if (e.Type == MessageType.Spell)
+            {
+                State = SpellState.Casting;
+            }
+        }
+
         public void SetCurrentSpell(int spellId)
         {
             CurrentSpell =  SpellDefinition.FullIndexGetSpell(spellId);
@@ -121,7 +143,7 @@ namespace ClassicUO.Game.Managers
             ClearSpellAreas();
             SetCurrentSpell(0);
         }
-        private void ClearSpellAreas()
+        private void ClearSpellAreasTiles()
         {
             if (_spellAreaTiles.Count != 0)
             {
@@ -134,21 +156,31 @@ namespace ClassicUO.Game.Managers
         {
             if (CurrentSpell == null || CurrentSpell == SpellDefinition.EmptySpell ||  !UIManager.IsMouseOverWorld || (!TargetManager.IsTargeting && CurrentSpell.ID != (int)HotkeyAction.CastEarthquake))
             {
-                ClearSpellAreas();
+                State = SpellState.None;
+                ClearSpellAreasTiles();
                 return;
             }
             
-            if (TargetManager.TargetingState == CursorTarget.Position)
+            if (new[] { CursorTarget.Object, CursorTarget.Position }.Contains(TargetManager.TargetingState))
             {
+                State = SpellState.Sequencing;
                 if (BookType == SpellBookType.Magery)
                 {
                     if (SelectedObject.Object is GameObject o)
                     {
                         //o.Hue = 0x0021;
-                        ClearSpellAreas();
+                        ClearSpellAreasTiles();
                         if (_spellAreas.TryGetValue(CurrentSpell.ID, out var area))
                         {
-                            if (area.Range > 0)
+                            if (TargetManager.TargetingState == CursorTarget.Object)
+                            {
+                                var loc = new Vector3(o.X, o.Y, o.Z);
+                                for (GameObject t = World.Map.GetTile((int)loc.X, (int)loc.Y, false); t != null; t = t.TNext)
+                                {
+                                    t.Hue = area.Hue;
+                                    _spellAreaTiles.Add(t);
+                                }
+                            } else if (area.Range > 0)
                             {
                                 var eastToWest = IsEastToWest(World.Player.X, World.Player.Y, o.X, o.Y);
                                 for (int i = (-1 * area.Range); i <= area.Range; ++i)
@@ -172,13 +204,13 @@ namespace ClassicUO.Game.Managers
                         }
                         return;
                     }
-                    ClearSpellAreas();
+                    ClearSpellAreasTiles();
                     return;
                 }
-                ClearSpellAreas();
+                ClearSpellAreasTiles();
                 return;
             }
-            ClearSpellAreas();
+            ClearSpellAreasTiles();
         }
 
         private void CreateDefault()

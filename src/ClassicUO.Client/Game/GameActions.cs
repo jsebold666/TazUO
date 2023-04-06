@@ -675,7 +675,7 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
-                Client.Game.GetScene<GameScene>()?.SetCurrentSpell(index);
+                Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(index);
                 Socket.Send_CastSpellFromBook(index, bookSerial);
             }
         }
@@ -685,7 +685,7 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
-                Client.Game.GetScene<GameScene>()?.SetCurrentSpell(index);
+                Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(index);
                 Socket.Send_CastSpell(index);
 
             }
