@@ -2740,9 +2740,8 @@ namespace ClassicUO.Network
                 mobile.Flags = flags;
                 mobile.Graphic = graphic;
                 mobile.CheckGraphicChange();
-                mobile.FixHue(hue);                
+                mobile.FixHue(hue);
                 // TODO: x,y,z, direction cause elastic effect, ignore 'em for the moment
-
             }
             else
             {

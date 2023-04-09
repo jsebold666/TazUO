@@ -683,9 +683,8 @@ namespace ClassicUO.Game
         {
             if (index >= 0)
             {
-                LastSpellIndex = index;                
+                LastSpellIndex = index;
                 Socket.Send_CastSpell(index);
-
             }
         }
 
