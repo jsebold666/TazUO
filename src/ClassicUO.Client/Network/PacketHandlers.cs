@@ -47,6 +47,8 @@ using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace ClassicUO.Network
@@ -942,8 +944,7 @@ namespace ClassicUO.Network
                 {
                     entity.Name = string.IsNullOrEmpty(name) ? text : name;
                 }
-            }
-
+            }          
 
             MessageManager.HandleMessage
             (
@@ -2739,8 +2740,9 @@ namespace ClassicUO.Network
                 mobile.Flags = flags;
                 mobile.Graphic = graphic;
                 mobile.CheckGraphicChange();
-                mobile.FixHue(hue);
+                mobile.FixHue(hue);                
                 // TODO: x,y,z, direction cause elastic effect, ignore 'em for the moment
+
             }
             else
             {
@@ -3481,13 +3483,27 @@ namespace ClassicUO.Network
             {
                 return;
             }
+            var ManaMax = p.ReadUInt16BE();
+            var Mana = p.ReadUInt16BE();
 
-            mobile.ManaMax = p.ReadUInt16BE();
-            mobile.Mana = p.ReadUInt16BE();
+            var isRegen = Mana > mobile.Mana;
+            mobile.ManaMax = ManaMax;
+            mobile.Mana = Mana;
 
             if (mobile == World.Player)
             {
                 UoAssist.SignalMana();
+                var spellManager = Client.Game.GetScene<GameScene>().SpellManager;
+                if (!isRegen && spellManager.TryGetActiveSpellArea(out var _))
+                {
+                    if (spellManager.BookType == SpellBookType.Chivalry)
+                    {
+                        Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(0);
+                    }else if (TargetManager.TargetingState == CursorTarget.Object || TargetManager.TargetingState == CursorTarget.Position)
+                    {
+                        Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(0);
+                    }
+                }
             }
         }
 

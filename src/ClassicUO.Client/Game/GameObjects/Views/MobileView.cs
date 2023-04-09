@@ -126,6 +126,14 @@ namespace ClassicUO.Game.GameObjects
             else
             {
                 overridedHue = 0;
+                var spM = Client.Game.GetScene<GameScene>().SpellManager;
+                if (spM.State == SpellState.Sequencing && spM.GameObjectInSpellTiles(this))
+                {
+                    if (Client.Game.GetScene<GameScene>().SpellManager.TryGetActiveSpellArea(out var area))
+                    {
+                        overridedHue = area.Hue;
+                    }                    
+                }
 
                 if (IsDead)
                 {

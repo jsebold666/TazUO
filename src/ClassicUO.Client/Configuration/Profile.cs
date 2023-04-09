@@ -185,6 +185,7 @@ namespace ClassicUO.Configuration
         public bool CastSpellsByOneClick { get; set; }
         public bool BuffBarTime { get; set; }
         public bool FastSpellsAssign { get; set; }
+        public bool SpellAreaHighlights { get; set; }
         public bool AutoOpenDoors { get; set; }
         public bool SmoothDoors { get; set; }
         public bool AutoOpenCorpses { get; set; }

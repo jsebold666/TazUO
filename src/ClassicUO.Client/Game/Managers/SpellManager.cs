@@ -2,6 +2,7 @@
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
+using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Utility.Logging;
 using Microsoft.Xna.Framework;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -45,6 +47,14 @@ namespace ClassicUO.Game.Managers
         {
             _spellAreas.Clear();
         }
+        public bool GameObjectInSpellTiles(GameObject o)
+        {
+            return _spellAreaTiles.Exists(t => ReferenceEquals(o, t));
+        }
+        public bool TryGetActiveSpellArea(out SpellArea area)
+        {
+            return _spellAreas.TryGetValue(CurrentSpell.ID, out area);
+        }
         public void AddSpellArea(SpellArea area)
         {
             _spellAreas.Add(area.Id, area);
@@ -52,16 +62,31 @@ namespace ClassicUO.Game.Managers
 
         private void MessageManager_MessageReceived(object sender, MessageEventArgs e)
         {
-            if (e.Type == MessageType.Spell)
+            if (e.Parent != null && ReferenceEquals(e.Parent, World.Player) && State != SpellState.Casting)
             {
-                State = SpellState.Casting;
+                if (SpellDefinition.WordToTargettype.TryGetValue(e.Text, out var spell))
+                {
+                    SetCurrentSpell(spell);
+                }
             }
         }
 
         public void SetCurrentSpell(int spellId)
         {
-            CurrentSpell =  SpellDefinition.FullIndexGetSpell(spellId);
-            BookType = GetSpellBookType(CurrentSpell.ID);
+            SetCurrentSpell(SpellDefinition.FullIndexGetSpell(spellId));
+        }
+        public void SetCurrentSpell(SpellDefinition spell)
+        {
+            CurrentSpell = spell;
+            if (CurrentSpell == SpellDefinition.EmptySpell)
+            {
+                State = SpellState.None;
+                BookType = SpellBookType.Unknown;
+                TargetManager.Reset();
+                return;
+            }
+            State = SpellState.Casting;
+            BookType = GetSpellBookType(spell.ID);            
         }
 
         private SpellBookType GetSpellBookType(int id)
@@ -140,7 +165,7 @@ namespace ClassicUO.Game.Managers
 
         public void CancelSpell()
         {
-            ClearSpellAreas();
+            ClearSpellAreasTiles();
             SetCurrentSpell(0);
         }
         private void ClearSpellAreasTiles()
@@ -154,12 +179,87 @@ namespace ClassicUO.Game.Managers
 
         public void Process()
         {
-            if (CurrentSpell == null || CurrentSpell == SpellDefinition.EmptySpell ||  !UIManager.IsMouseOverWorld || (!TargetManager.IsTargeting && CurrentSpell.ID != (int)HotkeyAction.CastEarthquake))
+            //|| !UIManager.IsMouseOverWorld
+            if (!ProfileManager.CurrentProfile.SpellAreaHighlights ||  State == SpellState.None || !_spellAreas.TryGetValue(CurrentSpell.ID, out var area) )
             {
+                CurrentSpell = SpellDefinition.EmptySpell;
                 State = SpellState.None;
                 ClearSpellAreasTiles();
                 return;
             }
+
+            ClearSpellAreasTiles();
+            if (area.Origin == SpellAreaOrigin.Caster && area.Range > 0)
+            {
+                for (int i = (-1 * area.Range); i <= area.Range; ++i)
+                {
+                    Vector3 loc = new Vector3(World.Player.X + i ,World.Player.Y + i, World.Player.Z);
+                    var startY = area.IsLinear ? 0 : -1;
+                    for (int j = (startY * area.Range); j <= area.Range; ++j)
+                    {
+                        if (!area.IsLinear)
+                        {
+                            loc = new Vector3(World.Player.X + i, World.Player.Y + j, World.Player.Z);
+                        }
+                        for (GameObject t = World.Map.GetTile((int)loc.X, (int)loc.Y, false); t != null; t = t.TNext)
+                        {
+                            t.Hue = area.Hue;
+                            _spellAreaTiles.Add(t);
+                        }
+                    }
+                }
+            }
+            if (area.Origin == SpellAreaOrigin.Target)
+            {
+                if (!TargetManager.IsTargeting && State == SpellState.Sequencing)
+                {
+                    CancelSpell();
+                    return;
+                }
+                if (TargetManager.IsTargeting && State == SpellState.Casting)
+                {
+                    State = SpellState.Sequencing;
+                }
+                if (SelectedObject.Object is not GameObject o)
+                {
+                    ClearSpellAreasTiles();
+                    return;
+                }
+
+                if (TargetManager.TargetingState == CursorTarget.Object || TargetManager.IsTargeting)
+                {
+                    if (area.Range == 0)
+                    {
+                        var loc = new Vector3(o.X, o.Y, o.Z);
+                        for (GameObject t = World.Map.GetTile((int)loc.X, (int)loc.Y, false); t != null; t = t.TNext)
+                        {
+                            t.Hue = area.Hue;
+                            _spellAreaTiles.Add(t);
+                        }
+                        return;
+                    }
+                    var eastToWest = IsEastToWest(World.Player.X, World.Player.Y, o.X, o.Y);
+                    for (int i = (-1 * area.Range); i <= area.Range; ++i)
+                    {
+                        Vector3 loc = new Vector3(eastToWest ? o.X + i : o.X, eastToWest ? o.Y : o.Y + i, o.Z);
+                        var startY = area.IsLinear ? 0 : -1;
+                        for (int j = (startY * area.Range); j <= area.Range; ++j)
+                        {
+                            if (!area.IsLinear)
+                            {
+                                loc = new Vector3(o.X + i, o.Y + j, o.Z);
+                            }
+                            for (GameObject t = World.Map.GetTile((int)loc.X, (int)loc.Y, false); t != null; t = t.TNext)
+                            {
+                                t.Hue = area.Hue;
+                                _spellAreaTiles.Add(t);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return;
             
             if (new[] { CursorTarget.Object, CursorTarget.Position }.Contains(TargetManager.TargetingState))
             {
@@ -170,8 +270,6 @@ namespace ClassicUO.Game.Managers
                     {
                         //o.Hue = 0x0021;
                         ClearSpellAreasTiles();
-                        if (_spellAreas.TryGetValue(CurrentSpell.ID, out var area))
-                        {
                             if (TargetManager.TargetingState == CursorTarget.Object)
                             {
                                 var loc = new Vector3(o.X, o.Y, o.Z);
@@ -201,7 +299,6 @@ namespace ClassicUO.Game.Managers
                                     }
                                 }
                             }                            
-                        }
                         return;
                     }
                     ClearSpellAreasTiles();
@@ -232,6 +329,56 @@ namespace ClassicUO.Game.Managers
             _spellAreas.Add((int)HotkeyAction.CastReveal, new SpellArea((int)HotkeyAction.CastReveal, 6, false, 0x0389));
             _spellAreas.Add((int)HotkeyAction.CastArchCure, new SpellArea((int)HotkeyAction.CastArchCure, 2, false, 0x0042));
             _spellAreas.Add((int)HotkeyAction.CastArchProtection, new SpellArea((int)HotkeyAction.CastArchProtection, 3, false, 0x0042));
+
+
+            _spellAreas.Add((int)HotkeyAction.CastHailStorm, new SpellArea((int)HotkeyAction.CastHailStorm, 2, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastMassSleep, new SpellArea((int)HotkeyAction.CastMassSleep, 3, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastNetherCyclone, new SpellArea((int)HotkeyAction.CastNetherCyclone, 2, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastNetherBlast, new SpellArea((int)HotkeyAction.CastNetherBlast, 1, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastPoisonStrike, new SpellArea((int)HotkeyAction.CastPoisonStrike, 2, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastFlamingShot, new SpellArea((int)HotkeyAction.CastFlamingShot, 5, false, 0x0021));
+            _spellAreas.Add((int)HotkeyAction.CastPlayingTheOdds, new SpellArea((int)HotkeyAction.CastPlayingTheOdds, 5, false, 0x0021));
+            //5 + focus
+            _spellAreas.Add((int)HotkeyAction.CastWildFire, new SpellArea((int)HotkeyAction.CastWildFire, 5, false, 0x0021));
+
+
+            //3 + focus
+            _spellAreas.Add((int)HotkeyAction.CastThinderstorm, new SpellArea((int)HotkeyAction.CastThinderstorm, 3, false, 0x0021, SpellAreaOrigin.Caster));
+            _spellAreas.Add((int)HotkeyAction.CastWither, new SpellArea((int)HotkeyAction.CastWither, 4, false, 0x0021, SpellAreaOrigin.Caster));
+            //1 + mageryskill / 15 ex: 1 + (100/15) = 8
+            _spellAreas.Add((int)HotkeyAction.CastEarthquake, new SpellArea((int)HotkeyAction.CastEarthquake, 8, false, 0x0021, SpellAreaOrigin.Caster));
+            //5 + focus
+            _spellAreas.Add((int)HotkeyAction.CastEssenceOfWind, new SpellArea((int)HotkeyAction.CastEssenceOfWind, 5, false, 0x0021, SpellAreaOrigin.Caster));
+
+            _spellAreas.Add((int)HotkeyAction.CastDispelEvil, new SpellArea((int)HotkeyAction.CastDispelEvil, 8, false, 0x0021, SpellAreaOrigin.Caster));
+            _spellAreas.Add((int)HotkeyAction.CastHolyLight, new SpellArea((int)HotkeyAction.CastHolyLight, 3, false, 0x0021, SpellAreaOrigin.Caster));
+
+            foreach(var area in _spellAreas)
+            {
+                if (area.Key >= 65 && area.Key <= 81)
+                {
+                    area.Value.Id += 36;
+                }else if (area.Key >= 82 && area.Key <= 91)
+                {
+                    area.Value.Id += 119;
+                }
+                else if (area.Key >= 92 && area.Key <= 97)
+                {
+                    area.Value.Id += 309;
+                }
+                else if (area.Key >= 106 && area.Key <= 120)
+                {
+                    area.Value.Id += 495;
+                }
+                else if (area.Key >= 122 && area.Key <= 137)
+                {
+                    area.Value.Id += 556;
+                }
+                else if (area.Key >= 138 && area.Key <= 182)
+                {
+                    area.Value.Id += 563;
+                }
+            }
         }
 
         public void Save()
@@ -246,7 +393,7 @@ namespace ClassicUO.Game.Managers
             })
             {
                 xml.WriteStartDocument(true);
-                xml.WriteStartElement("areas");
+                xml.WriteStartElement("spell_areas");
 
                 foreach (SpellArea area in _spellAreas.Values)
                 {
@@ -283,11 +430,11 @@ namespace ClassicUO.Game.Managers
 
             _spellAreas.Clear();
 
-            XmlElement root = doc["areas"];
+            XmlElement root = doc["spell_areas"];
 
             if (root != null)
             {
-                foreach (XmlElement xml in root.GetElementsByTagName("area"))
+                foreach (XmlElement xml in root.GetElementsByTagName("spell_area"))
                 {
                     var area = new SpellArea(xml);
                     _spellAreas.Add(area.Id, area);
@@ -296,18 +443,25 @@ namespace ClassicUO.Game.Managers
         }
     }
 
+    public enum SpellAreaOrigin
+    {
+        Target,
+        Caster
+    }
     internal class SpellArea
     {
         public int Id;
         public bool IsLinear;
         public int Range;
         public ushort Hue;
-        public SpellArea(int id, int range, bool isLinear, ushort hue = 0)
+        public SpellAreaOrigin Origin;
+        public SpellArea(int id, int range, bool isLinear, ushort hue = 0, SpellAreaOrigin origin = SpellAreaOrigin.Target)
         {
             Id = id;
             Range = range;
             IsLinear = isLinear;
             Hue = hue;
+            Origin = origin;
         }
 
 
@@ -324,15 +478,17 @@ namespace ClassicUO.Game.Managers
             int.TryParse(xml.GetAttribute("range"), out Range);
             bool.TryParse(xml.GetAttribute("isLinear"), out IsLinear);
             ushort.TryParse(xml.GetAttribute("hue"), out Hue);
+            Enum.TryParse(xml.GetAttribute("origin"), out Origin);
         }
 
         public void Save(XmlTextWriter writer)
         {
-            writer.WriteStartElement("area");
+            writer.WriteStartElement("spell_area");
             writer.WriteAttributeString("id", Id.ToString());
             writer.WriteAttributeString("range", Range.ToString());
             writer.WriteAttributeString("isLinear", IsLinear.ToString());
             writer.WriteAttributeString("hue", Hue.ToString());
+            writer.WriteAttributeString("origin", Origin.ToString("d"));
             writer.WriteEndElement();
         }
     }

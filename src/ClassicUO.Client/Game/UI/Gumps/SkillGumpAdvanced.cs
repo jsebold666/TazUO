@@ -415,6 +415,31 @@ namespace ClassicUO.Game.UI.Gumps
             };
         }
 
+        protected override void OnMouseUp(int x, int y, MouseButtonType button)
+        {
+            //Adding similiar behavior as standard gump to create skill gump button
+            if (button != MouseButtonType.Left)
+            {
+                return;
+            }
+
+            Client.Game.GameCursor.IsDraggingCursorForced = false;
+
+            if (UIManager.LastControlMouseDown(MouseButtonType.Left) == this && World.Player.Skills[_skill.Index].IsClickable)
+            {
+                if (UIManager.MouseOverControl == null || UIManager.MouseOverControl.RootParent != RootParent)
+                {
+                    GetSpellFloatingButton(_skill.Index)?.Dispose();
+
+                    if (_skill.Index >= 0 && _skill.Index < World.Player.Skills.Length)
+                    {
+                        UIManager.Add(new SkillButtonGump(World.Player.Skills[_skill.Index], Mouse.Position.X - 44, Mouse.Position.Y - 22));
+                    }
+                }
+            }
+            base.OnMouseUp(x, y, button);
+        }
+
         protected override void OnDragBegin(int x, int y)
         {
             if (_skill.IsClickable && Mouse.LButtonPressed)

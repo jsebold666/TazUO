@@ -136,7 +136,7 @@ namespace ClassicUO.Game.UI.Gumps
         private ClickableColorBox _innocentColorPickerBox, _friendColorPickerBox, _crimialColorPickerBox, _canAttackColorPickerBox, _enemyColorPickerBox, _murdererColorPickerBox, _neutralColorPickerBox, _beneficColorPickerBox, _harmfulColorPickerBox, _improvedBuffBarHue,
             _damageHueSelf, _damageHuePet, _damageHueAlly, _damageHueLastAttack, _damageHueOther;
         private HSliderBar _lightBar;
-        private Checkbox _buffBarTime, _uiButtonsSingleClick, _queryBeforAttackCheckbox, _queryBeforeBeneficialCheckbox, _spellColoringCheckbox, _spellFormatCheckbox, _enableFastSpellsAssign, _enableImprovedBuffGump;
+        private Checkbox _buffBarTime, _uiButtonsSingleClick, _queryBeforAttackCheckbox, _queryBeforeBeneficialCheckbox, _spellColoringCheckbox, _spellFormatCheckbox, _enableFastSpellsAssign, _enableImprovedBuffGump, _enableSpellAreas;
 
         // macro
         private MacroControl _macroControl;
@@ -2929,6 +2929,22 @@ namespace ClassicUO.Game.UI.Gumps
                 startY
             );
 
+            startY += _enableFastSpellsAssign.Height + 5;
+
+            _enableSpellAreas = AddCheckBox
+            (
+                rightArea,
+                "Enable Spell Area hightlighs",
+                _currentProfile.SpellAreaHighlights,
+                startX,
+                startY
+            );
+
+            rightArea?.Add(new NiceButton(WIDTH - 375, _enableSpellAreas.Y, 50, 25, ButtonAction.Activate, "Config")
+            {
+                ButtonParameter = (int)Buttons.ConfigSpellAreas
+            });
+
             startY += 30;
 
             int initialY = startY;
@@ -3989,6 +4005,10 @@ namespace ClassicUO.Game.UI.Gumps
                     Dispose();
 
                     break;
+                case Buttons.ConfigSpellAreas:
+                    UIManager.GetGump<SpellAreaGump>()?.Dispose();
+                    UIManager.Add(new SpellAreaGump());
+                    break;
 
                 case Buttons.NewMacro: break;
 
@@ -4177,6 +4197,7 @@ namespace ClassicUO.Game.UI.Gumps
                     _uiButtonsSingleClick.IsChecked = false;
                     _buffBarTime.IsChecked = false;
                     _enableFastSpellsAssign.IsChecked = false;
+                    _enableSpellAreas.IsChecked = false;
                     _beneficColorPickerBox.Hue = 0x0059;
                     _harmfulColorPickerBox.Hue = 0x0020;
                     _neutralColorPickerBox.Hue = 0x03b2;
@@ -4642,6 +4663,7 @@ namespace ClassicUO.Game.UI.Gumps
             _currentProfile.CastSpellsByOneClick = _uiButtonsSingleClick.IsChecked;
             _currentProfile.BuffBarTime = _buffBarTime.IsChecked;
             _currentProfile.FastSpellsAssign = _enableFastSpellsAssign.IsChecked;
+            _currentProfile.SpellAreaHighlights = _enableSpellAreas.IsChecked;
 
             _currentProfile.BeneficHue = _beneficColorPickerBox.Hue;
             _currentProfile.HarmfulHue = _harmfulColorPickerBox.Hue;
@@ -5137,6 +5159,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             OpenIgnoreList,
             NewMacro,
+            ConfigSpellAreas,
             DeleteMacro,
 
             Last = DeleteMacro
