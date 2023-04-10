@@ -547,10 +547,24 @@ namespace ClassicUO.Game.UI.Gumps
                 _isMobile = true;
                 _hpPercent = (double)m.Hits / (double)m.HitsMax;
 
-                if (ProfileManager.CurrentProfile.NamePlateHideAtFullHealth && _hpPercent >= 1 && World.Player.InWarMode)
+                IsVisible = true;
+                if (ProfileManager.CurrentProfile.NamePlateHideAtFullHealth && _hpPercent >= 1)
                 {
-                    Dispose();
-                    return false;
+                    if (ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode)
+                    {
+                        if (World.Player.InWarMode)
+                        {
+                            IsVisible = false;
+                            return false;
+                        }
+
+                    }
+                    else
+                    {
+                        IsVisible = false;
+                        return false;
+                    }
+                    
                 }
 
                 if (_positionLocked)
@@ -643,7 +657,7 @@ namespace ClassicUO.Game.UI.Gumps
                 (
                     SolidColorTextureCache.GetTexture(Color.White),
                     new Vector2(x, y),
-                    new Rectangle(x, y, (int)(Width * _hpPercent), Height),
+                    new Rectangle(x, y, Math.Min((int)(Width * _hpPercent), Width), Height),
                     ShaderHueTranslator.GetHueVector(_background.Hue, false, ProfileManager.CurrentProfile.NamePlateHealthBarOpacity / 100f)
                 );
             }

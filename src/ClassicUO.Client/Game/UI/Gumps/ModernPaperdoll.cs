@@ -170,17 +170,19 @@ namespace ClassicUO.Game.UI.Gumps
 
             RequestUpdateContents();
 
-            World.OPL.OPLOnReceive += OPL_OnOPLReceive;
+            //World.OPL.OPLOnReceive += OPL_OnOPLReceive;
         }
 
         private void OPL_OnOPLReceive(ObjectPropertiesListManager.OPLEventArgs e)
         {
             Task.Factory.StartNew(() =>
             {
-                foreach (var itemSlot in itemLayerSlots)
-                {
-                    itemSlot.Value.OPLChangeEvent(e);
-                }
+                Item i = World.Items.Get(e.Serial);
+                if (i != null && i.RootContainer == World.Player.Serial)
+                    foreach (var itemSlot in itemLayerSlots)
+                    {
+                        itemSlot.Value.OPLChangeEvent(e);
+                    }
             });
         }
 
@@ -237,7 +239,7 @@ namespace ClassicUO.Game.UI.Gumps
             base.Dispose();
             lastX = X;
             lastY = Y;
-            World.OPL.OPLOnReceive -= OPL_OnOPLReceive;
+            //World.OPL.OPLOnReceive -= OPL_OnOPLReceive;
         }
 
         public override void Save(XmlTextWriter writer)
@@ -363,18 +365,26 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
             private void UpdateDurability(Item item, bool isOPLEvent = false)
-            {//Need to check durability somehow, not receiving item updates as durability changes
+            {
                 if (!isOPLEvent)
                     durablityBar.IsVisible = false;
                 tcount++;
                 Task.Factory.StartNew(() =>
                 {
                     int currentTcount = tcount;
-                    if (!isOPLEvent)
-                        System.Threading.Thread.Sleep(1500);
-                    if (durablityBar.IsDisposed || currentTcount != tcount)
+                    //if (!isOPLEvent)
+                    //    System.Threading.Thread.Sleep(1500);
+                    if (durablityBar.IsDisposed || currentTcount != tcount || item == null)
                         return;
-                    if (World.OPL.TryGetNameAndData(item.Serial, out string name, out string data))
+                    if (World.DurabilityManager.TryGetDurability(item.Serial, out DurabiltyProp durabilty))
+                    {
+                        if (durabilty.Percentage > (float)ProfileManager.CurrentProfile.ModernPaperDoll_DurabilityPercent / (float)100)
+                            return;
+                        durablityBar.Height = (int)(Height * durabilty.Percentage);
+                        durablityBar.Y = Height - durablityBar.Height;
+                        durablityBar.IsVisible = true;
+                    }
+                    else if (World.OPL.TryGetNameAndData(item.Serial, out string name, out string data))
                     {
                         MatchCollection matches = Regex.Matches(data, @"(?<=Durability )(\d*) / (\d*)"); //This should match 45 / 255 for example
                         if (matches.Count > 0)
@@ -384,13 +394,17 @@ namespace ClassicUO.Game.UI.Gumps
                                 if (int.TryParse(durability[1].Trim(), out int max))
                                 {
                                     double perecentRemaining = (double)min / (double)max;
-                                    if (perecentRemaining > 0.9)
+                                    if (perecentRemaining > (double)ProfileManager.CurrentProfile.ModernPaperDoll_DurabilityPercent / (double)100)
                                         return;
                                     durablityBar.Height = (int)(Height * perecentRemaining);
                                     durablityBar.Y = Height - durablityBar.Height;
                                     durablityBar.IsVisible = true;
                                 }
                         }
+                    } else
+                    {
+                        System.Threading.Thread.Sleep(1500);
+                        UpdateDurability(item, isOPLEvent);
                     }
                 });
             }
@@ -596,10 +610,12 @@ namespace ClassicUO.Game.UI.Gumps
                 X = x;
                 Y = y;
                 Width = 150;
-                Height = 241;
+                Height = 261;
                 AcceptMouseInput = true;
 
                 Add(new AlphaBlendControl(0.85f) { Width = Width, Height = Height, AcceptMouseInput = false });
+
+                var i = 1;
 
                 NiceButton preview = new NiceButton(1, 1, Width - 2, 20, ButtonAction.Activate, "Preview");
                 preview.MouseUp += (s, e) =>
@@ -611,7 +627,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(preview);
 
-                NiceButton help = new NiceButton(1, 21, Width - 2, 20, ButtonAction.Activate, "Help");
+                NiceButton help = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Help");
                 help.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -621,7 +637,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(help);
 
-                NiceButton options = new NiceButton(1, 41, Width - 2, 20, ButtonAction.Activate, "Options");
+                NiceButton options = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Options");
                 options.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -631,7 +647,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(options);
 
-                NiceButton logout = new NiceButton(1, 61, Width - 2, 20, ButtonAction.Activate, "Log Out");
+                NiceButton logout = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Log Out");
                 logout.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -641,7 +657,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(logout);
 
-                NiceButton quests = new NiceButton(1, 81, Width - 2, 20, ButtonAction.Activate, "Quests");
+                NiceButton quests = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Quests");
                 quests.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -651,7 +667,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(quests);
 
-                NiceButton skills = new NiceButton(1, 101, Width - 2, 20, ButtonAction.Activate, "Skills");
+                NiceButton skills = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Skills");
                 skills.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -661,7 +677,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(skills);
 
-                NiceButton guild = new NiceButton(1, 121, Width - 2, 20, ButtonAction.Activate, "Guild");
+                NiceButton guild = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Guild");
                 guild.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -671,7 +687,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(guild);
 
-                NiceButton peace = new NiceButton(1, 141, Width - 2, 20, ButtonAction.Activate, "Peace/War");
+                NiceButton peace = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Peace/War");
                 peace.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -681,7 +697,18 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(peace);
 
-                NiceButton status = new NiceButton(1, 161, Width - 2, 20, ButtonAction.Activate, "Status");
+                NiceButton durability = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Durability Tracker");
+                durability.MouseUp += (s, e) =>
+                {
+                    if (e.Button == MouseButtonType.Left)
+                    {
+                        UIManager.GetGump<DurabilitysGump>()?.Dispose();
+                        UIManager.Add(new DurabilitysGump());
+                    }
+                };
+                Add(durability);
+
+                NiceButton status = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Status");
                 status.MouseUp += (s, e) =>
                 {
                     if (e.Button == MouseButtonType.Left)
@@ -739,7 +766,7 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(status);
 
-                NiceButton party = new NiceButton(1, 181, Width - 2, 20, ButtonAction.Activate, "Party");
+                NiceButton party = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Party");
                 party.MouseUp += (s, e) =>
                 {
                     PartyGump party = UIManager.GetGump<PartyGump>();
@@ -757,14 +784,14 @@ namespace ClassicUO.Game.UI.Gumps
                 };
                 Add(party);
 
-                NiceButton profileEditor = new NiceButton(1, 201, Width - 2, 20, ButtonAction.Activate, "Profile");
+                NiceButton profileEditor = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Profile");
                 profileEditor.MouseUp += (s, e) =>
                 {
                     GameActions.RequestProfile(LocalSerial);
                 };
                 Add(profileEditor);
 
-                NiceButton abilities = new NiceButton(1, 221, Width - 2, 20, ButtonAction.Activate, "Abilities");
+                NiceButton abilities = new NiceButton(1, 1 + 20 * i++, Width - 2, 20, ButtonAction.Activate, "Abilities");
                 abilities.MouseUp += (s, e) =>
                 {
                     if (UIManager.GetGump<RacialAbilitiesBookGump>() == null)
