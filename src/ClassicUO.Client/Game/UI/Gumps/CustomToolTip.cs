@@ -30,6 +30,10 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (item != null)
             {
+                if (!World.OPL.Contains(item.Serial))
+                {
+                    System.Threading.Thread.Sleep(2500);
+                }
                 if (World.OPL.TryGetNameAndData(item.Serial, out string name, out string data))
                 {
                     byte font = 1;

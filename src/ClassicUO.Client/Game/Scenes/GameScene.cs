@@ -101,7 +101,6 @@ namespace ClassicUO.Game.Scenes
         private bool _useObjectHandles;
         private RenderTarget2D _world_render_target, _lightRenderTarget;
         private AnimatedStaticsManager _animatedStaticsManager;
-        public SpellManager SpellManager;
 
 
         public bool UpdateDrawPosition { get; set; }
@@ -148,7 +147,6 @@ namespace ClassicUO.Game.Scenes
 
             _animatedStaticsManager = new AnimatedStaticsManager();
             _animatedStaticsManager.Initialize();
-            SpellManager = new SpellManager();
             InfoBars = new InfoBarManager();
             InfoBars.Load();
             _healthLinesManager = new HealthLinesManager();
@@ -749,7 +747,6 @@ namespace ClassicUO.Game.Scenes
 
             World.Update();
             _animatedStaticsManager.Process();
-            SpellManager.Process();
             BoatMovingManager.Update();
             Pathfinder.ProcessAutoWalk();
             DelayedObjectClickManager.Update();
@@ -1195,6 +1192,7 @@ namespace ClassicUO.Game.Scenes
 
             World.WorldTextManager.ProcessWorldText(true);
             World.WorldTextManager.Draw(batcher, Camera.Bounds.X, Camera.Bounds.Y);
+            World.SpellManager.DrawCasterBar(batcher);
         }
 
         public void DrawSelection(UltimaBatcher2D batcher)

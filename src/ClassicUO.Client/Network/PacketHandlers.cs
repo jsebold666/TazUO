@@ -3494,16 +3494,27 @@ namespace ClassicUO.Network
             if (mobile == World.Player)
             {
                 UoAssist.SignalMana();
-                var spellManager = Client.Game.GetScene<GameScene>().SpellManager;
-                if (!isRegen && spellManager.TryGetActiveSpellArea(out var _))
+                var spellManager = World.SpellManager;
+                if (!isRegen && spellManager.TryGetActiveSpellArea(out var area))
                 {
-                    if (spellManager.BookType == SpellBookType.Chivalry)
+
+                    if (area.Origin == SpellAreaOrigin.Caster && spellManager.State == SpellState.Casting)
                     {
-                        Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(0);
-                    }else if (TargetManager.TargetingState == CursorTarget.Object || TargetManager.TargetingState == CursorTarget.Position)
-                    {
-                        Client.Game.GetScene<GameScene>()?.SpellManager.SetCurrentSpell(0);
+                        spellManager.SetCurrentSpell(0);
                     }
+
+                    //if (spellManager.State == SpellState.Casting)
+                    //{
+                    //    spellManager.SetCurrentSpell(0);
+                    //}
+
+                    //if (spellManager.BookType == SpellBookType.Chivalry)
+                    //{
+                    //    spellManager.SetCurrentSpell(0);
+                    //}else if (TargetManager.TargetingState == CursorTarget.Object || TargetManager.TargetingState == CursorTarget.Position)
+                    //{
+                    //    spellManager.SetCurrentSpell(0);
+                    //}
                 }
             }
         }

@@ -2799,7 +2799,7 @@ namespace ClassicUO.Game.UI.Gumps
                 startY
             );
 
-            rightArea?.Add(new NiceButton(WIDTH - 375, _enableSpellAreas.Y, 50, 25, ButtonAction.Activate, "Config")
+            rightArea?.Add(new NiceButton(WIDTH - 400, _enableSpellAreas.Y, 80, 25, ButtonAction.Activate, "Spell Config")
             {
                 ButtonParameter = (int)Buttons.ConfigSpellAreas
             });
@@ -4245,7 +4245,7 @@ namespace ClassicUO.Game.UI.Gumps
                     break;
                 case Buttons.ConfigSpellAreas:
                     UIManager.GetGump<SpellAreaGump>()?.Dispose();
-                    UIManager.Add(new SpellAreaGump());
+                    UIManager.Add(new SpellAreaGump(300,300));
                     break;
 
                 case Buttons.NewMacro: break;

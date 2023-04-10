@@ -675,8 +675,10 @@ namespace ClassicUO.Game
         {
             if (index >= 0)
             {
-                LastSpellIndex = index;
+                World.SpellManager.CancelSpell();
+                LastSpellIndex = index;                
                 Socket.Send_CastSpellFromBook(index, bookSerial);
+                
             }
         }
 
@@ -684,6 +686,7 @@ namespace ClassicUO.Game
         {
             if (index >= 0)
             {
+                World.SpellManager.CancelSpell();
                 LastSpellIndex = index;
                 Socket.Send_CastSpell(index);
             }

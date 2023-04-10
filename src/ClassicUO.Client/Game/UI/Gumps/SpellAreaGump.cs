@@ -46,6 +46,8 @@ using static ClassicUO.Game.UI.Gumps.OptionsGump;
 using static ClassicUO.Renderer.UltimaBatcher2D;
 using System.Collections;
 using System;
+using ClassicUO.Game.GameObjects;
+using System.Data;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -60,7 +62,6 @@ namespace ClassicUO.Game.UI.Gumps
             CanMove = true;
             AcceptMouseInput = true;
             AcceptKeyboardInput = true;
-            WantUpdateSize = false;
 
             Width = WIDTH;
             Height = HEIGHT;
@@ -143,29 +144,30 @@ namespace ClassicUO.Game.UI.Gumps
                     "Is Linear"
                 )
             );
-
+            
             Add
             (
                 new NiceButton
                 (
                     380,
                     10,
-                    80,
+                    125,
                     25,
                     ButtonAction.Activate,
-                    "Hue"
-                )        
+                    "Point of Origin"
+                )
             );
+
             Add
             (
                 new NiceButton
                 (
-                    460,
+                    500,
                     10,
                     80,
                     25,
                     ButtonAction.Activate,
-                    "Point of Origin"
+                    "Cast Time"
                 )
             );
 
@@ -230,9 +232,8 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (buttonID == (int)Buttons.Apply)
             {
-                var spMgr = Client.Game.GetScene<GameScene>()?.SpellManager;
 
-                spMgr.ClearSpellAreas();
+                World.SpellManager?.ClearSpellAreas();
                 foreach (SpellAreaEntry entry in _databox.Children.OfType<SpellAreaEntry>())
                 {
                     var spA = entry.GetSpellArea();
@@ -240,9 +241,11 @@ namespace ClassicUO.Game.UI.Gumps
                     {
                         continue;
                     }
-                    spMgr.AddSpellArea(spA);
+                    var duration = entry.GetSpellDuration();
+                    World.SpellManager?.AddSpellArea(spA, duration);
                 }
-                spMgr.Save();
+                World.SpellManager?.Save();
+                Dispose();
             } else if (buttonID == (int)Buttons.Add)
             {
                 UIManager.GetGump<SpellAreaEntryGump>()?.Dispose();
@@ -252,13 +255,15 @@ namespace ClassicUO.Game.UI.Gumps
 
         private void BuildGump()
         {
-            _databox.Clear();          
+            _databox.Clear();
 
-            foreach (SpellArea area in Client.Game.GetScene<GameScene>()?.SpellManager.SpellAreas)
+            var spellAreas = World.SpellManager?.SpellAreas;
+            foreach (SpellArea area in spellAreas)
             {
                 var entry = new SpellAreaEntry(area);
                 entry.OnRemove += (sender, e) =>
                 {
+                    World.SpellManager.RemoveSpellAreaById(area.Id);
                     entry.Dispose();
                     _databox.WantUpdateSize = true;
                     _databox.ReArrangeChildren();
@@ -270,11 +275,10 @@ namespace ClassicUO.Game.UI.Gumps
            _databox.ReArrangeChildren();
         }
 
-        public void AddSpellArea(SpellArea area)
+        public void AddSpellArea(SpellArea area, long duration = 2500)
         {
-            _databox.Add(new SpellAreaEntry(area));
-            _databox.WantUpdateSize = true;
-            _databox.ReArrangeChildren();
+            World.SpellManager.AddSpellArea(area, duration);
+            BuildGump();
         }
 
         public override void Update()
@@ -309,7 +313,7 @@ namespace ClassicUO.Game.UI.Gumps
 
     internal class SpellAreaEntryGump: Gump
     {
-        private List<SpellDefinition> _availableSpells;
+        private SpellDefinition[] _availableSpells;
         private SpellAreaEntry _entry;
         public SpellAreaEntryGump(int? x = 0, int? y = 0) : base(0, 0)
         {
@@ -334,8 +338,7 @@ namespace ClassicUO.Game.UI.Gumps
             );
 
 
-            _availableSpells = new List<SpellDefinition>();
-            BuildAvailableSpellsList();
+            _availableSpells = World.SpellManager?.GetAvailableSpells();
 
             Add(new Label("Spell", true, 0xFFFF)
             {
@@ -352,14 +355,19 @@ namespace ClassicUO.Game.UI.Gumps
                 X = 305,
                 Y = 10
             });
-            Add(new Label("Hue", true, 0xFFFF)
-            {
-                X = 400,
-                Y = 10
-            });
+            //Add(new Label("Hue", true, 0xFFFF)
+            //{
+            //    X = 400,
+            //    Y = 10
+            //});
             Add(new Label("Point of Origin", true, 0xFFFF)
             {
-                X = 450,
+                X = 380,
+                Y = 10
+            });
+            Add(new Label("Cast Time", true, 0xFFFF)
+            {
+                X = 500,
                 Y = 10
             });
             Add
@@ -392,21 +400,13 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (buttonID == 1)
             {
-                UIManager.GetGump<SpellAreaGump>()?.AddSpellArea(_entry.GetSpellArea());
+                var area = _entry.GetSpellArea();
+                var duration = _entry.GetSpellDuration();
+                UIManager.GetGump<SpellAreaGump>()?.AddSpellArea(area, duration);
                 this.Dispose();
             }
         }
 
-        private void BuildAvailableSpellsList()
-        {
-            var existingKeys = Client.Game.GetScene<GameScene>()?.SpellManager.GetAllSpellAreas.Keys;
-            _availableSpells = SpellsMagery.GetAllSpells.Values
-                .Concat(SpellsNecromancy.GetAllSpells.Values)
-                .Concat(SpellsChivalry.GetAllSpells.Values)
-                .Concat(SpellsSpellweaving.GetAllSpells.Values)
-                .Concat(SpellsMysticism.GetAllSpells.Values)
-                .Concat(SpellsMastery.GetAllSpells.Values).Where(def => !existingKeys.Contains(def.ID)).OrderBy(d => d.Name).ToList();
-        }
         public override bool Draw(UltimaBatcher2D batcher, int x, int y)
         {
             Vector3 hueVector = ShaderHueTranslator.GetHueVector(0);
@@ -430,7 +430,7 @@ namespace ClassicUO.Game.UI.Gumps
         private SpellDefinition _spell;
         private GumpPic _spellIcon;
         private Checkbox _isLinear;
-        private InputField _range;
+        private InputField _range, _castTime;
         private ModernColorPicker.HueDisplay _hue;
         private Combobox _pointOfOrigin;
         private SpellDefinition[] _availableSpells;
@@ -473,6 +473,24 @@ namespace ClassicUO.Game.UI.Gumps
             _spellIcon = new GumpPic(0, 0, (ushort)_spell.GumpIconSmallID, 0) { AcceptMouseInput = false, IsVisible = false };
 
             _pointOfOrigin = new Combobox(0, 0, 80, Enum.GetNames(typeof(SpellAreaOrigin)), (int)spellArea.Origin);
+
+            InputField castTime = _castTime = new InputField
+            (
+                0x0BB8,
+                0xFF,
+                0xFFFF,
+                true,
+                60,
+                25,
+                40,
+                -1
+            );
+
+            if (World.SpellManager.TryGetSpellDuration(_spell.ID, out var duration))
+            {
+                castTime.SetText(TimeSpan.FromTicks(duration).TotalSeconds.ToString());
+            }
+           
 
 
             var Remove = new Button((int)Buttons.Remove, 0x644, 0x644, caption: "Remove")
@@ -517,13 +535,19 @@ namespace ClassicUO.Game.UI.Gumps
             isLinear.Y = name.Y;
             Add(isLinear);
 
-            hue.X = 400;
-            hue.Y = hue.Height >> 1;
+            hue.X = name.X;
+            hue.Y = name.Y + name.Height + 5;
             Add(hue);
 
-            _pointOfOrigin.X = 450;
+            _pointOfOrigin.X = 380;
             _pointOfOrigin.Y = name.Y;
             Add(_pointOfOrigin);
+
+            castTime.X = 485;
+            castTime.Y = name.Y;
+            Add(castTime);
+
+
 
             Remove.X = 0;
             Remove.Y = 0;
@@ -537,6 +561,14 @@ namespace ClassicUO.Game.UI.Gumps
             _spellIcon.IsVisible = true;
         }
         
+        public long GetSpellDuration()
+        {
+            if (!float.TryParse(_castTime.Text, out var newDuration))
+            {
+                newDuration = 0.25f;
+            }
+            return TimeSpan.FromSeconds(newDuration).Ticks;
+        }
         public SpellArea GetSpellArea()
         {
             return new SpellArea(_spell.ID, int.Parse(_range.Text), _isLinear.IsChecked, _hue.Hue, (SpellAreaOrigin)_pointOfOrigin.SelectedIndex);
@@ -545,7 +577,22 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (buttonID == (int)Buttons.Remove)
             {
-                OnRemove?.Invoke(null,null);
+                QuestionGump dialog = new QuestionGump
+                    (
+                        ResGumps.MacroDeleteConfirmation,
+                        b =>
+                        {
+                            if (!b)
+                            {
+                                return;
+                            }
+                            OnRemove?.Invoke(null, null);
+                        }
+                    );
+
+                UIManager.Add(dialog);
+
+                
             }
         }
 
@@ -554,4 +601,5 @@ namespace ClassicUO.Game.UI.Gumps
             Remove = 1
         }
     }
+        
 }

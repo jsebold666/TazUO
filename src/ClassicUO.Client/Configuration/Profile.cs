@@ -714,7 +714,7 @@ namespace ClassicUO.Configuration
                                     gump = new GridContainer(serial, ogContainer);
                                     break;
                                 case GumpType.SpellArea:
-                                    gump = new SpellAreaGump();
+                                    gump = new SpellAreaGump(300,300);
                                     break;
                                 case GumpType.DurabilityGump:
                                     gump = new DurabilitysGump();

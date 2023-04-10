@@ -68,6 +68,7 @@ namespace ClassicUO.Game
 
         public static ObjectPropertiesListManager OPL { get; } = new ObjectPropertiesListManager();
         public static DurabilityManager DurabilityManager { get; } = new DurabilityManager();
+        public static SpellManager SpellManager { get; } = new SpellManager();
 
         public static CorpseManager CorpseManager { get; } = new CorpseManager();
 
@@ -369,6 +370,7 @@ namespace ClassicUO.Game
                 _effectManager.Update();
                 WorldTextManager.Update();
                 WMapManager.RemoveUnupdatedWEntity();
+                SpellManager.Update();
             }
         }
 
