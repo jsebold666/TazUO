@@ -238,7 +238,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 );
 
                 //// Credit Button
-                Add
+                /*Add
                 (
                     new Button((int)Buttons.Credits, 0x05D0, 0x05CF, 0x5CE)
                     {
@@ -246,7 +246,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         Y = 125,
                         ButtonAction = ButtonAction.Activate
                     }
-                );
+                );*/
 
                 // Arrow Button
                 Add
@@ -264,23 +264,23 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 offtextY = 50;
 
 
-                Add
+                /*Add
                 (
                     new Label($"UO Version {Settings.GlobalSettings.ClientVersion}.", false, 0x0481, font: 9)
                     {
                         X = 286,
                         Y = 453
                     }
-                );
+                );*/
 
-                Add
+                /*Add
                 (
                     new Label(string.Format("TazUO Version {0}", CUOEnviroment.Version), false, 0x0481, font: 9)
                     {
                         X = 286,
                         Y = 465
                     }
-                );
+                );*/
 
 
                 Add
@@ -405,7 +405,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             _checkboxAutologin.IsChecked = Settings.GlobalSettings.AutoLogin;
 
 
-            Add
+            /*Add
             (
                 new HtmlControl
                 (
@@ -422,10 +422,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     isunicode: true,
                     style: FontStyle.BlackBorder
                 )
-            );
+            );*/
 
 
-            Add
+            /*Add
             (
                 new HtmlControl
                 (
@@ -442,13 +442,14 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     isunicode: true,
                     style: FontStyle.BlackBorder
                 )
-            );
+            );*/
 
+            // Replace
             Add
             (
                 new HtmlControl
                 (
-                    505,
+                    555,
                     460,
                     100,
                     15,
@@ -465,7 +466,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             TextBox _;
             HitBox _hit;
-            Add(_ = new TextBox("TazUO Wiki", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 420, AcceptMouseInput = true });
+            /*Add(_ = new TextBox("TazUO Wiki", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 420, AcceptMouseInput = true });
             Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
             _hit.MouseUp += (s, e) =>
             {
@@ -477,7 +478,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             _hit.MouseUp += (s, e) =>
             {
                 Utility.Platforms.PlatformHelper.LaunchBrowser("https://discord.gg/SqwtB5g95H");
-            };
+            };*/
 
             Checkbox loginmusic_checkbox = new Checkbox
             (
@@ -538,7 +539,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 _textboxAccount.SetKeyboardFocus();
             }
 
-            _ = new TextBox("A new version of TazUO is available!\n Click to open the download page.", TrueTypeLoader.EMBEDDED_FONT, 20, 300, Color.Yellow, strokeEffect: false) { X = 10, Y = 10, AcceptMouseInput = false };
+            /*_ = new TextBox("A new version of TazUO is available!\n Click to open the download page.", TrueTypeLoader.EMBEDDED_FONT, 20, 300, Color.Yellow, strokeEffect: false) { X = 10, Y = 10, AcceptMouseInput = false };
             Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
             _hit.MouseUp += (s, e) =>
             {
@@ -562,7 +563,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         _hit.IsVisible = true;
                     }
                 };
-            }
+            }*/
 
         }
 
