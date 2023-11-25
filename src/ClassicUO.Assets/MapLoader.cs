@@ -51,7 +51,7 @@ namespace ClassicUO.Assets
         private UOFileMul[] _staDifl;
 
         // cannot be a const, due to UOLive implementation
-        public static int MAPS_COUNT = 6;
+        public static int MAPS_COUNT = 11;
 
         protected MapLoader()
         {
@@ -67,7 +67,7 @@ namespace ClassicUO.Assets
             }
         }
 
-        public static string MapsLayouts { get; set; }
+        public static string MapsLayouts { get; set; } = "7168,4096;7168,4096;2304,1600;2560,2048;1448,1448;1280,4096;2560,2048;7168,4096;6144,4096;1448,1448;1280,4096";
 
         public IndexMap[][] BlockData { get; private set; }
 
@@ -136,6 +136,8 @@ namespace ClassicUO.Assets
                 () =>
                 {
                     bool foundOneMap = false;
+                    // CUSTOM override because it's simply easier hard coding it 
+                    var layouts = "7168,4096;7168,4096;2304,1600;2560,2048;1448,1448;1280,4096;2560,2048;7168,4096;6144,4096;1448,1448;1280,4096";
 
                     if (!string.IsNullOrEmpty(MapsLayouts))
                     {

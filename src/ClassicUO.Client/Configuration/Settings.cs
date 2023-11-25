@@ -101,7 +101,8 @@ namespace ClassicUO.Configuration
 
         [JsonPropertyName("use_verdata")] public bool UseVerdata { get; set; }
 
-        [JsonPropertyName("maps_layouts")] public string MapsLayouts { get; set; }
+        [JsonPropertyName("maps_layouts")]
+        public string MapsLayouts { get; set; } = "7168,4096;7168,4096;2304,1600;2560,2048;1448,1448;1280,4096;2560,2048;7168,4096;6144,4096;1448,1448;1280,4096";
 
         [JsonPropertyName("encryption")] public byte Encryption { get; set; }
 
