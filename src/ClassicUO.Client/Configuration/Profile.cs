@@ -140,9 +140,9 @@ namespace ClassicUO.Configuration
         public bool HighlightMobilesByParalize { get; set; } = true;
         public bool HighlightMobilesByPoisoned { get; set; } = true;
         public bool HighlightMobilesByInvul { get; set; } = true;
-        public bool ShowMobilesHP { get; set; }
-        public int MobileHPType { get; set; }     // 0 = %, 1 = line, 2 = both
-        public int MobileHPShowWhen { get; set; } // 0 = Always, 1 - <100%
+        public bool ShowMobilesHP { get; set; } = true;
+        public int MobileHPType { get; set; } = 1;     // 0 = %, 1 = line, 2 = both
+        public int MobileHPShowWhen { get; set; } = 0; // 0 = Always, 1 - <100%
         public bool DrawRoofs { get; set; } = true;
         public bool TreeToStumps { get; set; }
         public bool EnableCaveBorder { get; set; }
@@ -176,8 +176,8 @@ namespace ClassicUO.Configuration
         public bool EnablePathfind { get; set; }
         public bool UseShiftToPathfind { get; set; }
         public bool PathfindSingleClick { get; set; }
-        public bool AlwaysRun { get; set; }
-        public bool AlwaysRunUnlessHidden { get; set; }
+        public bool AlwaysRun { get; set; } = true;
+        public bool AlwaysRunUnlessHidden { get; set; } = true;
         public bool SmoothMovements { get; set; } = true;
         public bool HoldDownKeyTab { get; set; } = true;
         public bool HoldShiftForContext { get; set; } = false;
@@ -192,15 +192,15 @@ namespace ClassicUO.Configuration
         public bool WindowBorderless { get; set; } = false;
         [JsonConverter(typeof(Point2Converter))] public Point GameWindowSize { get; set; } = new Point(600, 480);
         [JsonConverter(typeof(Point2Converter))] public Point TopbarGumpPosition { get; set; } = new Point(0, 0);
-        public bool TopbarGumpIsMinimized { get; set; }
+        public bool TopbarGumpIsMinimized { get; set; } = false;
         public bool TopbarGumpIsDisabled { get; set; }
         public bool UseAlternativeLights { get; set; }
         public bool UseCustomLightLevel { get; set; }
-        public byte LightLevel { get; set; }
-        public int LightLevelType { get; set; } // 0 = absolute, 1 = minimum
+        public byte LightLevel { get; set; } = 10;
+        public int LightLevelType { get; set; } = 1;
         public bool UseColoredLights { get; set; } = true;
-        public bool UseDarkNights { get; set; }
-        public int CloseHealthBarType { get; set; } // 0 = none, 1 == not exists, 2 == is dead
+        public bool UseDarkNights { get; set; } = true;
+        public int CloseHealthBarType { get; set; } = 2;
         public bool ActivateChatAfterEnter { get; set; }
         public bool ActivateChatAdditionalButtons { get; set; } = true;
         public bool ActivateChatShiftEnterSupport { get; set; } = true;
@@ -218,18 +218,18 @@ namespace ClassicUO.Configuration
         public bool CastSpellsByOneClick { get; set; }
         public bool BuffBarTime { get; set; }
         public bool FastSpellsAssign { get; set; }
-        public bool AutoOpenDoors { get; set; }
-        public bool SmoothDoors { get; set; }
-        public bool AutoOpenCorpses { get; set; }
+        public bool AutoOpenDoors { get; set; } = true;
+        public bool SmoothDoors { get; set; } = true;
+        public bool AutoOpenCorpses { get; set; } = true;
         public int AutoOpenCorpseRange { get; set; } = 2;
         public int CorpseOpenOptions { get; set; } = 3;
-        public bool SkipEmptyCorpse { get; set; }
+        public bool SkipEmptyCorpse { get; set; } = true;
         public bool DisableDefaultHotkeys { get; set; }
         public bool DisableArrowBtn { get; set; }
         public bool DisableTabBtn { get; set; }
         public bool DisableCtrlQWBtn { get; set; }
         public bool DisableAutoMove { get; set; }
-        public bool EnableDragSelect { get; set; }
+        public bool EnableDragSelect { get; set; } = true;
         public int DragSelectModifierKey { get; set; } // 0 = none, 1 = control, 2 = shift
         public int DragSelect_PlayersModifier { get; set; } = 0;
         public int DragSelect_MonstersModifier { get; set; } = 0;
@@ -246,7 +246,7 @@ namespace ClassicUO.Configuration
         public bool DragSelectAsAnchor { get; set; } = false;
         public string LastActiveNameOverheadOption { get; set; } = "All";
         public bool NameOverheadToggled { get; set; } = false;
-        public bool ShowTargetRangeIndicator { get; set; }
+        public bool ShowTargetRangeIndicator { get; set; } = true;
         public bool PartyInviteGump { get; set; }
         public bool CustomBarsToggled { get; set; }
         public bool CBBlackBGToggled { get; set; }
@@ -272,7 +272,7 @@ namespace ClassicUO.Configuration
         public bool ShadowsEnabled { get; set; } = true;
         public bool ShadowsStatics { get; set; } = true;
         public int TerrainShadowsLevel { get; set; } = 15;
-        public int AuraUnderFeetType { get; set; } // 0 = NO, 1 = in warmode, 2 = ctrl+shift, 3 = always
+        public int AuraUnderFeetType { get; set; } = 1;// 0 = NO, 1 = in warmode, 2 = ctrl+shift, 3 = always
         public bool AuraOnMouse { get; set; } = true;
         public bool AnimatedWaterEffect { get; set; } = false;
 
@@ -289,7 +289,7 @@ namespace ClassicUO.Configuration
 
         public uint GrabBagSerial { get; set; }
 
-        public int GridLootType { get; set; } // 0 = none, 1 = only grid, 2 = both
+        public int GridLootType { get; set; } = 1;
 
         public bool ReduceFPSWhenInactive { get; set; } = true;
 
@@ -314,11 +314,11 @@ namespace ClassicUO.Configuration
 
         public bool HighlightContainerWhenSelected { get; set; }
 
-        public bool ShowHouseContent { get; set; }
+        public bool ShowHouseContent { get; set; } = true;
         public bool SaveHealthbars { get; set; }
         public bool TextFading { get; set; } = true;
 
-        public bool UseSmoothBoatMovement { get; set; } = false;
+        public bool UseSmoothBoatMovement { get; set; } = true;
 
         public bool IgnoreStaminaCheck { get; set; } = false;
 
@@ -330,7 +330,7 @@ namespace ClassicUO.Configuration
         public int WorldMapWidth { get; set; } = 400;
         public int WorldMapHeight { get; set; } = 400;
         public int WorldMapFont { get; set; } = 3;
-        public bool WorldMapFlipMap { get; set; } = true;
+        public bool WorldMapFlipMap { get; set; } //= true;
         public bool WorldMapTopMost { get; set; }
         public bool WorldMapFreeView { get; set; }
         public bool WorldMapShowParty { get; set; } = true;
@@ -481,7 +481,7 @@ namespace ClassicUO.Configuration
         public string DefaultTTFFont { get; set; } = "Roboto-Regular";
         public int TextBorderSize { get; set; } = 2;
 
-        public bool UseModernShopGump { get; set; } = false;
+        public bool UseModernShopGump { get; set; } = true;
 
         public int MaxJournalEntries { get; set; } = 750;
         public bool HideJournalBorder { get; set; } = false;
@@ -499,8 +499,8 @@ namespace ClassicUO.Configuration
         public int AdvancedSkillsGumpHeight { get; set; } = 310;
 
         #region ToolTip Overrides
-        public List<string> ToolTipOverride_SearchText { get; set; } = new List<string>() { "Physical Res", "Fire Res", "Cold Res", "Poison Res", "Energy Res" };
-        public List<string> ToolTipOverride_NewFormat { get; set; } = new List<string>() { "/c[#5f423c]Physical Resist {1}%", "/c[red]Fire Resist {1}%", "/c[blue]Cold Resist {1}%", "/c[green]Poison Resist {1}%", "/c[purple]Energy Resist {1}%" };
+        public List<string> ToolTipOverride_SearchText { get; set; } = new List<string>() { /*"Physical Res", "Fire Res", "Cold Res", "Poison Res", "Energy Res"*/ };
+        public List<string> ToolTipOverride_NewFormat { get; set; } = new List<string>() { /*"/c[#5f423c]Physical Resist {1}%", "/c[red]Fire Resist {1}%", "/c[blue]Cold Resist {1}%", "/c[green]Poison Resist {1}%", "/c[purple]Energy Resist {1}%" */};
         public List<int> ToolTipOverride_MinVal1 { get; set; } = new List<int>() { -1, -1, -1, -1, -1 };
         public List<int> ToolTipOverride_MinVal2 { get; set; } = new List<int>() { -1, -1, -1, -1, -1 };
         public List<int> ToolTipOverride_MaxVal1 { get; set; } = new List<int>() { 100, 100, 100, 100, 100 };
@@ -526,8 +526,8 @@ namespace ClassicUO.Configuration
         [JsonConverter(typeof(Point2Converter))] 
         public Point InfoBarSize { get; set; } = new Point(400, 20);
         public bool InfoBarLocked { get; set; } = false;
-        public string InfoBarFont { get; set; } = "Roboto-Regular";
-        public int InfoBarFontSize { get; set; } = 18;
+        public string InfoBarFont { get; set; } = "avadonian";
+        public int InfoBarFontSize { get; set; } = 16;
 
         public int LastJournalTab { get; set; } = 0;
         public Dictionary<string, MessageType[]> JournalTabs { get; set; } = new Dictionary<string, MessageType[]>() 
