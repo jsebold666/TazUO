@@ -148,10 +148,10 @@ namespace ClassicUO.Game.UI.Gumps
             _picBase?.Dispose();
             _hitBox?.Dispose();
 
-            var showPaperdollBooks =
-                LocalSerial == World.Player && World.ClientFeatures.PaperdollBooks;
-            var showRacialAbilitiesBook =
-                showPaperdollBooks && Client.Version >= ClientVersion.CV_7000;
+            var showPaperdollBooks = false;
+                //LocalSerial == World.Player && World.ClientFeatures.PaperdollBooks;
+                var showRacialAbilitiesBook = false;
+                //showPaperdollBooks && Client.Version >= ClientVersion.CV_7000;
 
             if (LocalSerial == World.Player)
             {
@@ -292,8 +292,8 @@ namespace ClassicUO.Game.UI.Gumps
             );
 
             // Virtue menu
-            Add(_virtueMenuPic = new GumpPic(80, 4, 0x0071, 0));
-            _virtueMenuPic.MouseDoubleClick += VirtueMenu_MouseDoubleClickEvent;
+            /*Add(_virtueMenuPic = new GumpPic(80, 4, 0x0071, 0));
+            _virtueMenuPic.MouseDoubleClick += VirtueMenu_MouseDoubleClickEvent;*/
 
             if (LocalSerial == World.Player.Serial)
                 Add(new DurabilityGumpMinimized()
