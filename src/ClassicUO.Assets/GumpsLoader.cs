@@ -51,7 +51,7 @@ namespace ClassicUO.Assets
         public static GumpsLoader Instance =>
             _instance ?? (_instance = new GumpsLoader(MAX_GUMP_DATA_INDEX_COUNT));
 
-        public bool UseUOPGumps = false;
+        public bool UseUOPGumps = true;
 
         public override Task Load()
         {
@@ -84,7 +84,7 @@ namespace ClassicUO.Assets
 
                     _file = new UOFileMul(path, pathidx, MAX_GUMP_DATA_INDEX_COUNT, 12);
 
-                    UseUOPGumps = false;
+                    UseUOPGumps = true;
                 }
 
                 _file.FillEntries(ref Entries);
@@ -141,6 +141,7 @@ namespace ClassicUO.Assets
                         }
                     }
                 }
+                UseUOPGumps = true;
             });
         }
 
