@@ -204,7 +204,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 1
             );
 
-            if (Client.Version >= ClientVersion.CV_60144)
+            /*if (Client.Version >= ClientVersion.CV_60144)
             {
                 Add
                 (
@@ -223,7 +223,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                     },
                     1
                 );
-            }
+            }*/
 
             // Prev/Next
             Add
