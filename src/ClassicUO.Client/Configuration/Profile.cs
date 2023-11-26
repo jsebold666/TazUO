@@ -370,7 +370,8 @@ namespace ClassicUO.Configuration
         public bool DisableSystemChat { get; set; } = false;
 
         #region GRID CONTAINER
-        public bool UseGridLayoutContainerGumps { get; set; } = true;
+
+        public bool UseGridLayoutContainerGumps { get; set; } = false;
         public int GridContainerSearchMode { get; set; } = 1;
         public bool EnableGridContainerAnchor { get; set; } = false;
         public byte GridBorderAlpha { get; set; } = 60;
@@ -379,8 +380,8 @@ namespace ClassicUO.Configuration
         public bool GridContainerScaleItems { get; set; } = true;
         public bool GridEnableContPreview { get; set; } = true;
         public int Grid_BorderStyle { get; set; } = 6;
-        public int Grid_DefaultColumns { get; set; } = 4;
-        public int Grid_DefaultRows { get; set; } = 4;
+        public int Grid_DefaultColumns { get; set; } = 8;
+        public int Grid_DefaultRows { get; set; } = 8;
         public bool Grid_UseContainerHue { get; set; } = false;
         public bool Grid_HideBorder { get; set; } = false;
         #endregion
