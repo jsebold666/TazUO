@@ -208,7 +208,7 @@ namespace ClassicUO.Configuration
         public bool HoldDownKeyAltToCloseAnchored { get; set; } = true;
         public bool CloseAllAnchoredGumpsInGroupWithRightClick { get; set; } = false;
         public bool HoldAltToMoveGumps { get; set; }
-        public byte JournalOpacity { get; set; } = 50;
+        public byte JournalOpacity { get; set; } = 100;
         public int JournalStyle { get; set; } = 0;
         public bool HideScreenshotStoredInMessage { get; set; }
         public bool UseModernPaperdoll { get; set; } = false;
@@ -373,12 +373,12 @@ namespace ClassicUO.Configuration
         public bool UseGridLayoutContainerGumps { get; set; } = true;
         public int GridContainerSearchMode { get; set; } = 1;
         public bool EnableGridContainerAnchor { get; set; } = false;
-        public byte GridBorderAlpha { get; set; } = 75;
+        public byte GridBorderAlpha { get; set; } = 60;
         public ushort GridBorderHue { get; set; } = 0;
         public byte GridContainersScale { get; set; } = 100;
         public bool GridContainerScaleItems { get; set; } = true;
         public bool GridEnableContPreview { get; set; } = true;
-        public int Grid_BorderStyle { get; set; } = 0;
+        public int Grid_BorderStyle { get; set; } = 6;
         public int Grid_DefaultColumns { get; set; } = 4;
         public int Grid_DefaultRows { get; set; } = 4;
         public bool Grid_UseContainerHue { get; set; } = false;
@@ -478,7 +478,7 @@ namespace ClassicUO.Configuration
         public int OverheadChatFontSize { get; set; } = 20;
         public int OverheadChatWidth { get; set; } = 200;
 
-        public string DefaultTTFFont { get; set; } = "Roboto-Regular";
+        public string DefaultTTFFont { get; set; } = "avadonian";
         public int TextBorderSize { get; set; } = 2;
 
         public bool UseModernShopGump { get; set; } = true;
@@ -517,7 +517,7 @@ namespace ClassicUO.Configuration
         public int DisplayRadiusDistance { get; set; } = 10;
         public ushort DisplayRadiusHue { get; set; } = 22;
 
-        public bool EnableSpellIndicators { get; set; } = true;
+        public bool EnableSpellIndicators { get; set; } 
 
         public bool EnableAutoLoot { get; set; } = false;
 

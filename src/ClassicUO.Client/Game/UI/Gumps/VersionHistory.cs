@@ -6,7 +6,7 @@ namespace ClassicUO.Game.UI.Gumps
 {
     internal class VersionHistory : Gump
     {
-        private static string[] updateTexts = {
+        private static string[] _updateTexts = {
             "/c[white][3.13.0]/cd\n" +
                 "- Fix item unintentional stacking\n" +
                 "- Potential small bug fix\n" +
@@ -158,14 +158,14 @@ namespace ClassicUO.Game.UI.Gumps
 
             TextBox _;
             Add(_ = new TextBox("TazUO Version History", TrueTypeLoader.EMBEDDED_FONT, 30, Width, Color.White, FontStashSharp.RichText.TextHorizontalAlignment.Center, false) { Y = 10 });
-            Add(_ = new TextBox("Current Version: " + CUOEnviroment.Version.ToString(), TrueTypeLoader.EMBEDDED_FONT, 20, Width, Color.Orange, FontStashSharp.RichText.TextHorizontalAlignment.Center, false) { Y = _.Y + _.Height + 5 });
+            //Add(_ = new TextBox("Current Version: " + CUOEnviroment.Version.ToString(), TrueTypeLoader.EMBEDDED_FONT, 20, Width, Color.Orange, FontStashSharp.RichText.TextHorizontalAlignment.Center, false) { Y = _.Y + _.Height + 5 });
 
             ScrollArea scroll = new ScrollArea(10, _.Y + _.Height, Width - 20, Height - (_.Y + _.Height) - 20, true) { ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways };
 
             Add(new AlphaBlendControl(0.45f) { Width = scroll.Width, Height = scroll.Height, X = scroll.X, Y = scroll.Y });
 
             int y = 0;
-            foreach (string s in updateTexts)
+            foreach (string s in _updateTexts)
             {
                 scroll.Add(_ = new TextBox(s, TrueTypeLoader.EMBEDDED_FONT, 15, scroll.Width - scroll.ScrollBarWidth(), Color.Orange, FontStashSharp.RichText.TextHorizontalAlignment.Left, false) { Y = y });
                 y += _.Height + 10;
@@ -174,7 +174,7 @@ namespace ClassicUO.Game.UI.Gumps
             Add(scroll);
 
 
-            HitBox _hit;
+            /*HitBox _hit;
             Add(_ = new TextBox("TazUO Wiki", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 25, Y = Height - 20 });
             Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
             _hit.MouseUp += (s, e) =>
@@ -187,7 +187,7 @@ namespace ClassicUO.Game.UI.Gumps
             _hit.MouseUp += (s, e) =>
             {
                 Utility.Platforms.PlatformHelper.LaunchBrowser("https://discord.gg/SqwtB5g95H");
-            };
+            };*/
         }
     }
 }
