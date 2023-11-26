@@ -1754,6 +1754,33 @@ namespace ClassicUO.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Time Until Bandage Applies (in seconds).
+        /// </summary>
+        public static string BandageTimer {
+            get {
+                return ResourceManager.GetString("BandageTimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time Being Criminal (in seconds).
+        /// </summary>
+        public static string CriminalTimer {
+            get {
+                return ResourceManager.GetString("CriminalTimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Heat Of Combat Time (in seconds).
+        /// </summary>
+        public static string HeatTimer {
+            get {
+                return ResourceManager.GetString("HeatTimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help.
         /// </summary>
         public static string Help {
