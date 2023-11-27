@@ -1703,12 +1703,12 @@ namespace ClassicUO.Game.UI.Gumps
                     _labels[(int) MobileStats.RE].Text = World.Player.EnergyResistance.ToString();
                 }
                 
-                if (GumpsLoader.Instance.UseUOPGumps)
+                /*if (GumpsLoader.Instance.UseUOPGumps)
                 {
                     _labels[(int)MobileStats.CriminalTimerSeconds].Text = World.Player.CriminalTimer.ToString();
                     _labels[(int)MobileStats.HeatTimerSeconds].Text = World.Player.HeatTimer.ToString();
                     _labels[(int)MobileStats.BandageTimerSeconds].Text = World.Player.BandageTimer.ToString();
-                }
+                }*/
             }
 
             base.Update();
