@@ -427,7 +427,7 @@ namespace ClassicUO.Game.Managers
             public bool IsLinear { get; set; } = false;
             public double CastTime { get; set; } = 0.0;
             public bool ShowCastRangeDuringCasting { get; set; } = false;
-            public bool FreezeCharacterWhileCasting { get; set; } = false;
+            public bool FreezeCharacterWhileCasting { get; set; } = true;
 
             public static SpellRangeInfo FromSpellDef(SpellDefinition spell)
             {

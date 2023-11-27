@@ -17,7 +17,7 @@ namespace ClassicUO.Game.UI.Gumps
             UIManager.GetGump<SkillProgressBar>((uint)skillIndex + 764544)?.Dispose();
 
             Height = 40;
-            Width = 500;
+            Width = 300;
 
             WorldViewportGump vp = UIManager.GetGump<WorldViewportGump>();
 
