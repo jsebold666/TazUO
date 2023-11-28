@@ -32,9 +32,6 @@ We do not assume any responsibility of the usage of this client.
 
 Ultima Online(R) 2021 Electronic Arts Inc. All Rights Reserved.
 
-
-
-
                 [Lead Developer]
                 Karasho' - https://github.com/andreakarasho
 ";

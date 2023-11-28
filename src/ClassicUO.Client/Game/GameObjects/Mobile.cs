@@ -187,6 +187,24 @@ namespace ClassicUO.Game.GameObjects
             || Graphic == 0x02E8
             || Graphic == 0x02E9
             || Graphic == 0x04E5;
+        
+        public static bool IsHumanGraphic(int graphic)
+        {
+            return
+                graphic >= 0x0190 && graphic <= 0x0193 ||
+                graphic >= 0x00B7 && graphic <= 0x00BA ||
+                graphic >= 0x025D && graphic <= 0x0260 ||
+                graphic == 0x029A ||
+                graphic == 0x029B ||
+                graphic == 0x02B6 ||
+                graphic == 0x02B7 ||
+                graphic == 0x03DB ||
+                graphic == 0x03DF ||
+                graphic == 0x03E2 ||
+                graphic == 0x02E8 ||
+                graphic == 0x02E9 ||
+                graphic == 0x04E5;
+        }
 
         public bool IsGargoyle =>
             Client.Version >= ClientVersion.CV_7000 && Graphic == 0x029A || Graphic == 0x029B;

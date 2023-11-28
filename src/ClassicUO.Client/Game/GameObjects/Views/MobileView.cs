@@ -411,6 +411,12 @@ namespace ClassicUO.Game.GameObjects
                             {
                                 FixGargoyleEquipments(ref graphic);
                             }
+                            
+                            // Override animation drawn
+                            if (!isGargoyle)
+                            {
+                                FixHumanEquipments(ref graphic);
+                            }
 
                             if (
                                 AnimationsLoader.Instance.EquipConversions.TryGetValue(
@@ -539,10 +545,48 @@ namespace ClassicUO.Game.GameObjects
                     }
                 }
 
+                FixHumanEquipments(ref graphic);
+
                 return graphic;
             }
 
             return 0xFFFF;
+        }
+        
+        // CUSTOM - allows us to force animations away from UOP
+        private static void FixHumanEquipments(ref ushort graphic)
+        {
+            switch (graphic)
+            {
+                /* into the mobtypes.txt file of 7.0.90+ client version we have:
+                 *
+                 *   1529 	EQUIPMENT	0		# EQUIP_Shield_Pirate_Male_H
+                 *   1530 	EQUIPMENT	0		# EQUIP_Shield_Pirate_Female_H
+                 *   1531 	EQUIPMENT	10000	# Equip_Shield_Pirate_Male_G
+                 *   1532 	EQUIPMENT	10000	# Equip_Shield_Pirate_Female_G
+                 *
+                 *   This means that graphic 0xA649 [pirate shield] has 4 tiledata infos.
+                 *   Standard client handles it automatically without any issue.
+                 *   Maybe it's hardcoded into the client
+                 */
+
+                // EQUIP Barbarian Sword => dragon turtle
+                case 1288:
+                    graphic = 643;
+                    break;
+                // Laser sword => phoenix 1246
+                case 832:
+                    graphic = 1202;
+                    break;
+                // yumi => fire dragon 1289
+                case 1246:
+                    graphic = 575;
+                    break;
+                // whip => snake
+                case 1289:
+                    graphic = 0;
+                    break;
+            }
         }
 
         private static void FixGargoyleEquipments(ref ushort graphic)
@@ -1128,7 +1172,7 @@ namespace ClassicUO.Game.GameObjects
                     if (
                         item == null
                         || (IsDead && (layer == Layer.Hair || layer == Layer.Beard))
-                        || IsCovered(this, layer)
+                        || IsCovered(this, layer) 
                     )
                     {
                         continue;
@@ -1221,6 +1265,16 @@ namespace ClassicUO.Game.GameObjects
                         {
                             return true;
                         }
+                    }
+
+                    break;
+                
+                case Layer.Earrings:
+                    Item earrings = mobile.FindItemByLayer(Layer.Earrings);
+
+                    if (earrings.Graphic == 500 /*|| pants.Graphic == 0x141A*/)
+                    {
+                        return true;
                     }
 
                     break;
