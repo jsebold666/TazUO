@@ -404,6 +404,12 @@ namespace ClassicUO.Game.UI.Gumps
                 }
             );
 
+            // ## BEGIN - END ## // BASICSETUP
+            Add(new NiceButton(10, 10 + 30 * i++, 140, 25, ButtonAction.SwitchPage, "Dust") { ButtonParameter = 16 });
+            Add(new NiceButton(10, 10 + 30 * i++, 140, 25, ButtonAction.SwitchPage, "765") { ButtonParameter = 17 });
+            Add(new NiceButton(10, 10 + 30 * i++, 140, 25, ButtonAction.SwitchPage, "Mods") { ButtonParameter = 18 });
+            // ## BEGIN - END ## // BASICSETUP
+
             Add
             (
                 new NiceButton
@@ -538,6 +544,11 @@ namespace ClassicUO.Game.UI.Gumps
             BuildNameOverhead();
             BuildCooldowns();
             BuildTazUO();
+            // ## BEGIN - END ## // BASICSETUP
+            BuildDust();
+            Build765();
+            BuildMods();
+            // ## BEGIN - END ## // BASICSETUP
 
             ChangePage(1);
         }
@@ -4782,6 +4793,51 @@ namespace ClassicUO.Game.UI.Gumps
             return main;
         }
 
+        // ## BEGIN - END ## // BASICSETUP
+        private void BuildDust()
+        {
+            const int PAGE = 16;
+            ScrollArea rightArea = new ScrollArea(190, 20, WIDTH - 210, 420, true);
+
+            int startX = 5;
+            int startY = 5;
+
+            DataBox box = new DataBox(startX, startY, rightArea.Width - 15, 1);
+            box.WantUpdateSize = true;
+            rightArea.Add(box);
+
+            Add(rightArea, PAGE);
+        }
+        private void Build765()
+        {
+            const int PAGE = 17;
+            ScrollArea rightArea = new ScrollArea(190, 20, WIDTH - 210, 420, true);
+
+            int startX = 5;
+            int startY = 5;
+
+            DataBox box = new DataBox(startX, startY, rightArea.Width - 15, 1);
+            box.WantUpdateSize = true;
+            rightArea.Add(box);
+
+            Add(rightArea, PAGE);
+        }
+        private void BuildMods()
+        {
+            const int PAGE = 18;
+            ScrollArea rightArea = new ScrollArea(190, 20, WIDTH - 210, 420, true);
+
+            int startX = 5;
+            int startY = 5;
+
+            DataBox box = new DataBox(startX, startY, rightArea.Width - 15, 1);
+            box.WantUpdateSize = true;
+            rightArea.Add(box);
+
+            Add(rightArea, PAGE);
+        }
+        // ## BEGIN - END ## // BASICSETUP
+
         public override void OnButtonClick(int buttonID)
         {
             if (buttonID == (int)Buttons.Last + 1)
@@ -5834,6 +5890,10 @@ namespace ClassicUO.Game.UI.Gumps
             _currentProfile.TooltipBackgroundOpacity = _tooltip_background_opacity.Value;
             _currentProfile.TooltipDisplayZoom = _tooltip_zoom.Value;
             _currentProfile.TooltipFont = _tooltip_font_selector.GetSelectedFont();
+
+            // ## BEGIN - END ## // BASICSETUP
+
+            // ## BEGIN - END ## // BASICSETUP
 
             _currentProfile?.Save(ProfileManager.ProfilePath);
         }
