@@ -2194,7 +2194,7 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
 
             content.AddToRight(new TextBox("Spellicon offset:", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
-
+            content.Indent();
             content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.X.ToString(), false, (s, e) =>
             {
                 profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
@@ -2203,7 +2203,7 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
             }), true, page);
-
+            content.RemoveIndent();
             content.BlankLine();
             content.AddToRight(new ModernColorPickerWithLabel("Color game cursor when targeting (hostile / friendly)", profile.HighlightLastTargetTypeParaHue, (h) =>
             {
