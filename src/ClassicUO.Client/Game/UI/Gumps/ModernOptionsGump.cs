@@ -2183,6 +2183,35 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
             #endregion
 
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1002);
+
+            content.AddToLeft(SubCategoryButton("Cursor", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Show spells on cursor", 0, profile.SpellOnCursor, (b) =>
+            {
+                profile.SpellOnCursor = b;
+            }), true, page);
+
+            content.AddToRight(new TextBox("Spellicon offset:", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.X.ToString(), false, (s, e) =>
+            {
+                profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
+            }), true, page);
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.Y.ToString(), false, (s, e) =>
+            {
+                profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new ModernColorPickerWithLabel("Color game cursor when targeting (hostile / friendly)", profile.HighlightLastTargetTypeParaHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeParaHue = h;
+            }), true, page);
+
+            #endregion 
+
             options.Add(
             new SettingsOption(
                 "",

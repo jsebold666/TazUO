@@ -374,6 +374,11 @@ namespace ClassicUO.Configuration
         public bool FlashingHealthbarNegativeOnly { get; set; } = false;
         public int FlashingHealthbarTreshold { get; set; } = 10;
         // ## BEGIN - END ## // HEALTHBAR
+        // ## BEGIN - END ## // CURSOR
+        public Point SpellOnCursorOffset { get; set; } = new Point(25, 30);
+        public bool SpellOnCursor { get; set; }
+        public bool ColorGameCursor { get; set; }
+        // ## BEGIN - END ## // CURSOR
         // ## BEGIN - END ## // BASICSETUP
 
         public bool ShowJournalClient { get; set; } = true;
