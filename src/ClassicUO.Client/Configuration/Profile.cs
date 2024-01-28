@@ -145,7 +145,9 @@ namespace ClassicUO.Configuration
         public int MobileHPType { get; set; }     // 0 = %, 1 = line, 2 = both
         public int MobileHPShowWhen { get; set; } // 0 = Always, 1 - <100%
         public bool DrawRoofs { get; set; } = true;
-        public bool TreeToStumps { get; set; }
+        // ## BEGIN - END ## // ART / HUE CHANGES
+        //public bool TreeToStumps { get; set; }
+        // ## BEGIN - END ## // ART / HUE CHANGES
         public bool EnableCaveBorder { get; set; }
         public bool HideVegetation { get; set; }
         public int FieldsType { get; set; } // 0 = normal, 1 = static, 2 = tile
@@ -322,6 +324,28 @@ namespace ClassicUO.Configuration
         public bool UseSmoothBoatMovement { get; set; } = false;
 
         public bool IgnoreStaminaCheck { get; set; } = false;
+
+        // ## BEGIN - END ## // BASICSETUP
+
+        // ## BEGIN - END ## // ART / HUE CHANGES
+        public bool ColorStealth { get; set; }
+        public ushort StealthHue { get; set; } = 0x0044;
+        public int StealthNeonType { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire
+        public int GoldType { get; set; } = 0; // 0 = normal, 1 = skillball, 2 = prevcoin
+        public bool ColorGold { get; set; }
+        public ushort GoldHue { get; set; } = 0x0044;
+        public bool ColorEnergyBolt { get; set; }
+        public ushort EnergyBoltHue { get; set; } = 0x0044;
+        public int EnergyBoltNeonType { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire
+        public int EnergyBoltArtType { get; set; } = 0; // 0 = normal, 1 = explo ball, 2 = small bag ball
+        public int BlockerType { get; set; } = 0; // 0 = off, 1 = stump, 2 = tile
+        public bool ColorBlockerTile { get; set; }
+        public ushort BlockerTileHue { get; set; } = 0x0044;
+        public int TreeType { get; set; } = 0; // 0 = off, 1 = stump, 2 = tile
+        public bool ColorTreeTile { get; set; }
+        public ushort TreeTileHue { get; set; } = 0x0044;
+        // ## BEGIN - END ## // ART / HUE CHANGES
+        // ## BEGIN - END ## // BASICSETUP
 
         public bool ShowJournalClient { get; set; } = true;
         public bool ShowJournalObjects { get; set; } = true;

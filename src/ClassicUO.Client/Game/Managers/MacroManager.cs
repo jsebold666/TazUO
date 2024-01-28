@@ -1823,7 +1823,18 @@ namespace ClassicUO.Game.Managers
 
                 case MacroType.ToggleTreeStumps:
                     StaticFilters.CleanTreeTextures();
-                    ProfileManager.CurrentProfile.TreeToStumps = !ProfileManager.CurrentProfile.TreeToStumps;
+                    // ## BEGIN - END ## // ART / HUE CHANGES
+                    //ProfileManager.CurrentProfile.TreeToStumps = !ProfileManager.CurrentProfile.TreeToStumps;
+                    // ## BEGIN - END ## // ART / HUE CHANGES
+                    if (ProfileManager.CurrentProfile.TreeType == 0)
+                    {
+                        ProfileManager.CurrentProfile.TreeType = ProfileManager.CurrentProfile.TreeType = 2;
+                    }
+                    else
+                    {
+                        ProfileManager.CurrentProfile.TreeType = ProfileManager.CurrentProfile.TreeType = 0;
+                    }
+                    // ## BEGIN - END ## // ART / HUE CHANGES
 
                     break;
 

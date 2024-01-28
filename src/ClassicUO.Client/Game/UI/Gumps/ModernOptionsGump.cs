@@ -84,6 +84,7 @@ namespace ClassicUO.Game.UI.Gumps
             mainContent.AddToLeft(CategoryButton(lang.ButtonNameplates, (int)PAGE.NameplateOptions, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonCooldowns, (int)PAGE.TUOCooldowns, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonTazUO, (int)PAGE.TUOOptions, mainContent.LeftWidth));
+            mainContent.AddToLeft(CategoryButton("Dust765 Specific", (int)PAGE.Dust765, mainContent.LeftWidth));
 
             BuildGeneral();
             BuildSound();
@@ -99,6 +100,11 @@ namespace ClassicUO.Game.UI.Gumps
             BuildNameplates();
             BuildCooldowns();
             BuildTazUO();
+            // ## BEGIN - END ## // BASICSETUP
+            BuildDust();
+           
+            // ## BEGIN - END ## // BASICSETUP
+            
 
             foreach (SettingsOption option in options)
             {
@@ -347,7 +353,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             content.BlankLine();
 
-            content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.TreesToStump, isChecked: profile.TreeToStumps, valueChanged: (b) => { profile.TreeToStumps = b; }), true, page);
+            //content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.TreesToStump, isChecked: profile.TreeToStumps, valueChanged: (b) => { profile.TreeToStumps = b; }), true, page);
 
             content.BlankLine();
 
@@ -1898,6 +1904,142 @@ namespace ClassicUO.Game.UI.Gumps
                 PAGE.TUOCooldowns
             ));
             PositionHelper.PositionControl(s.FullControl);
+        }
+
+        private void BuildDust()
+        {
+            LeftSideMenuRightSideContent content = new LeftSideMenuRightSideContent(mainContent.RightWidth, mainContent.Height, (int)(mainContent.RightWidth * 0.3));
+            Control c;
+            int page;
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1000);
+            content.AddToLeft(SubCategoryButton("Dust", page, content.LeftWidth));
+            content.AddToRight(new CheckboxWithLabel("Color stealth ON / OFF", 0, profile.ColorStealth, (b) =>
+            {
+                profile.ColorStealth = b;
+            }), true, page);
+
+             
+            content.AddToRight(new ModernColorPickerWithLabel("Stealth Color", profile.StealthHue, (h) =>
+            {
+                profile.StealthHue = h;
+                GridContainer.UpdateAllGridContainers();
+            }), true, page);
+
+
+            content.Indent();
+            content.AddToRight(new ComboBoxWithLabel("Or Neon", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.StealthNeonType, (i, s) =>
+            {
+                profile.StealthNeonType = i;
+            }), true, page);
+            content.Indent();
+            content.BlankLine();
+
+
+            content.RemoveIndent();
+            content.AddToRight(new CheckboxWithLabel("Color Enery bolt ON / OFF", 0, profile.ColorEnergyBolt, (b) =>
+            {
+                profile.ColorEnergyBolt = b;
+            }), true, page);
+
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Color Energy Bolt", profile.EnergyBoltHue, (h) =>
+            {
+                profile.EnergyBoltHue = h;
+                GridContainer.UpdateAllGridContainers();
+            }), true, page);
+            content.RemoveIndent();
+            content.AddToRight(new ComboBoxWithLabel("Or Neon: ", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.EnergyBoltNeonType, (i, s) =>
+            {
+                profile.EnergyBoltNeonType = i;
+            }), true, page);
+            content.AddToRight(new ComboBoxWithLabel("Change energy bolt art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Explo", "Bagball" }, profile.EnergyBoltArtType, (i, s) =>
+            {
+                profile.EnergyBoltArtType = i;
+            }), true, page);
+
+            content.BlankLine();
+
+            
+            content.AddToRight(new ComboBoxWithLabel("Change gold art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Cannonball", "Prev Coin" }, profile.GoldType, (i, s) =>
+            {
+                profile.GoldType = i;
+            }), true, page);
+
+
+            content.Indent();
+            content.AddToRight(new CheckboxWithLabel("Color cannonball or prev coin ON / OFF", 0, profile.ColorGold, (b) =>
+            {
+                profile.ColorGold = b;
+            }), true, page);
+            content.RemoveIndent();
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Cannonball or prev coin color", profile.GoldHue, (h) =>
+            {
+                profile.GoldHue = h;
+                GridContainer.UpdateAllGridContainers();
+            }), true, page);
+            content.Indent();
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Change tree art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Stump", "Tile" }, profile.TreeType, (i, s) =>
+            {
+                profile.TreeType = i;
+            }), true, page);
+            content.Indent();
+
+            content.AddToRight(new CheckboxWithLabel("Color stump or tile ON / OFF", 0, profile.ColorTreeTile, (b) =>
+            {
+                profile.ColorTreeTile = b;
+            }), true, page);
+            content.RemoveIndent();
+            content.Indent();
+
+
+            content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.TreeTileHue, (h) =>
+            {
+                profile.TreeTileHue = h;
+                GridContainer.UpdateAllGridContainers();
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Blocker Type:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Stump", "Tile" }, profile.BlockerType, (i, s) =>
+            {
+                profile.BlockerType = i;
+            }), true, page);
+            content.Indent();
+
+            content.AddToRight(new CheckboxWithLabel("Color stump or tile", 0, profile.ColorBlockerTile, (b) =>
+            {
+                profile.ColorBlockerTile = b;
+            }), true, page);
+            content.RemoveIndent();
+            content.Indent();
+
+            content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.BlockerTileHue, (h) =>
+            {
+                profile.BlockerTileHue = h;
+                GridContainer.UpdateAllGridContainers();
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            #endregion
+
+
+
+
+            options.Add(
+            new SettingsOption(
+                "",
+                content,
+                mainContent.RightWidth,
+                PAGE.Dust765
+                )
+            );
         }
 
         private void BuildTazUO()
@@ -6330,7 +6472,8 @@ namespace ClassicUO.Game.UI.Gumps
             IgnoreList,
             NameplateOptions,
             TUOCooldowns,
-            TUOOptions
+            TUOOptions,
+            Dust765
         }
 
         private interface SearchableOption

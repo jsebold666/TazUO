@@ -32,6 +32,9 @@
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // ART / HUE CHANGES
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // ART / HUE CHANGES
 using ClassicUO.Game.Scenes;
 using ClassicUO.IO;
 using ClassicUO.Assets;
@@ -111,12 +114,19 @@ namespace ClassicUO.Game.GameObjects
 
             Vector3 hueVec = ShaderHueTranslator.GetHueVector(hue, partial, AlphaHue / 255f);
 
+            // ## BEGIN - END ## // ART / HUE CHANGES
+            /*
             bool isTree = StaticFilters.IsTree(graphic, out _);
-
             if (isTree && ProfileManager.CurrentProfile.TreeToStumps)
             {
                 graphic = Constants.TREE_REPLACE_GRAPHIC;
             }
+                        */
+            // ## BEGIN - END ## // ART / HUE CHANGES
+            graphic = CombatCollection.ArtloaderFilters(graphic);
+
+            bool isTree = StaticFilters.IsTree(graphic, out _);
+            // ## BEGIN - END ## // ART / HUE CHANGES
 
             DrawStaticAnimated(
                 batcher,
@@ -151,12 +161,19 @@ namespace ClassicUO.Game.GameObjects
             {
                 ushort graphic = Graphic;
 
+                // ## BEGIN - END ## // ART / HUE CHANGES
+                /*
                 bool isTree = StaticFilters.IsTree(graphic, out _);
-
                 if (isTree && ProfileManager.CurrentProfile.TreeToStumps)
                 {
                     graphic = Constants.TREE_REPLACE_GRAPHIC;
                 }
+                            */
+                // ## BEGIN - END ## // ART / HUE CHANGES
+                graphic = CombatCollection.ArtloaderFilters(graphic);
+
+                bool isTree = StaticFilters.IsTree(graphic, out _);
+                // ## BEGIN - END ## // ART / HUE CHANGES
 
                 ref var index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
 

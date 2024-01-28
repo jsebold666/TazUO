@@ -34,6 +34,9 @@ using System;
 using System.Collections.Generic;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // ART / HUE CHANGES
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // ART / HUE CHANGES
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.IO;
@@ -87,6 +90,14 @@ namespace ClassicUO.Game.GameObjects
             ushort hue = Hue;
             ushort graphic = DisplayedGraphic;
             bool partial = ItemData.IsPartialHue;
+
+            // ## BEGIN - END ## // ART / HUE CHANGES
+            if (CombatCollection.IsStealthArt(Graphic))
+            {
+                if (ProfileManager.CurrentProfile.ColorStealth || ProfileManager.CurrentProfile.StealthNeonType != 0)
+                    hue = CombatCollection.StealthtHue(hue);
+            }
+            // ## BEGIN - END ## // ART / HUE CHANGES
 
             if (OnGround)
             {
