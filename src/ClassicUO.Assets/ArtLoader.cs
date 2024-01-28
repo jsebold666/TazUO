@@ -303,7 +303,16 @@ namespace ClassicUO.Assets
         //     {
         //         AddBlackBorder(pixels, width, height);
         //     }
-        //     */
+        //
+        //
+        // ## BEGIN - END ## // MISC
+        /* Temporarily broken. ProfileManager is not accessible here.
+        if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.BlackOutlineStatics || StaticFilters.IsCave(graphic) && ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.EnableCaveBorder)
+        {
+            AddBlackBorder(pixels, width, height);
+        }
+        */
+        // ## BEGIN - END ## // MISC
 
         //     for (int y = 0; y < height; ++y)
         //     {

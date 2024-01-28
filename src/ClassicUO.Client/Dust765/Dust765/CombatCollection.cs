@@ -1433,5 +1433,17 @@ namespace ClassicUO.Dust765.Dust765
         }
         // ## BEGIN - END ## // OLDHEALTHLINES
 
+        // ## BEGIN - END ## // MISC
+        //NETWORK\PACKETHANDLERS.CS
+        public static void SpecialSetLastTargetCliloc(uint target)
+        {
+            if (ProfileManager.CurrentProfile.SpecialSetLastTargetCliloc)
+            {
+                TargetManager.LastTargetInfo.Serial = target;
+                TargetManager.LastTargetInfo.SetEntity(target);
+            }
+        }
+        // ## BEGIN - END ## // MISC
+
     }
 }

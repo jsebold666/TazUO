@@ -310,6 +310,10 @@ namespace ClassicUO.Assets
             Flags = (TileFlag) flags;
             TexID = textId;
             Name = name;
+
+            // ## BEGIN - END ## // MISC
+            IsImpassable = (Flags & TileFlag.Impassable) != 0;
+            // ## BEGIN - END ## // MISC
         }
 
         public TileFlag Flags;
@@ -317,7 +321,9 @@ namespace ClassicUO.Assets
         public string Name;
 
         public bool IsWet => (Flags & TileFlag.Wet) != 0;
-        public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
+        // ## BEGIN - END ## // MISC
+        public bool IsImpassable;
+        // ## BEGIN - END ## // MISC
         public bool IsNoDiagonal => (Flags & TileFlag.NoDiagonal) != 0;
     }
 

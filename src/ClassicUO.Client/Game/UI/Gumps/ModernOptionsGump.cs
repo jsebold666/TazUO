@@ -101,7 +101,7 @@ namespace ClassicUO.Game.UI.Gumps
             BuildCooldowns();
             BuildTazUO();
             // ## BEGIN - END ## // BASICSETUP
-            BuildDust();
+            BuildDust765();
            
             // ## BEGIN - END ## // BASICSETUP
             
@@ -1906,7 +1906,7 @@ namespace ClassicUO.Game.UI.Gumps
             PositionHelper.PositionControl(s.FullControl);
         }
 
-        private void BuildDust()
+        private void BuildDust765()
         {
             LeftSideMenuRightSideContent content = new LeftSideMenuRightSideContent(mainContent.RightWidth, mainContent.Height, (int)(mainContent.RightWidth * 0.3));
             Control c;
@@ -2197,11 +2197,18 @@ namespace ClassicUO.Game.UI.Gumps
             content.Indent();
             content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.X.ToString(), false, (s, e) =>
             {
-                profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.SpellOnCursorOffset = new Point(xValue, profile.SpellOnCursorOffset.Y);
+                }
             }), true, page);
+
             content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.Y.ToString(), false, (s, e) =>
             {
-                profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int yValue))
+                {
+                    profile.SpellOnCursorOffset = new Point(profile.SpellOnCursorOffset.X, yValue);
+                }
             }), true, page);
             content.RemoveIndent();
             content.AddToRight(new ModernColorPickerWithLabel("Color game cursor when targeting (hostile / friendly)", profile.HighlightLastTargetTypeParaHue, (h) =>
@@ -2255,11 +2262,102 @@ namespace ClassicUO.Game.UI.Gumps
 
             content.AddToLeft(SubCategoryButton("Misc", page, content.LeftWidth));
             content.ResetRightSide();
-            content.AddToRight(new CheckboxWithLabel("Use old healthlines", 0, profile.UseOldHealthBars, (b) =>
+            content.AddToRight(new CheckboxWithLabel("Offscreen targeting (always on)", 0, profile.OffscreenTargeting, (b) =>
             {
-                profile.UseOldHealthBars = b;
+                profile.OffscreenTargeting = b;
             }), true, page);
             content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Razor * Target * to lasttarget string", 0, profile.SpecialSetLastTargetCliloc, (b) =>
+            {
+                profile.SpecialSetLastTargetCliloc = b;
+            }), true, page);
+
+
+            content.AddToRight(new InputFieldWithLabel("Text for Target Msg Head: ", Theme.INPUT_WIDTH, profile.SpecialSetLastTargetClilocText, false, (s, e) =>
+            {
+                profile.SpecialSetLastTargetClilocText = ((InputField.StbTextBox)s).Text;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Outline statics black (CURRENTLY BROKEN): ", 0, profile.BlackOutlineStatics, (b) =>
+            {
+                profile.BlackOutlineStatics = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Ignore stamina check", 0, profile.IgnoreStaminaCheck, (b) =>
+            {
+                profile.IgnoreStaminaCheck = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Wall of Stone", 0, profile.BlockWoS, (b) =>
+            {
+                profile.BlockWoS = b;
+                if (b == true)
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].IsImpassable = true;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].IsImpassable = true;
+                }
+                else
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].IsImpassable = false;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].IsImpassable = false;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Wall of Stone Fel only", 0, profile.BlockWoSFelOnly, (b) =>
+            {
+                profile.BlockWoSFelOnly = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Wall of Stone Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockWoSArt.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint result))
+                {
+    
+                    profile.BlockWoSArt = result;
+                }
+                else
+                {
+        
+                    Console.WriteLine("Error: This entrance not is type unit");
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Force WoS to Art above (AoS only?) and hue 945", 0, profile.BlockWoSArtForceAoS, (b) =>
+            {
+                profile.BlockWoSArtForceAoS = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Energy Field", 0, profile.BlockEnergyF, (b) =>
+            {
+                profile.BlockEnergyF = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Energy Field Fell Only", 0, profile.BlockEnergyFFelOnly, (b) =>
+            {
+                profile.BlockEnergyFFelOnly = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Energy Field Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockEnergyFArt.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint result))
+                {
+
+                    profile.BlockEnergyFArt = result;
+                }
+                else
+                {
+
+                    Console.WriteLine("Error: This entrance not is type unit");
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Force EnergyF to Art above (AoS only?) and hue 293", 0, profile.BlockEnergyFArtForceAoS, (b) =>
+            {
+                profile.BlockEnergyFArtForceAoS = b;
+            }), true, page);
+            content.BlankLine();
+
+            #endregion
 
             options.Add(
             new SettingsOption(
