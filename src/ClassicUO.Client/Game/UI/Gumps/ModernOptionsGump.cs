@@ -2184,7 +2184,7 @@ namespace ClassicUO.Game.UI.Gumps
             #endregion
 
             #region Dust
-            page = ((int)PAGE.Dust765 + 1002);
+            page = ((int)PAGE.Dust765 + 1003);
 
             content.AddToLeft(SubCategoryButton("Cursor", page, content.LeftWidth));
             content.ResetRightSide();
@@ -2204,13 +2204,25 @@ namespace ClassicUO.Game.UI.Gumps
                 profile.SkillBarFormat = ((InputField.StbTextBox)s).Text;
             }), true, page);
             content.RemoveIndent();
-            content.BlankLine();
             content.AddToRight(new ModernColorPickerWithLabel("Color game cursor when targeting (hostile / friendly)", profile.HighlightLastTargetTypeParaHue, (h) =>
             {
                 profile.HighlightLastTargetTypeParaHue = h;
             }), true, page);
+            content.BlankLine();
 
-            #endregion 
+            #endregion
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1004);
+
+            content.AddToLeft(SubCategoryButton("Overhead / Underchar", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Display range in overhead (needs HP overhead enabled)", 0, profile.OverheadRange, (b) =>
+            {
+                profile.OverheadRange = b;
+            }), true, page);
+            content.BlankLine();
+            #endregion
 
             options.Add(
             new SettingsOption(

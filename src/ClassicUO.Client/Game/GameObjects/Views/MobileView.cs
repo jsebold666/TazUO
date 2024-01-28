@@ -56,6 +56,9 @@ namespace ClassicUO.Game.GameObjects
         private static int _startCharacterKneesY;
         private static int _startCharacterFeetY;
         private static int _characterFrameHeight;
+        // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
+        public RenderedText RangeTexture { get; set; }
+        // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
 
         public override bool Draw(UltimaBatcher2D batcher, int posX, int posY, float depth)
         {

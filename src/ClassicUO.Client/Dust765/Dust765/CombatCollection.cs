@@ -1354,6 +1354,25 @@ namespace ClassicUO.Dust765.Dust765
             return hue;
         }
         // ## BEGIN - END ## // CURSOR
+        // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
+        //GAME\GAMEOBJECTS\VIEWS\MOBILEVIEW.CS
+        public static void UpdateRange(Mobile mobile)
+        {
+            mobile.RangeTexture?.Destroy();
+            mobile.RangeTexture = RenderedText.Create($"[{mobile.Distance}]", 0x0044, 3, false);
+        }
+        //GAME\MANAGERS\HEALTHLINESMANAGER.CS
+        public static void UpdateOverheads(Mobile mobile)
+        {
+            if (ProfileManager.CurrentProfile.OverheadRange)
+            {
+                if (mobile.Distance >= 0)
+                {
+                    UpdateRange(mobile);
+                }
+            }
+        }
+        // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
 
     }
 }
