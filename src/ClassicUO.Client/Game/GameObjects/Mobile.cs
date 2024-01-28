@@ -141,6 +141,12 @@ namespace ClassicUO.Game.GameObjects
             CalculateRandomIdleTime();
         }
 
+
+        // ## BEGIN - END ## // HEALTHBAR
+        public uint FlashTimeTick { get; set; } = 0;
+        public ushort OldHits { get; set; } = 0;
+        // ## BEGIN - END ## // HEALTHBAR
+
         public Mobile() : base(0) { }
 
         public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);

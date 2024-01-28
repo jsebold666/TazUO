@@ -345,6 +345,35 @@ namespace ClassicUO.Configuration
         public bool ColorTreeTile { get; set; }
         public ushort TreeTileHue { get; set; } = 0x0044;
         // ## BEGIN - END ## // ART / HUE CHANGES
+        // ## BEGIN - END ## // VISUAL HELPERS
+        public bool HighlightTileAtRange { get; set; }
+        public int HighlightTileAtRangeRange { get; set; }
+        public ushort HighlightTileRangeHue { get; set; } = 0x0044;
+        public bool HighlightTileAtRangeSpell { get; set; }
+        public int HighlightTileAtRangeRangeSpell { get; set; }
+        public ushort HighlightTileRangeHueSpell { get; set; } = 0x0044;
+        public int GlowingWeaponsType { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire, 5 = custom
+        public ushort HighlightGlowingWeaponsTypeHue { get; set; } = 0x0044;
+        public bool PreviewFields { get; set; }
+        public bool OwnAuraByHP { get; set; }
+        public int HighlightLastTargetType { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire, 5 = custom
+        public ushort HighlightLastTargetTypeHue { get; set; } = 0x0044;
+        public int HighlightLastTargetTypePoison { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire, 5 = special, 6 = custom
+        public ushort HighlightLastTargetTypePoisonHue { get; set; } = 0x0044;
+        public int HighlightLastTargetTypePara { get; set; } = 0; // 0 = off, 1 = white, 2 = pink, 3 = ice, 4 = fire, 5 = special, 6 = custom
+        public ushort HighlightLastTargetTypeParaHue { get; set; } = 0x0044;
+        // ## BEGIN - END ## // VISUAL HELPERS
+        // ## BEGIN - END ## // HEALTHBAR
+        public bool HighlightHealthBarByState { get; set; } //## Highlights mobiles healthbars if they're poisoned or para
+        public bool HighlightLastTargetHealthBarOutline { get; set; } //## Highlights last target healthbar if they're poisoned or invul
+        public bool FlashingHealthbarOutlineSelf { get; set; } = false;
+        public bool FlashingHealthbarOutlineParty { get; set; } = false;
+        public bool FlashingHealthbarOutlineGreen { get; set; } = false;
+        public bool FlashingHealthbarOutlineOrange { get; set; } = false;
+        public bool FlashingHealthbarOutlineAll { get; set; } = false;
+        public bool FlashingHealthbarNegativeOnly { get; set; } = false;
+        public int FlashingHealthbarTreshold { get; set; } = 10;
+        // ## BEGIN - END ## // HEALTHBAR
         // ## BEGIN - END ## // BASICSETUP
 
         public bool ShowJournalClient { get; set; } = true;

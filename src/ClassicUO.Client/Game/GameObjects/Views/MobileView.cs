@@ -33,6 +33,9 @@
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // VISUAL HELPERS
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Renderer;
@@ -83,7 +86,15 @@ namespace ClassicUO.Game.GameObjects
 
             if (AuraManager.IsEnabled)
             {
-                AuraManager.Draw(
+                // ## BEGIN - END ## // VISUAL HELPERS
+                if (this == World.Player && ProfileManager.CurrentProfile.OwnAuraByHP)
+                {
+                    ushort color = CombatCollection.OwnAuraColorByHP();
+                    AuraManager.Draw(batcher, drawX, drawY, color, depth + 1f);
+                }
+                else
+                    // ## BEGIN - END ## // VISUAL HELPERS
+                    AuraManager.Draw(
                     batcher,
                     drawX,
                     drawY,
@@ -109,8 +120,22 @@ namespace ClassicUO.Game.GameObjects
 
             if (ProfileManager.CurrentProfile.HighlightGameObjects && ReferenceEquals(SelectedObject.Object, this))
             {
+                // ## BEGIN - END ## // VISUAL HELPERS
+                /*
                 overridedHue = Constants.HIGHLIGHT_CURRENT_OBJECT_HUE;
                 hueVec.Y = 1;
+                */
+                // ## BEGIN - END ## // VISUAL HELPERS
+                Item item = World.Items.Get(Serial);
+
+                if (this == item)
+                {
+                    overridedHue = Constants.HIGHLIGHT_CURRENT_OBJECT_HUE;
+                    hueVec.Y = 1;
+                }
+                else
+                    overridedHue = Notoriety.GetHue(NotorietyFlag);
+                // ## BEGIN - END ## // VISUAL HELPERS
             }
             else if (SelectedObject.HealthbarObject == this)
             {
@@ -186,6 +211,22 @@ namespace ClassicUO.Game.GameObjects
                     overridedHue = ProfileManager.CurrentProfile.FriendHue;
                 }
             }
+
+            // ## BEGIN - END ## // VISUAL HELPERS
+            if (ProfileManager.CurrentProfile.HighlightLastTargetType != 0 && World.Get(TargetManager.LastTargetInfo.Serial) == this)
+            {
+                overridedHue = CombatCollection.LastTargetHue(this, overridedHue);
+                hueVec.Y = 1;
+            }
+            if (ProfileManager.CurrentProfile.PreviewFields)
+            {
+                if (CombatCollection.MobileFieldPreview(this))
+                {
+                    overridedHue = 0x0040;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // VISUAL HELPERS
 
             ProcessSteps(out byte dir);
             byte layerDir = dir;
@@ -414,6 +455,14 @@ namespace ClassicUO.Game.GameObjects
 
                         if (item.ItemData.AnimID != 0)
                         {
+                            // ## BEGIN - END ## // VISUAL HELPERS
+                            if (ProfileManager.CurrentProfile.GlowingWeaponsType != 0)
+                            {
+                                if (graphic >= 0x263 && graphic <= 0x28D) // all weps
+                                    item.Hue = CombatCollection.WeaponsHue(item.Hue);
+                            }
+                            // ## BEGIN - END ## // VISUAL HELPERS
+
                             graphic = item.ItemData.AnimID;
 
                             if (isGargoyle)
@@ -796,6 +845,14 @@ namespace ClassicUO.Game.GameObjects
                         partialHue = false;
                     }
                 }
+
+                // ## BEGIN - END ## // VISUAL HELPERS
+                if (ProfileManager.CurrentProfile.GlowingWeaponsType != 0)
+                {
+                    if (id >= 0x263 && id <= 0x28D) // all weps
+                        hue = CombatCollection.WeaponsHue(hue);
+                }
+                // ## BEGIN - END ## // VISUAL HELPERS
 
                 hueVec = ShaderHueTranslator.GetHueVector(hue, partialHue, hueVec.Z);
 

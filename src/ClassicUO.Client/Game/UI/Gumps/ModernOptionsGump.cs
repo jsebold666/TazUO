@@ -1914,30 +1914,26 @@ namespace ClassicUO.Game.UI.Gumps
 
             #region Dust
             page = ((int)PAGE.Dust765 + 1000);
-            content.AddToLeft(SubCategoryButton("Dust", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Art / Hue Changes", page, content.LeftWidth));
             content.AddToRight(new CheckboxWithLabel("Color stealth ON / OFF", 0, profile.ColorStealth, (b) =>
             {
                 profile.ColorStealth = b;
             }), true, page);
 
-             
+            content.Indent();
             content.AddToRight(new ModernColorPickerWithLabel("Stealth Color", profile.StealthHue, (h) =>
             {
                 profile.StealthHue = h;
-                GridContainer.UpdateAllGridContainers();
             }), true, page);
 
 
-            content.Indent();
             content.AddToRight(new ComboBoxWithLabel("Or Neon", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.StealthNeonType, (i, s) =>
             {
                 profile.StealthNeonType = i;
             }), true, page);
-            content.Indent();
-            content.BlankLine();
-
-
             content.RemoveIndent();
+            content.BlankLine();
+            
             content.AddToRight(new CheckboxWithLabel("Color Enery bolt ON / OFF", 0, profile.ColorEnergyBolt, (b) =>
             {
                 profile.ColorEnergyBolt = b;
@@ -1947,9 +1943,9 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new ModernColorPickerWithLabel("Color Energy Bolt", profile.EnergyBoltHue, (h) =>
             {
                 profile.EnergyBoltHue = h;
-                GridContainer.UpdateAllGridContainers();
+
             }), true, page);
-            content.RemoveIndent();
+            
             content.AddToRight(new ComboBoxWithLabel("Or Neon: ", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.EnergyBoltNeonType, (i, s) =>
             {
                 profile.EnergyBoltNeonType = i;
@@ -1958,7 +1954,7 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.EnergyBoltArtType = i;
             }), true, page);
-
+            content.RemoveIndent();
             content.BlankLine();
 
             
@@ -1973,14 +1969,13 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.ColorGold = b;
             }), true, page);
-            content.RemoveIndent();
-            content.Indent();
+           
+            
             content.AddToRight(new ModernColorPickerWithLabel("Cannonball or prev coin color", profile.GoldHue, (h) =>
             {
                 profile.GoldHue = h;
-                GridContainer.UpdateAllGridContainers();
             }), true, page);
-            content.Indent();
+            
             content.RemoveIndent();
             content.BlankLine();
 
@@ -1994,15 +1989,16 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.ColorTreeTile = b;
             }), true, page);
-            content.RemoveIndent();
+           
             content.Indent();
 
 
             content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.TreeTileHue, (h) =>
             {
                 profile.TreeTileHue = h;
-                GridContainer.UpdateAllGridContainers();
+
             }), true, page);
+            content.RemoveIndent();
             content.RemoveIndent();
             content.BlankLine();
 
@@ -2022,15 +2018,170 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.BlockerTileHue, (h) =>
             {
                 profile.BlockerTileHue = h;
-                GridContainer.UpdateAllGridContainers();
+
             }), true, page);
             content.RemoveIndent();
             content.BlankLine();
 
             #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1001);
+            content.ResetRightSide();
 
+            content.AddToLeft(SubCategoryButton("Visual Helpers", page, content.LeftWidth));
+            content.AddToRight(new CheckboxWithLabel("Highlight tiles on range", 0, profile.HighlightTileAtRange, (b) =>
+            {
+                profile.HighlightTileAtRange = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("@ range:", 0, Theme.SLIDER_WIDTH, 1, 20, profile.HighlightTileAtRangeRange, (i) =>
+            {
+                profile.HighlightTileAtRangeRange = (byte)i;
+            }), true, page);
+            content.AddToRight(new ModernColorPickerWithLabel("Tile color", profile.HighlightTileRangeHue, (h) =>
+            {
+                profile.HighlightTileRangeHue = h;
+            }), true, page);
+            
+            content.BlankLine();
 
+            content.AddToRight(new CheckboxWithLabel("Highlight tiles on range for spells", 0, profile.HighlightTileAtRangeSpell    , (b) =>
+            {
+                profile.HighlightTileAtRangeSpell = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("@ range:", 0, Theme.SLIDER_WIDTH, 1, 20, profile.HighlightTileAtRangeRangeSpell, (i) =>
+            {
+                profile.HighlightTileAtRangeRangeSpell = (byte)i;
+            }), true, page);
+            content.AddToRight(new ModernColorPickerWithLabel("Tile color", profile.HighlightTileRangeHueSpell, (h) =>
+            {
+                profile.HighlightTileRangeHueSpell = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
 
+            content.AddToRight(new CheckboxWithLabel("Preview Fields", 0, profile.PreviewFields, (b) =>
+            {
+                profile.PreviewFields = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Color own aura by HP (needs aura enabled)", 0, profile.OwnAuraByHP, (b) =>
+            {
+                profile.OwnAuraByHP = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Glowing Weapons:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.GlowingWeaponsType, (i, s) =>
+            {
+                profile.GlowingWeaponsType = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color Glowing Weapons", profile.HighlightGlowingWeaponsTypeHue, (h) =>
+            {
+                profile.HighlightGlowingWeaponsTypeHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetType, (i, s) =>
+            {
+                profile.HighlightLastTargetType = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color last target", profile.HighlightLastTargetTypeHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget poisoned:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetTypePoison, (i, s) =>
+            {
+                profile.HighlightLastTargetTypePoison = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color poisoned", profile.HighlightLastTargetTypePoisonHue, (h) =>
+            {
+                profile.HighlightLastTargetTypePoisonHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget paralyzed:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetTypePara, (i, s) =>
+            {
+                profile.HighlightLastTargetTypePara = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color paralyzed", profile.HighlightLastTargetTypeParaHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeParaHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- FEATURES ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+
+            content.AddToRight(new TextBox("HighlightTileAtRange (toggle HighlightTileAtRange on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+            content.RemoveIndent();
+            content.BlankLine();
+
+            #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1002);
+            
+            content.AddToLeft(SubCategoryButton("HealthBars", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Highlight LT healthbar", 0, profile.HighlightLastTargetHealthBarOutline, (b) =>
+            {
+                profile.HighlightLastTargetHealthBarOutline = b;
+            }), true, page);
+            
+            content.AddToRight(new CheckboxWithLabel("Highlight healthbar border by state", 0, profile.HighlightHealthBarByState, (b) =>
+            {
+                profile.HighlightHealthBarByState = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - self", 0, profile.FlashingHealthbarOutlineSelf, (b) =>
+            {
+                profile.FlashingHealthbarOutlineSelf = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - party", 0, profile.FlashingHealthbarOutlineParty, (b) =>
+            {
+                profile.FlashingHealthbarOutlineParty = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - ally", 0, profile.FlashingHealthbarOutlineGreen, (b) =>
+            {
+                profile.FlashingHealthbarOutlineGreen = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - enemy", 0, profile.FlashingHealthbarOutlineOrange, (b) =>
+            {
+                profile.FlashingHealthbarOutlineOrange = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - all", 0, profile.FlashingHealthbarOutlineAll, (b) =>
+            {
+                profile.FlashingHealthbarOutlineAll = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline on negative changes only", 0, profile.FlashingHealthbarNegativeOnly, (b) =>
+            {
+                profile.FlashingHealthbarNegativeOnly = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new SliderWithLabel("Only flash on HP change >= : ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.FlashingHealthbarTreshold, (i) =>
+            {
+                profile.FlashingHealthbarTreshold = (byte)i;
+            }), true, page);
+            #endregion
 
             options.Add(
             new SettingsOption(

@@ -114,6 +114,35 @@ namespace ClassicUO.Game.GameObjects
 
             Vector3 hueVec = ShaderHueTranslator.GetHueVector(hue, partial, AlphaHue / 255f);
 
+            // ## BEGIN - END ## // VISUAL HELPERS
+            if (ProfileManager.CurrentProfile.HighlightTileAtRange && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRange)
+            {
+                hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHue;
+                hueVec.Y = 1;
+            }
+            if (ProfileManager.CurrentProfile.HighlightTileAtRangeSpell)
+            {
+                if (GameActions.LastSpellIndexCursor > 0 && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRangeSpell)
+                {
+                    hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHueSpell;
+                    hueVec.Y = 1;
+                }
+            }
+            if (ProfileManager.CurrentProfile.PreviewFields)
+            {
+                if (CombatCollection.StaticFieldPreview(this))
+                {
+                    hueVec.X = 0x0040;
+                    hueVec.Y = 1;
+                }
+                if (SelectedObject.Object == this)
+                {
+                    hueVec.X = 0x0023;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // VISUAL HELPERS
+
             // ## BEGIN - END ## // ART / HUE CHANGES
             /*
             bool isTree = StaticFilters.IsTree(graphic, out _);

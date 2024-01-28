@@ -34,6 +34,9 @@ using System;
 using System.Collections.Generic;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // VISUAL HELPERS
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
@@ -116,6 +119,12 @@ namespace ClassicUO.Game
         private bool _needGraphicUpdate = true;
         private readonly List<Multi> _temp = new List<Multi>();
         private readonly Tooltip _tooltip;
+
+        // ## BEGIN - END ## // VISUAL HELPERS
+        public static uint _spellTime { get; set; }
+        public static uint _startSpellTime { get; set; }
+        public static bool _fieldEastToWest { get; set; }
+        // ## BEGIN - END ## // VISUAL HELPERS
 
         public GameCursor()
         {
@@ -414,6 +423,13 @@ namespace ClassicUO.Game
 
                     _aura.Draw(sb, Mouse.Position.X, Mouse.Position.Y, hue, 0f);
                 }
+
+                // ## BEGIN - END ## // VISUAL HELPERS
+                if (GameActions.LastSpellIndexCursor >= 1 && GameActions.LastSpellIndexCursor <= 64)
+                {
+                    CombatCollection.UpdateSpelltime();
+                }
+                // ## BEGIN - END ## // VISUAL HELPERS
 
                 if (ProfileManager.CurrentProfile.ShowTargetRangeIndicator)
                 {
