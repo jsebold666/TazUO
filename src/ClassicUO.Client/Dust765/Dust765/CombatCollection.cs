@@ -1373,6 +1373,65 @@ namespace ClassicUO.Dust765.Dust765
             }
         }
         // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
+        // ## BEGIN - END ## // OLDHEALTHLINES
+        //GAME\MANAGERS\HEALTHLINESMANAGER.CS
+        public static (Color hpcolor, int hpwidth, int manawidth, int staminawidth) CalcUnderlines(Mobile mobile)
+        {
+            Color hpcolor;
+
+            //COLOR FOR HP BAR
+            if (mobile.IsParalyzed)
+                hpcolor = Color.AliceBlue;
+            else if (mobile.IsYellowHits)
+                hpcolor = Color.Orange;
+            else if (mobile.IsPoisoned)
+                hpcolor = Color.LimeGreen;
+            else
+                hpcolor = Color.CornflowerBlue;
+
+            hpcolor *= HealthLinesManager._alphamodifier;
+
+            //CALCING STATS
+            int currenthp = mobile.Hits;
+            int maxhp = mobile.HitsMax;
+            int currentmana = mobile.Mana;
+            int maxmana = mobile.ManaMax;
+            int currentstam = mobile.Stamina;
+            int maxstam = mobile.StaminaMax;
+
+            if (maxhp > 0)
+            {
+                maxhp = currenthp * 100 / maxhp;
+
+                if (maxhp > 100)
+                    maxhp = 100;
+
+                if (maxhp > 1)
+                    maxhp = HealthLinesManager.BIGBAR_WIDTH * maxhp / 100;
+            }
+            if (maxmana > 0)
+            {
+                maxmana = currentmana * 100 / maxmana;
+
+                if (maxmana > 100)
+                    maxmana = 100;
+
+                if (maxmana > 1)
+                    maxmana = HealthLinesManager.BIGBAR_WIDTH * maxmana / 100;
+            }
+            if (maxstam > 0)
+            {
+                maxstam = currentstam * 100 / maxstam;
+
+                if (maxstam > 100)
+                    maxstam = 100;
+
+                if (maxstam > 1)
+                    maxstam = HealthLinesManager.BIGBAR_WIDTH * maxstam / 100;
+            }
+            return (hpcolor, maxhp, maxmana, maxstam);
+        }
+        // ## BEGIN - END ## // OLDHEALTHLINES
 
     }
 }

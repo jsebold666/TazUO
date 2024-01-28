@@ -2224,6 +2224,43 @@ namespace ClassicUO.Game.UI.Gumps
             content.BlankLine();
             #endregion
 
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1005);
+
+            content.AddToLeft(SubCategoryButton("Old Healthlines", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Use old healthlines", 0, profile.UseOldHealthBars, (b) =>
+            {
+                profile.UseOldHealthBars = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Display Mana / Stam in underline for self and party (requires old healthbars)", 0, profile.MultipleUnderlinesSelfParty, (b) =>
+            {
+                profile.MultipleUnderlinesSelfParty = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use bigger underlines for self and party (requires old healthbars)", 0, profile.MultipleUnderlinesSelfPartyBigBars, (b) =>
+            {
+                profile.MultipleUnderlinesSelfPartyBigBars = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new SliderWithLabel("Transparency for self and party (close client completly), (requires old healthlines): ", 0, Theme.SLIDER_WIDTH, 0, 10, profile.MultipleUnderlinesSelfPartyTransparency, (i) =>
+            {
+                profile.MultipleUnderlinesSelfPartyTransparency = (byte)i;
+            }), true, page);
+            content.BlankLine();
+            #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1006);
+
+            content.AddToLeft(SubCategoryButton("Misc", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Use old healthlines", 0, profile.UseOldHealthBars, (b) =>
+            {
+                profile.UseOldHealthBars = b;
+            }), true, page);
+            content.BlankLine();
+
             options.Add(
             new SettingsOption(
                 "",
