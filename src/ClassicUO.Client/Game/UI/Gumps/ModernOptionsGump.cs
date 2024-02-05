@@ -2306,6 +2306,16 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Block Wall of Stone Fel only", 0, profile.BlockWoSFelOnly, (b) =>
             {
                 profile.BlockWoSFelOnly = b;
+                if (b == true)
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].IsImpassable = true;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].IsImpassable = true;
+                }
+                else
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].IsImpassable = false;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].IsImpassable = false;
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new InputFieldWithLabel("Wall of Stone Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockWoSArt.ToString(), false, (s, e) =>
@@ -2314,6 +2324,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
     
                     profile.BlockWoSArt = result;
+
                 }
                 else
                 {
@@ -2330,11 +2341,45 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Block Energy Field", 0, profile.BlockEnergyF, (b) =>
             {
                 profile.BlockEnergyF = b;
+                if (b == true)
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        //0x3946 to 0x3964 / 14662 to 14692
+                        TileDataLoader.Instance.StaticData[0x3946 + i].IsImpassable = true;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].IsImpassable = true;
+                }
+                else
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        TileDataLoader.Instance.StaticData[0x3946 + i].IsImpassable = false;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].IsImpassable = false;
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("Block Energy Field Fell Only", 0, profile.BlockEnergyFFelOnly, (b) =>
             {
                 profile.BlockEnergyFFelOnly = b;
+                if (b == true)
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        //0x3946 to 0x3964 / 14662 to 14692
+                        TileDataLoader.Instance.StaticData[0x3946 + i].IsImpassable = true;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].IsImpassable = true;
+                }
+                else
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        TileDataLoader.Instance.StaticData[0x3946 + i].IsImpassable = false;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].IsImpassable = false;
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new InputFieldWithLabel("Energy Field Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockEnergyFArt.ToString(), false, (s, e) =>
@@ -2354,6 +2399,7 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Force EnergyF to Art above (AoS only?) and hue 293", 0, profile.BlockEnergyFArtForceAoS, (b) =>
             {
                 profile.BlockEnergyFArtForceAoS = b;
+
             }), true, page);
             content.BlankLine();
 

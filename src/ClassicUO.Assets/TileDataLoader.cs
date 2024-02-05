@@ -373,7 +373,11 @@ namespace ClassicUO.Assets
 
         public bool IsAnimated => (Flags & TileFlag.Animation) != 0;
         public bool IsBridge => (Flags & TileFlag.Bridge) != 0;
-        public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
+        // ## BEGIN - END ## // MISC
+        //public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
+        // ## BEGIN - END ## // MISC
+        public bool IsImpassable;
+        // ## BEGIN - END ## // MISC
         public bool IsSurface => (Flags & TileFlag.Surface) != 0;
         public bool IsWearable => (Flags & TileFlag.Wearable) != 0;
         public bool IsInternal => (Flags & TileFlag.Internal) != 0;

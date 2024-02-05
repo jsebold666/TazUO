@@ -35,7 +35,9 @@ using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
 // ## BEGIN - END ## // VISUAL HELPERS
+// ## BEGIN - END ## // MISC
 using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // MISC
 // ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
