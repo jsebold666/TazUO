@@ -1859,6 +1859,16 @@ namespace ClassicUO.Game.Managers
 
                     break;
                 // ## BEGIN - END ## // VISUAL HELPERS
+                // ## BEGIN - END ## // MISC2
+                case MacroType.ToggleTransparentHouses:
+                    ProfileManager.CurrentProfile.TransparentHousesEnabled = !ProfileManager.CurrentProfile.TransparentHousesEnabled;
+
+                    break;
+                case MacroType.ToggleInvisibleHouses:
+                    ProfileManager.CurrentProfile.InvisibleHousesEnabled = !ProfileManager.CurrentProfile.InvisibleHousesEnabled;
+
+                    break;
+                // ## BEGIN - END ## // MISC2
 
                 case MacroType.UseCounterBar:
                     string counterIndex = ((MacroObjectString)macro).Text;
@@ -2509,8 +2519,10 @@ namespace ClassicUO.Game.Managers
         ToggleVegetation,
         ToggleCaveTiles,
         // ## BEGIN - END ## // BASICSETUP
-        notimplemented23,
-        notimplemented24,
+        // ## BEGIN - END ## // MISC2
+        ToggleTransparentHouses,
+        ToggleInvisibleHouses,
+        // ## BEGIN - END ## // MISC2
         notimplemented25,
         notimplemented26,
         notimplemented27,

@@ -2610,6 +2610,61 @@ namespace ClassicUO.Game.UI.Gumps
                     );
             }
 
+            // ## BEGIN - END ## // MISC2
+            //DEATH
+            //RESET INCASE LONGER THAN 5MIN //FAILSAFE
+            if ((Time.Ticks - World.Player.DeathTick) > 300000 && World.Player.DeathX != 0 && World.Player.DeathY != 0 && World.Player.DeathTick != 0)
+            {
+                World.Player.DeathTick = 0;
+                World.Player.DeathX = 0;
+                World.Player.DeathY = 0;
+            }
+            if (ProfileManager.CurrentProfile.ShowDeathOnWorldmap)
+            {
+                if (World.Player.DeathX != 0 && World.Player.DeathY != 0 && World.Player.DeathTick != 0)
+                {
+                    //DESTINATION
+                    int sx = World.Player.DeathX - _center.X;
+                    int sy = World.Player.DeathY - _center.Y;
+
+                    Point pdrot = RotatePoint(sx, sy, Zoom, 1, _flipMap ? 45f : 0f);
+
+                    pdrot.X += gX + halfWidth;
+                    pdrot.Y += gY + halfHeight;
+
+                    const int DOT_SIZE = 4;
+                    const int DOT_SIZE_HALF = DOT_SIZE >> 1;
+
+                    Vector3 hueVec = ShaderHueTranslator.GetHueVector(0);
+
+                    //DRAW DOT AT DEATH LOCATION
+                    batcher.Draw(SolidColorTextureCache.GetTexture(Color.YellowGreen), new Rectangle(pdrot.X - DOT_SIZE_HALF, pdrot.Y - DOT_SIZE_HALF, DOT_SIZE, DOT_SIZE), hueVec);
+
+                    //PLAYER
+                    int psx = World.Player.X - _center.X;
+                    int psy = World.Player.Y - _center.Y;
+
+                    Point prot = RotatePoint(psx, psy, Zoom, 1, _flipMap ? 45f : 0f);
+
+                    prot.X += gX + halfWidth;
+                    prot.Y += gY + halfHeight;
+
+                    Vector2 start = new Vector2(pdrot.X - DOT_SIZE_HALF, pdrot.Y - DOT_SIZE_HALF);
+                    Vector2 end = new Vector2(prot.X, prot.Y);
+
+                    //DRAW LINE FROM PLAYER TO DEATH LOCATION
+                    batcher.DrawLine
+                    (
+                       SolidColorTextureCache.GetTexture(Color.YellowGreen),
+                       start,
+                       end,
+                       hueVec,
+                       1
+                    );
+                }
+            }
+            // ## BEGIN - END ## // MISC2
+
             DrawMobile
             (
                 batcher,

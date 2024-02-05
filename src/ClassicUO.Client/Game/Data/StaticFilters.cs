@@ -48,7 +48,10 @@ namespace ClassicUO.Game.Data
         STFF_STUMP = 0x02,
         STFF_STUMP_HATCHED = 0x04,
         STFF_VEGETATION = 0x08,
-        STFF_WATER = 0x10
+        STFF_WATER = 0x10,
+        // ## BEGIN - END ## // MISC2
+        STFF_IGNORECOT = 0x12
+        // ## BEGIN - END ## // MISC2
     }
 
     internal static class StaticFilters
@@ -57,6 +60,9 @@ namespace ClassicUO.Game.Data
 
         public static readonly List<ushort> CaveTiles = new List<ushort>();
         public static readonly List<ushort> TreeTiles = new List<ushort>();
+        // ## BEGIN - END ## // MISC2
+        public static readonly List<ushort> IgnoreCoT = new List<ushort>();
+        // ## BEGIN - END ## // MISC2
 
         public static void Load()
         {
@@ -70,6 +76,46 @@ namespace ClassicUO.Game.Data
             string cave = Path.Combine(path, "cave.txt");
             string vegetation = Path.Combine(path, "vegetation.txt");
             string trees = Path.Combine(path, "tree.txt");
+            // ## BEGIN - END ## // MISC2
+            string ignoreCot = Path.Combine(path, "ignoreCoT.txt");
+
+            if (!File.Exists(ignoreCot))
+            {
+                using (StreamWriter writer = new StreamWriter(ignoreCot))
+                {
+                    ushort[] ignoreCoTTiles =
+                    {
+                        0x0CF8, 0x0CD1, 0x0CDB, 0x08E0, 0x08EA, 0x0C99, 0x0C9E, 0x0CA6, 0x0CC4, 0x0CC9, 0x0CCD,
+                        0x0CD0, 0x0CD3, 0x0CD6, 0x0CD8, 0x0CDA, 0x0CDD, 0x0CE0, 0x0CE3, 0x0CE6, 0x0CF8, 0x0CFB,
+                        0x0CFE, 0x0D01, 0x0D25, 0x0D35, 0x0D26, 0x0D37, 0x0D38, 0x0D42, 0x0D43, 0x0D59, 0x0D70,
+                        0x0D85, 0x0ED7, 0x0ED8, 0x1182, 0x12B8, 0x12BB, 0x134F, 0x136D, 0x1772, 0x1776, 0x177A,
+                        0x08E6, 0x08E5, 0x08E2, 0x08E1, 0x08E3, 0x08E4, 0x08E7, 0x08E8, 0x08E9
+                    };
+
+                    for (int i = 0; i < ignoreCoTTiles.Length; i++)
+                    {
+                        ushort g = ignoreCoTTiles[i];
+
+                        writer.WriteLine(g);
+                    }
+                }
+            }
+
+            TextFileParser ignoreCoTParser = new TextFileParser(File.ReadAllText(ignoreCot), new[] { ' ', '\t', ',' }, new[] { '#', ';' }, new[] { '"', '"' });
+
+            while (!ignoreCoTParser.IsEOF())
+            {
+                List<string> ss = ignoreCoTParser.ReadTokens();
+
+                if (ss != null && ss.Count != 0)
+                {
+                    if (ushort.TryParse(ss[0], out ushort graphic))
+                    {
+                        _filteredTiles[graphic] |= STATIC_TILES_FILTER_FLAGS.STFF_IGNORECOT;
+                    }
+                }
+            }
+            // ## BEGIN - END ## // MISC2
 
 
             if (!File.Exists(cave))
@@ -357,5 +403,12 @@ namespace ClassicUO.Game.Data
         {
             return g == 0x038A;
         }
+        // ## BEGIN - END ## // MISC2
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsIgnoreCoT(ushort g)
+        {
+            return (_filteredTiles[g] & STATIC_TILES_FILTER_FLAGS.STFF_IGNORECOT) != 0;
+        }
+        // ## BEGIN - END ## // MISC2
     }
 }

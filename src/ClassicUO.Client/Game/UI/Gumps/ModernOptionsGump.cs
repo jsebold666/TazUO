@@ -2404,6 +2404,87 @@ namespace ClassicUO.Game.UI.Gumps
             content.BlankLine();
 
             #endregion
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1007);
+
+            content.AddToLeft(SubCategoryButton("Misc2", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable WireFrame view (restart needed) (CURRENTLY BROKEN)", 0, profile.WireFrameView, (b) =>
+            {
+                profile.OffscreenTargeting = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Hue impassable Tiles", 0, profile.WireFrameView, (b) =>
+            {
+                profile.WireFrameView = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Hue ", profile.HueImpassableViewHue, (h) =>
+            {
+                profile.HueImpassableViewHue = h;
+
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Transparent Houses and Items (Z level):", 0, profile.TransparentHousesEnabled, (b) =>
+            {
+                profile.TransparentHousesEnabled = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("Transparency Z: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.TransparentHousesZ, (i) =>
+            {
+                profile.TransparentHousesZ = (byte)i;
+            }), true, page);
+
+            content.AddToRight(new SliderWithLabel("Transparency: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.TransparentHousesTransparency, (i) =>
+            {
+                profile.TransparentHousesTransparency = (byte)i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Invisible Houses and Items (Z level):", 0, profile.InvisibleHousesEnabled, (b) =>
+            {
+                profile.InvisibleHousesEnabled = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("Invisible Z: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.InvisibleHousesZ, (i) =>
+            {
+                profile.InvisibleHousesZ = (byte)i;
+            }), true, page);
+
+            content.AddToRight(new SliderWithLabel("Dont make Invisible or Transparent below (Z level): ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.DontRemoveHouseBelowZ, (i) =>
+            {
+                profile.DontRemoveHouseBelowZ = (byte)i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Draw mobiles with surface overhead: ", 0, profile.DrawMobilesWithSurfaceOverhead, (b) =>
+            {
+                profile.DrawMobilesWithSurfaceOverhead = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable ignorelist for circle of transparency: ", 0, profile.IgnoreCoTEnabled, (b) =>
+            {
+                profile.IgnoreCoTEnabled = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Show death location on world map for 5min: ", 0, profile.ShowDeathOnWorldmap, (b) =>
+            {
+                profile.ShowDeathOnWorldmap = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- FEATURES ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+
+            content.AddToRight(new TextBox("ToggleTransparentHouses (toggle ToggleTransparentHouses on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.AddToRight(new TextBox("ToggleInvisibleHouses (toggle ToggleInvisibleHouses on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+
+            content.RemoveIndent();
+
+            #endregion
 
             options.Add(
             new SettingsOption(

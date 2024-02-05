@@ -50,6 +50,12 @@ namespace ClassicUO.Game.GameObjects
 
         private static SpellVisualRangeManager.CastTimerProgressBar castTimer;
 
+        // ## BEGIN - END ## // MISC2
+        public int DeathX = 0;
+        public int DeathY = 0;
+        public uint DeathTick = 0;
+        // ## BEGIN - END ## // MISC2
+
         public PlayerMobile(uint serial) : base(serial)
         {
             Skills = new Skill[SkillsLoader.Instance.SkillsCount];

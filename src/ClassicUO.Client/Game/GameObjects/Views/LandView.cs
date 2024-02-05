@@ -32,7 +32,9 @@
 
 using ClassicUO.Configuration;
 // ## BEGIN - END ## // VISUAL HELPERS
+// ## BEGIN - END ## // MISC2
 using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // MISC2
 // ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Assets;
 using ClassicUO.Renderer;
@@ -134,7 +136,16 @@ namespace ClassicUO.Game.GameObjects
                 }
             }
             // ## BEGIN - END ## // VISUAL HELPERS
-
+            // ## BEGIN - END ## // MISC2
+            if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.HueImpassableView)
+            {
+                if (this.TileData.IsImpassable)
+                {
+                    hueVec.X = ProfileManager.CurrentProfile.HueImpassableViewHue;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // MISC2
             if (IsStretched)
             {
                 posY += Z << 2;
