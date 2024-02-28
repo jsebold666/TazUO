@@ -86,6 +86,9 @@ namespace ClassicUO.Game.GameObjects
         public uint Serial;
         public HitsRequestStatus HitsRequest;
         private ushort hits;
+        // ## BEGIN - END ## // AUTOLOOT
+        public ushort LootFlag;
+        // ## BEGIN - END ## // AUTOLOOT
 
         public bool IsHidden => (Flags & Flags.Hidden) != 0;
 

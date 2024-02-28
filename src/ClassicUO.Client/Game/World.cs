@@ -45,6 +45,7 @@ using ClassicUO.Configuration;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Assets;
+using ClassicUO.Dust765.Dust765;
 
 namespace ClassicUO.Game
 {
@@ -94,8 +95,12 @@ namespace ClassicUO.Game
 
         public static JournalManager Journal { get; } = new JournalManager();
 
+
         public static CoolDownBarManager CoolDownBarManager { get; } = new CoolDownBarManager();
 
+        // ## BEGIN - END ## // MACROS
+        public static AnimationTriggers AnimationTriggers { get; } = new AnimationTriggers();
+        // ## BEGIN - END ## // MACROS
 
         public static int MapIndex
         {

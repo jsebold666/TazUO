@@ -1003,7 +1003,16 @@ namespace ClassicUO.Network
             {
                 text = string.Empty;
             }
-
+            // ## BEGIN - END ## // AUTOLOOT
+            Item item = World.Items.Get(serial);
+            if (item != null)
+            {
+                if (item.IsCorpse)
+                {
+                    CombatCollection.SetLootFlag(serial, hue);
+                }
+            }
+            // ## BEGIN - END ## // AUTOLOOT
             // ## BEGIN - END ## // VISUAL HELPERS
             if (serial == World.Player.Serial && type == MessageType.Spell && !string.IsNullOrEmpty(text))
                 CombatCollection.SpellCastFromCliloc(text);
@@ -2529,6 +2538,11 @@ namespace ClassicUO.Network
                 forward,
                 true
             );
+
+            // ## BEGIN - END ## // MACROS
+            if (mobile == World.Player)
+                World.AnimationTriggers.OnOwnCharacterAnimation(action);
+            // ## BEGIN - END ## // MACROS
         }
 
         private static void GraphicEffect(ref StackDataReader p)
@@ -4898,6 +4912,20 @@ namespace ClassicUO.Network
 
             SpellVisualRangeManager.Instance.OnClilocReceived((int)cliloc);
 
+            // ## BEGIN - END ## // UI/GUMPS
+            World.Player?.BandageTimer.OnCliloc(cliloc);
+            // ## BEGIN - END ## // UI/GUMPS
+            // ## BEGIN - END ## // AUTOLOOT
+            Item item = World.Items.Get(serial);
+            if (item != null)
+            {
+                if (item.IsCorpse)
+                {
+                    CombatCollection.SetLootFlag(serial, hue);
+                }
+            }
+            // ## BEGIN - END ## // AUTOLOOT
+
             if (cliloc == 1008092 || cliloc == 1005445) // value for "You notify them you don't want to join the party" || "You have been added to the party"
             {
                 for (LinkedListNode<Gump> g = UIManager.Gumps.Last; g != null; g = g.Previous)
@@ -5763,6 +5791,11 @@ namespace ClassicUO.Network
                 forward: true,
                 fromServer: true
             );
+
+            // ## BEGIN - END ## // MACROS
+            if (mobile == World.Player && type == 0)
+                World.AnimationTriggers.OnOwnCharacterAnimationNew(action, type);
+            // ## BEGIN - END ## // MACROS
         }
 
         private static void KREncryptionResponse(ref StackDataReader p) { }

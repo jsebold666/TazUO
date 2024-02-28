@@ -1,4 +1,4 @@
-#region license
+  #region license
 
 // Copyright (c) 2021, andreakarasho
 // All rights reserved.
@@ -32,6 +32,7 @@
 
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
+using ClassicUO.Dust765.External;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
@@ -55,10 +56,17 @@ namespace ClassicUO.Game.GameObjects
         public int DeathY = 0;
         public uint DeathTick = 0;
         // ## BEGIN - END ## // MISC2
+        // ## BEGIN - END ## // UI/GUMPS
+        public BandageGump BandageTimer;
+        // ## BEGIN - END ## // UI/GUMPS
 
         public PlayerMobile(uint serial) : base(serial)
         {
             Skills = new Skill[SkillsLoader.Instance.SkillsCount];
+
+            // ## BEGIN - END ## // UI/GUMPS
+            UIManager.Add(BandageTimer = new BandageGump());
+            // ## BEGIN - END ## // UI/GUMPS
 
             for (int i = 0; i < Skills.Length; i++)
             {
@@ -1399,6 +1407,20 @@ namespace ClassicUO.Game.GameObjects
                 }
             }
         }
+
+        // ## BEGIN - END ## // MACROS
+        public void OpenCorpses(byte range)
+        {
+            foreach (Item item in World.Items.Values)
+            {
+                if (!item.IsDestroyed && item.IsCorpse && item.Distance <= range && item.Graphic == 0x2006)
+                {
+                    ManualOpenedCorpses.Add(item.Serial);
+                    GameActions.DoubleClickQueued(item.Serial);
+                }
+            }
+        }
+        // ## BEGIN - END ## // MACROS
 
         protected override void OnDirectionChanged()
         {

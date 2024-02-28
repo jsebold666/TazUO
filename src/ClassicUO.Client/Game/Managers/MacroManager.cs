@@ -32,6 +32,10 @@
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // MACROS
+using ClassicUO.Dust765.External;
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // MACROS
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Gumps;
@@ -1870,6 +1874,108 @@ namespace ClassicUO.Game.Managers
                     break;
                 // ## BEGIN - END ## // MISC2
 
+                // ## BEGIN - END ## // MACROS
+                case MacroType.ObjectInfo:
+
+                    CommandManager.Execute("info");
+
+                    break;
+
+                case MacroType.OpenCorpses:
+                    World.Player.OpenCorpses(2);
+
+                    break;
+
+                case MacroType.SetTargetClientSide:
+                    TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
+
+                    break;
+
+                case MacroType.LastTargetRC:
+
+                    if (TargetManager.IsTargeting)
+                    {
+                        var entity = World.Get(TargetManager.LastTargetInfo.Serial);
+
+                        if (entity != null)
+                        {
+                            if (entity.Distance <= ProfileManager.CurrentProfile.LastTargetRange && (entity.Z - World.Player.Z) <= ProfileManager.CurrentProfile.LastTargetRange)
+                                TargetManager.Target(World.Get(TargetManager.LastTargetInfo.Serial));
+                            else
+                                MessageManager.HandleMessage(World.Player, "LastTarget out of range", null, 0x3B2, MessageType.Regular, 3, TextType.CLIENT, true);
+                        }
+
+                        WaitForTargetTimer = 0;
+                    }
+                    else if (WaitForTargetTimer < Time.Ticks)
+                        WaitForTargetTimer = 0;
+                    else
+                        result = 1;
+
+                    break;
+
+                case MacroType.HideX:
+
+                    if (SelectedObject.Object is Land l)
+                        l.AllowedToDraw = false;
+
+                    if (SelectedObject.Object is Item i)
+                        i.AllowedToDraw = false;
+
+                    if (SelectedObject.Object is Entity e)
+                        e.AllowedToDraw = false;
+
+                    if (SelectedObject.Object is Mobile m)
+                        m.AllowedToDraw = false;
+
+                    break;
+
+                case MacroType.HealOnHPChange:
+                    if (!CombatCollection._HealOnHPChangeON)
+                    {
+                        CombatCollection._HealOnHPChangeHP = World.Player.Hits;
+                        CombatCollection._HealOnHPChangeON = true;
+                    }
+
+                    CombatCollection.HealOnHPChange();
+
+                    break;
+
+                case MacroType.HarmOnSwing:
+                    if (!CombatCollection._HarmOnSwingON)
+                        CombatCollection._HarmOnSwingON = true;
+
+                    CombatCollection.HarmOnSwing();
+
+                    break;
+
+                case MacroType.CureGH:
+                    if (World.Player.IsPoisoned)
+                        GameActions.CastSpell(11); //cure
+                    else
+                        GameActions.CastSpell(29); //greater heal
+
+                    break;
+                // ## BEGIN - END ## // MACROS
+                // ## BEGIN - END ## // LINES
+                case MacroType.UCCLinesToggleLT:
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAll(); //ALL
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Innocent);
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Ally);
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Criminal);
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Gray);
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Enemy);
+                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Murderer);
+                    UOClassicCombatLines.ClilocTriggerToggleLT();
+
+                    break;
+
+                case MacroType.UCCLinesToggleHM:
+                    UOClassicCombatLines.ClilocTriggerToggleHM();
+
+                    break;
+                // ## BEGIN - END ## // LINES
+
                 case MacroType.UseCounterBar:
                     string counterIndex = ((MacroObjectString)macro).Text;
 
@@ -2488,31 +2594,35 @@ namespace ClassicUO.Game.Managers
         CloseAllHealthBars,
         RazorMacro,
         // ## BEGIN - END ## // BASICSETUP
-        notimplemented,
+        ObjectInfo,
         notimplemented1,
         notimplemented2,
         notimplemented3,
         notimplemented4,
-        notimplemented5,
+        OpenCorpses,
         notimplemented6,
         notimplemented7,
         // ## BEGIN - END ## // VISUAL HELPERS
         HighlightTileAtRange,
         // ## BEGIN - END ## // VISUAL HELPERS
-        notimplemented9,
-        notimplemented10,
-        notimplemented11,
-        notimplemented12,
+        // ## BEGIN - END ## // MACROS
+        LastTargetRC,
+        HideX,
+        HealOnHPChange,
+        HarmOnSwing,
+        // ## BEGIN - END ## // MACROS
         notimplemented13,
-        notimplemented14,
-        notimplemented15,
-        notimplemented16,
-        notimplemented17,
+        SetTargetClientSide, // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // LINES
+        UCCLinesToggleLT,
+        UCCLinesToggleHM,
+        // ## BEGIN - END ## // LINES
+        CureGH, // ## BEGIN - END ## // MACROS
         notimplemented18,
         notimplemented19,
         notimplemented20,
         notimplemented21,
-        notimplemented22,
+        OpenJournal2, // ## BEGIN - END ## // MACROS
         // ## BEGIN - END ## // BASICSETUP
         ToggleDrawRoofs,
         ToggleTreeStumps,
@@ -2533,7 +2643,14 @@ namespace ClassicUO.Game.Managers
         CloseInactiveHealthBars,
         CloseCorpses,
         UseObject,
+        // ## BEGIN - END ## // BASICSETUP
+        notimplemented31,
+        notimplemented32,
+        notimplemented33,
+        notimplemented34,
+        // ## BEGIN - END ## // BASICSETUP
         LookAtMouse,
+        // ## BEGIN - END ## // BASICSETUP
         UseCounterBar,
         ClientCommand
     }

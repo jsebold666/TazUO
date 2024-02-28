@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 
 // Copyright (C) 2020 project dust765
 // 
@@ -26,6 +26,7 @@ using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
+using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using ClassicUO.Resources;
 
@@ -58,6 +59,13 @@ namespace ClassicUO.Dust765.Dust765
         public const ushort BRIGHT_POISON_COLOR = 0x0A0B;
         public const ushort BRIGHT_PARALYZE_COLOR = 0x0A13;
         // ## BEGIN - END ## // ART / HUE CHANGES
+        // ## BEGIN - END ## // MACROS
+        //USED VARS
+        public static bool _HealOnHPChangeON = false;
+        public static int _HealOnHPChangeHP = 0;
+        public static bool _HarmOnSwingON = false;
+        public static bool _HarmOnSwingTrigger = false;
+        // ## BEGIN - END ## // MACROS
 
         // ## BEGIN - END ## // ART / HUE CHANGES
         //GAME\SCENES\GAMESCENEDRAWINGSORTING.CS
@@ -272,7 +280,7 @@ namespace ClassicUO.Dust765.Dust765
                 else if (ww < 1)
                     ww = 0;
 
-                World.Player.UpdateHits((byte)ww);
+                World.Player.UpdateHits((byte) ww);
             }
 
             if (World.Player.HitsPercentage < 20)
@@ -284,7 +292,7 @@ namespace ClassicUO.Dust765.Dust765
             else if (World.Player.HitsPercentage < 80)
                 color = 0x0035; //yellow (but shows green?)
             else if (World.Player.HitsPercentage == 100)
-                color = (ushort)Notoriety.GetHue(World.Player.NotorietyFlag);
+                color = (ushort) Notoriety.GetHue(World.Player.NotorietyFlag);
             // "original colors from overhead %, < 30 0x0021, < 50 0x0030, < 80 0x0058"
 
             return color;
@@ -1331,6 +1339,13 @@ namespace ClassicUO.Dust765.Dust765
                     }
                 }
             }
+            //// ## BEGIN - END ## // ONCASTINGGUMP
+            //if (ProfileManager.CurrentProfile.OnCastingGump)
+            //{
+            //    if (!GameActions.iscasting)
+            //        World.Player.OnCasting.Start((uint) GameActions.LastSpellIndexCursor);
+            //}
+            //// ## BEGIN - END ## // ONCASTINGGUMP
         }
         // ## BEGIN - END ## // VISUAL HELPERS
         // ## BEGIN - END ## // CURSOR
@@ -1432,7 +1447,6 @@ namespace ClassicUO.Dust765.Dust765
             return (hpcolor, maxhp, maxmana, maxstam);
         }
         // ## BEGIN - END ## // OLDHEALTHLINES
-
         // ## BEGIN - END ## // MISC
         //NETWORK\PACKETHANDLERS.CS
         public static void SpecialSetLastTargetCliloc(uint target)
@@ -1444,6 +1458,418 @@ namespace ClassicUO.Dust765.Dust765
             }
         }
         // ## BEGIN - END ## // MISC
+        // ## BEGIN - END ## // MACROS
+        //GAME\SCENES\GAMESCENEINPUTHANDLER.CS
+        //GAME\MANAGERS\MACROMANAGER.CS
+        public static void HealOnHPChange()
+        {
+            if (_HealOnHPChangeON)
+            {
+                if (_HealOnHPChangeHP != World.Player.Hits)
+                {
+                    GameActions.CastSpell(29); //greater heal
+                    _HealOnHPChangeON = false;
+                }
+            }
+        }
+        public static void HarmOnSwing()
+        {
+            if (_HarmOnSwingON)
+            {
+                if (_HarmOnSwingTrigger)
+                {
+                    GameActions.CastSpell(12); //harm
+                    _HarmOnSwingTrigger = false;
+                    _HarmOnSwingON = false;
+                }
+            }
+        }
+        // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // TEXTUREMANAGER
+        public static Point CalcUnderChar5(Mobile mobile)
+        {
+            Point p = mobile.RealScreenPosition;
+            p.X += (int) mobile.Offset.X + 22 + 5;
+            p.Y += (int) (mobile.Offset.Y - mobile.Offset.Z) + 22 + 5;
 
+            p = Client.Game.Scene.Camera.WorldToScreen(p);
+
+            return p;
+        }
+
+        public static Point CalcUnderChar(Mobile mobile)
+        {
+            Point p = mobile.RealScreenPosition;
+            p.X += (int) mobile.Offset.X + 22;
+            p.Y += (int) (mobile.Offset.Y - mobile.Offset.Z) + 22;
+
+            p = Client.Game.Scene.Camera.WorldToScreen(p);
+
+            return p;
+        }
+        public static Point CalcOverChar(Mobile mobile)
+        {
+            Point p = mobile.RealScreenPosition;
+            p.X += (int) mobile.Offset.X + 22;
+            p.Y += (int) (mobile.Offset.Y - mobile.Offset.Z) + 22;
+            var dir = 0;
+            bool mirror = false;
+            Client.Game.Animations.GetAnimationDimensions(
+                mobile.AnimIndex,
+                mobile.GetGraphicForAnimation(),
+                /*(byte) m.GetDirectionForAnimation()*/
+                0,
+                /*Mobile.GetGroupForAnimation(m, isParent:true)*/
+                0,
+                mobile.IsMounted,
+                /*(byte) m.AnimIndex*/
+                0,
+                out _,
+                out int centerY,
+                out _,
+                out int height
+            );
+
+            Point p1 = p;
+
+            p1.X = (int) (mobile.RealScreenPosition.X + mobile.Offset.X + 22);
+            p1.Y = (int) (mobile.RealScreenPosition.Y + (mobile.Offset.Y - mobile.Offset.Z) - (height + centerY + 8 + 22) + (mobile.IsGargoyle && mobile.IsFlying ? -22 : !mobile.IsMounted ? 22 : 0));
+
+            if (mobile.ObjectHandlesStatus == ObjectHandlesStatus.DISPLAYING)
+            {
+                p1.Y -= Constants.OBJECT_HANDLES_GUMP_HEIGHT + 5;
+            }
+
+            /*
+            if (!(p1.X < 0 || p1.X > screenW - mobile.HitsTexture.Width || p1.Y < 0 || p1.Y > screenH))
+            {
+                return p1;
+            }
+            */
+
+            p1 = Client.Game.Scene.Camera.WorldToScreen(p1);
+
+            return p1;
+        }
+        // ## BEGIN - END ## // TEXTUREMANAGER
+        // ## BEGIN - END ## // AUTOLOOT
+        //NETWORK\PACKETHANDLERS.CS
+        public static void SetLootFlag(uint source, ushort hue)
+        {
+            Item item = World.Items.Get(source);
+            if (item != null)
+            {
+                item.LootFlag = hue;
+            }
+        }
+        // ## BEGIN - END ## // AUTOLOOT
+        // ## BEGIN - END ## // OUTLANDS
+        /*
+        //GAME/MAP/CHUNK.CS
+        public static bool InfernoBridgeSolver(ushort x, ushort y)
+        {
+            if (ProfileManager.CurrentProfile.InfernoBridge)
+            {
+                //INFERNO BRIDGE 1
+                if (x == 5957 && y == 2016)
+                    return true;
+                if (x == 5956 && y == 2016)
+                    return true;
+                if (x == 5955 && y == 2017)
+                    return true;
+                if (x == 5954 && y == 2017)
+                    return true;
+                if (x == 5953 && y == 2016)
+                    return true;
+                if (x == 5952 && y == 2015)
+                    return true;
+                if (x == 5951 && y == 2016)
+                    return true;
+                if (x == 5950 && y == 2017)
+                    return true;
+                if (x == 5949 && y == 2017)
+                    return true;
+                if (x == 5948 && y == 2016)
+                    return true;
+                if (x == 5947 && y == 2016)
+                    return true;
+                //INFERNO BRIDGE 2
+                if (x == 5929 && y == 2016)
+                    return true;
+                if (x == 5928 && y == 2016)
+                    return true;
+                if (x == 5927 && y == 2015)
+                    return true;
+                if (x == 5926 && y == 2015)
+                    return true;
+                if (x == 5925 && y == 2016)
+                    return true;
+                if (x == 5924 && y == 2017)
+                    return true;
+                if (x == 5923 && y == 2016)
+                    return true;
+                if (x == 5922 && y == 2015)
+                    return true;
+                if (x == 5921 && y == 2015)
+                    return true;
+                if (x == 5920 && y == 2016)
+                    return true;
+            }
+            return false;
+        }
+
+        //
+        public static void SetSummonTime(string text, uint serial)
+        {
+            String minutes = null;
+            String seconds = null;
+            String[] arraystring = null;
+            String str = text.Replace("(summoned ", "").Replace(")", "");
+
+            if (str.Contains(" "))
+            {
+                arraystring = str.Split(' ');
+
+                minutes = arraystring[0].Replace("m", "");
+                seconds = arraystring[1].Replace("s", "");
+            }
+            else
+            {
+                if (str.Contains("m"))
+                {
+                    minutes = str.Replace("m", "");
+                }
+                else
+                {
+                    seconds = str.Replace("s", "");
+                }
+            }
+
+            int intm = 0;
+            Int32.TryParse(minutes, out intm);
+            int ints = 0;
+            Int32.TryParse(seconds, out ints);
+            int time = (intm * 60) + ints;
+
+            Mobile targetmobile = World.Mobiles.Get(serial);
+
+            targetmobile.SummonTimeTick = Time.Ticks;
+            targetmobile.SummonTime = time;
+
+        }
+        public static void GetPeaceTime(uint serial)
+        {
+            Mobile targetmobile = World.Mobiles.Get(serial);
+
+            if (targetmobile.PeaceTimeTick == 0)
+                Socket.Send(new PClickRequest(targetmobile));
+
+            targetmobile.PeaceTimeTick = Time.Ticks;
+        }
+        public static void SetPeaceTime(string text, uint serial)
+        {
+            if (text.Equals("*pacified*"))
+                return;
+
+            String minutes = null;
+            String seconds = null;
+            String[] arraystring = null;
+            String str = text.Replace("*pacified ", "").Replace("*", "");
+
+            if (str.Contains(" "))
+            {
+                arraystring = str.Split(' ');
+
+                minutes = arraystring[0].Replace("m", "");
+                seconds = arraystring[1].Replace("s", "");
+            }
+            else
+            {
+                if (str.Contains("m"))
+                {
+                    minutes = str.Replace("m", "");
+                }
+                else
+                {
+                    seconds = str.Replace("s", "");
+                }
+            }
+
+            int intm = 0;
+            Int32.TryParse(minutes, out intm);
+            int ints = 0;
+            Int32.TryParse(seconds, out ints);
+            int time = (intm * 60) + ints;
+
+            Mobile targetmobile = World.Mobiles.Get(serial);
+
+            targetmobile.PeaceTimeTick = Time.Ticks;
+            targetmobile.PeaceTime = time;
+
+        }
+        public static void SetHamstrungTime(uint source)
+        {
+            Mobile targetmobile = World.Mobiles.Get(source);
+            if (targetmobile != null && targetmobile != World.Player)
+            {
+                targetmobile.HamstrungTimeTick = Time.Ticks;
+                targetmobile.HamstrungTime = ProfileManager.CurrentProfile.MobileHamstrungTimeCooldown;
+            }
+        }
+        public static void UpdateSummonTime(Mobile mobile)
+        {
+            if (Time.Ticks >= (mobile.SummonTimeTick + 1000))
+            {
+                mobile.SummonTime = mobile.SummonTime - 1;
+                mobile.SummonTimeTick = Time.Ticks;
+            }
+
+            ushort color = 0x0044;
+
+            if (mobile.SummonTime < 20)
+                color = 0x0021;
+            else if (mobile.SummonTime < 40)
+                color = 0x0030;
+            else if (mobile.SummonTime < 60)
+                color = 0x0035;
+
+            mobile.SummonTexture?.Destroy();
+            mobile.SummonTexture = RenderedText.Create($"[{mobile.SummonTime}s]", color, 3, false);
+        }
+        public static void UpdatePeaceTime(Mobile mobile)
+        {
+            if (Time.Ticks >= (mobile.PeaceTimeTick + 1000))
+            {
+                if (mobile.PeaceTime > 0)
+                    mobile.PeaceTime = mobile.PeaceTime - 1;
+
+                mobile.PeaceTimeTick = Time.Ticks;
+            }
+
+            ushort color = 0x0044;
+
+            if (mobile.PeaceTime < 10)
+                color = 0x0021;
+            else if (mobile.PeaceTime < 20)
+                color = 0x0030;
+            else if (mobile.PeaceTime < 30)
+                color = 0x0035;
+
+            mobile.PeaceTexture?.Destroy();
+            mobile.PeaceTexture = RenderedText.Create($"[{mobile.PeaceTime}s]", color, 3, false);
+        }
+        public static void UpdateHamstrung(Mobile mobile)
+        {
+            if (mobile == null)
+                return;
+
+            if (Time.Ticks >= (mobile.HamstrungTimeTick + 100))
+            {
+                if (mobile.HamstrungTime >= 100)
+                    mobile.HamstrungTime = mobile.HamstrungTime - 100;
+                else if (mobile.HamstrungTime > 0 && mobile.HamstrungTime < 100)
+                    mobile.HamstrungTime = 0;
+
+                mobile.HamstrungTimeTick = Time.Ticks;
+            }
+
+            mobile.HamstrungTexture?.Destroy();
+            mobile.HamstrungTexture = RenderedText.Create($"[{mobile.HamstrungTime / 100}]", 0x0021, 3, false);
+        }
+        */
+        // ## BEGIN - END ## // OUTLANDS
+        // ## BEGIN - END ## // UNUSED
+        //GAME\DATA\STATICFILTERS.CS
+        [MethodImpl(256)]
+        public static bool IsClassicBoatSailArt(ushort g)
+        {
+            switch (g)
+            {
+                case 0x3E58:
+                case 0x3E59:
+                case 0x3E5B:
+                case 0x3E5C:
+                case 0x3E6A:
+                case 0x3E6B:
+                case 0x3E6D:
+                case 0x3E6E:
+                case 0x3E70:
+                case 0x3E71:
+                case 0x3E73:
+                case 0x3E74:
+                case 0x3EC9:
+                case 0x3ECA:
+                case 0x3ECC:
+                case 0x3ECD:
+                case 0x3ECE:
+                case 0x3ECF:
+                case 0x3ED1:
+                case 0x3ED2:
+                case 0x3EDC:
+                case 0x3EDE:
+                case 0x3EDF:
+                case 0x3EE0:
+                case 0x3EE1:
+                case 0x3EE3:
+
+                    return true;
+            }
+
+            return false;
+        }
+        [MethodImpl(256)]
+        public static bool IsClassicBoatMastArt(ushort g)
+        {
+            switch (g)
+            {
+                case 0x3E57:
+                case 0x3E5A:
+                case 0x3E6C:
+                case 0x3E72:
+                case 0x3Ec8:
+                case 0x3ECB:
+                case 0x3ED0:
+                case 0x3EDD:
+                case 0x3EE2:
+
+                    return true;
+            }
+
+            return false;
+        }
+        [MethodImpl(256)]
+        public static bool IsDungeonTrapArt(ushort g)
+        {
+            switch (g)
+            {
+                case 0x10F5:
+                case 0x10FC:
+                case 0x1103:
+                case 0x1108:
+                case 0x110F:
+                case 0x1116:
+                case 0x111B:
+                case 0x1125:
+                case 0x112B:
+                case 0x112F:
+                case 0x1133:
+                case 0x113A:
+                case 0x1140:
+                case 0x1145:
+                case 0x114B:
+                case 0x1193:
+                case 0x119A:
+                case 0x11A0:
+                case 0x11A6:
+                case 0x11AC:
+                case 0x11B1:
+                case 0x11C0:
+
+                    return true;
+            }
+
+            return false;
+        }
+        // ## BEGIN - END ## // UNUSED
     }
 }

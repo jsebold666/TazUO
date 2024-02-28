@@ -247,10 +247,27 @@ namespace ClassicUO.Configuration
         public int DragSelectStartX { get; set; } = 100;
         public int DragSelectStartY { get; set; } = 100;
         public bool DragSelectAsAnchor { get; set; } = false;
+        // ## BEGIN - END ## // NAMEOVERHEAD
+        //public NameOverheadTypeAllowed NameOverheadTypeAllowed { get; set; } = NameOverheadTypeAllowed.All;
+        // ## BEGIN - END ## // NAMEOVERHEAD
         public string LastActiveNameOverheadOption { get; set; } = "All";
+        // ## BEGIN - END ## // NAMEOVERHEAD
         public bool NameOverheadToggled { get; set; } = false;
         public bool ShowTargetRangeIndicator { get; set; }
         public bool PartyInviteGump { get; set; }
+        // ## BEGIN - END ## // NAMEOVERHEAD
+        public bool ShowHPLineInNOH { get; set; } = false;
+        public bool NameOverheadPinnedToggled { get; set; } = false;
+        public bool NameOverheadBackgroundToggled { get; set; } = false;
+        // ## BEGIN - END ## // NAMEOVERHEAD
+        // ## BEGIN - END ## // UI/GUMPS
+        public bool UOClassicCombatLTBar { get; set; } = false;
+        public Point UOClassicCombatLTBarLocation { get; set; } = new Point(25, 25);
+        public bool UOClassicCombatLTBar_Locked { get; set; } = false;
+        public Point BandageGumpOffset { get; set; } = new Point(0, 0);
+        public bool BandageGump { get; set; }
+        public bool BandageGumpUpDownToggle { get; set; } = false;
+        // ## BEGIN - END ## // UI/GUMPS
         public bool CustomBarsToggled { get; set; }
         public bool CBBlackBGToggled { get; set; }
 
@@ -416,6 +433,171 @@ namespace ClassicUO.Configuration
         public bool IgnoreCoTEnabled { get; set; } = false;
         public bool ShowDeathOnWorldmap { get; set; } = false;
         // ## BEGIN - END ## // MISC2
+        // ## BEGIN - END ## // MACROS
+        public int LastTargetRange { get; set; }
+        // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // TEXTUREMANAGER
+        public bool TextureManagerEnabled { get; set; } = false;
+        public bool TextureManagerHalos { get; set; } // Halos
+        public bool TextureManagerHumansOnly { get; set; } = false;
+        public bool TextureManagerPurple { get; set; } = true;
+        public bool TextureManagerGreen { get; set; } = true;
+        public bool TextureManagerRed { get; set; } = true;
+        public bool TextureManagerOrange { get; set; } = true;
+        public bool TextureManagerBlue { get; set; } = true;
+        public bool TextureManagerArrows { get; set; } // Arrows
+        public bool TextureManagerHumansOnlyArrows { get; set; } = false;
+        public bool TextureManagerPurpleArrows { get; set; } = true;
+        public bool TextureManagerGreenArrows { get; set; } = true;
+        public bool TextureManagerRedArrows { get; set; } = true;
+        public bool TextureManagerOrangeArrows { get; set; } = true;
+        public bool TextureManagerBlueArrows { get; set; } = true;
+        // ## BEGIN - END ## // TEXTUREMANAGER
+        // ## BEGIN - END ## // LINES
+        public bool UOClassicCombatLines { get; set; } = false;
+        public Point UOClassicCombatLinesLocation { get; set; } = new Point(25, 25);
+        public bool UOClassicCombatLines_ToggleLastTarget { get; set; } = false;
+        public bool UOClassicCombatLines_ToggleHuntingMmode { get; set; } = false;
+        public bool UOClassicCombatLines_ToggleHMBlue { get; set; } = false;
+        public bool UOClassicCombatLines_ToggleHMRed { get; set; } = false;
+        public bool UOClassicCombatLines_ToggleHMOrange { get; set; } = false;
+        public bool UOClassicCombatLines_ToggleHMCriminal { get; set; } = false;
+        // ## BEGIN - END ## // LINES
+        // ## BEGIN - END ## // AUTOLOOT
+        public bool UOClassicCombatAL { get; set; } = false;
+        public Point UOClassicCombatALLocation { get; set; } = new Point(25, 25);
+        public bool UOClassicCombatAL_EnableAL { get; set; } = false;
+        public bool UOClassicCombatAL_EnableSL { get; set; } = false;
+        public bool UOClassicCombatAL_EnableALLow { get; set; } = false;
+        public bool UOClassicCombatAL_EnableSLLow { get; set; } = false;
+        public uint UOClassicCombatAL_LootDelay { get; set; } = 500;
+        public uint UOClassicCombatAL_PurgeDelay { get; set; } = 10000;
+        public uint UOClassicCombatAL_QueueSpeed { get; set; } = 100;
+        public bool UOClassicCombatAL_EnableGridLootColoring { get; set; } = false;
+        public bool UOClassicCombatAL_EnableLootAboveID { get; set; } = false;
+        public uint UOClassicCombatAL_LootAboveID { get; set; } = 22400;
+        public uint UOClassicCombatAL_SL_Gray { get; set; } = 946;
+        public uint UOClassicCombatAL_SL_Blue { get; set; } = 89;
+        public uint UOClassicCombatAL_SL_Green { get; set; } = 63;
+        public uint UOClassicCombatAL_SL_Red { get; set; } = 34;
+        // ## BEGIN - END ## // AUTOLOOT
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        public bool UOClassicCombatBuffbar { get; set; } = false;
+        public Point UOClassicCombatBuffbarLocation { get; set; } = new Point(25, 25);
+        public bool UOClassicCombatBuffbar_SwingEnabled { get; set; } = false;
+        public bool UOClassicCombatBuffbar_DoDEnabled { get; set; } = false;
+        public bool UOClassicCombatBuffbar_GotDEnabled { get; set; } = false;
+        public bool UOClassicCombatBuffbar_Locked { get; set; } = true;
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        public uint UOClassicCombatSelf_DisarmedCooldown { get; set; } = 5000;
+        public uint UOClassicCombatSelf_DisarmStrikeCooldown { get; set; } = 30000;
+        public uint UOClassicCombatSelf_DisarmAttemptCooldown { get; set; } = 15000;
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        // ## BEGIN - END ## // SELF
+        public bool UOClassicCombatSelf { get; set; } = false;
+        public Point UOClassicCombatSelfLocation { get; set; } = new Point(25, 25);
+        public bool UOClassicCombatSelf_ColoredPouches { get; set; } = false;
+        public ushort UOClassicCombatSelf_ColoredPouchesColor { get; set; } = 38;
+        public bool UOClassicCombatSelf_AutoEApple { get; set; } = true;
+        public uint UOClassicCombatSelf_EAppleCooldown { get; set; } = 31000;
+        public bool UOClassicCombatSelf_AutoBandage { get; set; } = true;
+        public bool UOClassicCombatSelf_AutoPouche { get; set; } = true;
+        public bool UOClassicCombatSelf_AutoCurepot { get; set; } = true;
+        public bool UOClassicCombatSelf_AutoHealpot { get; set; } = true;
+        public bool UOClassicCombatSelf_AutoRefreshpot { get; set; } = true;
+        public uint UOClassicCombatSelf_ActionCooldown { get; set; } = 700;
+        public uint UOClassicCombatSelf_PoucheCooldown { get; set; } = 0;
+        public uint UOClassicCombatSelf_CurepotCooldown { get; set; } = 0;
+        public uint UOClassicCombatSelf_HealpotCooldown { get; set; } = 10000;
+        public uint UOClassicCombatSelf_RefreshpotCooldown { get; set; } = 0;
+        public uint UOClassicCombatSelf_WaitForTarget { get; set; } = 1000;
+        public bool UOClassicCombatSelf_RearmAfterPot { get; set; } = true;
+        public bool UOClassicCombatSelf_IsDuelingOrTankMage { get; set; } = true;
+        public bool UOClassicCombatSelf_AutoRearmAfterDisarmed { get; set; } = true;
+        public uint UOClassicCombatSelf_AutoRearmAfterDisarmedCooldown { get; set; } = 5000;
+        public uint UOClassicCombatSelf_BandiesHPTreshold { get; set; } = 1;
+        public bool UOClassicCombatSelf_BandiesPoison { get; set; } = true;
+        public uint UOClassicCombatSelf_CurepotHPTreshold { get; set; } = 10;
+        public uint UOClassicCombatSelf_HealpotHPTreshold { get; set; } = 20;
+        public uint UOClassicCombatSelf_RefreshpotStamTreshold { get; set; } = 15;
+        public bool UOClassicCombatSelf_DisarmStrike { get; set; } = true;
+        public bool UOClassicCombatSelf_ConsiderHidden { get; set; } = true;
+        public bool UOClassicCombatSelf_ConsiderSpells { get; set; } = true;
+        public uint UOClassicCombatSelf_StrengthPotCooldown { get; set; } = 120000;
+        public uint UOClassicCombatSelf_DexPotCooldown { get; set; } = 120000;
+        public int UOClassicCombatSelf_MinRNG { get; set; } = 50;
+        public int UOClassicCombatSelf_MaxRNG { get; set; } = 150;
+        public bool UOClassicCombatSelf_ClilocTriggers { get; set; } = false;
+        public bool UOClassicCombatSelf_MacroTriggers { get; set; } = false;
+        public bool UOClassicCombatSelf_ConsiderBalanced { get; set; } = true;
+        // ## BEGIN - END ## // SELF
+        // ## BEGIN - END ## // ADVMACROS
+        public Point PullEnemyBars { get; set; } = new Point(1630, 214);
+        public Point PullEnemyBarsFinalLocation { get; set; } = new Point(1790, 0); // X difference needs to be 120 to get bars next to one another
+        public Point PullFriendlyBars { get; set; } = new Point(1550, 214);
+        public Point PullFriendlyBarsFinalLocation { get; set; } = new Point(1670, 0); // X difference needs to be 120 to get bars next to one another
+        public Point PullPartyAllyBars { get; set; } = new Point(1470, 214);
+        public Point PullPartyAllyBarsFinalLocation { get; set; } = new Point(1550, 0); // X difference needs to be 120 to get bars next to one another
+        public uint CustomSerial { get; set; }
+        public uint Mimic_PlayerSerial { get; set; }
+        // ## BEGIN - END ## // ADVMACROS
+        // ## BEGIN - END ## // AUTOMATIONS
+        public bool AutoWorldmapMarker { get; set; }
+        public bool AutoRangeDisplayAlways { get; set; } = false;
+        public bool AutoRangeDisplayActive { get; set; } = false;
+        public int AutoRangeDisplayActiveRange { get; set; } = 10;
+        public ushort AutoRangeDisplayHue { get; set; } = 0x0074;
+        // ## BEGIN - END ## // AUTOMATIONS
+        // ## BEGIN - END ## // OUTLANDS
+        /*
+        public bool InfernoBridge { get; set; } = true;
+        public bool OverheadSummonTime { get; set; }
+        public bool OverheadPeaceTime { get; set; }
+        public bool MobileHamstrungTime { get; set; }
+        public uint MobileHamstrungTimeCooldown { get; set; } = 3000;
+        //UCC SELF
+        public uint UOClassicCombatSelf_HamstringStrikeCooldown { get; set; } = 30000;
+        public uint UOClassicCombatSelf_HamstringAttemptCooldown { get; set; } = 15000;
+        public uint UOClassicCombatSelf_HamstrungCooldown { get; set; } = 5000;
+        public bool UOClassicCombatSelf_NoRefreshPotAfterHamstrung { get; set; } = true;
+        public uint UOClassicCombatSelf_NoRefreshPotAfterHamstrungCooldown { get; set; } = 5000;
+        // BUFFBAR
+        public bool UOClassicCombatBuffbar_DoHEnabled { get; set; } = false;
+        public bool UOClassicCombatBuffbar_GotHEnabled { get; set; } = false;
+        */
+        // ## BEGIN - END ## // OUTLANDS
+        // ## BEGIN - END ## // LOBBY
+        public string LobbyIP { get; set; } = "127.0.0.1";
+        public string LobbyPort { get; set; } = "2596";
+        // ## BEGIN - END ## // LOBBY
+        // ## BEGIN - END ## // STATUSGUMP
+        public bool UseRazorEnhStatusGump { get; set; } = false;
+        // ## BEGIN - END ## // STATUSGUMP
+        // ## BEGIN - END ## // MODERNCOOLDOWNBAR
+        public bool ModernCooldwonBar_locked { get; set; } = false;
+        // ## BEGIN - END ## // MODERNCOOLDOWNBAR
+        // ## BEGIN - END ## // ONCASTINGGUMP
+        public bool OnCastingGump { get; set; }
+        public bool OnCastingGump_hidden { get; set; } = false;
+        // ## BEGIN - END ## // ONCASTINGGUMP
+        // ## BEGIN - END ## // MISC3 SHOWALLLAYERS
+        public bool ShowAllLayers { get; set; }
+        public bool ShowAllLayersPaperdoll { get; set; }
+        public int ShowAllLayersPaperdoll_X { get; set; } = 166;
+        // ## BEGIN - END ## // MISC3 SHOWALLLAYERS
+        // ## BEGIN - END ## // MISC3 THIEFSUPREME
+        public bool OverrideContainerOpenRange { get; set; }
+        // ## BEGIN - END ## // MISC3 THIEFSUPREME
+        // ## BEGIN - END ## // VISUALRESPONSEMANAGER
+        public bool VisualResponseManager { get; set; } = false;
+        // ## BEGIN - END ## // VISUALRESPONSEMANAGER
+        // ## BEGIN - END ## // TABGRID // PKRION
+        public bool TabGridGumpEnabled { get; set; } = false;
+        public int GridTabs { get; set; } = 1;
+        public int GridRows { get; set; } = 1;
+        public string TabList { get; set; } = "tab1:tab2:tab3";
+        // ## BEGIN - END ## // TABGRID // PKRION
         // ## BEGIN - END ## // BASICSETUP
 
         public bool ShowJournalClient { get; set; } = true;
