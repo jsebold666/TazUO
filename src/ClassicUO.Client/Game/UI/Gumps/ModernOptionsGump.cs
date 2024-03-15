@@ -2732,7 +2732,7 @@ namespace ClassicUO.Game.UI.Gumps
             content.BlankLine();
             content.AddToRight(new TextBox("----- SETTINGS (AL) ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
             content.BlankLine();
-            content.AddToRight(new TextBox("----- DISABLE / ENABLE AL ON CHANGES BELOW ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.AddToRight(new TextBox("----- DISABLE / ENABLE AL ON CHANGES BELOW ----- ", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
             content.BlankLine();
 
             content.AddToRight(new InputFieldWithLabel("Time between looting two items(ms) ", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_LootDelay.ToString(), false, (s, e) =>
@@ -2802,6 +2802,263 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
             content.BlankLine();
 
+            page = ((int)PAGE.Dust765 + 1012);
+
+            content.AddToLeft(SubCategoryButton("AUTOLOOT (AL UI)", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - Buffbar", 0, profile.UOClassicCombatBuffbar, (b) =>
+            {
+                profile.UOClassicCombatBuffbar = b;
+
+                if (profile.UOClassicCombatBuffbar != b)
+                {
+                    UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+
+                    if (b)
+                    {
+                        if (UOClassicCombatBuffbar != null)
+                            UOClassicCombatBuffbar.Dispose();
+
+                        UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                        {
+                            X = profile.UOClassicCombatBuffbarLocation.X,
+                            Y = profile.UOClassicCombatBuffbarLocation.Y
+                        };
+                        UIManager.Add(UOClassicCombatBuffbar);
+                    }
+                    else
+                    {
+                        if (UOClassicCombatBuffbar != null)
+                            UOClassicCombatBuffbar.Dispose();
+                    }
+
+                    profile.UOClassicCombatBuffbar = b;
+                }
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- DISABLE / ENABLE BUFFBAR ON CHANGES BELOW ----- ", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Show Swing Line", 0, profile.UOClassicCombatBuffbar_SwingEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_SwingEnabled = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Show Do Disarm Line", 0, profile.UOClassicCombatBuffbar_DoDEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_DoDEnabled = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("how Got Disarmed Line", 0, profile.UOClassicCombatBuffbar_GotDEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_GotDEnabled = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Lock in place", 0, profile.UOClassicCombatBuffbar_Locked, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_Locked = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (BUFFBAR AND SELF)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("General cooldown when you get disarmed (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmedCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmedCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Cooldown after successfull disarm (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmStrikeCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmStrikeCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Cooldown after failed disarm (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmAttemptCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmAttemptCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            page = ((int)PAGE.Dust765 + 1013);
+
+            content.AddToLeft(SubCategoryButton("SELF (AUTOMATIONS UI)", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - Self", 0, profile.UOClassicCombatSelf, (b) =>
+            {
+                profile.UOClassicCombatSelf = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (SELF)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Are trapped pouches colored from server?", 0, profile.UOClassicCombatSelf_ColoredPouches, (b) =>
+            {
+                profile.UOClassicCombatSelf_ColoredPouches = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Color (decimal not hex): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_ColoredPouchesColor.ToString(), false, (s, e) =>
+            {
+                if (ushort.TryParse(((InputField.StbTextBox)s).Text, out ushort xValue))
+                {
+                    profile.UOClassicCombatSelf_ColoredPouchesColor = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (COOLDOWNS)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("ActionCooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_ActionCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_ActionCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Pouche Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_PoucheCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_PoucheCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Curepot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_CurepotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_CurepotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Healpot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_HealpotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_HealpotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Refreshpot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("WaitForTarget (oldBandies) (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_WaitForTarget.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_WaitForTarget = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Enhanced Apple Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_EAppleCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_EAppleCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-----SETTINGS (TRESHOLDS)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Bandies treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_BandiesHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_BandiesHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Curepot HP treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_CurepotHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_CurepotHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("HP treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_HealpotHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_HealpotHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Refreshpot Stam treshold (diffstam >= ): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotStamTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotStamTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (MISC)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+            content.AddToRight(new InputFieldWithLabel("Auto rearm weps held before got disarmeded (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotStamTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotStamTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use Cliloc Triggers (up time on cliloc and uoc hotkey)", 0, profile.UOClassicCombatSelf_ClilocTriggers, (b) =>
+            {
+                profile.UOClassicCombatSelf_ClilocTriggers = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use Macro Triggers (change uoc hotkey to disarm / pot / rearm by ucc)", 0, profile.UOClassicCombatSelf_ClilocTriggers, (b) =>
+            {
+                profile.UOClassicCombatSelf_ClilocTriggers = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Strength Pot Cooldown (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_StrengthPotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_StrengthPotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Agility Pot Cooldown (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DexPotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DexPotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Min RNG (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_MinRNG.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.UOClassicCombatSelf_MinRNG = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Max RNG (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_MaxRNG.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.UOClassicCombatSelf_MaxRNG = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
 
             options.Add(
             new SettingsOption(

@@ -28,7 +28,7 @@ using System.Text.RegularExpressions; //REGEX
 
 namespace ClassicUO.Dust765.Dust765
 {
-    internal class ClilocTriggers
+    public class ClilocTriggers
     {
         private static int[] _startBandiesAtClilocs = new int[]
         {
