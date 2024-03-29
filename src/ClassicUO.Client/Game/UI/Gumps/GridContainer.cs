@@ -916,9 +916,28 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     GameActions.GrabItem(_item, _item.Amount);
                 }
-                else
+                else if (!_item.IsDestroyed && container == World.Player.FindItemByLayer(Layer.Backpack))
                 {
-                    GameActions.DoubleClick(LocalSerial);
+                    if (_item.ItemData.IsWearable && !_item.ItemData.IsContainer)
+                    {
+                        Item equipment = World.Player.FindItemByLayer((Layer)_item.ItemData.Layer);
+                        if (equipment != null)
+                        {
+                            GameActions.GrabItem(equipment.Serial, 0, container.Serial);
+                            GameActions.DoubleClickQueued(container.Serial);
+                            Mouse.CancelDoubleClick = true;
+                            return;
+                        }
+                        GameActions.PickUp(_item.Serial, 0, 0, 1);                        
+                        Task.Delay(Mouse.MOUSE_DELAY_DOUBLE_CLICK).Wait();
+                        GameActions.Equip();
+                        Mouse.CancelDoubleClick = true;
+                        return;
+                    }
+                    else
+                    {
+                        GameActions.DoubleClick(LocalSerial);
+                    }                        
                 }
                 e.Result = true;
             }

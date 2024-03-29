@@ -342,6 +342,11 @@ namespace ClassicUO.Game
                     {
                         g.SetInScreen();
                         g.BringOnTop();
+                        if (UIManager.MouseOverControl != null)
+                        {
+                            UIManager.OnMouseDoubleClick(MouseButtonType.Left);
+                            return;
+                        }
                     }
                     Socket.Send_DoubleClick(serial);
                 }
