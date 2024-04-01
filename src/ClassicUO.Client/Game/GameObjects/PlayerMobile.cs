@@ -1421,6 +1421,27 @@ namespace ClassicUO.Game.GameObjects
             }
         }
         // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // ADVMACROS
+        public void OpenCorpsesSafe(byte range)
+        {
+            foreach (Item item in World.Items.Values)
+            {
+                if (!item.IsDestroyed && item.IsCorpse && item.Distance <= range && item.Graphic == 0x2006)
+                {
+                    if (item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Gray || item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Green || item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Red)
+                    {
+                        ManualOpenedCorpses.Add(item.Serial);
+                        GameActions.DoubleClickQueued(item.Serial);
+                    }
+                    else
+                    {
+                        item.AddMessage(MessageType.Regular, "This is not safe lootable!", 3, 33, true, TextType.OBJECT);
+                        continue;
+                    }
+                }
+            }
+        }
+        // ## BEGIN - END ## // ADVMACROS
 
         protected override void OnDirectionChanged()
         {

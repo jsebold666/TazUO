@@ -41,7 +41,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace ClassicUO.Dust765.Dust765
 {
-    internal class VisualResponseManager
+    public class VisualResponseManager
     {
         public bool IsEnabled => ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.VisualResponseManager;
         private readonly List<VREntry> _actions = new List<VREntry>();
@@ -88,23 +88,23 @@ namespace ClassicUO.Dust765.Dust765
                     continue;
                 }
 
-                var texture = ArtLoader.Instance.GetStaticTexture(entry.Graphic, out var bounds);
+                //var texture = ArtLoader.Instance.GetStaticTexture(entry.Graphic, out var bounds);
 
-                Point pm = CombatCollection.CalcUnderChar(World.Player);
-                pm.X -= bounds.Width;
+                //Point pm = CombatCollection.CalcUnderChar(World.Player);
+                //pm.X -= bounds.Width;
 
-                Vector3 _hueVector = ShaderHueTranslator.GetHueVector(0, false, 1);
+                //Vector3 _hueVector = ShaderHueTranslator.GetHueVector(0, false, 1);
 
-                //vanish effect
-                if (delta > 600)
-                {
-                    float _delta = delta;
-                    float _alpha = 1 - (_delta / 1000);
+                ////vanish effect
+                //if (delta > 600)
+                //{
+                //    float _delta = delta;
+                //    float _alpha = 1 - (_delta / 1000);
                     
-                    _hueVector.Z = _alpha;
-                }
+                //    _hueVector.Z = _alpha;
+                //}
 
-                batcher.Draw(texture, new Rectangle(pm.X, pm.Y - entry.OffsetY, bounds.Width, bounds.Height), bounds, _hueVector);
+                //batcher.Draw(texture, new Rectangle(pm.X, pm.Y - entry.OffsetY, bounds.Width, bounds.Height), bounds, _hueVector);
             }
         }
 

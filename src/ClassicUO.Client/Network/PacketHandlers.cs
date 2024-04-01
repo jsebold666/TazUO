@@ -37,6 +37,9 @@ using ClassicUO.Game.Data;
 // ## BEGIN - END ## // VISUAL HELPERS
 // ## BEGIN - END ## // MISC
 using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // AUTOMATIONS
+using ClassicUO.Dust765.Autos;
+// ## BEGIN - END ## // AUTOMATIONS
 // ## BEGIN - END ## // MISC
 // ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.GameObjects;
@@ -1013,6 +1016,10 @@ namespace ClassicUO.Network
                 }
             }
             // ## BEGIN - END ## // AUTOLOOT
+            // ## BEGIN - END ## // AUTOMATIONS
+            if (serial == ProfileManager.CurrentProfile.Mimic_PlayerSerial && type == MessageType.Spell && !string.IsNullOrEmpty(text))
+                AutoMimic.SyncByClilocString(serial, text);
+            // ## BEGIN - END ## // AUTOMATIONS
             // ## BEGIN - END ## // VISUAL HELPERS
             if (serial == World.Player.Serial && type == MessageType.Spell && !string.IsNullOrEmpty(text))
                 CombatCollection.SpellCastFromCliloc(text);
@@ -2400,6 +2407,10 @@ namespace ClassicUO.Network
 
                         gump.AddPin(x, y);
 
+                        // ## BEGIN - END ## // AUTOMATIONS
+                        AutoWorldMapMarker.TmapPinXY(x, y);
+                        // ## BEGIN - END ## // AUTOMATIONS
+
                         break;
 
                     case MapMessageType.Insert:
@@ -2625,6 +2636,10 @@ namespace ClassicUO.Network
                 false,
                 blendmode
             );
+
+            // ## BEGIN - END ## // AUTOMATIONS
+            Defender.gfxTrigger(source, target, graphic);
+            // ## BEGIN - END ## // AUTOMATIONS
         }
 
         private static void ClientViewRange(ref StackDataReader p)
@@ -3292,6 +3307,10 @@ namespace ClassicUO.Network
 
             MapGump gump = new MapGump(serial, gumpid, width, height);
             SpriteInfo multiMapInfo;
+
+            // ## BEGIN - END ## // AUTOMATIONS
+            AutoWorldMapMarker.TmapMarker(startX, startY, endX, endY, width, height);
+            // ## BEGIN - END ## // AUTOMATIONS
 
             if (p[0] == 0xF5 || Client.Version >= Utility.ClientVersion.CV_308Z)
             {
@@ -4926,7 +4945,8 @@ namespace ClassicUO.Network
             }
             // ## BEGIN - END ## // AUTOLOOT
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-            World.GetClilocTriggers().OnCliloc(cliloc);
+            World.GetClilocTriggers.OnCliloc(cliloc);
+       
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
             if (cliloc == 1008092 || cliloc == 1005445) // value for "You notify them you don't want to join the party" || "You have been added to the party"

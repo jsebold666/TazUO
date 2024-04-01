@@ -819,6 +819,7 @@ namespace ClassicUO.Renderer
         (
             Texture2D texture,
             Vector2 position,
+            object bounds,
             Vector3 color
         )
         {

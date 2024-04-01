@@ -3060,6 +3060,218 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
             content.BlankLine();
 
+            page = ((int)PAGE.Dust765 + 1014);
+
+            content.AddToLeft(SubCategoryButton("Advanced Macros", page, content.LeftWidth));
+            content.ResetRightSide();
+
+            content.AddToRight(new TextBox("use macro to run advanced scripts ONCE:", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("OpenCorpsesSafeLoot (opens non blue 0x2006 corpses within 2 tiles)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("EquipManager (equip an item)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("SetMimic_PlayerSerial (set master or custom serial for EquipManager)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("AutoPot (disarm 2h layer -> \n healpot below 85%, \n pouch if paralyzed, \n cure if poisoned and not full hp, \n refresh if below 23, \n str pot if str below 100, \n agi pot if dex above 89)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("DefendPartyKey (if ally / party member in 12 tile range and hits < 64: \n if targeting -> target them, else cast gheal \n if own hits < 64: \n if targeting -> target self and use gheal pot, \n else start casting gheal)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("DefendSelfKey (if own hits < 64, \n if targeting -> target self and use gheal pot, \n else start casting gheal)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("CustomInterrupt (fast macro to interrupt active spellcasting)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("GrabFriendlyBars (grab all innocent bars)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.PullFriendlyBars.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBars = new Point (xValue, profile.PullEnemyBars.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.PullFriendlyBars.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBars = new Point(profile.PullEnemyBars.X, xValue);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.RemoveIndent();
+
+            content.BlankLine();
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.PullFriendlyBarsFinalLocation.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullFriendlyBarsFinalLocation = new Point(xValue, profile.PullFriendlyBarsFinalLocation.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.PullFriendlyBarsFinalLocation.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullFriendlyBarsFinalLocation = new Point(profile.PullFriendlyBarsFinalLocation.X, xValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            
+            content.AddToRight(new TextBox("GrabEnemyBars (grab all criminal, enemy, gray, murderer bars)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.PullEnemyBars.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBars = new Point(xValue, profile.PullEnemyBars.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.PullEnemyBars.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBars = new Point(profile.PullEnemyBars.X, xValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.PullEnemyBarsFinalLocation.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBarsFinalLocation = new Point(xValue, profile.PullEnemyBarsFinalLocation.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.PullEnemyBarsFinalLocation.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullEnemyBarsFinalLocation = new Point(profile.PullEnemyBarsFinalLocation.X, xValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("GrabPartyAllyBars (grab all ally and party bars)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.PullPartyAllyBars.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullPartyAllyBars = new Point(xValue, profile.PullPartyAllyBars.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.PullPartyAllyBars.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullPartyAllyBars = new Point(profile.PullPartyAllyBars.X, xValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("FX", Theme.INPUT_WIDTH, profile.PullPartyAllyBarsFinalLocation.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullPartyAllyBarsFinalLocation = new Point(xValue, profile.PullPartyAllyBarsFinalLocation.Y);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("FY", Theme.INPUT_WIDTH, profile.PullPartyAllyBarsFinalLocation.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.PullPartyAllyBarsFinalLocation = new Point(profile.PullPartyAllyBarsFinalLocation.X, xValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+
+            page = ((int)PAGE.Dust765 + 1015);
+
+            content.AddToLeft(SubCategoryButton("Automations", page, content.LeftWidth));
+            content.ResetRightSide();
+
+            content.AddToRight(new TextBox("write in chat or use macro to enable / disable:", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("(runs in background until disabled)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-automed or macro AutoMeditate (auto meditates \n with 2.5s delay and not targeting)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-engange (auto engage and pathfind to last target)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("---MISIC---", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("write in chat to enable / disable:", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-mimic (mimic harmful spells 1:1, on beneficial macro defendSelf/defendParty)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("Macro: SetMimic_PlayerSerial (define the player to mimic)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-marker X Y (place a dot and line to X Y on world map \n use -marker to remove it)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("Auto add marker for MapGumps (ie. T-Maps)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-df (if GreaterHeal cursor is up and you or a party member \n " +
+                                                "gets hit by EB, Explor or FS \n " +
+                                                "and your or the party members condition is met \n " +
+                                                "greater heal will be cast on you or party member \n " +
+                                                "Condition: Poisoned and HP smaller than random between 65 - 80 \n " +
+                                                "Condition: HP smaller than random between 40-70)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-autorange (show range depending on archery equipment)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("(configure range for every ranged weapon in the autorange.txt file!)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("always have -autorange ON", 0, profile.AutoRangeDisplayAlways, (b) =>
+            {
+                profile.AutoRangeDisplayAlways = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new ModernColorPickerWithLabel("Color", profile.AutoRangeDisplayHue, (h) =>
+            {
+                profile.AutoRangeDisplayHue = h;
+            }), true, page);
+            content.BlankLine();
+
             options.Add(
             new SettingsOption(
                 "",

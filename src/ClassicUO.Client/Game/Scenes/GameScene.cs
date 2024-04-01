@@ -270,6 +270,9 @@ namespace ClassicUO.Game.Scenes
 
             }
             // ## BEGIN - END ## // SELF
+            // ## BEGIN - END ## // AUTOMATIONS
+            ModulesManager.Load();
+            // ## BEGIN - END ## // AUTOMATIONS
 
 
             CircleOfTransparency.Create(ProfileManager.CurrentProfile.CircleOfTransparencyRadius);
@@ -422,7 +425,7 @@ namespace ClassicUO.Game.Scenes
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
             if (ProfileManager.CurrentProfile.UOClassicCombatSelf || ProfileManager.CurrentProfile.UOClassicCombatBuffbar)
             {
-                World.ClilocTriggers.OnMessage(text, hue, name, e.IsUnicode);
+                World.GetClilocTriggers.OnMessage(text, hue, name, e.IsUnicode);
             }
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
@@ -470,6 +473,16 @@ namespace ClassicUO.Game.Scenes
             catch { }
 
             EventSink.InvokeOnDisconnected(null);
+
+            // ## BEGIN - END ## // AUTOMATIONS
+            try
+            {
+                ModulesManager.Unload();
+            }
+            catch
+            {
+            }
+            // ## BEGIN - END ## // AUTOMATIONS
 
             TargetManager.Reset();
 
