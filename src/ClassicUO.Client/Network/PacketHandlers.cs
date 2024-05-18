@@ -4913,7 +4913,7 @@ namespace ClassicUO.Network
             SpellVisualRangeManager.Instance.OnClilocReceived((int)cliloc);
 
             // ## BEGIN - END ## // UI/GUMPS
-            World.Player?.BandageTimer.OnCliloc(cliloc);
+            //World.Player?.BandageTimer.OnCliloc(cliloc);
             // ## BEGIN - END ## // UI/GUMPS
             // ## BEGIN - END ## // AUTOLOOT
             Item item = World.Items.Get(serial);
@@ -4926,7 +4926,7 @@ namespace ClassicUO.Network
             }
             // ## BEGIN - END ## // AUTOLOOT
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-            World.GetClilocTriggers().OnCliloc(cliloc);
+            //World.GetClilocTriggers().OnCliloc(cliloc);
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
             if (cliloc == 1008092 || cliloc == 1005445) // value for "You notify them you don't want to join the party" || "You have been added to the party"

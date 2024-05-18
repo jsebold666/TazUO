@@ -497,15 +497,15 @@ namespace ClassicUO.Dust765.Dust765
                                         true
                                     );
 
-                var texture = GumpsLoader.Instance.GetGumpTexture(Graphic, out var bounds);
+                ref readonly var texture = ref Client.Game.Gumps.GetGump(Graphic);
 
-                if (texture != null)
+                if (texture.Texture != null)
                 {
                     batcher.Draw
                     (
-                        texture,
+                        texture.Texture,
                         new Vector2(x, y),
-                        bounds,
+                        texture.UV,
                         hueVector
                     );
                     //should there be the need to resize the pic, use this
@@ -520,7 +520,7 @@ namespace ClassicUO.Dust765.Dust765
                             _timeborderline.Draw(batcher, x + 154, y);
                             _timebgline.Draw(batcher, x + 155, y + 1);
                         }
-                        _gText.Draw(batcher, x + 154, y + bounds.Height / 2 - 3, hueVector.Z);
+                        _gText.Draw(batcher, x + 154, y + texture.UV.Height / 2 - 3, hueVector.Z);
                         //
                     }
 
@@ -529,7 +529,7 @@ namespace ClassicUO.Dust765.Dust765
                     _bgline.Draw(batcher, x + 31, y + 1);
                     _tickline.Draw(batcher, x + 31, y + 1);
                     _sepline.Draw(batcher, x + 30 + this._sepline.X, y + 1);
-                    _label.Draw(batcher, x + 31, y + bounds.Height / 2 - 4);
+                    _label.Draw(batcher, x + 31, y + texture.UV.Height / 2 - 4);
                     //
 
 

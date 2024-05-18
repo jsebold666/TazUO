@@ -57,7 +57,8 @@ namespace ClassicUO.Game.Managers
         HueCommandTarget,
         IgnorePlayerTarget,
         MoveItemContainer,
-        Internal
+        Internal,
+        SetCustomSerial
     }
 
     public class CursorType

@@ -417,7 +417,7 @@ namespace ClassicUO.Game.Scenes
             }
 
             // ## BEGIN - END ## // UI/GUMPS
-            World.Player?.BandageTimer.OnMessage(text, hue, name, e.IsUnicode);
+            //World.Player?.BandageTimer.OnMessage(text, hue, name, e.IsUnicode);
             // ## BEGIN - END ## // UI/GUMPS
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
             if (ProfileManager.CurrentProfile.UOClassicCombatSelf || ProfileManager.CurrentProfile.UOClassicCombatBuffbar)
@@ -933,7 +933,7 @@ namespace ClassicUO.Game.Scenes
             Pathfinder.ProcessAutoWalk();
             DelayedObjectClickManager.Update();
 
-            if (!MoveCharacterByMouseInput() && !currentProfile.DisableArrowBtn && !MoveCharByController())
+            if (!MoveCharacterByMouseInput() && !currentProfile.DisableArrowBtn)
             {
                 Direction dir = DirectionHelper.DirectionFromKeyboardArrows(
                     _flags[0],

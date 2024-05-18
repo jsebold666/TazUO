@@ -88,10 +88,12 @@ namespace ClassicUO.Dust765.Dust765
                     continue;
                 }
 
-                var texture = ArtLoader.Instance.GetStaticTexture(entry.Graphic, out var bounds);
+                
+                ref readonly var texture = ref Client.Game.Gumps.GetGump(entry.Graphic);
+
 
                 Point pm = CombatCollection.CalcUnderChar(World.Player);
-                pm.X -= bounds.Width;
+                pm.X -= texture.UV.Width;
 
                 Vector3 _hueVector = ShaderHueTranslator.GetHueVector(0, false, 1);
 
@@ -104,7 +106,7 @@ namespace ClassicUO.Dust765.Dust765
                     _hueVector.Z = _alpha;
                 }
 
-                batcher.Draw(texture, new Rectangle(pm.X, pm.Y - entry.OffsetY, bounds.Width, bounds.Height), bounds, _hueVector);
+                batcher.Draw(texture.Texture, new Rectangle(pm.X, pm.Y - entry.OffsetY, texture.UV.Width, texture.UV.Height), texture.UV, _hueVector);
             }
         }
 

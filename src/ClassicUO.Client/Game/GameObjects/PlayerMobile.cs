@@ -57,7 +57,7 @@ namespace ClassicUO.Game.GameObjects
         public uint DeathTick = 0;
         // ## BEGIN - END ## // MISC2
         // ## BEGIN - END ## // UI/GUMPS
-        public BandageGump BandageTimer;
+        //public BandageGump BandageTimer;
         // ## BEGIN - END ## // UI/GUMPS
 
         public PlayerMobile(uint serial) : base(serial)
@@ -65,7 +65,7 @@ namespace ClassicUO.Game.GameObjects
             Skills = new Skill[SkillsLoader.Instance.SkillsCount];
 
             // ## BEGIN - END ## // UI/GUMPS
-            UIManager.Add(BandageTimer = new BandageGump());
+            //UIManager.Add(BandageTimer = new BandageGump());
             // ## BEGIN - END ## // UI/GUMPS
 
             for (int i = 0; i < Skills.Length; i++)
@@ -1638,7 +1638,7 @@ namespace ClassicUO.Game.GameObjects
 
         public bool Walk(Direction direction, bool run)
         {
-            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT || Client.Version >= ClientVersion.CV_60142 && IsParalyzed)
+            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT || Client.Version >= ClientVersion.CV_60142 && IsParalyzed )
             {
                 return false;
             }

@@ -35,7 +35,7 @@ namespace ClassicUO.Game.Managers // only exception to not being in the 'Interop
             AutoMeditate.Initialize();  //AUTOMEDITATE##//
             AutoEngage.Initialize();  //AUTOENGAGE##//
             AutoMimic.Initialize();  //##AUTO MIMIC##//
-            AutoWorldMapMarker.LoadCommands();
+            //AutoWorldMapMarker.LoadCommands();
             Defender.Initialize();
             // ## BEGIN - END ## // LOBBY
             Lobby.LoadCommands();

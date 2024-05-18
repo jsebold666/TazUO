@@ -395,21 +395,21 @@ namespace ClassicUO.Dust765.Dust765
                                         true
                                     );
 
-                var texture = GumpsLoader.Instance.GetGumpTexture(Graphic, out var bounds);
+                ref readonly var texture = ref Client.Game.Gumps.GetGump(Graphic);
 
-                if (texture != null)
+                if (texture.Texture != null)
                 {
                     batcher.Draw
                     (
-                        texture,
+                        texture.Texture,
                         new Vector2(x, y),
-                        bounds,
+                        texture.UV,
                         hueVector
                     );
 
                     if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.BuffBarTime)
                     {
-                        _gText.Draw(batcher, x - 3, y + bounds.Height / 2 - 3, hueVector.Z);
+                        _gText.Draw(batcher, x - 3, y + texture.UV.Height / 2 - 3, hueVector.Z);
                     }
                 }
 
