@@ -317,7 +317,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         protected override void OnMouseDown(int x, int y, MouseButtonType button)
         {
-            if (button != MouseButtonType.Left)
+           if (button != MouseButtonType.Left)
             {
                 return;
             }
@@ -332,10 +332,17 @@ namespace ClassicUO.Game.UI.Gumps
                 Entity ent = World.Get(LocalSerial);
                 if (ent == null)
                 {
-                    TargetManager.LastTargetInfo.Serial = LocalEntity.Serial;
-                    GameActions.Print($"Changing last target to {LocalEntity.Name}");
-                    GameActions.Print(World.Player, $"Target: {LocalEntity.Name}");
+                    TargetManager.LastTargetInfo.Serial = LocalSerial;
                     TargetManager.CancelTarget();
+                }
+            
+                else
+                {
+                    if (LocalEntity != null && LocalEntity.Serial != default)
+                    {
+                        TargetManager.LastTargetInfo.Serial = LocalEntity.Serial;
+                    }
+                    
                 }
                 // ## BEGIN - END ## // MISC
                 Mouse.LastLeftButtonClickTime = 0;

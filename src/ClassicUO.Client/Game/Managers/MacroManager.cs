@@ -1239,7 +1239,26 @@ namespace ClassicUO.Game.Managers
 
                 case MacroType.CloseGump:
 
-                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is ImprovedBuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
+
+                    // ## BEGIN - END ## // UI/GUMPS
+                    // ## BEGIN - END ## // LINES
+                    // ## BEGIN - END ## // AUTOLOOT
+                    // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+                    // ## BEGIN - END ## // SELF
+                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
+                    //UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
+                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
+                    //UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump) && !(s is UOClassicCombatLTBar) && !(s is BandageGump) && !(s is UOClassicCombatLines) && !(s is UOClassicCombatAL) && !(s is UOClassicCombatBuffbar) && !(s is UOClassicCombatSelf) && !(s is ECBuffGump) && !(s is ECDebuffGump) && !(s is ECStateGump) && !(s is ModernCooldownBar)).ToList().ForEach(s => s.Dispose());
+                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
+                    // ## BEGIN - END ## // SELF
+                    // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+                    // ## BEGIN - END ## // AUTOLOOT
+                    // ## BEGIN - END ## // LINES
+                    // ## BEGIN - END ## // UI/GUMPS
+                    // ## BEGIN - END ## // TAZUO
+                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is ImprovedBuffGump) && !(s is WorldViewportGump) && !(s is UOClassicCombatLTBar) && !(s is BandageGump) && !(s is UOClassicCombatLines) && !(s is UOClassicCombatAL) && !(s is UOClassicCombatBuffbar) && !(s is UOClassicCombatSelf) && !(s is ECBuffGump) && !(s is ECDebuffGump) && !(s is ECStateGump) && !(s is ModernCooldownBar)).ToList().ForEach(s => s.Dispose());
+                    // ## BEGIN - END ## // TAZUO
+
 
                     break;
 
@@ -2654,14 +2673,18 @@ namespace ClassicUO.Game.Managers
         CloseAllHealthBars,
         RazorMacro,
         // ## BEGIN - END ## // BASICSETUP
-        ObjectInfo,
-        notimplemented1,
-        notimplemented2,
-        notimplemented3,
-        notimplemented4,
-        OpenCorpses,
-        notimplemented6,
-        notimplemented7,
+        ObjectInfo, // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // ADVMACROS
+        GrabFriendlyBars,
+        GrabEnemyBars,
+        GrabPartyAllyBars,
+        AutoPot,
+        // ## BEGIN - END ## // ADVMACROS
+        OpenCorpses, // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // ADVMACROS
+        DefendSelfKey,
+        DefendPartyKey,
+        // ## BEGIN - END ## // ADVMACROS
         // ## BEGIN - END ## // VISUAL HELPERS
         HighlightTileAtRange,
         // ## BEGIN - END ## // VISUAL HELPERS
@@ -2671,18 +2694,22 @@ namespace ClassicUO.Game.Managers
         HealOnHPChange,
         HarmOnSwing,
         // ## BEGIN - END ## // MACROS
-        notimplemented13,
+        EquipManager,
         SetTargetClientSide, // ## BEGIN - END ## // MACROS
         // ## BEGIN - END ## // LINES
         UCCLinesToggleLT,
         UCCLinesToggleHM,
         // ## BEGIN - END ## // LINES
         CureGH, // ## BEGIN - END ## // MACROS
-        notimplemented18,
-        notimplemented19,
-        notimplemented20,
-        notimplemented21,
-        OpenJournal2, // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // AUTOMATIONS
+        AutoMeditate,
+        // ## BEGIN - END ## // AUTOMATIONS
+        // ## BEGIN - END ## // ADVMACROS
+        CustomInterrupt,
+        SetMimic_PlayerSerial,
+        OpenCorpsesSafe,
+        // ## BEGIN - END ## // ADVMACROS
+        OpenJournal2, // ## BEGIN - END ## // MACROS        OpenJournal2, // ## BEGIN - END ## // MACROS
         // ## BEGIN - END ## // BASICSETUP
         ToggleDrawRoofs,
         ToggleTreeStumps,
@@ -2693,21 +2720,21 @@ namespace ClassicUO.Game.Managers
         ToggleTransparentHouses,
         ToggleInvisibleHouses,
         // ## BEGIN - END ## // MISC2
-        notimplemented25,
-        notimplemented26,
-        notimplemented27,
-        notimplemented28,
-        notimplemented29,
-        notimplemented30,
+         LobbyConnect,
+        LobbyDisconnect,
+        LobbyTarget,
+        LobbyCastLightning,
+        LobbyCastEB,
+        LobbyDrop,
         // ## BEGIN - END ## // BASICSETUP
         CloseInactiveHealthBars,
         CloseCorpses,
         UseObject,
         // ## BEGIN - END ## // BASICSETUP
-        notimplemented31,
-        notimplemented32,
-        notimplemented33,
-        notimplemented34,
+        ToggleECBuffGump,
+        ToggleECDebuffGump,
+        ToggleECStateGump,
+        ToggleModernCooldownBar,
         // ## BEGIN - END ## // BASICSETUP
         LookAtMouse,
         // ## BEGIN - END ## // BASICSETUP

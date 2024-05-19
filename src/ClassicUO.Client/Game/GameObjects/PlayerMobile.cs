@@ -55,18 +55,24 @@ namespace ClassicUO.Game.GameObjects
         public int DeathX = 0;
         public int DeathY = 0;
         public uint DeathTick = 0;
-        // ## BEGIN - END ## // MISC2
+        // ## BEGIN - END ## // MISC2s
         // ## BEGIN - END ## // UI/GUMPS
-        //public BandageGump BandageTimer;
+        public BandageGump BandageTimer;
         // ## BEGIN - END ## // UI/GUMPS
+    // ## BEGIN - END ## // ONCASTINGGUMP
+        public OnCastingGump OnCasting;
+        // ## BEGIN - END ## // ONCASTINGGUMP
 
         public PlayerMobile(uint serial) : base(serial)
         {
             Skills = new Skill[SkillsLoader.Instance.SkillsCount];
 
             // ## BEGIN - END ## // UI/GUMPS
-            //UIManager.Add(BandageTimer = new BandageGump());
+            UIManager.Add(BandageTimer = new BandageGump());
             // ## BEGIN - END ## // UI/GUMPS
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            UIManager.Add(OnCasting = new OnCastingGump());
+            // ## BEGIN - END ## // ONCASTINGGUMP
 
             for (int i = 0; i < Skills.Length; i++)
             {
@@ -1671,6 +1677,10 @@ namespace ClassicUO.Game.GameObjects
 
             if ((oldDirection & Direction.Mask) == (direction & Direction.Mask))
             {
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                if (GameActions.iscasting) return false;
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                
                 Direction newDir = direction;
                 int newX = x;
                 int newY = y;

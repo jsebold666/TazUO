@@ -2679,6 +2679,24 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Show Swing Line", 0, profile.UOClassicCombatBuffbar_SwingEnabled, (b) =>
             {
                 profile.UOClassicCombatBuffbar_SwingEnabled = b;
+                if (profile.UOClassicCombatBuffbar_SwingEnabled != b)
+                {
+                    UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+
+                    if (profile.UOClassicCombatBuffbar)
+                    {
+                        if (UOClassicCombatBuffbar != null)
+                            UOClassicCombatBuffbar.Dispose();
+                        UIManager.Add(UOClassicCombatBuffbar);
+                    }
+                    else
+                    {
+                        if (UOClassicCombatBuffbar != null)
+                            UOClassicCombatBuffbar.Dispose();
+                    }
+
+                    profile.UOClassicCombatBuffbar_SwingEnabled = b;
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("Show Do Disarm Line", 0, profile.UOClassicCombatBuffbar_DoDEnabled, (b) =>
@@ -2973,6 +2991,16 @@ namespace ClassicUO.Game.UI.Gumps
                 profile.BandageGumpUpDownToggle = b;
             }), true, page);
             content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("OnCasting gump (anti-rubberbanding) on mouse", 0, profile.OnCastingGump, (b) =>
+            {
+                profile.OnCastingGump = b;
+            }), true, page);
+
+            content.AddToRight(new CheckboxWithLabel("hide the gump OnCasting", 0, profile.OnCastingGump_hidden, (b) =>
+            {
+                profile.OnCastingGump_hidden = b;
+            }), true, page);
+             content.BlankLine();
             #endregion
 
             #region Dust

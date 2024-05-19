@@ -397,6 +397,10 @@ namespace ClassicUO.Network
                 (TargetType)p.ReadUInt8()
             );
 
+              // ## BEGIN - END ## // ONCASTINGGUMP
+            GameActions.iscasting = false;
+            // ## BEGIN - END ## // ONCASTINGGUMP
+
             if (World.Party.PartyHealTimer < Time.Ticks && World.Party.PartyHealTarget != 0)
             {
                 TargetManager.Target(World.Party.PartyHealTarget);
@@ -508,6 +512,11 @@ namespace ClassicUO.Network
 
                 if (damage > 0)
                 {
+                    
+                    // ## BEGIN - END ## // ONCASTINGGUMP
+                    if (entity == World.Player)
+                        GameActions.iscasting = false;
+                    // ## BEGIN - END ## // ONCASTINGGUMP
                     World.WorldTextManager.AddDamage(entity, damage);
                     EventSink.InvokeOnEntityDamage(entity, damage);
                 }
@@ -1003,7 +1012,7 @@ namespace ClassicUO.Network
             {
                 text = string.Empty;
             }
-            // ## BEGIN - END ## // AUTOLOOT
+             // ## BEGIN - END ## // AUTOLOOT
             Item item = World.Items.Get(serial);
             if (item != null)
             {
@@ -1013,6 +1022,10 @@ namespace ClassicUO.Network
                 }
             }
             // ## BEGIN - END ## // AUTOLOOT
+            // ## BEGIN - END ## // AUTOMATIONS
+            if (serial == ProfileManager.CurrentProfile.Mimic_PlayerSerial && type == MessageType.Spell && !string.IsNullOrEmpty(text))
+                //AutoMimic.SyncByClilocString(serial, text);
+            // ## BEGIN - END ## // AUTOMATIONS
             // ## BEGIN - END ## // VISUAL HELPERS
             if (serial == World.Player.Serial && type == MessageType.Spell && !string.IsNullOrEmpty(text))
                 CombatCollection.SpellCastFromCliloc(text);
@@ -4911,9 +4924,14 @@ namespace ClassicUO.Network
             string arguments = null;
 
             SpellVisualRangeManager.Instance.OnClilocReceived((int)cliloc);
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            if (ProfileManager.CurrentProfile.OnCastingGump)
+            {
+                World.Player?.OnCasting.OnCliloc(cliloc);
+            }
 
             // ## BEGIN - END ## // UI/GUMPS
-            //World.Player?.BandageTimer.OnCliloc(cliloc);
+            World.Player?.BandageTimer.OnCliloc(cliloc);
             // ## BEGIN - END ## // UI/GUMPS
             // ## BEGIN - END ## // AUTOLOOT
             Item item = World.Items.Get(serial);
@@ -4926,7 +4944,7 @@ namespace ClassicUO.Network
             }
             // ## BEGIN - END ## // AUTOLOOT
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-            //World.GetClilocTriggers().OnCliloc(cliloc);
+            World.ClilocTriggers.OnCliloc(cliloc);
             // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
             if (cliloc == 1008092 || cliloc == 1005445) // value for "You notify them you don't want to join the party" || "You have been added to the party"
