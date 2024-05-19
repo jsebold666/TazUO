@@ -289,6 +289,7 @@ namespace ClassicUO.Game.Scenes
             GameController.UpdateBackgroundHueShader();
             SpellDefinition.LoadCustomSpells();
             SpellVisualRangeManager.Instance.OnSceneLoad();
+            OnCastingGump.OnSceneLoad();
             AutoLootManager.Instance.OnSceneLoad();
             if (!UpdateManager.SkipUpdateCheck && UpdateManager.HasUpdate)
             {
@@ -483,6 +484,7 @@ namespace ClassicUO.Game.Scenes
             TileMarkerManager.Instance.Save();
             SpellVisualRangeManager.Instance.Save();
             SpellVisualRangeManager.Instance.OnSceneUnload();
+            OnCastingGump.OnSceneUnload();
             AutoLootManager.Instance.Save();
 
             NameOverHeadManager.Save();
