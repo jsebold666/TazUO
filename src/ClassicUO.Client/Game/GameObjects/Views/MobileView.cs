@@ -1116,9 +1116,7 @@ namespace ClassicUO.Game.GameObjects
 
                         if (
                             GetTexture(
-                                mountGraphic,
-                                animGroupMount,
-                                ref animIndex,
+                                graphic, animGroup, ref animIndex,
                                 dir,
                                 out spriteInfo,
                                 out isUop

@@ -52,10 +52,10 @@ namespace ClassicUO.Game.UI.Gumps
 
             Add(new ColorBox(Width, 40, Theme.SEARCH_BACKGROUND) { AcceptMouseInput = true, CanMove = true, Alpha = 0.85f });
 
-            Add(new TextBox(lang.OptionsTitle, Theme.FONT, 30, null, Color.White, strokeEffect: false) { X = 10, Y = 7 });
+            Add(new TextBox(lang.OptionsTitle, Theme.FONT, 28, null, Color.White, strokeEffect: false) { X = 10, Y = 7 });
 
             Control c;
-            Add(c = new TextBox(lang.Search, Theme.FONT, 30, null, Color.White, strokeEffect: false) { Y = 7 });
+            Add(c = new TextBox(lang.Search, Theme.FONT, 28, null, Color.White, strokeEffect: false) { Y = 7 });
 
             InputField search;
             Add(search = new InputField(400, 30) { X = Width - 405, Y = 5 });
@@ -2047,6 +2047,7 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
             
             content.BlankLine();
+            content.RemoveIndent();
 
             content.AddToRight(new CheckboxWithLabel("Highlight tiles on range for spells", 0, profile.HighlightTileAtRangeSpell    , (b) =>
             {
@@ -2141,45 +2142,44 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.HighlightLastTargetHealthBarOutline = b;
             }), true, page);
-            
+  
             content.AddToRight(new CheckboxWithLabel("Highlight healthbar border by state", 0, profile.HighlightHealthBarByState, (b) =>
             {
                 profile.HighlightHealthBarByState = b;
             }), true, page);
-            content.BlankLine();
+        
 
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - self", 0, profile.FlashingHealthbarOutlineSelf, (b) =>
             {
                 profile.FlashingHealthbarOutlineSelf = b;
             }), true, page);
-            content.BlankLine();
 
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - party", 0, profile.FlashingHealthbarOutlineParty, (b) =>
             {
                 profile.FlashingHealthbarOutlineParty = b;
             }), true, page);
-            content.BlankLine();
+         
 
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - ally", 0, profile.FlashingHealthbarOutlineGreen, (b) =>
             {
                 profile.FlashingHealthbarOutlineGreen = b;
             }), true, page);
-            content.BlankLine();
+            
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - enemy", 0, profile.FlashingHealthbarOutlineOrange, (b) =>
             {
                 profile.FlashingHealthbarOutlineOrange = b;
             }), true, page);
-            content.BlankLine();
+            
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - all", 0, profile.FlashingHealthbarOutlineAll, (b) =>
             {
                 profile.FlashingHealthbarOutlineAll = b;
             }), true, page);
-            content.BlankLine();
+           
             content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline on negative changes only", 0, profile.FlashingHealthbarNegativeOnly, (b) =>
             {
                 profile.FlashingHealthbarNegativeOnly = b;
             }), true, page);
-            content.BlankLine();
+           
             content.AddToRight(new SliderWithLabel("Only flash on HP change >= : ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.FlashingHealthbarTreshold, (i) =>
             {
                 profile.FlashingHealthbarTreshold = (byte)i;
@@ -2513,7 +2513,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             page = ((int)PAGE.Dust765 + 1008);
 
-            content.AddToLeft(SubCategoryButton("AUTOLOOT (AL UI)", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Auto Loot", page, content.LeftWidth));
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - AL", 0, profile.UOClassicCombatAL, (b) =>
             {
@@ -2641,7 +2641,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             page = ((int)PAGE.Dust765 + 1009);
 
-            content.AddToLeft(SubCategoryButton("MODS", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Buffbar UCC", page, content.LeftWidth));
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - Buffbar", 0, profile.UOClassicCombatBuffbar, (b) =>
             {
@@ -2747,7 +2747,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             page = ((int)PAGE.Dust765 + 1010);
 
-            content.AddToLeft(SubCategoryButton("SELF (AUTOMATIONS UI)", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Self(Automations", page, content.LeftWidth));
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - Self", 0, profile.UOClassicCombatSelf, (b) =>
             {
@@ -2957,7 +2957,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             page = ((int)PAGE.Dust765 + 1012);
 
-            content.AddToLeft(SubCategoryButton("UI - Gumps", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Gumps", page, content.LeftWidth));
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - LastTarget Bar", 0, profile.UOClassicCombatLTBar, (b) =>
             {

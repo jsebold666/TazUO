@@ -262,9 +262,9 @@ namespace ClassicUO.Configuration
         // ## BEGIN - END ## // NAMEOVERHEAD
         // ## BEGIN - END ## // UI/GUMPS
         public bool UOClassicCombatLTBar { get; set; } = false;
-        public Point UOClassicCombatLTBarLocation { get; set; } = new Point(25, 25);
+        [JsonConverter(typeof(Point2Converter))] public Point UOClassicCombatLTBarLocation { get; set; } = new Point(25, 25);
         public bool UOClassicCombatLTBar_Locked { get; set; } = false;
-        public Point BandageGumpOffset { get; set; } = new Point(0, 0);
+        [JsonConverter(typeof(Point2Converter))] public Point BandageGumpOffset { get; set; } = new Point(0, 0);
         public bool BandageGump { get; set; }
         public bool BandageGumpUpDownToggle { get; set; } = false;
         // ## BEGIN - END ## // UI/GUMPS
@@ -393,7 +393,7 @@ namespace ClassicUO.Configuration
         public bool OffscreenTargeting { get; set; } = true;
         // ## BEGIN - END ## // HEALTHBAR
         // ## BEGIN - END ## // CURSOR
-        public Point SpellOnCursorOffset { get; set; } = new Point(25, 30);
+        [JsonConverter(typeof(Point2Converter))] public Point SpellOnCursorOffset { get; set; } = new Point(25, 30);
         public bool SpellOnCursor { get; set; }
         public bool ColorGameCursor { get; set; }
         // ## BEGIN - END ## // CURSOR
@@ -455,7 +455,7 @@ namespace ClassicUO.Configuration
         // ## BEGIN - END ## // TEXTUREMANAGER
         // ## BEGIN - END ## // LINES
         public bool UOClassicCombatLines { get; set; } = false;
-        public Point UOClassicCombatLinesLocation { get; set; } = new Point(25, 25);
+        [JsonConverter(typeof(Point2Converter))] public Point UOClassicCombatLinesLocation { get; set; } = new Point(25, 25);
         public bool UOClassicCombatLines_ToggleLastTarget { get; set; } = false;
         public bool UOClassicCombatLines_ToggleHuntingMmode { get; set; } = false;
         public bool UOClassicCombatLines_ToggleHMBlue { get; set; } = false;
@@ -465,7 +465,7 @@ namespace ClassicUO.Configuration
         // ## BEGIN - END ## // LINES
         // ## BEGIN - END ## // AUTOLOOT
         public bool UOClassicCombatAL { get; set; } = false;
-        public Point UOClassicCombatALLocation { get; set; } = new Point(25, 25);
+        [JsonConverter(typeof(Point2Converter))] public Point UOClassicCombatALLocation { get; set; } = new Point(25, 25);
         public bool UOClassicCombatAL_EnableAL { get; set; } = false;
         public bool UOClassicCombatAL_EnableSL { get; set; } = false;
         public bool UOClassicCombatAL_EnableALLow { get; set; } = false;
@@ -483,7 +483,7 @@ namespace ClassicUO.Configuration
         // ## BEGIN - END ## // AUTOLOOT
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
         public bool UOClassicCombatBuffbar { get; set; } = false;
-        public Point UOClassicCombatBuffbarLocation { get; set; } = new Point(25, 25);
+        [JsonConverter(typeof(Point2Converter))] public Point UOClassicCombatBuffbarLocation { get; set; } = new Point(25, 25);
         public bool UOClassicCombatBuffbar_SwingEnabled { get; set; } = false;
         public bool UOClassicCombatBuffbar_DoDEnabled { get; set; } = false;
         public bool UOClassicCombatBuffbar_GotDEnabled { get; set; } = false;
@@ -496,7 +496,7 @@ namespace ClassicUO.Configuration
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
         // ## BEGIN - END ## // SELF
         public bool UOClassicCombatSelf { get; set; } = false;
-        public Point UOClassicCombatSelfLocation { get; set; } = new Point(25, 25);
+        [JsonConverter(typeof(Point2Converter))] public Point UOClassicCombatSelfLocation { get; set; } = new Point(25, 25);
         public bool UOClassicCombatSelf_ColoredPouches { get; set; } = false;
         public ushort UOClassicCombatSelf_ColoredPouchesColor { get; set; } = 38;
         public bool UOClassicCombatSelf_AutoEApple { get; set; } = true;

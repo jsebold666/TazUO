@@ -495,7 +495,7 @@ namespace ClassicUO.Dust765.Dust765
                     }
                         
 
-                if (UOClassicCombatLines.entryList.Exists(mob => mob.Serial == mobile.Serial) || _draw)
+                if (UOClassicCombatLines != null && UOClassicCombatLines.entryList.Exists(mob => mob.Serial == mobile.Serial) || _draw)
                 {
                     //CALC WHERE MOBILE IS
                     Point pm = CombatCollection.CalcUnderChar5(mobile);
