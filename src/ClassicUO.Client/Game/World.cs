@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassicUO.IO.Audio;
 using ClassicUO.Game.Data;
+using ClassicUO.Dust765.Dust765;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Map;
@@ -45,7 +46,7 @@ using ClassicUO.Configuration;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Assets;
-using ClassicUO.Dust765.Dust765;
+
 
 namespace ClassicUO.Game
 {
@@ -103,7 +104,11 @@ namespace ClassicUO.Game
         // ## BEGIN - END ## // MACROS
 
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-        public static ClilocTriggers ClilocTriggers { get; } = new ClilocTriggers();
+        public static ClilocTriggers GetClilocTriggers { get; } = new ClilocTriggers();
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        public static VisualResponseManager VisualResponseManager { get; } = new VisualResponseManager();
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
         public static int MapIndex
@@ -374,6 +379,10 @@ namespace ClassicUO.Game
 
                     _toRemove.Clear();
                 }
+
+                // ## BEGIN - END ## // AUTOMATIONS
+                ModulesManager.OnWorldUpdate();
+                // ## BEGIN - END ## // AUTOMATIONS
 
                 _effectManager.Update();
                 WorldTextManager.Update();

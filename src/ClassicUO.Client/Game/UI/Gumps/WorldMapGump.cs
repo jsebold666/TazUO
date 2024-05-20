@@ -70,6 +70,19 @@ namespace ClassicUO.Game.UI.Gumps
         private Point _center, _lastScroll, _mouseCenter, _scroll;
         private Point? _lastMousePosition = null;
 
+        // ## BEGIN - END ## // AUTOMATIONS
+        public int _tempX = 0;
+        public int _tempY = 0;
+        public int _tempTmapStartX = 0;
+        public int _tempTmapStartY = 0;
+        public int _tempTmapEndX = 0;
+        public int _tempTmapEndY = 0;
+        public int _tempTmapWidth = 0;
+        public int _tempTmapHeight = 0;
+        public int _tempTmapX = 0;
+        public int _tempTmapY = 0;
+        // ## BEGIN - END ## // AUTOMATIONS
+
         private bool _flipMap = true;
         private bool _freeView;
         private List<string> _hiddenMarkerFiles;
@@ -2663,7 +2676,7 @@ namespace ClassicUO.Game.UI.Gumps
                     );
                 }
             }
-            // ## BEGIN - END ## // MISC2
+            // ## BEGIN - END ## // MISC2s
 
             DrawMobile
             (
@@ -2973,18 +2986,18 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else
             {
-                batcher.Draw(marker.MarkerIcon, new Vector2(rot.X - (marker.MarkerIcon.Width >> 1), rot.Y - (marker.MarkerIcon.Height >> 1)), hueVector);
+                //batcher.Draw(marker.MarkerIcon, new Vector2(rot.X - (marker.MarkerIcon.Width >> 1), rot.Y - (marker.MarkerIcon.Height >> 1)), hueVector);
 
-                if (!showMarkerName)
-                {
-                    if (Mouse.Position.X >= rot.X - (marker.MarkerIcon.Width >> 1) &&
-                        Mouse.Position.X <= rot.X + (marker.MarkerIcon.Width >> 1) &&
-                        Mouse.Position.Y >= rot.Y - (marker.MarkerIcon.Height >> 1) &&
-                        Mouse.Position.Y <= rot.Y + (marker.MarkerIcon.Height >> 1))
-                    {
-                        drawSingleName = true;
-                    }
-                }
+                //if (!showMarkerName)
+                //{
+                //    if (Mouse.Position.X >= rot.X - (marker.MarkerIcon.Width >> 1) &&
+                //        Mouse.Position.X <= rot.X + (marker.MarkerIcon.Width >> 1) &&
+                //        Mouse.Position.Y >= rot.Y - (marker.MarkerIcon.Height >> 1) &&
+                //        Mouse.Position.Y <= rot.Y + (marker.MarkerIcon.Height >> 1))
+                //    {
+                //        drawSingleName = true;
+                //    }
+                //}
             }
 
             if (showMarkerName)
