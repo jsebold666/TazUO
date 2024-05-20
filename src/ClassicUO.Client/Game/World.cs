@@ -108,7 +108,7 @@ namespace ClassicUO.Game
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-        public static VisualResponseManager VisualResponseManager { get; } = new VisualResponseManager();
+       
         // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
         public static int MapIndex

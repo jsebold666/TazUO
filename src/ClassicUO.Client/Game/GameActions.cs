@@ -48,7 +48,6 @@ namespace ClassicUO.Game
 {
     public static class GameActions
     {
-        internal static bool iscasting;
 
         public static int LastSpellIndex { get; set; } = 1;
         public static int LastSkillIndex { get; set; } = 1;

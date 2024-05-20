@@ -2747,7 +2747,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             page = ((int)PAGE.Dust765 + 1010);
 
-            content.AddToLeft(SubCategoryButton("Self(Automations", page, content.LeftWidth));
+            content.AddToLeft(SubCategoryButton("Self Automations", page, content.LeftWidth));
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - Self", 0, profile.UOClassicCombatSelf, (b) =>
             {

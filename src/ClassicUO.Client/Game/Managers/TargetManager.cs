@@ -60,8 +60,7 @@ namespace ClassicUO.Game.Managers
         SetCustomSerial,
         // ## BEGIN - END ## // ADVMACROS
         MoveItemContainer,
-        Internal,
-        SetCustomSerial
+        Internal
     }
 
     public class CursorType
