@@ -142,6 +142,7 @@ namespace ClassicUO.Configuration
         public bool HighlightMobilesByPoisoned { get; set; } = true;
         public bool HighlightMobilesByInvul { get; set; } = true;
         public bool ShowMobilesHP { get; set; }
+        public bool ShowTargetIndicator { get; set; }
         public int MobileHPType { get; set; }     // 0 = %, 1 = line, 2 = both
         public int MobileHPShowWhen { get; set; } // 0 = Always, 1 - <100%
         public bool DrawRoofs { get; set; } = true;
@@ -231,7 +232,7 @@ namespace ClassicUO.Configuration
         public bool DisableCtrlQWBtn { get; set; }
         public bool DisableAutoMove { get; set; }
         public bool EnableDragSelect { get; set; }
-        public int DragSelectModifierKey { get; set; } // 0 = none, 1 = control, 2 = shift
+        public int DragSelectModifierKey { get; set; } // 0 = none, 1 = control, 2 = shift, 3 = alt
         public int DragSelect_PlayersModifier { get; set; } = 0;
         public int DragSelect_MonstersModifier { get; set; } = 0;
         public int DragSelect_NameplateModifier { get; set; } = 0;
@@ -353,6 +354,7 @@ namespace ClassicUO.Configuration
         public bool WorldMapAllowPositionalTarget { get; set; } = true;
 
         public int AutoFollowDistance { get; set; } = 2;
+        public bool DisableAutoFollowAlt { get; set; } = false;
         [JsonConverter(typeof(Point2Converter))] public Point ResizeJournalSize { get; set; } = new Point(410, 350);
         public bool FollowingMode { get; set; } = false;
         public uint FollowingTarget { get; set; }
@@ -479,6 +481,9 @@ namespace ClassicUO.Configuration
         public int OverheadChatFontSize { get; set; } = 20;
         public int OverheadChatWidth { get; set; } = 200;
 
+        public string NamePlateFont { get; set; } = "avadonian";
+        public int NamePlateFontSize { get; set; } = 20;
+
         public string DefaultTTFFont { get; set; } = "Roboto-Regular";
         public int TextBorderSize { get; set; } = 1;
 
@@ -500,7 +505,7 @@ namespace ClassicUO.Configuration
         public int AdvancedSkillsGumpHeight { get; set; } = 310;
 
         #region ToolTip Overrides
-        public List<string> ToolTipOverride_SearchText { get; set; } = new List<string>() { "Physical Res", "Fire Res", "Cold Res", "Poison Res", "Energy Res" };
+        public List<string> ToolTipOverride_SearchText { get; set; } = new List<string>() { "Physical Res", "Fire Resist", "Cold Resist", "Poison Resist", "Energy Resist" };
         public List<string> ToolTipOverride_NewFormat { get; set; } = new List<string>() { "/c[#5f423c]Physical Resist {1}%", "/c[red]Fire Resist {1}%", "/c[blue]Cold Resist {1}%", "/c[green]Poison Resist {1}%", "/c[purple]Energy Resist {1}%" };
         public List<int> ToolTipOverride_MinVal1 { get; set; } = new List<int>() { -1, -1, -1, -1, -1 };
         public List<int> ToolTipOverride_MinVal2 { get; set; } = new List<int>() { -1, -1, -1, -1, -1 };
@@ -589,6 +594,10 @@ namespace ClassicUO.Configuration
         public double PaperdollScale { get; set; } = 1f;
 
         public uint SOSGumpID { get; set; } = 1915258020;
+
+        public bool ModernPaperdollAnchorEnabled { get; set; } = false;
+        public bool JournalAnchorEnabled { get; set; } = false;
+        public bool EnableGumpCloseAnimation { get; set; } = true;
 
 
         public void Save(string path, bool saveGumps = true)
@@ -817,10 +826,9 @@ namespace ClassicUO.Configuration
                                     break;
 
                                 case GumpType.Journal:
-                                    //gump = new JournalGump();
                                     gump = new ResizableJournal();
-                                    x = ProfileManager.CurrentProfile.JournalPosition.X;
-                                    y = ProfileManager.CurrentProfile.JournalPosition.Y;
+                                    //x = ProfileManager.CurrentProfile.JournalPosition.X;
+                                    //y = ProfileManager.CurrentProfile.JournalPosition.Y;
                                     break;
 
                                 case GumpType.MacroButton:

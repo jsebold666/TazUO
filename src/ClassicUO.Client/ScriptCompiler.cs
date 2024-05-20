@@ -32,9 +32,28 @@ namespace ClassicUO
                 CUOEnviroment.ExecutablePath + "/ClassicUO.Renderer.dll",
                 CUOEnviroment.ExecutablePath + "/ClassicUO.Utility.dll",
                 CUOEnviroment.ExecutablePath + "/FNA.dll",
-
-                CUOEnviroment.ExecutablePath + "/ClassicUO.exe"
+                CUOEnviroment.ExecutablePath + "/ClassicUO.exe",
+                "System.dll",
+                "System.Core.dll"
             };
+
+            var path = Path.Combine(CUOEnviroment.ExecutablePath, "Data/Assemblies.cfg");
+
+            if (File.Exists(path))
+            {
+                using (var ip = new StreamReader(path))
+                {
+                    string line;
+
+                    while ((line = ip.ReadLine()) != null)
+                    {
+                        if (line.Length > 0 && !line.StartsWith("#"))
+                        {
+                            list.Add(line);
+                        }
+                    }
+                }
+            }
 
             list.AddRange(m_AdditionalReferences);
 
@@ -70,14 +89,6 @@ namespace ClassicUO
             {
                 AppendCompilerOption(ref sb, "/d:x64");
             }
-
-#if NEWTIMERS
-			AppendCompilerOption(ref sb, "/d:NEWTIMERS");
-#endif
-
-#if NEWPARENT
-			AppendCompilerOption(ref sb, "/d:NEWPARENT");
-#endif
 
             return (sb == null ? null : sb.ToString());
         }
@@ -202,8 +213,9 @@ namespace ClassicUO
 #if !MONO
             using CodeDomProvider provider = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
 #else
-            using (CSharpCodeProvider provider = new CSharpCodeProvider())
+            using CSharpCodeProvider provider = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
 #endif
+
             var path = GetUnusedPath("Scripts.CS");
 
             var parms = new CompilerParameters(GetReferenceAssemblies(), path, debug);
@@ -214,6 +226,7 @@ namespace ClassicUO
             {
                 parms.CompilerOptions = options;
             }
+
 
             if (CUOEnviroment.IsUnix)
             {

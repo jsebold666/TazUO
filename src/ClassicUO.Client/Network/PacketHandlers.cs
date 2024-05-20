@@ -5655,8 +5655,8 @@ namespace ClassicUO.Network
                         uint wtfCliloc = p.ReadUInt32BE();
 
                         ushort arg_length = p.ReadUInt16BE();
-                        p.Skip(4);
-                        string args = p.ReadUnicodeLE();
+                        var str = p.ReadUnicodeLE(2);
+                        var args = str + p.ReadUnicodeLE();
                         string title = ClilocLoader.Instance.Translate(
                             (int)titleCliloc,
                             args,
@@ -7246,7 +7246,7 @@ namespace ClassicUO.Network
 
             if (ProfileManager.CurrentProfile != null)
             {
-                if (gumpID == 1426736667 || gumpID == ProfileManager.CurrentProfile.SOSGumpID) //SOS message gump
+                if (gumpID == ProfileManager.CurrentProfile.SOSGumpID) //SOS message gump
                 {
                     for (int i = 0; i < gump.Children.Count; i++)
                     {
@@ -7301,6 +7301,18 @@ namespace ClassicUO.Network
                                 }
                                 gump.GoToMarker((int)location.X, (int)location.Y, true);
                             }));
+
+                            menu.ContextMenu.Add(new ContextMenuItemEntry("Add marker on world map", () =>
+                            {
+                                WorldMapGump gump = UIManager.GetGump<WorldMapGump>();
+                                if (gump == null)
+                                {
+                                    gump = new WorldMapGump();
+                                    UIManager.Add(gump);
+                                }
+                                gump.AddUserMarker("SOS", (int)location.X, (int)location.Y, World.Map.Index);
+                            }));
+
                             menu.ContextMenu.Add(new ContextMenuItemEntry("Close", () =>
                             {
                                 gump.Dispose();
@@ -7333,7 +7345,7 @@ namespace ClassicUO.Network
             if (!ySouth)
                 absLat = 360.0 - absLat;
 
-            int x, y, z;
+            int x, y;
 
             x = xCenter + (int)((absLong * xWidth) / 360);
             y = yCenter + (int)((absLat * yHeight) / 360);

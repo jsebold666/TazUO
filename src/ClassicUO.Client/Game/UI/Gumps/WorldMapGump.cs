@@ -195,7 +195,10 @@ namespace ClassicUO.Game.UI.Gumps
                     if (!_freeView)
                     {
                         _isScrolling = false;
-                        CanMove = true;
+                        if (!IsLocked)
+                        {
+                            CanMove = true;
+                        }
                     }
                 }
             }
@@ -773,7 +776,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private int GetOffset(int x, int y, int centerX, int centerY)
         {
-            const int offset = 0;
+            const int OFFSET = 0;
 
             if (y > centerY)
             {
@@ -787,15 +790,15 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (x > centerX)
             {
-                return offset + 4;
+                return OFFSET + 4;
             }
 
             if (x >= -centerX)
             {
-                return offset;
+                return OFFSET;
             }
 
-            return offset + 8;
+            return OFFSET + 8;
         }
 
         internal void HandlePositionTarget()
@@ -1766,6 +1769,10 @@ namespace ClassicUO.Game.UI.Gumps
                 catch (Exception ee)
                 {
                     Log.Error($"{ee}");
+                    if (CUOEnviroment.Debug)
+                    {
+                        GameActions.Print(ee.ToString());
+                    }
                 }
             }
 
@@ -1797,7 +1804,10 @@ namespace ClassicUO.Game.UI.Gumps
 
             _zoneSets.Clear();
 
-            foreach (String filename in Directory.GetFiles(_mapFilesPath, "*.zones.json"))
+            List<string> zonefiles = [.. Directory.GetFiles(_mapFilesPath, "*.zones.json")];
+            zonefiles.AddRange(Directory.GetFiles(Settings.GlobalSettings.UltimaOnlineDirectory, "*.zones.json"));
+
+            foreach (string filename in zonefiles)
             {
                 bool shouldHide = !string.IsNullOrEmpty
                 (
@@ -2123,6 +2133,49 @@ namespace ClassicUO.Game.UI.Gumps
                 MarkerIconName = markerIcon,
                 Name = markerName,
                 ZoomIndex = markerZoomLevel
+            };
+
+            if (!string.IsNullOrWhiteSpace(mapMarker.MarkerIconName) && _markerIcons.TryGetValue(mapMarker.MarkerIconName, out Texture2D markerIconTexture))
+            {
+                mapMarker.MarkerIcon = markerIconTexture;
+            }
+
+            var mapMarkerFile = _markerFiles.FirstOrDefault(x => x.FullPath == UserMarkersFilePath);
+
+            mapMarkerFile?.Markers.Add(mapMarker);
+        }
+
+        public void AddUserMarker(string markerName, int x, int y, int map, string color = "yellow")
+        {
+            if (!World.InGame)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(markerName))
+            {
+                GameActions.Print(ResGumps.InvalidMarkerName, 0x2A);
+                return;
+            }
+
+            var markerCsv = $"{x},{y},{map},{markerName}, ,{color},{3}";
+            using (var fileStream = File.Open(UserMarkersFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Write))
+            using (var streamWriter = new StreamWriter(fileStream))
+            {
+                streamWriter.BaseStream.Seek(0, SeekOrigin.End);
+                streamWriter.WriteLine(markerCsv);
+            }
+
+            var mapMarker = new WMapMarker
+            {
+                X = x,
+                Y = y,
+                Color = GetColor(color),
+                ColorName = color,
+                MapId = map,
+                MarkerIconName = "",
+                Name = markerName,
+                ZoomIndex = 3
             };
 
             if (!string.IsNullOrWhiteSpace(mapMarker.MarkerIconName) && _markerIcons.TryGetValue(mapMarker.MarkerIconName, out Texture2D markerIconTexture))
@@ -3118,12 +3171,34 @@ namespace ClassicUO.Game.UI.Gumps
             Vector3 hueVector = ShaderHueTranslator.GetHueVector(0);
             Texture2D texture = SolidColorTextureCache.GetTexture(zone.Color);
 
+            //Vector2 topleft = new Vector2(10000, 10000), botright = Vector2.Zero;
+
             for (int i = 0, j = 1; i < zone.Vertices.Count; i++, j++)
             {
                 if (j >= zone.Vertices.Count) j = 0;
 
                 Vector2 start = WorldPointToGumpPoint(zone.Vertices[i].X, zone.Vertices[i].Y, x, y, width, height, zoom);
                 Vector2 end = WorldPointToGumpPoint(zone.Vertices[j].X, zone.Vertices[j].Y, x, y, width, height, zoom);
+
+                //if(start.X < topleft.X)
+                //{
+                //    topleft.X = start.X;
+                //}
+
+                //if(start.Y < topleft.Y)
+                //{
+                //    topleft.Y = start.Y;
+                //}
+
+                //if(end.X > botright.X)
+                //{
+                //    botright.X = end.X;
+                //}
+                //if (end.Y > botright.Y)
+                //{
+                //    botright.Y = end.Y;
+                //}
+                ////Handle drawing a label here
 
                 batcher.DrawLine(texture, start, end, hueVector, 1);
             }
@@ -3400,7 +3475,10 @@ namespace ClassicUO.Game.UI.Gumps
             if (button == MouseButtonType.Left && !Keyboard.Alt)
             {
                 _isScrolling = false;
-                CanMove = true;
+                if (!IsLocked)
+                {
+                    CanMove = true;
+                }
             }
 
             if (button == MouseButtonType.Left || button == MouseButtonType.Middle)
@@ -3430,15 +3508,18 @@ namespace ClassicUO.Game.UI.Gumps
                     {
                         if (button == MouseButtonType.Middle)
                         {
-                            FreeView = true;
+                            FreeView = !FreeView;
                         }
 
-                        _lastScroll.X = _center.X;
-                        _lastScroll.Y = _center.Y;
-                        _isScrolling = true;
-                        CanMove = false;
+                        if (FreeView)
+                        {
+                            _lastScroll.X = _center.X;
+                            _lastScroll.Y = _center.Y;
+                            _isScrolling = true;
+                            CanMove = false;
 
-                        Client.Game.GameCursor.IsDraggingCursorForced = true;
+                            Client.Game.GameCursor.IsDraggingCursorForced = true;
+                        }
                     }
                 }
 

@@ -39,12 +39,15 @@ using ClassicUO.Resources;
 using ClassicUO.Utility.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ClassicUO.Game.Managers
 {
     public static class CommandManager
     {
         private static readonly Dictionary<string, Action<string[]>> _commands = new Dictionary<string, Action<string[]>>();
+
+        public static Dictionary<string, Action<string[]>> Commands { get { return _commands; } }
 
         public static void Initialize()
         {
@@ -256,6 +259,11 @@ namespace ClassicUO.Game.Managers
                         GameActions.Print(g.GetPageString());
                     }
                 }
+            });
+
+            Register("genspelldef", (s) =>
+            {
+                Task.Run(SpellDefinition.SaveAllSpellsToJson);
             });
         }
 

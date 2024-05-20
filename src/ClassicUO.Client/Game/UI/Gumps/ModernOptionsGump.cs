@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ClassicUO.Game.UI.Gumps
@@ -31,6 +32,31 @@ namespace ClassicUO.Game.UI.Gumps
         private Profile profile;
         private ModernOptionsGumpLanguage lang;
 
+        private static ThemeSettings _settings;
+        private static ThemeSettings Theme
+        {
+            get
+            {
+                if (_settings == null)
+                {
+                    _settings = (ThemeSettings)UISettings.Load<ThemeSettings>(typeof(ModernOptionsGump).ToString());
+                    if (_settings == null)
+                    {
+                        _settings = new ThemeSettings();
+                        ThemeSettings.Save<ThemeSettings>(typeof(ModernOptionsGump).ToString(), _settings);
+                    }
+                    else
+                    { //Save changes if things have changed
+                        ThemeSettings.Save<ThemeSettings>(typeof(ModernOptionsGump).ToString(), _settings);
+                    }
+                    return _settings;
+                }
+                else
+                {
+                    return _settings;
+                }
+            }
+        }
 
         public ModernOptionsGump() : base(0, 0)
         {
@@ -49,10 +75,10 @@ namespace ClassicUO.Game.UI.Gumps
 
             Add(new ColorBox(Width, 40, Theme.SEARCH_BACKGROUND) { AcceptMouseInput = true, CanMove = true, Alpha = 0.85f });
 
-            Add(new TextBox(lang.OptionsTitle, Theme.FONT, 30, null, Color.White, strokeEffect: false) { X = 10, Y = 7 });
+            Add(new TextBox(lang.OptionsTitle, Theme.FONT, 30, null, Color.White, strokeEffect: false) { X = 10, Y = 7, AcceptMouseInput = false });
 
             Control c;
-            Add(c = new TextBox(lang.Search, Theme.FONT, 30, null, Color.White, strokeEffect: false) { Y = 7 });
+            Add(c = new TextBox(lang.Search, Theme.FONT, 30, null, Color.White, strokeEffect: false) { Y = 7, AcceptMouseInput = false });
 
             InputField search;
             Add(search = new InputField(400, 30) { X = Width - 405, Y = 5 });
@@ -61,6 +87,9 @@ namespace ClassicUO.Game.UI.Gumps
             c.X = search.X - c.Width - 5;
 
             Add(mainContent = new LeftSideMenuRightSideContent(Width, Height - 40, (int)(Width * 0.23)) { Y = 40 });
+            mainContent.RightArea.ToggleScrollBarVisibility(false);
+            mainContent.RightArea.GetScrollBar.Dispose();
+            mainContent.RightArea.GetScrollBar = null;
 
             ModernButton b;
             mainContent.AddToLeft(b = CategoryButton(lang.ButtonGeneral, (int)PAGE.General, mainContent.LeftWidth));
@@ -317,10 +346,10 @@ namespace ClassicUO.Game.UI.Gumps
 
             content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.DragSelectHP, isChecked: profile.EnableDragSelect, valueChanged: (b) => { profile.EnableDragSelect = b; }), true, page);
             content.Indent();
-            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragKeyMod, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift }, profile.DragSelectModifierKey, (s, n) => { profile.DragSelectModifierKey = s; }), true, page);
-            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragPlayersOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift }, profile.DragSelect_PlayersModifier, (s, n) => { profile.DragSelect_PlayersModifier = s; }), true, page);
-            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragMobsOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift }, profile.DragSelect_MonstersModifier, (s, n) => { profile.DragSelect_MonstersModifier = s; }), true, page);
-            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragNameplatesOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift }, profile.DragSelect_NameplateModifier, (s, n) => { profile.DragSelect_NameplateModifier = s; }), true, page);
+            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragKeyMod, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift, lang.GetGeneral.SharedAlt }, profile.DragSelectModifierKey, (s, n) => { profile.DragSelectModifierKey = s; }), true, page);
+            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragPlayersOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift, lang.GetGeneral.SharedAlt }, profile.DragSelect_PlayersModifier, (s, n) => { profile.DragSelect_PlayersModifier = s; }), true, page);
+            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragMobsOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift, lang.GetGeneral.SharedAlt }, profile.DragSelect_MonstersModifier, (s, n) => { profile.DragSelect_MonstersModifier = s; }), true, page);
+            content.AddToRight(new ComboBoxWithLabel(lang.GetGeneral.DragNameplatesOnly, 0, Theme.COMBO_BOX_WIDTH, new string[] { lang.GetGeneral.SharedNone, lang.GetGeneral.SharedCtrl, lang.GetGeneral.SharedShift, lang.GetGeneral.SharedAlt }, profile.DragSelect_NameplateModifier, (s, n) => { profile.DragSelect_NameplateModifier = s; }), true, page);
             content.AddToRight(new SliderWithLabel(lang.GetGeneral.DragX, 0, Theme.SLIDER_WIDTH, 0, Client.Game.Scene.Camera.Bounds.Width, profile.DragSelectStartX, (r) => { profile.DragSelectStartX = r; }), true, page);
             content.AddToRight(new SliderWithLabel(lang.GetGeneral.DragY, 0, Theme.SLIDER_WIDTH, 0, Client.Game.Scene.Camera.Bounds.Width, profile.DragSelectStartY, (r) => { profile.DragSelectStartY = r; }), true, page);
             content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.DragAnchored, isChecked: profile.DragSelectAsAnchor, valueChanged: (b) => { profile.DragSelectAsAnchor = b; }), true, page);
@@ -2062,6 +2091,12 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.HideJournalTimestamp = b;
             }), true, page);
+            content.BlankLine();
+            content.AddToRight(c = new CheckboxWithLabel(lang.GetTazUO.MakeAnchorable, 0, profile.JournalAnchorEnabled, (b) =>
+            {
+                profile.JournalAnchorEnabled = b;
+                ResizableJournal.UpdateJournalOptions();
+            }), true, page);
             #endregion
 
             #region Modern paperdoll
@@ -2083,12 +2118,19 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new ModernColorPickerWithLabel(lang.GetTazUO.DurabilityBarHue, profile.ModernPaperDollDurabilityHue, (h) =>
             {
                 profile.ModernPaperDollDurabilityHue = h;
+                ModernPaperdoll.UpdateAllOptions();
             }), true, page);
             content.RemoveIndent();
             content.BlankLine();
             content.AddToRight(new SliderWithLabel(lang.GetTazUO.ShowDurabilityBarBelow, 0, Theme.SLIDER_WIDTH, 1, 100, profile.ModernPaperDoll_DurabilityPercent, (i) =>
             {
                 profile.ModernPaperDoll_DurabilityPercent = i;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(c = new CheckboxWithLabel(lang.GetTazUO.PaperdollAnchor, 0, profile.ModernPaperdollAnchorEnabled, (b) =>
+            {
+                profile.ModernPaperdollAnchorEnabled = b;
+                ModernPaperdoll.UpdateAllOptions();
             }), true, page);
             #endregion
 
@@ -2202,6 +2244,12 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.AutoFollowDistance = i;
             }), true, page);
+            content.Indent();
+            content.AddToRight(new CheckboxWithLabel(lang.GetTazUO.DisableAutoFollow, 0, profile.DisableAutoFollowAlt, (i) =>
+            {
+                profile.DisableAutoFollowAlt = i;
+            }), true, page);
+            content.RemoveIndent();
             content.BlankLine();
             content.AddToRight(c = new CheckboxWithLabel(lang.GetTazUO.DisableMouseInteractionsForOverheadText, 0, profile.DisableMouseInteractionOverheadText, (b) =>
             {
@@ -2212,6 +2260,8 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.OverridePartyAndGuildHue = b;
             }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.ShowTargetIndicator, isChecked: profile.ShowTargetIndicator, valueChanged: (b) => { profile.ShowTargetIndicator = b; }), true, page);
             #endregion
 
             #region Misc
@@ -2326,7 +2376,7 @@ namespace ClassicUO.Game.UI.Gumps
                                   });
                               }
                           }
-                      })
+                      }, "https://gist.githubusercontent.com/bittiez/c70ddcb58fc59f74a0c4d2c5b4fc6478/raw/SpellVisualRange.json")
                       { X = (Client.Game.Window.ClientBounds.Width >> 1) - 50, Y = (Client.Game.Window.ClientBounds.Height >> 1) - 50 });
                   }
               };
@@ -2356,7 +2406,7 @@ namespace ClassicUO.Game.UI.Gumps
                 profile.UseLandTextures = b;
             }), true, page);
             content.BlankLine();
-            content.AddToRight(new InputFieldWithLabel(lang.GetTazUO.SOSGumpID, Theme.INPUT_WIDTH, profile.SOSGumpID.ToString(), true, (s, e) => { if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint id)) { profile.SOSGumpID = id; } }));
+            content.AddToRight(new InputFieldWithLabel(lang.GetTazUO.SOSGumpID, Theme.INPUT_WIDTH, profile.SOSGumpID.ToString(), true, (s, e) => { if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint id)) { profile.SOSGumpID = id; } }), true, page);
             #endregion
 
             #region Tooltips
@@ -2453,6 +2503,17 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new SliderWithLabel(lang.GetTazUO.SharedSize, 0, Theme.SLIDER_WIDTH, 5, 40, profile.SelectedJournalFontSize, (i) =>
             {
                 profile.SelectedJournalFontSize = i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(GenerateFontSelector(lang.GetTazUO.NameplateFont, ProfileManager.CurrentProfile.NamePlateFont, (i, s) =>
+            {
+                ProfileManager.CurrentProfile.NamePlateFont = s;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel(lang.GetTazUO.SharedSize, 0, Theme.SLIDER_WIDTH, 5, 40, profile.NamePlateFontSize, (i) =>
+            {
+                profile.NamePlateFontSize = i;
             }), true, page);
             content.RemoveIndent();
             content.BlankLine();
@@ -2786,7 +2847,10 @@ namespace ClassicUO.Game.UI.Gumps
             _preview.IsSelected = true;
             _preview.MouseUp += (s, e) =>
             {
-                CoolDownBarManager.AddCoolDownBar(TimeSpan.FromSeconds(int.Parse(_cooldown.Text)), _name.Text, _hueSelector.Hue, _replaceIfExists.IsChecked);
+                if (int.TryParse(_cooldown.Text, out int value))
+                {
+                    CoolDownBarManager.AddCoolDownBar(TimeSpan.FromSeconds(value), _name.Text, _hueSelector.Hue, _replaceIfExists.IsChecked);
+                }
             };
             main.Add(_preview);
 
@@ -2879,14 +2943,12 @@ namespace ClassicUO.Game.UI.Gumps
 
         private class CheckboxWithLabel : Control, SearchableOption
         {
-            private const int CHECKBOX_SIZE = 30;
-
             private bool _isChecked;
             private readonly TextBox _text;
 
             public TextBox TextLabel => _text;
 
-            private Vector3 hueVector = ShaderHueTranslator.GetHueVector(Theme.SEARCH_BACKGROUND, false, 0.9f);
+            private Vector3 hueVector = ShaderHueTranslator.GetHueVector(Theme.CHECKBOX, false, 0.9f);
 
             public CheckboxWithLabel(
                 string text = "",
@@ -2897,10 +2959,10 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 _isChecked = isChecked;
                 ValueChanged = valueChanged;
-                _text = new TextBox(text, Theme.FONT, Theme.STANDARD_TEXT_SIZE, maxWidth == 0 ? null : maxWidth, Theme.TEXT_FONT_COLOR, strokeEffect: false) { X = CHECKBOX_SIZE + 5, AcceptMouseInput = false };
+                _text = new TextBox(text, Theme.FONT, Theme.STANDARD_TEXT_SIZE, maxWidth == 0 ? null : maxWidth, Theme.TEXT_FONT_COLOR, strokeEffect: false) { X = Theme.CHECKBOX_SIZE + 5, AcceptMouseInput = false };
 
-                Width = CHECKBOX_SIZE + 5 + _text.Width;
-                Height = Math.Max(CHECKBOX_SIZE, _text.MeasuredSize.Y);
+                Width = Theme.CHECKBOX_SIZE + 5 + _text.Width;
+                Height = Math.Max(Theme.CHECKBOX_SIZE, _text.MeasuredSize.Y);
 
                 _text.Y = (Height / 2) - (_text.Height / 2);
 
@@ -2958,7 +3020,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                 batcher.Draw(
                     SolidColorTextureCache.GetTexture(Color.White),
-                    new Rectangle(x, y, CHECKBOX_SIZE, CHECKBOX_SIZE),
+                    new Rectangle(x, y, Theme.CHECKBOX_SIZE, Theme.CHECKBOX_SIZE),
                     hueVector
                 );
 
@@ -2966,7 +3028,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     batcher.Draw(
                         SolidColorTextureCache.GetTexture(Color.Black),
-                        new Rectangle(x + (CHECKBOX_SIZE / 2) / 2, y + (CHECKBOX_SIZE / 2) / 2, CHECKBOX_SIZE / 2, CHECKBOX_SIZE / 2),
+                        new Rectangle(x + (Theme.CHECKBOX_SIZE / 2) / 2, y + (Theme.CHECKBOX_SIZE / 2) / 2, Theme.CHECKBOX_SIZE / 2, Theme.CHECKBOX_SIZE / 2),
                         hueVector
                     );
                 }
@@ -4435,7 +4497,6 @@ namespace ClassicUO.Game.UI.Gumps
                 public void Drag(Point pos)
                 {
                     pos = new Point((pos.X - ScreenCoordinateX), pos.Y - ScreenCoordinateY);
-                    int p = 0;
 
                     if (SelectionStart == SelectionEnd)
                     {
@@ -4634,8 +4695,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                 if (Children.Count != 0)
                 {
-                    int w = 0, h = 0;
-
                     for (int i = 0; i < Children.Count; i++)
                     {
                         Control c = Children[i];
@@ -4649,10 +4708,7 @@ namespace ClassicUO.Game.UI.Gumps
                         }
 
                         c.Update();
-
-
                     }
-
                 }
 
             }
@@ -4945,7 +5001,9 @@ namespace ClassicUO.Game.UI.Gumps
 
         private class ScrollArea : Control
         {
-            private readonly ScrollBar _scrollBar;
+            private ScrollBar _scrollBar;
+
+            public ScrollBar GetScrollBar { get { return _scrollBar; } set { _scrollBar = value; } }
 
             public ScrollArea
             (
@@ -4980,7 +5038,13 @@ namespace ClassicUO.Game.UI.Gumps
             public int ScrollMinValue => _scrollBar.MinValue;
             public int ScrollMaxValue => _scrollBar.MaxValue;
 
-            public Rectangle ScissorRectangle;
+            public void ToggleScrollBarVisibility(bool visible = true)
+            {
+                if (_scrollBar != null)
+                {
+                    _scrollBar.IsVisible = visible;
+                }
+            }
 
             public override void Update()
             {
@@ -5003,11 +5067,18 @@ namespace ClassicUO.Game.UI.Gumps
 
             public override bool Draw(UltimaBatcher2D batcher, int x, int y)
             {
-                _scrollBar.Draw(batcher, x + _scrollBar.X, y + _scrollBar.Y);
+                int sbar = 0, start = 0;
 
-                if (batcher.ClipBegin(x + ScissorRectangle.X, y + ScissorRectangle.Y, Width - _scrollBar.Width + ScissorRectangle.Width, Height + ScissorRectangle.Height))
+                if (_scrollBar != null)
                 {
-                    for (int i = 1; i < Children.Count; i++)
+                    _scrollBar.Draw(batcher, x + _scrollBar.X, y + _scrollBar.Y);
+                    sbar = _scrollBar.Width;
+                    start = 1;
+                }
+
+                if (batcher.ClipBegin(x, y, Width - sbar, Height))
+                {
+                    for (int i = start; i < Children.Count; i++)
                     {
                         Control child = Children[i];
 
@@ -5016,7 +5087,7 @@ namespace ClassicUO.Game.UI.Gumps
                             continue;
                         }
 
-                        int finalY = y + child.Y - _scrollBar.Value + ScissorRectangle.Y;
+                        int finalY = y + child.Y - (_scrollBar == null ? 0 : _scrollBar.Value);
 
                         child.Draw(batcher, x + child.X, finalY);
                     }
@@ -5038,16 +5109,19 @@ namespace ClassicUO.Game.UI.Gumps
 
             protected override void OnMouseWheel(MouseEventType delta)
             {
+                if (IsDisposed || _scrollBar == null)
+                {
+                    return;
+                }
+
                 switch (delta)
                 {
                     case MouseEventType.WheelScrollUp:
                         _scrollBar.Value -= _scrollBar.ScrollStep;
-
                         break;
 
                     case MouseEventType.WheelScrollDown:
                         _scrollBar.Value += _scrollBar.ScrollStep;
-
                         break;
                 }
             }
@@ -5062,6 +5136,11 @@ namespace ClassicUO.Game.UI.Gumps
 
             private void CalculateScrollBarMaxValue()
             {
+                if (_scrollBar == null)
+                {
+                    return;
+                }
+
                 _scrollBar.Height = ScrollMaxHeight >= 0 ? ScrollMaxHeight : Height;
                 bool maxValue = _scrollBar.Value == _scrollBar.MaxValue && _scrollBar.MaxValue != 0;
 
@@ -5086,7 +5165,7 @@ namespace ClassicUO.Game.UI.Gumps
                 }
 
                 int height = Math.Abs(startY) + Math.Abs(endY) - _scrollBar.Height;
-                height = Math.Max(0, height - (-ScissorRectangle.Y + ScissorRectangle.Height));
+                height = Math.Max(0, height);
 
                 if (height > 0)
                 {
@@ -5106,11 +5185,11 @@ namespace ClassicUO.Game.UI.Gumps
 
                 for (int i = 1; i < Children.Count; i++)
                 {
-                    Children[i].UpdateOffset(0, -_scrollBar.Value + ScissorRectangle.Y);
+                    Children[i].UpdateOffset(0, -_scrollBar.Value);
                 }
             }
 
-            private class ScrollBar : ScrollBarBase
+            public class ScrollBar : ScrollBarBase
             {
                 private Rectangle _rectSlider,
                     _emptySpace;
@@ -5142,7 +5221,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                 public override bool Draw(UltimaBatcher2D batcher, int x, int y)
                 {
-                    if (Height <= 0 || !IsVisible)
+                    if (Height <= 0 || !IsVisible || IsDisposed)
                     {
                         return false;
                     }
@@ -5165,7 +5244,7 @@ namespace ClassicUO.Game.UI.Gumps
                         );
                     }
 
-                    return base.Draw(batcher, x, y);
+                    return true;// base.Draw(batcher, x, y);
                 }
 
                 protected override int GetScrollableArea()
@@ -6241,33 +6320,41 @@ namespace ClassicUO.Game.UI.Gumps
             public Area FullControl { get; }
         }
 
-        private static class Theme
+        private class ThemeSettings : UISettings
         {
-            public const int SLIDER_WIDTH = 150;
-            public const int COMBO_BOX_WIDTH = 225;
-            public const int SCROLL_BAR_WIDTH = 15;
-            public const int INPUT_WIDTH = 200;
-            public const int TOP_PADDING = 5;
-            public const int INDENT_SPACE = 40;
-            public const int BLANK_LINE = 20;
-            public const int HORIZONTAL_SPACING_CONTROLS = 20;
+            public int SLIDER_WIDTH { get; set; } = 150;
+            public int COMBO_BOX_WIDTH { get; set; } = 225;
+            public int SCROLL_BAR_WIDTH { get; set; } = 15;
+            public int INPUT_WIDTH { get; set; } = 200;
+            public int TOP_PADDING { get; set; } = 5;
+            public int INDENT_SPACE { get; set; } = 40;
+            public int BLANK_LINE { get; set; } = 20;
+            public int HORIZONTAL_SPACING_CONTROLS { get; set; } = 20;
 
-            public const int STANDARD_TEXT_SIZE = 20;
+            public int STANDARD_TEXT_SIZE { get; set; } = 20;
 
-            public const float NO_MATCH_SEARCH = 0.5f;
+            public float NO_MATCH_SEARCH { get; set; } = 0.5f;
 
-            public const ushort BACKGROUND = 897;
-            public const ushort SEARCH_BACKGROUND = 899;
-            public const ushort BLACK = 0;
+            public ushort BACKGROUND { get; set; } = 897;
+            public ushort SEARCH_BACKGROUND { get; set; } = 899;
+            public ushort CHECKBOX { get; set; } = 899;
+            public int CHECKBOX_SIZE { get; set; } = 30;
+            public ushort BLACK { get; set; } = 0;
 
-            public static Color DROPDOWN_OPTION_NORMAL_HUE = Color.White;
-            public static Color DROPDOWN_OPTION_HOVER_HUE = Color.AntiqueWhite;
-            public static Color DROPDOWN_OPTION_SELECTED_HUE = Color.CadetBlue;
+            [JsonConverter(typeof(ColorJsonConverter))]
+            public Color DROPDOWN_OPTION_NORMAL_HUE { get; set; } = Color.White;
+            [JsonConverter(typeof(ColorJsonConverter))]
 
-            public static Color BUTTON_FONT_COLOR = Color.White;
-            public static Color TEXT_FONT_COLOR = Color.White;
+            public Color DROPDOWN_OPTION_HOVER_HUE { get; set; } = Color.AntiqueWhite;
+            [JsonConverter(typeof(ColorJsonConverter))]
+            public Color DROPDOWN_OPTION_SELECTED_HUE { get; set; } = Color.CadetBlue;
 
-            public static string FONT = TrueTypeLoader.EMBEDDED_FONT;
+            [JsonConverter(typeof(ColorJsonConverter))]
+            public Color BUTTON_FONT_COLOR { get; set; } = Color.White;
+            [JsonConverter(typeof(ColorJsonConverter))]
+            public Color TEXT_FONT_COLOR { get; set; } = Color.White;
+
+            public string FONT { get; set; } = TrueTypeLoader.EMBEDDED_FONT;
         }
 
         private static class PositionHelper

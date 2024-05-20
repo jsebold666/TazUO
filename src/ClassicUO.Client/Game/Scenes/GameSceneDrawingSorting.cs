@@ -30,20 +30,18 @@
 
 #endregion
 
-using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Map;
-using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using ClassicUO.Utility;
-using ClassicUO.Utility.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Runtime.CompilerServices;
 
 namespace ClassicUO.Game.Scenes
 {
@@ -391,7 +389,8 @@ namespace ClassicUO.Game.Scenes
                 {
                     if (obj.Z >= _maxZ)
                     {
-                        CalculateAlpha(ref obj.AlphaHue, 0);
+                        obj.AlphaHue = 0;
+                        //CalculateAlpha(ref obj.AlphaHue, 0);
                     }
                     else
                     {
@@ -401,15 +400,15 @@ namespace ClassicUO.Game.Scenes
                             allowSelection = false;
                             return true;
                         }
-                        if (itemData.IsDoor || itemData.IsRoof)
-                        {
-                            obj.AlphaHue = 65;
-                            allowSelection = true;
-                            return true;
-                        }
                         if (itemData.IsRoof && _noDrawRoofs)
                         {
                             return false;
+                        }
+                        if (itemData.IsDoor || itemData.IsRoof)
+                        {
+                            obj.AlphaHue = 65;
+                            allowSelection = itemData.IsDoor;
+                            return true;
                         }
                         if (itemData.IsFoliage || obj.Graphic == Constants.TREE_REPLACE_GRAPHIC || StaticFilters.IsTree(obj.Graphic, out var _) || (!itemData.IsMultiMovable && obj is Static stat && stat.IsVegetation) || (!itemData.IsMultiMovable && obj is Multi multi && multi.IsVegetation))
                         {
