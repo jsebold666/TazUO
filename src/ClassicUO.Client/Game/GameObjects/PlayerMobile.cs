@@ -1665,7 +1665,7 @@ namespace ClassicUO.Game.GameObjects
 
         public bool Walk(Direction direction, bool run)
         {
-            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT || Client.Version >= ClientVersion.CV_60142 && IsParalyzed )
+            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT)
             {
                 return false;
             }
@@ -1677,11 +1677,13 @@ namespace ClassicUO.Game.GameObjects
                 run = false;
             }
 
+            
+
             int x = X;
             int y = Y;
             sbyte z = Z;
             Direction oldDirection = Direction;
-
+            bool isFrozeSet = (World.Player.Flags & Flags.Frozen) == Flags.Frozen;
             bool emptyStack = Steps.Count == 0;
 
             if (!emptyStack)
@@ -1698,6 +1700,7 @@ namespace ClassicUO.Game.GameObjects
 
             if ((oldDirection & Direction.Mask) == (direction & Direction.Mask))
             {
+                if (isFrozeSet || Client.Version >= ClientVersion.CV_60142 && IsParalyzed) return false;
                 // ## BEGIN - END ## // ONCASTINGGUMP
                 if (GameActions.iscasting) return false;
                 // ## BEGIN - END ## // ONCASTINGGUMP
