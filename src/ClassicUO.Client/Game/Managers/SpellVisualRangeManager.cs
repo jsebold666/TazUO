@@ -78,6 +78,12 @@ namespace ClassicUO.Game.Managers
                     {
                         if (spellRangePowerWordCache.TryGetValue(RemoveContentInBrackets(e.Text.Trim()), out SpellRangeInfo spell))
                         {
+                            GameActions.LastSpellIndex = spell.ID;
+                            // ## BEGIN - END ## // VISUAL HELPERS
+                            GameActions.LastSpellIndexCursor = spell.ID;
+                            GameCursor._spellTime = 0;
+                            // ## BEGIN - END ## // VISUAL HELPERS
+                            // ## BEGIN - END ## // ONCASTINGGUMP
                             if (!GameActions.iscasting)
                                 World.Player.OnCasting.Start((uint)spell.ID);
                         }

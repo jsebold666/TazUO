@@ -87,7 +87,7 @@ namespace ClassicUO.Game.GameObjects
                     SkillProgressBar.QueManager.AddSkill(e.Index);
                 }
             };
-
+        
             UIManager.Add(castTimer = new SpellVisualRangeManager.CastTimerProgressBar());
         }
 

@@ -1342,6 +1342,11 @@ namespace ClassicUO.Dust765.Dust765
             // ## BEGIN - END ## // ONCASTINGGUMP
             if (ProfileManager.CurrentProfile.OnCastingGump)
             {
+                GameActions.LastSpellIndex = spell.ID;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                GameActions.LastSpellIndexCursor = spell.ID;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
                 if (!GameActions.iscasting)
                     World.Player.OnCasting.Start((uint)GameActions.LastSpellIndexCursor);
             }

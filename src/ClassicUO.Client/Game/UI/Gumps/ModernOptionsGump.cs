@@ -2517,32 +2517,29 @@ namespace ClassicUO.Game.UI.Gumps
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - AL", 0, profile.UOClassicCombatAL, (b) =>
             {
+                UOClassicCombatAL UOClassicCombatAL = UIManager.GetGump<UOClassicCombatAL>();
                 profile.UOClassicCombatAL = b;
 
-                if (profile.UOClassicCombatAL != b)
+                if (b)
                 {
-                    UOClassicCombatAL UOClassicCombatAL = UIManager.GetGump<UOClassicCombatAL>();
+                    if (UOClassicCombatAL != null)
+                        UOClassicCombatAL.Dispose();
 
-                    if (b)
+                    UOClassicCombatAL = new UOClassicCombatAL
                     {
-                        if (UOClassicCombatAL != null)
-                            UOClassicCombatAL.Dispose();
-
-                        UOClassicCombatAL = new UOClassicCombatAL
-                        {
-                            X = profile.UOClassicCombatALLocation.X,
-                            Y = profile.UOClassicCombatALLocation.Y
-                        };
-                        UIManager.Add(UOClassicCombatAL);
-                    }
-                    else
-                    {
-                        if (UOClassicCombatAL != null)
-                            UOClassicCombatAL.Dispose();
-                    }
-
-                    profile.UOClassicCombatAL = b;
+                        X = profile.UOClassicCombatALLocation.X,
+                        Y = profile.UOClassicCombatALLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatAL);
                 }
+                else
+                {
+                    if (UOClassicCombatAL != null)
+                        UOClassicCombatAL.Dispose();
+                }
+
+               
+                
                 // ## BEGIN - END ## // AUTOLOOT
             }), true, page);
 
@@ -2647,30 +2644,28 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.UOClassicCombatBuffbar = b;
 
-                if (profile.UOClassicCombatBuffbar != b)
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+
+                if (b)
                 {
-                    UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
 
-                    if (b)
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
                     {
-                        if (UOClassicCombatBuffbar != null)
-                            UOClassicCombatBuffbar.Dispose();
-
-                        UOClassicCombatBuffbar = new UOClassicCombatBuffbar
-                        {
-                            X = profile.UOClassicCombatBuffbarLocation.X,
-                            Y = profile.UOClassicCombatBuffbarLocation.Y
-                        };
-                        UIManager.Add(UOClassicCombatBuffbar);
-                    }
-                    else
-                    {
-                        if (UOClassicCombatBuffbar != null)
-                            UOClassicCombatBuffbar.Dispose();
-                    }
-
-                    profile.UOClassicCombatBuffbar = b;
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
                 }
+                else
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                }
+
+                    
+                
             }), true, page);
 
             content.BlankLine();
@@ -2679,39 +2674,71 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Show Swing Line", 0, profile.UOClassicCombatBuffbar_SwingEnabled, (b) =>
             {
                 profile.UOClassicCombatBuffbar_SwingEnabled = b;
-                if (profile.UOClassicCombatBuffbar_SwingEnabled != b)
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
                 {
-                    UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
-
-                    if (profile.UOClassicCombatBuffbar)
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
                     {
-                        if (UOClassicCombatBuffbar != null)
-                            UOClassicCombatBuffbar.Dispose();
-                        UIManager.Add(UOClassicCombatBuffbar);
-                    }
-                    else
-                    {
-                        if (UOClassicCombatBuffbar != null)
-                            UOClassicCombatBuffbar.Dispose();
-                    }
-
-                    profile.UOClassicCombatBuffbar_SwingEnabled = b;
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
                 }
+
             }), true, page);
             content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("Show Do Disarm Line", 0, profile.UOClassicCombatBuffbar_DoDEnabled, (b) =>
             {
                 profile.UOClassicCombatBuffbar_DoDEnabled = b;
+
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("how Got Disarmed Line", 0, profile.UOClassicCombatBuffbar_GotDEnabled, (b) =>
             {
                 profile.UOClassicCombatBuffbar_GotDEnabled = b;
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("Lock in place", 0, profile.UOClassicCombatBuffbar_Locked, (b) =>
             {
                 profile.UOClassicCombatBuffbar_Locked = b;
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new TextBox("-----SETTINGS (BUFFBAR AND SELF)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
@@ -2751,7 +2778,28 @@ namespace ClassicUO.Game.UI.Gumps
             content.ResetRightSide();
             content.AddToRight(new CheckboxWithLabel("Enable UCC - Self", 0, profile.UOClassicCombatSelf, (b) =>
             {
+
                 profile.UOClassicCombatSelf = b;
+                UOClassicCombatSelf UOClassicCombatSelf = UIManager.GetGump<UOClassicCombatSelf>();
+
+                if (b)
+                {
+
+                    if (UOClassicCombatSelf != null)
+                        UOClassicCombatSelf.Dispose();
+
+                    UOClassicCombatSelf = new UOClassicCombatSelf
+                    {
+                        X = profile.UOClassicCombatSelfLocation.X,
+                        Y = profile.UOClassicCombatSelfLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatSelf);
+                }
+                else
+                {
+                    if (UOClassicCombatSelf != null)
+                        UOClassicCombatSelf.Dispose();
+                }
 
             }), true, page);
             content.BlankLine();
@@ -2962,6 +3010,26 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Enable UCC - LastTarget Bar", 0, profile.UOClassicCombatLTBar, (b) =>
             {
                 profile.UOClassicCombatLTBar = b;
+
+                UOClassicCombatLTBar UOClassicCombatLTBar = UIManager.GetGump<UOClassicCombatLTBar>();
+
+                if (b)
+                {
+                    if (UOClassicCombatLTBar != null)
+                        UOClassicCombatLTBar.Dispose();
+
+                    UOClassicCombatLTBar = new UOClassicCombatLTBar
+                    {
+                        X = profile.UOClassicCombatLTBarLocation.X,
+                        Y = profile.UOClassicCombatLTBarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatLTBar);
+                }
+                else
+                {
+                    if (UOClassicCombatLTBar != null)
+                        UOClassicCombatLTBar.Dispose();
+                }
             }), true, page);
             content.BlankLine();
             content.AddToRight(new TextBox("(Doubleklick to lock in place)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
@@ -3095,32 +3163,27 @@ namespace ClassicUO.Game.UI.Gumps
             content.AddToRight(new CheckboxWithLabel("Enable UCC - Lines", 0, profile.UOClassicCombatLines, (b) =>
             {
                 profile.UOClassicCombatLines = b;
+                UOClassicCombatLines UOClassicCombatLines = UIManager.GetGump<UOClassicCombatLines>();
 
-                // ## BEGIN - END ## // LINES
-                if (profile.UOClassicCombatLines != b)
+                if (b)
                 {
-                    UOClassicCombatLines UOClassicCombatLines = UIManager.GetGump<UOClassicCombatLines>();
+                    if (UOClassicCombatLines != null)
+                        UOClassicCombatLines.Dispose();
 
-                    if (profile.UOClassicCombatLines)
+                    UOClassicCombatLines = new UOClassicCombatLines
                     {
-                        if (UOClassicCombatLines != null)
-                            UOClassicCombatLines.Dispose();
-
-                        UOClassicCombatLines = new UOClassicCombatLines
-                        {
-                            X = profile.UOClassicCombatLinesLocation.X,
-                            Y = profile.UOClassicCombatLinesLocation.Y
-                        };
-                        UIManager.Add(UOClassicCombatLines);
-                    }
-                    else
-                    {
-                        if (UOClassicCombatLines != null)
-                            UOClassicCombatLines.Dispose();
-                    }
-
-                    profile.UOClassicCombatLines = b;
+                        X = profile.UOClassicCombatLinesLocation.X,
+                        Y = profile.UOClassicCombatLinesLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatLines);
                 }
+                else
+                {
+                    if (UOClassicCombatLines != null)
+                        UOClassicCombatLines.Dispose();
+                }
+
+                
                 // ## BEGIN - END ## // LINES
             }), true, page);
 
