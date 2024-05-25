@@ -2948,8 +2948,11 @@ namespace ClassicUO.Network
             {
                 mobile.Flags = flags;
                 mobile.Graphic = graphic;
+                bool isFrozen = (flags & Flags.Frozen) == Flags.Frozen;
+                mobile.SetParalyzed(isFrozen);
                 mobile.CheckGraphicChange();
                 mobile.FixHue(hue);
+                mobile.Direction = direction;
                 // TODO: x,y,z, direction cause elastic effect, ignore 'em for the moment
             }
             else
