@@ -42,6 +42,7 @@ using ClassicUO.Input;
 using ClassicUO.Network;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
+using System;
 
 namespace ClassicUO.Game.Managers
 {
@@ -608,6 +609,90 @@ namespace ClassicUO.Game.Managers
 
             Mouse.CancelDoubleClick = true;
             ClearTargetingWithoutTargetCancelPacket();
+        }
+
+        internal static void TargetFromHealthBar(uint serial)
+        {
+            if (!IsTargeting)
+            {
+                return;
+            }
+
+            if (serial != null)
+            {
+                switch (TargetingState)
+                {
+                    case CursorTarget.Invalid: return;
+
+                    case CursorTarget.MultiPlacement:
+                    case CursorTarget.Position:
+                    case CursorTarget.Object:
+                    case CursorTarget.HueCommandTarget:
+                    case CursorTarget.SetTargetClientSide:
+
+                        if (serial != World.Player.Serial)
+                        {
+                            LastTargetInfo.SetEntity(serial);
+                        }
+
+
+                        if (TargetingState != CursorTarget.SetTargetClientSide)
+                        {
+                            _lastDataBuffer[0] = 0x6C;
+
+                            _lastDataBuffer[1] = 0x00;
+
+                            _lastDataBuffer[2] = (byte)(_targetCursorId >> 24);
+                            _lastDataBuffer[3] = (byte)(_targetCursorId >> 16);
+                            _lastDataBuffer[4] = (byte)(_targetCursorId >> 8);
+                            _lastDataBuffer[5] = (byte)_targetCursorId;
+
+                            _lastDataBuffer[6] = (byte)TargetingType;
+
+                            _lastDataBuffer[7] = (byte)(serial >> 24);
+                            _lastDataBuffer[8] = (byte)(serial >> 16);
+                            _lastDataBuffer[9] = (byte)(serial >> 8);
+                            _lastDataBuffer[10] = (byte)serial;
+
+                            _lastDataBuffer[11] = (byte)(0 >> 8);
+                            _lastDataBuffer[12] = (byte)0;
+
+                            _lastDataBuffer[13] = (byte)(0 >> 8);
+                            _lastDataBuffer[14] = (byte)0;
+
+                            _lastDataBuffer[15] = (byte)(0 >> 8);
+                            _lastDataBuffer[16] = (byte)0;
+
+                            _lastDataBuffer[17] = (byte)(0 >> 8);
+                            _lastDataBuffer[18] = (byte)0;
+
+
+                            NetClient.Socket.Send_TargetObject(serial,
+                                                              0,
+                                                              0,
+                                                              0,
+                                                              0,
+                                                              _targetCursorId,
+                                                              (byte)TargetingType);
+
+
+
+                        }
+
+                        if (SerialHelper.IsMobile(serial) && LastTargetInfo.Serial == serial)
+                        {
+                            GameActions.RequestMobileStatus(serial);
+                        }
+
+                        ClearTargetingWithoutTargetCancelPacket();
+
+                        Mouse.CancelDoubleClick = true;
+
+                        break;
+
+
+                }
+            }
         }
     }
 }
