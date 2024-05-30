@@ -458,20 +458,32 @@ namespace ClassicUO.Game
 
                     ushort hue = 0;
 
-                    switch (TargetManager.TargetingType)
+                     switch (TargetManager.TargetingType)
                     {
                         case TargetType.Neutral:
-                            hue = 0x03b2;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x03b2;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_NEUTRAL;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
 
                         case TargetType.Harmful:
-                            hue = 0x0023;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x0023;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_HOSTILE;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
 
                         case TargetType.Beneficial:
-                            hue = 0x005A;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x005A;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_FRIENDLY;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
                     }
@@ -483,6 +495,21 @@ namespace ClassicUO.Game
                 if (GameActions.LastSpellIndexCursor >= 1 && GameActions.LastSpellIndexCursor <= 64)
                 {
                     CombatCollection.UpdateSpelltime();
+
+                     // ## BEGIN - END ## // CURSOR
+                    if (_spellTime < 10 && ProfileManager.CurrentProfile.SpellOnCursor)
+                        _spellTimeText.Draw(sb, Mouse.Position.X + ProfileManager.CurrentProfile.SpellOnCursorOffset.X - 17, Mouse.Position.Y + ProfileManager.CurrentProfile.SpellOnCursorOffset.Y, 0);
+
+                    SpellDefinition def = SpellsMagery.GetSpell(GameActions.LastSpellIndexCursor);
+
+                    _spellIconHue = CombatCollection.SpellIconHue(_spellIconHue);
+
+                    Vector3 _spellIconVector;
+                    _spellIconVector = ShaderHueTranslator.GetHueVector(_spellIconHue);
+
+                   // if (ProfileManager.CurrentProfile.SpellOnCursor) { }
+                        //sb.Draw(GumpsLoader.Instance.GetGumpTexture((ushort) def.GumpIconSmallID, out var bounds), new Rectangle(Mouse.Position.X + ProfileManager.CurrentProfile.SpellOnCursorOffset.X, Mouse.Position.Y + ProfileManager.CurrentProfile.SpellOnCursorOffset.Y, 20, 20), bounds, _spellIconVector);
+                    // ## BEGIN - END ## // CURSOR
                 }
                 // ## BEGIN - END ## // VISUAL HELPERS
 

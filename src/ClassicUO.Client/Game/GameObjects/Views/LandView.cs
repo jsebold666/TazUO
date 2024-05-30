@@ -116,7 +116,7 @@ namespace ClassicUO.Game.GameObjects
             }
             if (ProfileManager.CurrentProfile.HighlightTileAtRangeSpell)
             {
-                if (GameActions.LastSpellIndexCursor > 0 && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRangeSpell)
+                if (TargetManager.IsTargeting && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRangeSpell)
                 {
                     hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHueSpell;
                     hueVec.Y = 1;

@@ -1,4 +1,4 @@
-﻿#region license
+#region license
 
 // Copyright (c) 2021, andreakarasho
 // All rights reserved.
@@ -270,10 +270,18 @@ namespace ClassicUO.Game.Scenes
 
             }
             // ## BEGIN - END ## // SELF
-            // ## BEGIN - END ## // AUTOMATIONS
+             // ## BEGIN - END ## // AUTOMATIONS
             ModulesManager.Load();
             // ## BEGIN - END ## // AUTOMATIONS
-
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            if (ProfileManager.CurrentProfile.OnCastingGump)
+            {
+                if (World.Player.OnCasting == null)
+                {
+                    UIManager.Add(World.Player.OnCasting = new OnCastingGump());
+                }
+            }
+            // ## BEGIN - END ## // ONCASTINGGUMP
 
             CircleOfTransparency.Create(ProfileManager.CurrentProfile.CircleOfTransparencyRadius);
             Plugin.OnConnected();
@@ -281,6 +289,7 @@ namespace ClassicUO.Game.Scenes
             GameController.UpdateBackgroundHueShader();
             SpellDefinition.LoadCustomSpells();
             SpellVisualRangeManager.Instance.OnSceneLoad();
+            OnCastingGump.OnSceneLoad();
             AutoLootManager.Instance.OnSceneLoad();
             if (!UpdateManager.SkipUpdateCheck && UpdateManager.HasUpdate)
             {
@@ -419,15 +428,7 @@ namespace ClassicUO.Game.Scenes
                     break;
             }
 
-            // ## BEGIN - END ## // UI/GUMPS
-            World.Player?.BandageTimer.OnMessage(text, hue, name, e.IsUnicode);
-            // ## BEGIN - END ## // UI/GUMPS
-            // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-            if (ProfileManager.CurrentProfile.UOClassicCombatSelf || ProfileManager.CurrentProfile.UOClassicCombatBuffbar)
-            {
-                World.GetClilocTriggers.OnMessage(text, hue, name, e.IsUnicode);
-            }
-            // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+            
 
             if (!string.IsNullOrEmpty(text))
             {
@@ -474,16 +475,6 @@ namespace ClassicUO.Game.Scenes
 
             EventSink.InvokeOnDisconnected(null);
 
-            // ## BEGIN - END ## // AUTOMATIONS
-            try
-            {
-                ModulesManager.Unload();
-            }
-            catch
-            {
-            }
-            // ## BEGIN - END ## // AUTOMATIONS
-
             TargetManager.Reset();
 
             // special case for wmap. this allow us to save settings
@@ -493,6 +484,7 @@ namespace ClassicUO.Game.Scenes
             TileMarkerManager.Instance.Save();
             SpellVisualRangeManager.Instance.Save();
             SpellVisualRangeManager.Instance.OnSceneUnload();
+            OnCastingGump.OnSceneUnload();
             AutoLootManager.Instance.Save();
 
             NameOverHeadManager.Save();

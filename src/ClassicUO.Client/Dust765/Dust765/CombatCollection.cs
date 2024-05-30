@@ -1339,13 +1339,18 @@ namespace ClassicUO.Dust765.Dust765
                     }
                 }
             }
-            //// ## BEGIN - END ## // ONCASTINGGUMP
-            //if (ProfileManager.CurrentProfile.OnCastingGump)
-            //{
-            //    if (!GameActions.iscasting)
-            //        World.Player.OnCasting.Start((uint) GameActions.LastSpellIndexCursor);
-            //}
-            //// ## BEGIN - END ## // ONCASTINGGUMP
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            if (ProfileManager.CurrentProfile.OnCastingGump)
+            {
+                GameActions.LastSpellIndex = spell.ID;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                GameActions.LastSpellIndexCursor = spell.ID;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                if (!GameActions.iscasting)
+                    World.Player.OnCasting.Start((uint)GameActions.LastSpellIndexCursor);
+            }
+            // ## BEGIN - END ## // ONCASTINGGUMP
         }
         // ## BEGIN - END ## // VISUAL HELPERS
         // ## BEGIN - END ## // CURSOR
@@ -1357,7 +1362,7 @@ namespace ClassicUO.Dust765.Dust765
                 case TargetType.Neutral:
                     hue = 0x0000;  //BETTER HUE? 0x03B2
                     return hue;
-
+                    
                 case TargetType.Harmful:
                     hue = 0x0023;
                     return hue;

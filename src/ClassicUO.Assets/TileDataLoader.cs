@@ -311,18 +311,18 @@ namespace ClassicUO.Assets
             TexID = textId;
             Name = name;
 
-            // ## BEGIN - END ## // MISC
-            IsImpassable = (Flags & TileFlag.Impassable) != 0;
-            // ## BEGIN - END ## // MISC
         }
 
         public TileFlag Flags;
         public ushort TexID;
         public string Name;
+        
 
         public bool IsWet => (Flags & TileFlag.Wet) != 0;
+
+        public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
         // ## BEGIN - END ## // MISC
-        public bool IsImpassable;
+        //public bool IsImpassable;
         // ## BEGIN - END ## // MISC
         public bool IsNoDiagonal => (Flags & TileFlag.NoDiagonal) != 0;
     }
@@ -374,9 +374,9 @@ namespace ClassicUO.Assets
         public bool IsAnimated => (Flags & TileFlag.Animation) != 0;
         public bool IsBridge => (Flags & TileFlag.Bridge) != 0;
         // ## BEGIN - END ## // MISC
-        //public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
+        public bool IsImpassable => (Flags & TileFlag.Impassable) != 0;
         // ## BEGIN - END ## // MISC
-        public bool IsImpassable;
+        //public bool IsImpassable;
         // ## BEGIN - END ## // MISC
         public bool IsSurface => (Flags & TileFlag.Surface) != 0;
         public bool IsWearable => (Flags & TileFlag.Wearable) != 0;

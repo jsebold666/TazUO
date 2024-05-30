@@ -55,10 +55,13 @@ namespace ClassicUO.Game.GameObjects
         public int DeathX = 0;
         public int DeathY = 0;
         public uint DeathTick = 0;
-        // ## BEGIN - END ## // MISC2
+        // ## BEGIN - END ## // MISC2s
         // ## BEGIN - END ## // UI/GUMPS
         public BandageGump BandageTimer;
         // ## BEGIN - END ## // UI/GUMPS
+    // ## BEGIN - END ## // ONCASTINGGUMP
+        public OnCastingGump OnCasting;
+        // ## BEGIN - END ## // ONCASTINGGUMP
 
         public PlayerMobile(uint serial) : base(serial)
         {
@@ -67,6 +70,9 @@ namespace ClassicUO.Game.GameObjects
             // ## BEGIN - END ## // UI/GUMPS
             UIManager.Add(BandageTimer = new BandageGump());
             // ## BEGIN - END ## // UI/GUMPS
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            UIManager.Add(OnCasting = new OnCastingGump());
+            // ## BEGIN - END ## // ONCASTINGGUMP
 
             for (int i = 0; i < Skills.Length; i++)
             {
@@ -81,7 +87,7 @@ namespace ClassicUO.Game.GameObjects
                     SkillProgressBar.QueManager.AddSkill(e.Index);
                 }
             };
-
+        
             UIManager.Add(castTimer = new SpellVisualRangeManager.CastTimerProgressBar());
         }
 
@@ -1586,7 +1592,14 @@ namespace ClassicUO.Game.GameObjects
 
                         if (distance > Constants.MAX_CONTAINER_OPENED_ON_GROUND_RANGE)
                         {
-                            gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            //gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            if (!ProfileManager.CurrentProfile.OverrideContainerOpenRange)
+                            {
+                                gump.Dispose();
+                            }
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
                         }
 
                         break;
@@ -1659,7 +1672,7 @@ namespace ClassicUO.Game.GameObjects
 
         public bool Walk(Direction direction, bool run)
         {
-            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT || Client.Version >= ClientVersion.CV_60142 && IsParalyzed)
+            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT)
             {
                 return false;
             }
@@ -1671,11 +1684,13 @@ namespace ClassicUO.Game.GameObjects
                 run = false;
             }
 
+            
+
             int x = X;
             int y = Y;
             sbyte z = Z;
             Direction oldDirection = Direction;
-
+            bool isFrozeSet = World.Player.IsParalyzed;
             bool emptyStack = Steps.Count == 0;
 
             if (!emptyStack)
@@ -1690,8 +1705,16 @@ namespace ClassicUO.Game.GameObjects
             sbyte oldZ = z;
             ushort walkTime = Constants.TURN_DELAY;
 
+  
+
             if ((oldDirection & Direction.Mask) == (direction & Direction.Mask))
             {
+                if (isFrozeSet || Client.Version >= ClientVersion.CV_60142 && IsParalyzed) return false;
+
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                if (GameActions.iscasting) return false;
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                
                 Direction newDir = direction;
                 int newX = x;
                 int newY = y;

@@ -48,12 +48,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SDL2;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ClassicUO.Game.UI.Gumps
 {
     internal abstract class BaseHealthBarGump : AnchorableGump
     {
         private bool _targetBroke;
+        public static readonly MemoryCache entityCache = new MemoryCache(new MemoryCacheOptions());
 
         public bool IsLastAttackBar { get; set; } = false;
         public static BaseHealthBarGump LastAttackBar { get; set; }
@@ -76,6 +78,19 @@ namespace ClassicUO.Game.UI.Gumps
             // ## BEGIN - END ## // MISC
             LocalEntity = entity;
             // ## BEGIN - END ## // MISC
+
+
+            if (!entityCache.TryGetValue(entity.Serial, out Entity cachedEntity))
+            {
+                // A entidade não foi encontrada no cache, então a adicionamos
+                entityCache.Set(entity.Serial, entity, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2),
+
+                    Priority = CacheItemPriority.Normal
+                });
+            }
+
 
             BuildGump();
         }
@@ -325,17 +340,59 @@ namespace ClassicUO.Game.UI.Gumps
             if (TargetManager.IsTargeting)
             {
                 // ## BEGIN - END ## // MISC
+                // ## BEGIN - END ## // MISC
                 //_targetBroke = true;
                 // ## BEGIN - END ## // MISC
                 TargetManager.Target(LocalSerial);
                 // ## BEGIN - END ## // MISC
                 Entity ent = World.Get(LocalSerial);
-                if (ent == null)
-                {
-                    TargetManager.LastTargetInfo.Serial = LocalEntity.Serial;
-                    GameActions.Print($"Changing last target to {LocalEntity.Name}");
-                    GameActions.Print(World.Player, $"Target: {LocalEntity.Name}");
-                    TargetManager.CancelTarget();
+
+                if (ProfileManager.CurrentProfile.SetTargetOut) {
+                    if (ent == null)
+                    {
+
+                        if (LocalSerial != null)
+                        {
+
+                            GameActions.Print(World.Player, $"Target OutRange: {_name}");
+                            TargetManager.LastTargetInfo.Serial = LocalSerial;
+                            TargetManager.TargetFromHealthBar(LocalSerial);
+                        }
+                        else
+                        {
+
+                            Entity cachedEntity;
+                            if (entityCache.TryGetValue(LocalSerial, out cachedEntity))
+                            {
+
+                                GameActions.Print(World.Player, $"Target OutRange : {cachedEntity.Name}");
+                                TargetManager.LastTargetInfo.Serial = cachedEntity.Serial;
+                                TargetManager.TargetFromHealthBar(cachedEntity.Serial);
+
+                            }
+                            else
+                            {
+                                GameActions.Print($"No has info for Target, need see for updates infos.", 88);
+                            }
+
+
+                        }
+                    }
+                } else {
+                    if (ent == null)
+                    {
+                        TargetManager.LastTargetInfo.Serial = LocalSerial;
+                        TargetManager.CancelTarget();
+                    }
+                
+                    else
+                    {
+                        if (LocalEntity != null && LocalEntity.Serial != default)
+                        {
+                            TargetManager.LastTargetInfo.Serial = LocalEntity.Serial;
+                        }
+                        
+                    }
                 }
                 // ## BEGIN - END ## // MISC
                 Mouse.LastLeftButtonClickTime = 0;
