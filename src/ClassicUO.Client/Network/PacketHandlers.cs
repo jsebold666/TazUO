@@ -55,6 +55,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace ClassicUO.Network
 {
@@ -3694,9 +3695,16 @@ namespace ClassicUO.Network
 
             //}
 
-            GameActions.SendCloseStatus(TargetManager.LastAttack);
+             if (ProfileManager.CurrentProfile.AutoOpenHealth)
+             {
+                GameActions.SendCloseStatus(TargetManager.LastAttack);
+             }
+            
             TargetManager.LastAttack = serial;
-            GameActions.RequestMobileStatus(serial);
+            if (ProfileManager.CurrentProfile.AutoOpenHealth)
+            {
+                GameActions.RequestMobileStatus(serial);
+            }
         }
 
         private static void TextEntryDialog(ref StackDataReader p)
@@ -6481,11 +6489,15 @@ namespace ClassicUO.Network
                     mobile.Graphic = (ushort)(graphic + graphic_inc);
                     mobile.CheckGraphicChange();
                     mobile.Direction = direction & Direction.Up;
-                    mobile.FixHue(hue);
                     mobile.X = x;
                     mobile.Y = y;
                     mobile.Z = z;
                     mobile.Flags = flagss;
+
+                    bool isFrozen = (flagss & Flags.Frozen) == Flags.Frozen;
+                    var color = ProfileManager.CurrentProfile.HighlightMobilesByParalize ? ProfileManager.CurrentProfile.ParalyzedHue : hue;
+                    mobile.FixHue(isFrozen ? color : hue); 
+                    mobile.SetParalyzed(isFrozen);
                 }
                 else
                 {
@@ -6599,8 +6611,11 @@ namespace ClassicUO.Network
                 }
 
                 mobile.Graphic = (ushort)(graphic & 0x3FFF);
-                mobile.FixHue(hue);
                 mobile.Flags = flagss;
+                bool isFrozen = (flagss & Flags.Frozen) == Flags.Frozen;
+                var color = ProfileManager.CurrentProfile.HighlightMobilesByParalize ? ProfileManager.CurrentProfile.ParalyzedHue : hue;
+                mobile.FixHue(isFrozen ? color : hue);
+                mobile.SetParalyzed(isFrozen);
             }
 
             if (created && !obj.IsClicked)
@@ -6692,7 +6707,10 @@ namespace ClassicUO.Network
                 World.Player.Flags = flags;
                 World.Player.Walker.DenyWalk(0xFF, -1, -1, -1);
 
-                GameScene gs = Client.Game.GetScene<GameScene>();
+                bool isFrozen = (flags & Flags.Frozen) == Flags.Frozen;
+                World.Player.IsParalyzed = isFrozen;
+
+               GameScene gs = Client.Game.GetScene<GameScene>();
 
                 if (gs != null)
                 {

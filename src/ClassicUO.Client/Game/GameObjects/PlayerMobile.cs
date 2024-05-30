@@ -1592,7 +1592,14 @@ namespace ClassicUO.Game.GameObjects
 
                         if (distance > Constants.MAX_CONTAINER_OPENED_ON_GROUND_RANGE)
                         {
-                            gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            //gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            if (!ProfileManager.CurrentProfile.OverrideContainerOpenRange)
+                            {
+                                gump.Dispose();
+                            }
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
                         }
 
                         break;

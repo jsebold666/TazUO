@@ -1998,14 +1998,31 @@ namespace ClassicUO.Game.Managers
                     if (SelectedObject.Object is Land l)
                         l.AllowedToDraw = false;
 
+                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                    /*
                     if (SelectedObject.Object is Item i)
                         i.AllowedToDraw = false;
+                    */
+                    if (SelectedObject.Object is Item i)
+                    {
+                        i.AllowedToDraw = false;
 
+                        ContainerGump cont = UIManager.GetGump<ContainerGump>(i.Container);
+                        cont.ThiefUpdate();
+                    }
+                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
                     if (SelectedObject.Object is Entity e)
                         e.AllowedToDraw = false;
 
                     if (SelectedObject.Object is Mobile m)
                         m.AllowedToDraw = false;
+
+                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                    if (SelectedObject.Object is Static s)
+                        s.AllowedToDraw = false;
+                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
+
+                    break;
 
                     break;
 

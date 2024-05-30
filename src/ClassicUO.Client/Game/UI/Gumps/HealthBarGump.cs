@@ -346,34 +346,52 @@ namespace ClassicUO.Game.UI.Gumps
                 TargetManager.Target(LocalSerial);
                 // ## BEGIN - END ## // MISC
                 Entity ent = World.Get(LocalSerial);
-                if (ent == null)
-                {
 
-                    if (LocalSerial != null)
+                if (ProfileManager.CurrentProfile.SetTargetOut) {
+                    if (ent == null)
                     {
 
-                        GameActions.Print(World.Player, $"Target OutRange: {_name}");
-                        TargetManager.LastTargetInfo.Serial = LocalSerial;
-                        TargetManager.TargetFromHealthBar(LocalSerial);
-                    }
-                    else
-                    {
-
-                        Entity cachedEntity;
-                        if (entityCache.TryGetValue(LocalSerial, out cachedEntity))
+                        if (LocalSerial != null)
                         {
 
-                            GameActions.Print(World.Player, $"Target OutRange : {cachedEntity.Name}");
-                            TargetManager.LastTargetInfo.Serial = cachedEntity.Serial;
-                            TargetManager.TargetFromHealthBar(cachedEntity.Serial);
-
+                            GameActions.Print(World.Player, $"Target OutRange: {_name}");
+                            TargetManager.LastTargetInfo.Serial = LocalSerial;
+                            TargetManager.TargetFromHealthBar(LocalSerial);
                         }
                         else
                         {
-                            GameActions.Print($"No has info for Target, need see for updates infos.", 88);
+
+                            Entity cachedEntity;
+                            if (entityCache.TryGetValue(LocalSerial, out cachedEntity))
+                            {
+
+                                GameActions.Print(World.Player, $"Target OutRange : {cachedEntity.Name}");
+                                TargetManager.LastTargetInfo.Serial = cachedEntity.Serial;
+                                TargetManager.TargetFromHealthBar(cachedEntity.Serial);
+
+                            }
+                            else
+                            {
+                                GameActions.Print($"No has info for Target, need see for updates infos.", 88);
+                            }
+
+
                         }
-
-
+                    }
+                } else {
+                    if (ent == null)
+                    {
+                        TargetManager.LastTargetInfo.Serial = LocalSerial;
+                        TargetManager.CancelTarget();
+                    }
+                
+                    else
+                    {
+                        if (LocalEntity != null && LocalEntity.Serial != default)
+                        {
+                            TargetManager.LastTargetInfo.Serial = LocalEntity.Serial;
+                        }
+                        
                     }
                 }
                 // ## BEGIN - END ## // MISC

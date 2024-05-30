@@ -1882,6 +1882,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                     foreach (string icon in Directory.GetFiles(_mapIconsPath, "*.png").Union(Directory.GetFiles(_mapIconsPath, "*.jpg")))
                     {
+
                         FileStream fs = new FileStream(icon, FileMode.Open, FileAccess.Read);
                         MemoryStream ms = new MemoryStream();
                         fs.CopyTo(ms);
@@ -2085,6 +2086,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             //);
         }
+
 
         private void AddMarkerOnPlayer()
         {
@@ -2290,6 +2292,7 @@ namespace ClassicUO.Game.UI.Gumps
                         SpriteEffects.None,
                         0
                     );
+                    
 
                     DrawAll
                     (
@@ -2319,6 +2322,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private void DrawAll(UltimaBatcher2D batcher, Rectangle srcRect, int gX, int gY, int halfWidth, int halfHeight)
         {
+          
             foreach (Zone zone in _zoneSets.GetZonesForMapIndex(World.MapIndex))
             {
                 if (zone.BoundingRectangle.Intersects(srcRect))
@@ -2354,7 +2358,7 @@ namespace ClassicUO.Game.UI.Gumps
             if (_showMarkers && _mapMarkersLoaded)
             {
                 WMapMarker lastMarker = null;
-
+             
                 foreach (WMapMarkerFile file in _markerFiles)
                 {
                     if (file.Hidden)
@@ -2986,18 +2990,27 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else
             {
-                //batcher.Draw(marker.MarkerIcon, new Vector2(rot.X - (marker.MarkerIcon.Width >> 1), rot.Y - (marker.MarkerIcon.Height >> 1)), hueVector);
+                batcher.Draw(
+                 marker.MarkerIcon,
+                 new Rectangle(
+                     (int)(rot.X - (marker.MarkerIcon.Width >> 1)),
+                     (int)(rot.Y - (marker.MarkerIcon.Height >> 1)),
+                     marker.MarkerIcon.Width,
+                     marker.MarkerIcon.Height
+                 ),
+                 hueVector
+             );
 
-                //if (!showMarkerName)
-                //{
-                //    if (Mouse.Position.X >= rot.X - (marker.MarkerIcon.Width >> 1) &&
-                //        Mouse.Position.X <= rot.X + (marker.MarkerIcon.Width >> 1) &&
-                //        Mouse.Position.Y >= rot.Y - (marker.MarkerIcon.Height >> 1) &&
-                //        Mouse.Position.Y <= rot.Y + (marker.MarkerIcon.Height >> 1))
-                //    {
-                //        drawSingleName = true;
-                //    }
-                //}
+                if (!showMarkerName)
+                {
+                    if (Mouse.Position.X >= rot.X - (marker.MarkerIcon.Width >> 1) &&
+                        Mouse.Position.X <= rot.X + (marker.MarkerIcon.Width >> 1) &&
+                        Mouse.Position.Y >= rot.Y - (marker.MarkerIcon.Height >> 1) &&
+                        Mouse.Position.Y <= rot.Y + (marker.MarkerIcon.Height >> 1))
+                    {
+                        drawSingleName = true;
+                    }
+                }
             }
 
             if (showMarkerName)

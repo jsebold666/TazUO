@@ -177,18 +177,30 @@ namespace ClassicUO.Game.GameObjects
                 {
                     if (ProfileManager.CurrentProfile.HighlightMobilesByPoisoned)
                     {
-                        if (IsPoisoned)
+                        if (IsPoisoned || _isSA_Poisoned)
                         {
-                            overridedHue = ProfileManager.CurrentProfile.PoisonHue;
+                            overridedHue = CombatCollection.LastTargetHue(this, ProfileManager.CurrentProfile.PoisonHue);
+                            hueVec.Y = 1;
+                        }
+                    } 
+                    if (ProfileManager.CurrentProfile.HighlightMobilesByParalize)
+                    {
+                        if (IsParalyzed && NotorietyFlag != NotorietyFlag.Invulnerable) 
+                        {
+                            overridedHue = CombatCollection.LastTargetHue(this, ProfileManager.CurrentProfile.ParalyzedHue);
+                            hueVec.Y = 1;
                         }
                     }
-                    if (ProfileManager.CurrentProfile.HighlightMobilesByParalize)
+
+                    if (!ProfileManager.CurrentProfile.HighlightMobilesByParalize)
                     {
                         if (IsParalyzed && NotorietyFlag != NotorietyFlag.Invulnerable)
                         {
-                            overridedHue = ProfileManager.CurrentProfile.ParalyzedHue;
+                            overridedHue = CombatCollection.LastTargetHue(this, ProfileManager.CurrentProfile.ParalyzedHue);
+                            hueVec.Y = 1;
                         }
                     }
+
                     if (ProfileManager.CurrentProfile.HighlightMobilesByInvul)
                     {
                         if (NotorietyFlag != NotorietyFlag.Invulnerable && IsYellowHits)

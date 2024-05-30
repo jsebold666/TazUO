@@ -40,6 +40,7 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
+using ClassicUO.Utility.Logging;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -150,10 +151,11 @@ namespace ClassicUO.Game.GameObjects
         public Mobile() : base(0) { }
 
         public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
-        public bool IsParalyzed { get; private set; }
+        public bool IsParalyzed { get; set; }
 
         public void SetParalyzed(bool value)
         {
+           
             IsParalyzed = value;
         }
 

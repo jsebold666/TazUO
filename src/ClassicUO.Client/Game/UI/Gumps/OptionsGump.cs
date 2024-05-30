@@ -227,7 +227,7 @@ namespace ClassicUO.Game.UI.Gumps
         private HSliderBar _multipleUnderlinesSelfPartyTransparency;
         // ## BEGIN - END ## // OLDHEALTHLINES
         // ## BEGIN - END ## // MISC
-        private Checkbox _offscreenTargeting, _SpecialSetLastTargetCliloc, _blackOutlineStatics, _ignoreStaminaCheck, _blockWoS, _blockWoSFelOnly, _blockWoSArtForceAoS, _blockEnergyF, _blockEnergyFFelOnly, _blockEnergyFArtForceAoS;
+        private Checkbox _offscreenTargeting, _autoOpenHealth, _setTargetOut, _SpecialSetLastTargetCliloc, _blackOutlineStatics, _ignoreStaminaCheck, _blockWoS, _blockWoSFelOnly, _blockWoSArtForceAoS, _blockEnergyF, _blockEnergyFFelOnly, _blockEnergyFArtForceAoS;
         private InputField _SpecialSetLastTargetClilocText, _blockWoSArt, _blockEnergyFArt;
         // ## BEGIN - END ## // MISC
         // ## BEGIN - END ## // MISC2
@@ -6032,6 +6032,15 @@ namespace ClassicUO.Game.UI.Gumps
 
             section7.Add(_offscreenTargeting = AddCheckBox(null, "Offscreen targeting (always on)", true, startX, startY)); //has no effect but feature list
             startY += _offscreenTargeting.Height + 2;
+
+            section7.Add(_autoOpenHealth = AddCheckBox(null, "Auto Open HealthBars Gump GetEnemey", true, startX, startY)); //has no effect but feature list
+            startY += _autoOpenHealth.Height + 2;
+
+            
+
+            section7.Add(_setTargetOut = AddCheckBox(null, "Set Target to Out Range", true, startX, startY)); //has no effect but feature list
+            startY += _setTargetOut.Height + 2;
+            
             section7.Add(_SpecialSetLastTargetCliloc = AddCheckBox(null, "Razor * Target * to lasttarget string", _currentProfile.SpecialSetLastTargetCliloc, startX, startY));
             startY += _SpecialSetLastTargetCliloc.Height + 2;
 

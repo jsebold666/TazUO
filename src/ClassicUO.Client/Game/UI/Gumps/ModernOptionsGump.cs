@@ -1,4 +1,4 @@
-using ClassicUO.Assets;
+﻿using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 // ## BEGIN - END ## // UI/GUMPS
@@ -2270,6 +2270,21 @@ namespace ClassicUO.Game.UI.Gumps
                 profile.OffscreenTargeting = b;
             }), true, page);
             content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Auto Open HealthBars Gump GetEnemey", 0, profile.AutoOpenHealth, (b) =>
+            {
+                profile.AutoOpenHealth = b;
+            }), true, page);
+             content.BlankLine();
+             content.AddToRight(new CheckboxWithLabel("Auto Open HealthBars Gump GetEnemey", 0, profile.AutoOpenHealth, (b) =>
+            {
+                profile.AutoOpenHealth = b;
+            }), true, page);
+             content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Override container open range", 0, profile.OverrideContainerOpenRange , (b) =>
+            {
+                profile.OverrideContainerOpenRange = b;
+            }), true, page);
+            content.BlankLine();
             content.AddToRight(new CheckboxWithLabel("Razor * Target * to lasttarget string", 0, profile.SpecialSetLastTargetCliloc, (b) =>
             {
                 profile.SpecialSetLastTargetCliloc = b;
@@ -2455,8 +2470,9 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 profile.InvisibleHousesZ = (byte)i;
             }), true, page);
-
-            content.AddToRight(new SliderWithLabel("Dont make Invisible or Transparent below (Z level): ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.DontRemoveHouseBelowZ, (i) =>
+            content.AddToRight(new TextBox("Dont make Invisible or Transparent below (Z level):", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new SliderWithLabel("Z level ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.DontRemoveHouseBelowZ, (i) =>
             {
                 profile.DontRemoveHouseBelowZ = (byte)i;
             }), true, page);
