@@ -2270,12 +2270,12 @@ namespace ClassicUO.Game.UI.Gumps
                 profile.OffscreenTargeting = b;
             }), true, page);
             content.BlankLine();
-            content.AddToRight(new CheckboxWithLabel("Auto Open HealthBars Gump GetEnemey", 0, profile.AutoOpenHealth, (b) =>
+            content.AddToRight(new CheckboxWithLabel("Set target with is out range", 0, profile.SetTargetOut, (b) =>
             {
-                profile.AutoOpenHealth = b;
+                profile.SetTargetOut = b;
             }), true, page);
              content.BlankLine();
-             content.AddToRight(new CheckboxWithLabel("Auto Open HealthBars Gump GetEnemey", 0, profile.AutoOpenHealth, (b) =>
+             content.AddToRight(new CheckboxWithLabel("Auto Open Health bar gump Get Enemy", 0, profile.AutoOpenHealth, (b) =>
             {
                 profile.AutoOpenHealth = b;
             }), true, page);

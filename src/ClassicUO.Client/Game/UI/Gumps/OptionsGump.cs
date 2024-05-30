@@ -6033,12 +6033,12 @@ namespace ClassicUO.Game.UI.Gumps
             section7.Add(_offscreenTargeting = AddCheckBox(null, "Offscreen targeting (always on)", true, startX, startY)); //has no effect but feature list
             startY += _offscreenTargeting.Height + 2;
 
-            section7.Add(_autoOpenHealth = AddCheckBox(null, "Auto Open HealthBars Gump GetEnemey", true, startX, startY)); //has no effect but feature list
+            section7.Add(_autoOpenHealth = AddCheckBox(null, "Auto Open Health bar gump Get Enemy", true, startX, startY)); //has no effect but feature list
             startY += _autoOpenHealth.Height + 2;
 
             
 
-            section7.Add(_setTargetOut = AddCheckBox(null, "Set Target to Out Range", true, startX, startY)); //has no effect but feature list
+            section7.Add(_setTargetOut = AddCheckBox(null, "Set target with is out range", true, startX, startY)); //has no effect but feature list
             startY += _setTargetOut.Height + 2;
             
             section7.Add(_SpecialSetLastTargetCliloc = AddCheckBox(null, "Razor * Target * to lasttarget string", _currentProfile.SpecialSetLastTargetCliloc, startX, startY));
