@@ -30,7 +30,6 @@
 
 #endregion
 
-using System;
 using ClassicUO.Configuration;
 using ClassicUO.Dust765.Managers;
 using ClassicUO.Game.Data;
@@ -43,6 +42,7 @@ using ClassicUO.Network;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
+using System;
 using static ClassicUO.Network.NetClient;
 using ClassicUO.Dust765.Managers;
 
@@ -157,30 +157,7 @@ namespace ClassicUO.Game
 
         public static void OpenJournal()
         {
-            ResizableJournal resizableJournal = UIManager.GetGump<ResizableJournal>();
-            if (resizableJournal == null)
-                UIManager.Add(new ResizableJournal());
-            else
-            {
-                resizableJournal.SetInScreen();
-                resizableJournal.BringOnTop();
-            }
-            //JournalGump journalGump = UIManager.GetGump<JournalGump>();
-
-            //if (journalGump == null)
-            //{
-            //    UIManager.Add(new JournalGump { X = 64, Y = 64 });
-            //}
-            //else
-            //{
-            //    journalGump.SetInScreen();
-            //    journalGump.BringOnTop();
-
-            //    if (journalGump.IsMinimized)
-            //    {
-            //        journalGump.IsMinimized = false;
-            //    }
-            //}
+            UIManager.Add(new ResizableJournal());
         }
 
         public static void OpenSkills()
@@ -217,7 +194,7 @@ namespace ClassicUO.Game
         public static void BandageSelf()
         {
             Item bandage = World.Player.FindBandage();
-            if(bandage != null)
+            if (bandage != null)
             {
                 NetClient.Socket.Send_TargetSelectedObject(bandage.Serial, World.Player.Serial);
             }

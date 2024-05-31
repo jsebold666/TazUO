@@ -141,6 +141,12 @@ namespace ClassicUO.Game.Managers
 
             string path = Path.Combine(ProfileManager.ProfilePath, "macros.xml");
 
+            if (!File.Exists(path))
+            {
+                Directory.CreateDirectory(ProfileManager.ProfilePath);
+                File.Create(path).Close();
+            }
+
             using (XmlTextWriter xml = new XmlTextWriter(path, Encoding.UTF8)
             {
                 Formatting = Formatting.Indented,
@@ -327,16 +333,12 @@ namespace ClassicUO.Game.Managers
             {
                 if (obj.ControllerButtons != null)
                 {
-                    if (obj.ControllerButtons.Length > 1)
+                    if (obj.ControllerButtons.Length > 0)
                     {
                         if (Controller.AreButtonsPressed(obj.ControllerButtons))
                         {
                             break;
                         }
-                    }
-                    else if (obj.ControllerButtons.Contains(button))
-                    {
-                        break;
                     }
                 }
 

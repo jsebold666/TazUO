@@ -58,6 +58,7 @@ namespace ClassicUO.Game.UI.Controls
         private bool _handlesKeyboardFocus;
         private Point _offset;
         private Control _parent;
+        private float alpha = 1.0f;
 
         protected Control(Control parent = null)
         {
@@ -130,7 +131,15 @@ namespace ClassicUO.Game.UI.Controls
 
         public bool IsFocused { get; set; }
 
-        public float Alpha { get; set; } = 1.0f;
+        public float Alpha
+        {
+            get => alpha; set
+            {
+                float old = alpha;
+                alpha = value;
+                AlphaChanged(old, value);
+            }
+        }
 
         public List<Control> Children { get; }
 
@@ -277,8 +286,6 @@ namespace ClassicUO.Game.UI.Controls
             }
         }
 
-
-
         public virtual bool Draw(UltimaBatcher2D batcher, int x, int y)
         {
             if (IsDisposed)
@@ -308,6 +315,9 @@ namespace ClassicUO.Game.UI.Controls
             return true;
         }
 
+        /// <summary>
+        /// Update is called as often as possible.
+        /// </summary>
         public virtual void Update()
         {
             if (IsDisposed)
@@ -315,14 +325,15 @@ namespace ClassicUO.Game.UI.Controls
                 return;
             }
 
+
             if (Children.Count != 0)
             {
-                //InitializeControls();
+                List<Control> removalList = new List<Control>(); ;
                 int w = 0, h = 0;
 
                 for (int i = 0; i < Children.Count; i++)
                 {
-                    if (i < 0)
+                    if (i < 0 || i >= Children.Count)
                     {
                         continue;
                     }
@@ -336,10 +347,7 @@ namespace ClassicUO.Game.UI.Controls
 
                     if (c.IsDisposed)
                     {
-                        OnChildRemoved();
-                        //Children.RemoveAt(i);
-                        Children.Remove(c);
-                        i--;
+                        removalList.Add(c);
                         continue;
                     }
 
@@ -362,6 +370,15 @@ namespace ClassicUO.Game.UI.Controls
                     }
                 }
 
+                if (removalList.Count > 0)
+                {
+                    foreach (Control c in removalList)
+                    {
+                        OnChildRemoved();
+                        Children.Remove(c);
+                    }
+                }
+
                 if (WantUpdateSize && IsVisible)
                 {
                     if (w != Width)
@@ -376,6 +393,57 @@ namespace ClassicUO.Game.UI.Controls
 
                     WantUpdateSize = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Intended for updates that don't need to occur as frequently as Update() does.
+        /// SlowUpdate is called twice per second.
+        /// </summary>
+        public virtual void SlowUpdate()
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (Children.Count != 0)
+            {
+                List<Control> removalList = new List<Control>(); ;
+
+                for (int i = 0; i < Children.Count; i++)
+                {
+                    if (i < 0 || i >= Children.Count)
+                    {
+                        continue;
+                    }
+
+                    Control c = Children.ElementAt(i);
+
+                    if (c == null)
+                    {
+                        continue;
+                    }
+
+                    if (c.IsDisposed)
+                    {
+                        removalList.Add(c);
+                        continue;
+                    }
+
+                    c.SlowUpdate();
+
+                }
+
+                if (removalList.Count > 0)
+                {
+                    foreach (Control c in removalList)
+                    {
+                        OnChildRemoved();
+                        Children.Remove(c);
+                    }
+                }
+
             }
         }
 
@@ -572,6 +640,13 @@ namespace ClassicUO.Game.UI.Controls
         public virtual void OnHitTestSuccess(int x, int y, ref Control res)
         {
         }
+
+        /// <summary>
+        /// Invoked when alpha is changed on a control
+        /// </summary>
+        /// <param name="oldValue"></param>
+        /// <param name="newValue"></param>
+        public virtual void AlphaChanged(float oldValue, float newValue) { }
 
         public Control GetFirstControlAcceptKeyboardInput()
         {
@@ -950,6 +1025,12 @@ namespace ClassicUO.Game.UI.Controls
             }
 
             IsDisposed = true;
+            AfterDispose();
         }
+
+        /// <summary>
+        /// Called after the control has been disposed.
+        /// </summary>
+        public virtual void AfterDispose() { }
     }
 }

@@ -30,8 +30,7 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
+using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 // ## BEGIN - END ## // ART / HUE CHANGES
@@ -40,10 +39,11 @@ using ClassicUO.Dust765.Dust765;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.IO;
-using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 using MathHelper = ClassicUO.Utility.MathHelper;
 
 namespace ClassicUO.Game.GameObjects
@@ -270,7 +270,7 @@ namespace ClassicUO.Game.GameObjects
             byte animIndex = (byte)AnimIndex;
             ushort graphic = GetGraphicForAnimation();
 
-            Client.Game.Animations.ConvertBodyIfNeeded(ref graphic);
+            Client.Game.Animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
             var animGroup = Client.Game.Animations.GetAnimType(graphic);
             var animFlags = Client.Game.Animations.GetAnimFlags(graphic);
             byte group = AnimationsLoader.Instance.GetDeathAction(
@@ -668,7 +668,7 @@ namespace ClassicUO.Game.GameObjects
                         continue;
                     }
 
-                    Client.Game.Animations.ConvertBodyIfNeeded(ref graphic);
+                    Client.Game.Animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
                     var animGroup = Client.Game.Animations.GetAnimType(graphic);
                     var animFlags = Client.Game.Animations.GetAnimFlags(graphic);
                     byte group = AnimationsLoader.Instance.GetDeathAction(
@@ -682,7 +682,9 @@ namespace ClassicUO.Game.GameObjects
                         group,
                         direction,
                         out _,
-                        out var isUOP
+                        out var isUOP,
+                        false,
+                        IsCorpse
                     );
 
                     if (frames.IsEmpty)

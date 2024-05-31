@@ -30,17 +30,17 @@
 
 #endregion
 
-using System;
+using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Gumps;
-using ClassicUO.Assets;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
 using ClassicUO.Utility.Logging;
+using System;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -441,7 +441,7 @@ namespace ClassicUO.Game.GameObjects
                 //);
 
                 AnimationGroupsType type = Client.Game.Animations.GetAnimType(graphic);
-                AnimationFlags  flags = Client.Game.Animations.GetAnimFlags(graphic);
+                AnimationFlags flags = Client.Game.Animations.GetAnimFlags(graphic);
                 AnimationGroups animGroup = AnimationGroups.None;
 
                 bool isLowExtended = false;
@@ -961,7 +961,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            int offY = 0;
+            int offY = NameOverheadGump.CurrentHeight;
 
             bool health = ProfileManager.CurrentProfile.ShowMobilesHP;
             int alwaysHP = ProfileManager.CurrentProfile.MobileHPShowWhen;
@@ -1039,53 +1039,53 @@ namespace ClassicUO.Game.GameObjects
             {
                 case 0x0190:
                 case 0x0192:
-                {
-                    IsFemale = false;
-                    Race = RaceType.HUMAN;
+                    {
+                        IsFemale = false;
+                        Race = RaceType.HUMAN;
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x0191:
                 case 0x0193:
-                {
-                    IsFemale = true;
-                    Race = RaceType.HUMAN;
+                    {
+                        IsFemale = true;
+                        Race = RaceType.HUMAN;
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x025D:
-                {
-                    IsFemale = false;
-                    Race = RaceType.ELF;
+                    {
+                        IsFemale = false;
+                        Race = RaceType.ELF;
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x025E:
-                {
-                    IsFemale = true;
-                    Race = RaceType.ELF;
+                    {
+                        IsFemale = true;
+                        Race = RaceType.ELF;
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x029A:
-                {
-                    IsFemale = false;
-                    Race = RaceType.GARGOYLE;
+                    {
+                        IsFemale = false;
+                        Race = RaceType.GARGOYLE;
 
-                    break;
-                }
+                        break;
+                    }
 
                 case 0x029B:
-                {
-                    IsFemale = true;
-                    Race = RaceType.GARGOYLE;
+                    {
+                        IsFemale = true;
+                        Race = RaceType.GARGOYLE;
 
-                    break;
-                }
+                        break;
+                    }
             }
         }
 
