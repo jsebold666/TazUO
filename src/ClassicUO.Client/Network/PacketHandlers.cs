@@ -3695,16 +3695,13 @@ namespace ClassicUO.Network
 
             //}
 
-             if (ProfileManager.CurrentProfile.AutoOpenHealth)
-             {
-                GameActions.SendCloseStatus(TargetManager.LastAttack);
-             }
+            
+            GameActions.SendCloseStatus(TargetManager.LastAttack);
             
             TargetManager.LastAttack = serial;
-            if (ProfileManager.CurrentProfile.AutoOpenHealth)
-            {
-                GameActions.RequestMobileStatus(serial);
-            }
+    
+            GameActions.RequestMobileStatus(serial);
+            
         }
 
         private static void TextEntryDialog(ref StackDataReader p)

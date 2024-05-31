@@ -146,7 +146,6 @@ namespace ClassicUO.Configuration
         public int MobileHPShowWhen { get; set; } // 0 = Always, 1 - <100%
         public bool DrawRoofs { get; set; } = true;
 
-        public bool AutoOpenHealth { get; set; } = false;
         public bool SetTargetOut { get; set; }  = false;
         // ## BEGIN - END ## // ART / HUE CHANGES
         //public bool TreeToStumps { get; set; }
