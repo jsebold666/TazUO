@@ -39,10 +39,8 @@ using Microsoft.Xna.Framework.Graphics;
 // ## BEGIN - END ## // OLDHEALTHLINES
 // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
 using ClassicUO.Game.GameObjects;
-using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
-using FontStashSharp;
 
 namespace ClassicUO.Game.Managers
 {
@@ -98,6 +96,7 @@ namespace ClassicUO.Game.Managers
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
+                DrawTargetIndicator(batcher, TargetManager.LastTargetInfo.Serial);
             }
 
             if (SerialHelper.IsMobile(TargetManager.SelectedTarget))
@@ -108,6 +107,7 @@ namespace ClassicUO.Game.Managers
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
+                DrawTargetIndicator(batcher, TargetManager.SelectedTarget);
             }
 
             if (SerialHelper.IsMobile(TargetManager.LastAttack))
@@ -118,6 +118,7 @@ namespace ClassicUO.Game.Managers
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
+                DrawTargetIndicator(batcher, TargetManager.LastAttack);
             }
 
             if (!IsEnabled)
@@ -274,6 +275,39 @@ namespace ClassicUO.Game.Managers
             }
         }
 
+        private void DrawTargetIndicator(UltimaBatcher2D batcher, uint serial)
+        {
+            Entity entity = World.Get(serial);
+
+            if (entity == null)
+            {
+                return;
+            }
+            if (ProfileManager.CurrentProfile == null || !ProfileManager.CurrentProfile.ShowTargetIndicator)
+            {
+                return;
+            }
+            ref readonly var indicatorInfo = ref Client.Game.Gumps.GetGump(0x756F);
+            if (indicatorInfo.Texture != null)
+            {
+                Point p = entity.RealScreenPosition;
+                p.Y += (int)(entity.Offset.Y - entity.Offset.Z) + 22 + 5;
+
+                p = Client.Game.Scene.Camera.WorldToScreen(p);
+                p.Y -= entity.FrameInfo.Height + 25;
+
+                batcher.Draw(
+                indicatorInfo.Texture,
+                new Rectangle(p.X - 24, p.Y, indicatorInfo.UV.Width, indicatorInfo.UV.Height),
+                indicatorInfo.UV,
+                ShaderHueTranslator.GetHueVector(0, false, 1.0f)
+                );
+            }
+            else
+            {
+                ProfileManager.CurrentProfile.ShowTargetIndicator = false; //This sprite doesn't exist for this client, lets avoid checking for it every frame.
+            }
+        }
         private void DrawHealthLineWithMath(
             UltimaBatcher2D batcher,
             uint serial,

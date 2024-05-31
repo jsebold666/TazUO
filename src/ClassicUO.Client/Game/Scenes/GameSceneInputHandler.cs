@@ -207,6 +207,11 @@ namespace ClassicUO.Game.Scenes
                 return true;
             }
 
+            if (ProfileManager.CurrentProfile.DragSelectModifierKey == 3 && Keyboard.Alt)
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -214,6 +219,7 @@ namespace ClassicUO.Game.Scenes
         {
             bool ctrl = Keyboard.Ctrl;
             bool shift = Keyboard.Shift;
+            bool alt = Keyboard.Alt;
 
             if (_selectionStart.X > Mouse.Position.X)
             {
@@ -266,19 +272,22 @@ namespace ClassicUO.Game.Scenes
             {
                 if ((
                         (ProfileManager.CurrentProfile.DragSelect_PlayersModifier == 1 && ctrl) ||
-                        (ProfileManager.CurrentProfile.DragSelect_PlayersModifier == 2 && shift)
+                        (ProfileManager.CurrentProfile.DragSelect_PlayersModifier == 2 && shift) ||
+                        (ProfileManager.CurrentProfile.DragSelect_PlayersModifier == 2 && alt)
                     ) && !(mobile.IsHuman || mobile.IsGargoyle))
                     continue;
                 if ((
                         (ProfileManager.CurrentProfile.DragSelect_MonstersModifier == 1 && ctrl) ||
-                        (ProfileManager.CurrentProfile.DragSelect_MonstersModifier == 2 && shift)
+                        (ProfileManager.CurrentProfile.DragSelect_MonstersModifier == 2 && shift) ||
+                        (ProfileManager.CurrentProfile.DragSelect_MonstersModifier == 3 && alt)
                     ) && (mobile.IsHuman || mobile.IsGargoyle))
                     continue;
 
                 bool skip = false;
                 if ((
                         (ProfileManager.CurrentProfile.DragSelect_NameplateModifier == 1 && ctrl) ||
-                        (ProfileManager.CurrentProfile.DragSelect_NameplateModifier == 2 && shift)
+                        (ProfileManager.CurrentProfile.DragSelect_NameplateModifier == 2 && shift) ||
+                        (ProfileManager.CurrentProfile.DragSelect_NameplateModifier == 3 && alt)
                     ))
                 {
                     bool _skip = true;
@@ -859,7 +868,7 @@ namespace ClassicUO.Game.Scenes
 
                     case Entity ent:
 
-                        if (Keyboard.Alt && ent is Mobile)
+                        if (Keyboard.Alt && !ProfileManager.CurrentProfile.DisableAutoFollowAlt && ent is Mobile)
                         {
                             MessageManager.HandleMessage(
                                 World.Player,

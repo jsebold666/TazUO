@@ -9,6 +9,13 @@ namespace ClassicUO.Configuration
         public ModernOptionsGumpLanguage GetModernOptionsGumpLanguage { get; set; } = new ModernOptionsGumpLanguage();
         public ErrorsLanguage ErrorsLanguage { get; set; } = new ErrorsLanguage();
         public MapLanguage MapLanguage { get; set; } = new MapLanguage();
+        public TopBarGumpLanguage TopBarGump { get; set; } = new TopBarGumpLanguage();
+
+        public string TazuoVersionHistory { get; set; } = "TazUO Version History";
+        public string CurrentVersion { get; set; } = "Current Version: ";
+        public string TazUOWiki { get; set; } = "TazUO Wiki";
+        public string TazUODiscord { get; set; } = "TazUO Discord";
+        public string CommandGump { get; set; } = "Available Client Commands";
 
         [JsonIgnore]
         public static Language Instance { get; private set; } = new Language();
@@ -96,6 +103,7 @@ namespace ClassicUO.Configuration
             public string SharedNone { get; set; } = "None";
             public string SharedShift { get; set; } = "Shift";
             public string SharedCtrl { get; set; } = "Ctrl";
+            public string SharedAlt { get; set; } = "Alt";
 
             #region General->General
             public string HighlightObjects { get; set; } = "Highlight objects under cursor";
@@ -123,6 +131,7 @@ namespace ClassicUO.Configuration
 
             #region General->Mobiles
             public string ShowMobileHP { get; set; } = "Show mobile's HP";
+            public string ShowTargetIndicator { get; set; } = "Show Target Indicator";
             public string MobileHPType { get; set; } = "Type";
             public string HPTypePerc { get; set; } = "Percentage";
             public string HPTypeBar { get; set; } = "Bar";
@@ -438,6 +447,7 @@ namespace ClassicUO.Configuration
             public string JournalStyle { get; set; } = "Journal style";
             public string JournalHideBorders { get; set; } = "Hide borders";
             public string HideTimestamp { get; set; } = "Hide timestamp";
+            public string JournalAnchor { get; set; } = "Make anchorable";
             #endregion
 
             #region ModernPaperdoll
@@ -446,6 +456,7 @@ namespace ClassicUO.Configuration
             public string PaperdollHue { get; set; } = "Paperdoll hue";
             public string DurabilityBarHue { get; set; } = "Durability bar hue";
             public string ShowDurabilityBarBelow { get; set; } = "Show durability bar below %";
+            public string PaperdollAnchor { get; set; } = "Make anchorable";
             #endregion
 
             #region Nameplates
@@ -476,6 +487,7 @@ namespace ClassicUO.Configuration
             public string HiddenPlayerHue { get; set; } = "Hidden player hue";
             public string RegularPlayerOpacity { get; set; } = "Regular player opacity";
             public string AutoFollowDistance { get; set; } = "Auto follow distance";
+            public string DisableAutoFollow { get; set; } = "Disable alt click to auto follow";
             public string DisableMouseInteractionsForOverheadText { get; set; } = "Disable mouse interactions for overhead text";
             public string OverridePartyMemberHues { get; set; } = "Override party member body hues with friendly hue";
             #endregion
@@ -498,7 +510,7 @@ namespace ClassicUO.Configuration
             public string TextFormat { get; set; } = "Text format";
             public string EnableSpellIndicatorSystem { get; set; } = "Enable spell indicator system";
             public string ImportFromUrl { get; set; } = "Import from url";
-            public string InputRequestUrl { get; set; } = "Enter the url for the spell config. /c[red]This will override your current config.";
+            public string InputRequestUrl { get; set; } = "Enter the url for the spell config. \n/c[red]This will override your current config.";
             public string Download { get; set; } = "Download";
             public string Cancel { get; set; } = "Cancel";
             public string AttemptingToDownloadSpellConfig { get; set; } = "Attempting to download spell config..";
@@ -530,6 +542,7 @@ namespace ClassicUO.Configuration
             public string TooltipFont { get; set; } = "Tooltip font";
             public string OverheadFont { get; set; } = "Overhead font";
             public string JournalFont { get; set; } = "Journal font";
+            public string NameplateFont { get; set; } = "Nameplate font";
             #endregion
 
             #region Controller
@@ -575,5 +588,10 @@ namespace ClassicUO.Configuration
     {
         public string Follow { get; set; } = "Follow";
         public string Yourself { get; set; } = "Yourself";
+    }
+
+    public class TopBarGumpLanguage
+    {
+        public string CommandsEntry { get; set; } = "Client Commands";
     }
 }

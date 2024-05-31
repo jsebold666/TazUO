@@ -74,7 +74,7 @@ namespace ClassicUO.Game.Managers
                 if (loaded && e.Parent != null && ReferenceEquals(e.Parent, World.Player))
                 {
                     // ## BEGIN - END ## // ONCASTINGGUMP
-                    if (ProfileManager.CurrentProfile.OnCastingGump)
+                    if (ProfileManager.CurrentProfile.OnCastingGump && !ProfileManager.CurrentProfile.EnableSpellIndicators)
                     {
                         if (spellRangePowerWordCache.TryGetValue(RemoveContentInBrackets(e.Text.Trim()), out SpellRangeInfo spell))
                         {

@@ -3695,16 +3695,13 @@ namespace ClassicUO.Network
 
             //}
 
-             if (ProfileManager.CurrentProfile.AutoOpenHealth)
-             {
-                GameActions.SendCloseStatus(TargetManager.LastAttack);
-             }
+            
+            GameActions.SendCloseStatus(TargetManager.LastAttack);
             
             TargetManager.LastAttack = serial;
-            if (ProfileManager.CurrentProfile.AutoOpenHealth)
-            {
-                GameActions.RequestMobileStatus(serial);
-            }
+    
+            GameActions.RequestMobileStatus(serial);
+            
         }
 
         private static void TextEntryDialog(ref StackDataReader p)
@@ -7365,7 +7362,7 @@ namespace ClassicUO.Network
 
             if (ProfileManager.CurrentProfile != null)
             {
-                if (gumpID == 1426736667 || gumpID == ProfileManager.CurrentProfile.SOSGumpID) //SOS message gump
+                if (gumpID == ProfileManager.CurrentProfile.SOSGumpID) //SOS message gump
                 {
                     for (int i = 0; i < gump.Children.Count; i++)
                     {
@@ -7420,6 +7417,18 @@ namespace ClassicUO.Network
                                 }
                                 gump.GoToMarker((int)location.X, (int)location.Y, true);
                             }));
+
+                            menu.ContextMenu.Add(new ContextMenuItemEntry("Add marker on world map", () =>
+                            {
+                                WorldMapGump gump = UIManager.GetGump<WorldMapGump>();
+                                if (gump == null)
+                                {
+                                    gump = new WorldMapGump();
+                                    UIManager.Add(gump);
+                                }
+                                gump.AddUserMarker("SOS", (int)location.X, (int)location.Y, World.Map.Index);
+                            }));
+
                             menu.ContextMenu.Add(new ContextMenuItemEntry("Close", () =>
                             {
                                 gump.Dispose();
@@ -7452,7 +7461,7 @@ namespace ClassicUO.Network
             if (!ySouth)
                 absLat = 360.0 - absLat;
 
-            int x, y, z;
+            int x, y;
 
             x = xCenter + (int)((absLong * xWidth) / 360);
             y = yCenter + (int)((absLat * yHeight) / 360);
