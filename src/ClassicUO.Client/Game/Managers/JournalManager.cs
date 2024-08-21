@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,11 @@ using ClassicUO.Utility.Logging;
 
 namespace ClassicUO.Game.Managers
 {
+<<<<<<< HEAD
     public class JournalManager
+=======
+    internal sealed class JournalManager
+>>>>>>> externo/main
     {
         private StreamWriter _fileWriter;
         private bool _writerHasException;

@@ -13,19 +13,19 @@
 
 const static float3 LIGHT_DIRECTION = float3(0.0f, 1.0f, 1.0f);
 
-
+const static float HUE_ROWS = 1024;
+const static float HUE_COLUMNS = 16;
+const static float HUE_WIDTH = 32;
+const static float HUES_PER_TEXTURE = HUE_ROWS * HUE_COLUMNS;
 
 float4x4 MatrixTransform;
 float4x4 WorldMatrix;
 float2 Viewport;
 float Brightlight;
-const float HuesPerTexture = 2048;
-
 
 sampler DrawSampler : register(s0);
 sampler HueSampler0 : register(s1);
 sampler HueSampler1 : register(s2);
-sampler HueSampler2 : register(s3);
 
 struct VS_INPUT
 {
@@ -45,18 +45,14 @@ struct PS_INPUT
 
 float3 get_rgb(float gray, float hue)
 {
-	if (hue < HuesPerTexture)
-	{
-		float2 texcoord = float2(gray, hue / HuesPerTexture);
-
-		return tex2D(HueSampler0, texcoord).rgb;
-	}
-	else
-	{
-		float2 texcoord = float2(gray, (hue - HuesPerTexture) / HuesPerTexture);
-
-		return tex2D(HueSampler1, texcoord).rgb;
-	}
+    float halfPixelX = (1.0f / (HUE_COLUMNS * HUE_WIDTH)) * 0.5f;
+    float hueColumnWidth = 1.0f / HUE_COLUMNS;
+    float hueStart = frac(hue / HUE_COLUMNS);
+    
+    float xPos = hueStart + gray / HUE_COLUMNS;
+    xPos = clamp(xPos, hueStart + halfPixelX, hueStart + hueColumnWidth - halfPixelX);
+    float yPos = (hue % HUES_PER_TEXTURE) / (HUES_PER_TEXTURE - 1);
+    return tex2D(HueSampler0, float2(xPos, yPos)).rgb;
 }
 
 float get_light(float3 norm)
@@ -74,7 +70,7 @@ float3 get_colored_light(float shader, float gray)
 {
 	float2 texcoord = float2(gray, (shader - 0.5) / 63);
 
-	return tex2D(HueSampler2, texcoord).rgb;
+	return tex2D(HueSampler1, texcoord).rgb;
 }
 
 PS_INPUT VertexShaderFunction(VS_INPUT IN)

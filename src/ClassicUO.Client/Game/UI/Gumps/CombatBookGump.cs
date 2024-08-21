@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -51,7 +51,7 @@ namespace ClassicUO.Game.UI.Gumps
         private GumpPic _pageCornerLeft, _pageCornerRight, _primAbility, _secAbility;
         private int _enqueuePage = -1;
 
-        public CombatBookGump(int x, int y) : base(0, 0)
+        public CombatBookGump(World world, int x, int y) : base(world, 0, 0)
         {
             X = x;
             Y = y;
@@ -59,9 +59,9 @@ namespace ClassicUO.Game.UI.Gumps
             CanMove = true;
             CanCloseWithRightClick = true;
 
-            if (Client.Version < ClientVersion.CV_7000)
+            if (Client.Game.UO.Version < ClientVersion.CV_7000)
             {
-                if (Client.Version < ClientVersion.CV_500A)
+                if (Client.Game.UO.Version < ClientVersion.CV_500A)
                 {
                     _abilityCount = 29;
                 }
@@ -146,7 +146,7 @@ namespace ClassicUO.Game.UI.Gumps
                         };
 
                         Add(text, page);
-                        text.SetTooltip(ClilocLoader.Instance.GetString(1061693 + offs), 150);
+                        text.SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(1061693 + offs), 150);
 
                         y += 15;
                         offs++;
@@ -158,11 +158,11 @@ namespace ClassicUO.Game.UI.Gumps
                         {
                             byte bab1 = (byte)(((byte)World.Player.PrimaryAbility & 0x7F) - 1);
                             _primAbility = new GumpPic(215, 105, (ushort)(0x5200 + bab1), (ushort)(((byte)World.Player.PrimaryAbility & 0x80) != 0 ? 38 : 0));
-                            _primAbility.SetTooltip(ClilocLoader.Instance.GetString(1028838 + bab1));
+                            _primAbility.SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(1028838 + bab1));
                             _primAbility.DragBegin += OnGumpicDragBeginPrimary;
                             _primAbility.MouseDoubleClick += PrimaryAbilityMouseDoubleClick;
                         }
-                        
+
                         text = new Label
                         (
                             ResGumps.PrimaryAbilityIcon,
@@ -171,7 +171,7 @@ namespace ClassicUO.Game.UI.Gumps
                             80,
                             6
                         ) { X = 265, Y = 105 };
-      
+
                         Add(text, page);
                         Add(_primAbility, page);
 
@@ -180,11 +180,11 @@ namespace ClassicUO.Game.UI.Gumps
                         {
                             byte bab2 = (byte)(((byte)World.Player.SecondaryAbility & 0x7F) - 1);
                             _secAbility = new GumpPic(215, 150, (ushort)(0x5200 + bab2), (ushort)(((byte)World.Player.SecondaryAbility & 0x80) != 0 ? 38 : 0));
-                            _secAbility.SetTooltip(ClilocLoader.Instance.GetString(1028838 + bab2));
+                            _secAbility.SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(1028838 + bab2));
                             _secAbility.DragBegin += OnGumpicDragBeginSecondary;
                             _secAbility.MouseDoubleClick += SecondaryAbilityMouseDoubleClick;
                         }
-                        
+
                         text = new Label
                         (
                             ResGumps.SecondaryAbilityIcon,
@@ -194,8 +194,8 @@ namespace ClassicUO.Game.UI.Gumps
                             6
                         ) { X = 265, Y = 150 };
 
-                        
-                        Add(text, page);              
+
+                        Add(text, page);
                         Add(_secAbility, page);
                     }
                 }
@@ -215,7 +215,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                 GumpPic icon = new GumpPic(62, 40, (ushort) (0x5200 + i), 0);
                 Add(icon, pageW);
-                icon.SetTooltip(ClilocLoader.Instance.GetString(1061693 + i), 150);
+                icon.SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(1061693 + i), 150);
 
                 Label text = new Label
                 (
@@ -245,7 +245,7 @@ namespace ClassicUO.Game.UI.Gumps
 
 
                 List<ushort> list = GetItemsList((byte) i);
-                int maxStaticCount = TileDataLoader.Instance.StaticData.Length;
+                int maxStaticCount = Client.Game.UO.FileManager.TileData.StaticData.Length;
 
                 int textX = 62;
                 int textY = 98;
@@ -266,7 +266,7 @@ namespace ClassicUO.Game.UI.Gumps
                         continue;
                     }
 
-                    text = new Label(StringHelper.CapitalizeAllWords(TileDataLoader.Instance.StaticData[id].Name), false, 0x0288, font: 9)
+                    text = new Label(StringHelper.CapitalizeAllWords(Client.Game.UO.FileManager.TileData.StaticData[id].Name), false, 0x0288, font: 9)
                     {
                         X = textX,
                         Y = textY
@@ -284,17 +284,17 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (e.Button == MouseButtonType.Left)
             {
-                GameActions.UsePrimaryAbility();
+                GameActions.UsePrimaryAbility(World);
 
                 e.Result = true;
-            }        
+            }
         }
 
         private void SecondaryAbilityMouseDoubleClick(object sender, MouseDoubleClickEventArgs e)
         {
             if (e.Button == MouseButtonType.Left)
             {
-                GameActions.UseSecondaryAbility();
+                GameActions.UseSecondaryAbility(World);
 
                 e.Result = true;
             }
@@ -331,7 +331,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             GetSpellFloatingButton(def.Index)?.Dispose();
 
-            UseAbilityButtonGump gump = new UseAbilityButtonGump(true)
+            UseAbilityButtonGump gump = new UseAbilityButtonGump(World, true)
             {
                 X = Mouse.LClickPosition.X - 22,
                 Y = Mouse.LClickPosition.Y - 22
@@ -352,7 +352,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             GetSpellFloatingButton(def.Index)?.Dispose();
 
-            UseAbilityButtonGump gump = new UseAbilityButtonGump(false)
+            UseAbilityButtonGump gump = new UseAbilityButtonGump(World, false)
             {
                 X = Mouse.LClickPosition.X - 22,
                 Y = Mouse.LClickPosition.Y - 22

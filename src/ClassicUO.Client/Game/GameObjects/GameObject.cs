@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,11 +44,17 @@ namespace ClassicUO.Game.GameObjects
 {
     public abstract class BaseGameObject : LinkedObject
     {
+        protected BaseGameObject(World world) => World = world;
+
         public Point RealScreenPosition;
+
+        public World World { get; }
     }
 
     public abstract partial class GameObject : BaseGameObject
     {
+        protected GameObject(World world) : base(world) { }
+
         public bool IsDestroyed { get; protected set; }
         public bool IsPositionChanged { get; protected set; }
         public TextContainer TextContainer { get; private set; }
@@ -216,7 +222,7 @@ namespace ClassicUO.Game.GameObjects
 
             Point p = RealScreenPosition;
 
-            var bounds = Client.Game.Arts.GetRealArtBounds(Graphic);
+            var bounds = Client.Game.UO.Arts.GetRealArtBounds(Graphic);
 
             p.Y -= bounds.Height >> 1;
 
@@ -317,7 +323,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            TextObject msg = MessageManager.CreateMessage(
+            TextObject msg = World.MessageManager.CreateMessage(
                 text,
                 hue,
                 font,
@@ -381,8 +387,11 @@ namespace ClassicUO.Game.GameObjects
             FrameInfo = Rectangle.Empty;
         }
 
-        public static bool CanBeDrawn(ushort g)
+        public static bool CanBeDrawn(World world, ushort g)
         {
+            if (Client.Game == null)
+                return true;
+
             switch (g)
             {
                 case 0x0001:
@@ -398,7 +407,7 @@ namespace ClassicUO.Game.GameObjects
                 case 0x9E64:
                 case 0x9E65:
                 case 0x9E7D:
-                    ref StaticTiles data = ref TileDataLoader.Instance.StaticData[g];
+                    ref var data = ref Client.Game.UO.FileManager.TileData.StaticData[g];
 
                     return !data.IsBackground && !data.IsSurface;
             }
@@ -414,20 +423,20 @@ namespace ClassicUO.Game.GameObjects
                 // In older clients the tiledata flag for this
                 // item contains NoDiagonal for some reason.
                 // So the next check will make the item invisible.
-                if (g == 0x0F65 && Client.Version < ClientVersion.CV_60144)
+                if (g == 0x0F65 && Client.Game.UO.Version < ClientVersion.CV_60144)
                 {
                     return true;
                 }
 
-                if (g < TileDataLoader.Instance?.StaticData?.Length)
+                if (g < Client.Game.UO.FileManager.TileData.StaticData.Length)
                 {
-                    ref StaticTiles data = ref TileDataLoader.Instance.StaticData[g];
+                    ref var data = ref Client.Game.UO.FileManager.TileData.StaticData[g];
 
                     if (
                         !data.IsNoDiagonal
                         || data.IsAnimated
-                            && World.Player != null
-                            && World.Player.Race == RaceType.GARGOYLE
+                            && world.Player != null
+                            && world.Player.Race == RaceType.GARGOYLE
                     )
                     {
                         return true;

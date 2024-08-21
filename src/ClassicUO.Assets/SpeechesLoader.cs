@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -35,21 +35,18 @@ using ClassicUO.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class SpeechesLoader : UOFileLoader
+    public sealed class SpeechesLoader : UOFileLoader
     {
-        private static SpeechesLoader _instance;
         private SpeechEntry[] _speech;
 
-        private SpeechesLoader()
+        public SpeechesLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
 
-        public static SpeechesLoader Instance => _instance ?? (_instance = new SpeechesLoader());
 
         public override unsafe Task Load()
         {
@@ -57,7 +54,7 @@ namespace ClassicUO.Assets
             (
                 () =>
                 {
-                    string path = UOFileManager.GetUOFilePath("speech.mul");
+                    string path = FileManager.GetUOFilePath("speech.mul");
 
                     if (!File.Exists(path))
                     {
@@ -66,19 +63,18 @@ namespace ClassicUO.Assets
                         return;
                     }
 
-                    UOFileMul file = new UOFileMul(path);
-                    List<SpeechEntry> entries = new List<SpeechEntry>();
+                    var file = new UOFileMul(path);
+                    var reader = file.GetReader();
+                    var entries = new List<SpeechEntry>();
 
-                    while (file.Position < file.Length)
+                    while (reader.Remaining > 0)
                     {
-                        int id = file.ReadUShortReversed();
-                        int length = file.ReadUShortReversed();
+                        int id = reader.ReadUInt16BE();
+                        int length = reader.ReadUInt16BE();
 
                         if (length > 0)
                         {
-                            entries.Add(new SpeechEntry(id, string.Intern(Encoding.UTF8.GetString((byte*) file.PositionAddress, length))));
-
-                            file.Skip(length);
+                            entries.Add(new SpeechEntry(id, string.Intern(reader.ReadUTF8(length))));
                         }
                     }
 
@@ -126,8 +122,6 @@ namespace ClassicUO.Assets
                         return true;
                     }
 
-                    
-
                     idx = input.IndexOf(split[i], idx + 1, StringComparison.InvariantCultureIgnoreCase);
                 }
             }
@@ -139,7 +133,7 @@ namespace ClassicUO.Assets
         {
             List<SpeechEntry> list = new List<SpeechEntry>();
 
-            if (UOFileManager.Version < ClientVersion.CV_305D)
+            if (FileManager.Version < ClientVersion.CV_305D)
             {
                 return list;
             }

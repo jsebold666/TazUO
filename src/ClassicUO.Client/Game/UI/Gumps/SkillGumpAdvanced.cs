@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -82,7 +82,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private ScrollArea area;
 
-        public SkillGumpAdvanced() : base(0, 0)
+        public SkillGumpAdvanced(World world) : base(world, 0, 0)
         {
             _totalReal = 0;
             _totalValue = 0;
@@ -477,6 +477,23 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
 
+<<<<<<< HEAD
+=======
+                Label skillName = new Label(skill.Name, true, 1153, font: 3);
+                Label skillValueBase = new Label(skill.Base.ToString(), true, 1153, font: 3);
+                Label skillValue = new Label(skill.Value.ToString(), true, 1153, font: 3);
+                Label skillCap = new Label(skill.Cap.ToString(), true, 1153, font: 3);
+
+                _skillListEntries.Add(
+                    new SkillListEntry(this, skillName, skillValueBase, skillValue, skillCap, skill)
+                );
+            }
+
+            foreach (SkillListEntry t in _skillListEntries)
+            {
+                _databox.Add(t);
+            }
+>>>>>>> externo/main
 
             _databox.WantUpdateSize = true;
             _databox.ReArrangeChildren();
@@ -566,10 +583,24 @@ namespace ClassicUO.Game.UI.Gumps
 
     internal class SkillListEntry : Control
     {
+        private readonly SkillGumpAdvanced _gump;
         private readonly Button _activeUse;
         private readonly Skill _skill;
+<<<<<<< HEAD
         public SkillListEntry(Skill skill)
+=======
+
+        public SkillListEntry(
+            SkillGumpAdvanced gump,
+            Label skillname,
+            Label skillvaluebase,
+            Label skillvalue,
+            Label skillcap,
+            Skill skill
+        )
+>>>>>>> externo/main
         {
+            _gump = gump;
             Height = 20;
             Label skillName = new Label(skill.Name, true, 1153, font: 3);
             Label skillValueBase = new Label(skill.Base.ToString(), true, 1153, font: 3);
@@ -642,9 +673,10 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 GetSpellFloatingButton(_skill.Index)?.Dispose();
 
-                ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(0x24B8);
+                ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(0x24B8);
 
                 SkillButtonGump skillButtonGump = new SkillButtonGump(
+                    _gump.World,
                     _skill,
                     Mouse.LClickPosition.X + (gumpInfo.UV.Width >> 1),
                     Mouse.LClickPosition.Y + (gumpInfo.UV.Height >> 1)

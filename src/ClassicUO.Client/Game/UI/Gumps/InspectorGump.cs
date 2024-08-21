@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ namespace ClassicUO.Game.UI.Gumps
         private const int HEIGHT = 400;
         private readonly GameObject _obj;
 
-        public InspectorGump(GameObject obj) : base(0, 0)
+        public InspectorGump(World world, GameObject obj) : base(world, 0, 0)
         {
             X = 200;
             Y = 100;

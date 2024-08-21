@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -31,42 +31,47 @@
 #endregion
 
 using ClassicUO.IO;
-using System.Runtime.CompilerServices;
+using ClassicUO.Utility.Logging;
+using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public static class Verdata
+    public sealed class VerdataLoader : UOFileLoader
     {
-        unsafe static Verdata()
+        public VerdataLoader(UOFileManager fileManager) : base(fileManager) { }
+
+        public unsafe override Task Load()
         {
-            string path = UOFileManager.GetUOFilePath("verdata.mul");
-
-            if (!System.IO.File.Exists(path))
+            return Task.Run(() =>
             {
-                Patches = new UOFileIndex5D[0];
-                File = null;
-            }
-            else
-            {
-                File = new UOFileMul(path);
+                string path = FileManager.GetUOFilePath("verdata.mul");
 
-                // the scope of this try/catch is to avoid unexpected crashes if servers redestribuite wrong verdata
-                try
+                if (!System.IO.File.Exists(path))
                 {
-                    int len = File.ReadInt();
-                    Patches = new UOFileIndex5D[len];
+                    File = null;
+                }
+                else
+                {
+                    File = new UOFileMul(path);
 
-                    fixed (UOFileIndex5D* ptr = Patches)
+                    // the scope of this try/catch is to avoid unexpected crashes if servers redestribuite wrong verdata
+                    try
                     {
-                        Unsafe.CopyBlockUnaligned((void*)ptr, (void*) File.PositionAddress, (uint) (len * Unsafe.SizeOf<UOFileIndex5D>()));
+                        var reader = File.GetReader();
+                        int len = reader.ReadInt32LE();
+
+                        Patches = MemoryMarshal.Cast<byte, UOFileIndex5D>(reader.ReadArray(len * sizeof(UOFileIndex5D))).ToArray();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error($"error while reading verdata.mul\n{ex}");
                     }
                 }
-                catch
-                {
-                    Patches = new UOFileIndex5D[0];
-                }
-            }
+            });
         }
+
 
         // FileIDs
         //0 - map0.mul
@@ -89,8 +94,8 @@ namespace ClassicUO.Assets
         //30 - tiledata.mul
         //31 - animdata.mul 
 
-        public static UOFileIndex5D[] Patches { get; }
+        public UOFileIndex5D[] Patches { get; private set; } = Array.Empty<UOFileIndex5D>();
 
-        public static UOFileMul File { get; }
+        public UOFileMul File { get; private set; }
     }
 }

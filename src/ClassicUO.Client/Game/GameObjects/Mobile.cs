@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -39,72 +39,76 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
+<<<<<<< HEAD
 using System;
+=======
+using ClassicUO.Game.Scenes;
+>>>>>>> externo/main
 
 namespace ClassicUO.Game.GameObjects
 {
     public partial class Mobile : Entity
     {
-        private static readonly QueuedPool<Mobile> _pool = new QueuedPool<Mobile>(
-            Constants.PREDICTABLE_CHUNKS,
-            mobile =>
-            {
-                mobile.IsDestroyed = false;
-                mobile.Graphic = 0;
-                mobile.Steps.Clear();
-                mobile.Offset = Vector3.Zero;
-                mobile.SpeedMode = CharacterSpeedType.Normal;
-                mobile.Race = 0;
-                mobile.Hits = 0;
-                mobile.HitsMax = 0;
-                mobile.Mana = 0;
-                mobile.ManaMax = 0;
-                mobile.Stamina = 0;
-                mobile.StaminaMax = 0;
-                mobile.NotorietyFlag = 0;
-                mobile.IsRenamable = false;
-                mobile.Flags = 0;
-                mobile.IsFemale = false;
-                mobile.InWarMode = false;
-                mobile.IsRunning = false;
-                mobile._animationInterval = 0;
-                mobile.AnimationFrameCount = 0;
-                mobile._animationRepeateMode = 1;
-                mobile._animationRepeatModeCount = 1;
-                mobile._animationRepeat = false;
-                mobile.AnimationFromServer = false;
-                mobile._isAnimationForwardDirection = false;
-                mobile.LastStepSoundTime = 0;
-                mobile.StepSoundOffset = 0;
-                mobile.Title = string.Empty;
-                mobile._animationGroup = 0xFF;
-                mobile._isDead = false;
-                mobile._isSA_Poisoned = false;
-                mobile._lastAnimationIdleDelay = 0;
-                mobile.X = 0;
-                mobile.Y = 0;
-                mobile.Z = 0;
-                mobile.Direction = 0;
-                mobile.LastAnimationChangeTime = Time.Ticks;
-                mobile.TextContainer?.Clear();
-                mobile.HitsPercentage = 0;
-                mobile.IsFlipped = false;
-                mobile.FrameInfo = Rectangle.Empty;
-                mobile.ObjectHandlesStatus = ObjectHandlesStatus.NONE;
-                mobile.AlphaHue = 0;
-                mobile.AllowedToDraw = true;
-                mobile.IsClicked = false;
-                mobile.RemoveFromTile();
-                mobile.Clear();
-                mobile.Next = null;
-                mobile.Previous = null;
-                mobile.Name = null;
-                mobile.ExecuteAnimation = true;
-                mobile.HitsRequest = HitsRequestStatus.None;
+        //private static readonly QueuedPool<Mobile> _pool = new QueuedPool<Mobile>(
+        //    Constants.PREDICTABLE_CHUNKS,
+        //    mobile =>
+        //    {
+        //        mobile.IsDestroyed = false;
+        //        mobile.Graphic = 0;
+        //        mobile.Steps.Clear();
+        //        mobile.Offset = Vector3.Zero;
+        //        mobile.SpeedMode = CharacterSpeedType.Normal;
+        //        mobile.Race = 0;
+        //        mobile.Hits = 0;
+        //        mobile.HitsMax = 0;
+        //        mobile.Mana = 0;
+        //        mobile.ManaMax = 0;
+        //        mobile.Stamina = 0;
+        //        mobile.StaminaMax = 0;
+        //        mobile.NotorietyFlag = 0;
+        //        mobile.IsRenamable = false;
+        //        mobile.Flags = 0;
+        //        mobile.IsFemale = false;
+        //        mobile.InWarMode = false;
+        //        mobile.IsRunning = false;
+        //        mobile._animationInterval = 0;
+        //        mobile.AnimationFrameCount = 0;
+        //        mobile._animationRepeateMode = 1;
+        //        mobile._animationRepeatModeCount = 1;
+        //        mobile._animationRepeat = false;
+        //        mobile.AnimationFromServer = false;
+        //        mobile._isAnimationForwardDirection = false;
+        //        mobile.LastStepSoundTime = 0;
+        //        mobile.StepSoundOffset = 0;
+        //        mobile.Title = string.Empty;
+        //        mobile._animationGroup = 0xFF;
+        //        mobile._isDead = false;
+        //        mobile._isSA_Poisoned = false;
+        //        mobile._lastAnimationIdleDelay = 0;
+        //        mobile.X = 0;
+        //        mobile.Y = 0;
+        //        mobile.Z = 0;
+        //        mobile.Direction = 0;
+        //        mobile.LastAnimationChangeTime = Time.Ticks;
+        //        mobile.TextContainer?.Clear();
+        //        mobile.HitsPercentage = 0;
+        //        mobile.IsFlipped = false;
+        //        mobile.FrameInfo = Rectangle.Empty;
+        //        mobile.ObjectHandlesStatus = ObjectHandlesStatus.NONE;
+        //        mobile.AlphaHue = 0;
+        //        mobile.AllowedToDraw = true;
+        //        mobile.IsClicked = false;
+        //        mobile.RemoveFromTile();
+        //        mobile.Clear();
+        //        mobile.Next = null;
+        //        mobile.Previous = null;
+        //        mobile.Name = null;
+        //        mobile.ExecuteAnimation = true;
+        //        mobile.HitsRequest = HitsRequestStatus.None;
 
-                mobile.CalculateRandomIdleTime();
-            }
-        );
+        //        mobile.CalculateRandomIdleTime();
+        //    }
+        //);
 
         private static readonly byte[,] _animationIdle =
         {
@@ -135,19 +139,19 @@ namespace ClassicUO.Game.GameObjects
         private ushort _animationRepeateMode = 1;
         private ushort _animationRepeatModeCount = 1;
 
-        public Mobile(uint serial) : base(serial)
+        public Mobile(World world, uint serial) : base(world, serial)
         {
             LastAnimationChangeTime = Time.Ticks;
             CalculateRandomIdleTime();
         }
 
-        public Mobile() : base(0) { }
+        public Mobile(World world) : base(world, 0) { }
 
         public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
         public bool IsParalyzed => (Flags & Flags.Frozen) != 0;
         public bool IsYellowHits => (Flags & Flags.YellowBar) != 0;
         public bool IsPoisoned =>
-            Client.Version >= ClientVersion.CV_7000
+            Client.Game.UO.Version >= ClientVersion.CV_7000
                 ? _isSA_Poisoned
                 : (Flags & Flags.Poisoned) != 0;
         public bool IgnoreCharacters => (Flags & Flags.IgnoreMobiles) != 0;
@@ -165,7 +169,7 @@ namespace ClassicUO.Game.GameObjects
         }
 
         public bool IsFlying =>
-            Client.Version >= ClientVersion.CV_7000 && (Flags & Flags.Poisoned) != 0;
+            Client.Game.UO.Version >= ClientVersion.CV_7000 && (Flags & Flags.Poisoned) != 0;
 
         public virtual bool InWarMode
         {
@@ -189,7 +193,7 @@ namespace ClassicUO.Game.GameObjects
             || Graphic == 0x04E5;
 
         public bool IsGargoyle =>
-            Client.Version >= ClientVersion.CV_7000 && Graphic == 0x029A || Graphic == 0x029B;
+            Client.Game.UO.Version >= ClientVersion.CV_7000 && Graphic == 0x029A || Graphic == 0x029B;
 
         public bool IsMounted
         {
@@ -234,9 +238,9 @@ namespace ClassicUO.Game.GameObjects
         public int StepSoundOffset;
         public string Title = string.Empty;
 
-        public static Mobile Create(uint serial)
+        public static Mobile Create(World world, uint serial)
         {
-            Mobile mobile = _pool.GetOne();
+            Mobile mobile = new Mobile(world); // _pool.GetOne();
             mobile.Serial = serial;
 
             return mobile;
@@ -411,7 +415,8 @@ namespace ClassicUO.Game.GameObjects
 
                 ushort graphic = GetGraphicForAnimation();
 
-                if (graphic >= Client.Game.Animations.MaxAnimationCount)
+                var animations = Client.Game.UO.Animations;
+                if (graphic >= animations.MaxAnimationCount)
                 {
                     return;
                 }
@@ -419,15 +424,20 @@ namespace ClassicUO.Game.GameObjects
                 //byte action = 0;
                 //ushort hue = 0;
 
-                //Client.Game.Animations.ReplaceAnimationValues(
+                //Client.Game.UO.Animations.ReplaceAnimationValues(
                 //    ref graphic,
                 //    ref action,
                 //    ref hue,
                 //    out var useUOP
                 //);
 
+<<<<<<< HEAD
                 AnimationGroupsType type = Client.Game.Animations.GetAnimType(graphic);
                 AnimationFlags flags = Client.Game.Animations.GetAnimFlags(graphic);
+=======
+                AnimationGroupsType type = animations.GetAnimType(graphic);
+                AnimationFlags  flags = animations.GetAnimFlags(graphic);
+>>>>>>> externo/main
                 AnimationGroups animGroup = AnimationGroups.None;
 
                 bool isLowExtended = false;
@@ -507,8 +517,8 @@ namespace ClassicUO.Game.GameObjects
                 if (isLowExtended && _animationGroup == 18)
                 {
                     if (
-                        !Client.Game.Animations.AnimationExists(graphic, 18)
-                        && Client.Game.Animations.AnimationExists(graphic, 17)
+                        !animations.AnimationExists(graphic, 18)
+                        && animations.AnimationExists(graphic, 17)
                     )
                     {
                         _animationGroup = GetReplacedObjectAnimation(graphic, 17);
@@ -519,7 +529,7 @@ namespace ClassicUO.Game.GameObjects
                     }
                 }
 
-                if (!Client.Game.Animations.AnimationExists(graphic, _animationGroup))
+                if (!animations.AnimationExists(graphic, _animationGroup))
                 {
                     if (first_value == 0)
                     {
@@ -532,7 +542,7 @@ namespace ClassicUO.Game.GameObjects
 
                     _animationGroup = _animationIdle[(byte)animGroup - 1, first_value];
 
-                    if (!Client.Game.Animations.AnimationExists(graphic, _animationGroup))
+                    if (!animations.AnimationExists(graphic, _animationGroup))
                     {
                         SetAnimation(original_value);
                     }
@@ -584,7 +594,7 @@ namespace ClassicUO.Game.GameObjects
 
                     StepSoundOffset = (incID + 1) % 2;
 
-                    Client.Game.Audio.PlaySoundWithDistance(soundID, step.X, step.Y);
+                    Client.Game.Audio.PlaySoundWithDistance(World, soundID, step.X, step.Y);
                     LastStepSoundTime = Time.Ticks + delaySound;
                 }
             }
@@ -595,120 +605,124 @@ namespace ClassicUO.Game.GameObjects
             ProcessSteps(out var dir, evalutate);
             ProcessFootstepsSound();
 
-            if (LastAnimationChangeTime < Time.Ticks && !NoIterateAnimIndex())
+            if (LastAnimationChangeTime >= Time.Ticks || NoIterateAnimIndex())
             {
-                ushort id = GetGraphicForAnimation();
-                byte action = GetGroupForAnimation(this, id, true);
+                return;
+            }
 
-                bool mirror = false;
-                AnimationsLoader.Instance.GetAnimDirection(ref dir, ref mirror);
-                int currentDelay = Constants.CHARACTER_ANIMATION_DELAY;
+            var animations = Client.Game.UO.Animations;
 
-                if (id < Client.Game.Animations.MaxAnimationCount && dir < 5)
+            ushort id = GetGraphicForAnimation();
+            byte action = GetGroupForAnimation(this, id, true);
+
+            bool mirror = false;
+            animations.GetAnimDirection(ref dir, ref mirror);
+            int currentDelay = Constants.CHARACTER_ANIMATION_DELAY;
+
+            if (id < animations.MaxAnimationCount && dir < 5)
+            {
+                var frames = animations.GetAnimationFrames(
+                    id,
+                    action,
+                    dir,
+                    out _,
+                    out _
+                );
+
+                if (frames.Length != 0)
                 {
-                    var frames = Client.Game.Animations.GetAnimationFrames(
-                        id,
-                        action,
-                        dir,
-                        out _,
-                        out _
-                    );
+                    int fc = frames.Length;
 
-                    if (frames.Length != 0)
+                    int frameIndex =
+                        AnimIndex
+                        + (AnimationFromServer && !_isAnimationForwardDirection ? -1 : 1);
+
+                    if (AnimationFromServer)
                     {
-                        int fc = frames.Length;
+                        currentDelay += currentDelay * (_animationInterval + 1);
 
-                        int frameIndex =
-                            AnimIndex
-                            + (AnimationFromServer && !_isAnimationForwardDirection ? -1 : 1);
-
-                        if (AnimationFromServer)
+                        if (AnimationFrameCount == 0)
                         {
-                            currentDelay += currentDelay * (_animationInterval + 1);
-
-                            if (AnimationFrameCount == 0)
-                            {
-                                AnimationFrameCount = (byte)fc;
-                            }
-                            else
-                            {
-                                fc = AnimationFrameCount;
-                            }
-
-                            if (_isAnimationForwardDirection && frameIndex >= fc)
-                            {
-                                frameIndex = 0;
-                            }
-                            else if (!_isAnimationForwardDirection && frameIndex < 0)
-                            {
-                                if (fc == 0)
-                                {
-                                    frameIndex = 0;
-                                }
-                                else
-                                {
-                                    frameIndex = (byte)(frames.Length - 1);
-                                }
-                            }
-                            else
-                            {
-                                goto SKIP;
-                            }
-
-                            if (_animationRepeateMode == 0) // play animation infinite time
-                            {
-                                goto SKIP;
-                            }
-
-                            if (--_animationRepeateMode > 0) // play animation n times
-                            {
-                                goto SKIP;
-                            }
-
-                            if (_animationRepeat)
-                            {
-                                _animationRepeatModeCount = _animationRepeateMode;
-
-                                _animationRepeat = false;
-                            }
-                            else
-                            {
-                                SetAnimation(0xFF);
-                            }
-
-                            SKIP:
-                            ;
+                            AnimationFrameCount = (byte)fc;
                         }
                         else
                         {
-                            if (frameIndex >= fc)
-                            {
-                                frameIndex = 0;
-
-                                if ((Serial & 0x80000000) != 0)
-                                {
-                                    World.CorpseManager.Remove(0, Serial);
-                                    World.RemoveMobile(Serial);
-                                }
-                            }
+                            fc = AnimationFrameCount;
                         }
 
-                        AnimIndex = (byte)(frameIndex % frames.Length);
+                        if (_isAnimationForwardDirection && frameIndex >= fc)
+                        {
+                            frameIndex = 0;
+                        }
+                        else if (!_isAnimationForwardDirection && frameIndex < 0)
+                        {
+                            if (fc == 0)
+                            {
+                                frameIndex = 0;
+                            }
+                            else
+                            {
+                                frameIndex = (byte)(frames.Length - 1);
+                            }
+                        }
+                        else
+                        {
+                            goto SKIP;
+                        }
+
+                        if (_animationRepeateMode == 0) // play animation infinite time
+                        {
+                            goto SKIP;
+                        }
+
+                        if (--_animationRepeateMode > 0) // play animation n times
+                        {
+                            goto SKIP;
+                        }
+
+                        if (_animationRepeat)
+                        {
+                            _animationRepeatModeCount = _animationRepeateMode;
+
+                            _animationRepeat = false;
+                        }
+                        else
+                        {
+                            SetAnimation(0xFF);
+                        }
+
+                    SKIP:
+                        ;
                     }
-                    else if ((Serial & 0x80000000) != 0)
+                    else
                     {
-                        World.CorpseManager.Remove(0, Serial);
-                        World.RemoveMobile(Serial);
+                        if (frameIndex >= fc)
+                        {
+                            frameIndex = 0;
+
+                            if ((Serial & 0x80000000) != 0)
+                            {
+                                World.CorpseManager.Remove(0, Serial);
+                                World.RemoveMobile(Serial);
+                            }
+                        }
                     }
+
+                    AnimIndex = (byte)(frameIndex % frames.Length);
                 }
                 else if ((Serial & 0x80000000) != 0)
                 {
                     World.CorpseManager.Remove(0, Serial);
                     World.RemoveMobile(Serial);
                 }
-
-                LastAnimationChangeTime = Time.Ticks + currentDelay;
             }
+            else if ((Serial & 0x80000000) != 0)
+            {
+                World.CorpseManager.Remove(0, Serial);
+                World.RemoveMobile(Serial);
+            }
+
+            LastAnimationChangeTime = Time.Ticks + currentDelay;
         }
 
         public void ProcessSteps(out byte dir, bool evalutate = false)
@@ -779,7 +793,7 @@ namespace ClassicUO.Game.GameObjects
                                 absX = X;
                                 absY = Y;
 
-                                Pathfinder.GetNewXY((byte)(step.Direction & 7), ref absX, ref absY);
+                               Pathfinder.GetNewXY((byte)(step.Direction & 7), ref absX, ref absY);
 
                                 badStep = absX != step.X || absY != step.Y;
                             }
@@ -964,7 +978,7 @@ namespace ClassicUO.Game.GameObjects
                 p.Y += 22;
             }
 
-            Client.Game.Animations.GetAnimationDimensions(
+            Client.Game.UO.Animations.GetAnimationDimensions(
                 AnimIndex,
                 GetGraphicForAnimation(),
                 /*(byte) m.GetDirectionForAnimation()*/
@@ -1088,7 +1102,7 @@ namespace ClassicUO.Game.GameObjects
                 UIManager.GetGump<PaperDollGump>(serial)?.Dispose();
                 UIManager.GetGump<ModernPaperdoll>(serial)?.Dispose();
 
-                _pool.ReturnOne(this);
+                //_pool.ReturnOne(this);
             }
         }
 

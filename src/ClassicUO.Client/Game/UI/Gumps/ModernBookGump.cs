@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -60,13 +60,14 @@ namespace ClassicUO.Game.UI.Gumps
 
         public ModernBookGump
         (
+            World world,
             uint serial,
             ushort page_count,
             string title,
             string author,
             bool is_editable,
             bool old_packet
-        ) : base(serial, 0)
+        ) : base(world, serial, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -84,7 +85,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         public ushort BookPageCount { get; internal set; }
         public HashSet<int> KnownPages { get; internal set; } = new HashSet<int>();
-        public static bool IsNewBook => Client.Version > ClientVersion.CV_200;
+        public static bool IsNewBook => Client.Game.UO.Version > ClientVersion.CV_200;
         public bool UseNewHeader { get; set; } = true;
         public static byte DefaultFont => (byte) (IsNewBook ? 1 : 4);
 
@@ -111,7 +112,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             for (int i = 0, l = BookLines.Length; i < l; i++)
             {
-                int w = IsNewBook ? FontsLoader.Instance.GetWidthUnicode(_bookPage.renderedText.Font, BookLines[i]) : FontsLoader.Instance.GetWidthASCII(_bookPage.renderedText.Font, BookLines[i]);
+                int w = IsNewBook ? Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_bookPage.renderedText.Font, BookLines[i]) : Client.Game.UO.FileManager.Fonts.GetWidthASCII(_bookPage.renderedText.Font, BookLines[i]);
 
                 sb.Append(BookLines[i]);
 
@@ -738,7 +739,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                                 int endX = 0;
 
-                                // calculate width 
+                                // calculate width
                                 for (int k = 0; k < count; k++)
                                 {
                                     endX += _rendererText.GetCharWidth(info.Data[startSelectionIndex + k].Item);

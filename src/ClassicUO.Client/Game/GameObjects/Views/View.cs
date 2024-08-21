@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -138,11 +138,11 @@ namespace ClassicUO.Game.GameObjects
             bool isWet = false
         )
         {
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(graphic);
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(graphic);
 
             if (artInfo.Texture != null)
             {
-                ref var index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+                ref var index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
                 index.Width = (short)((artInfo.UV.Width >> 1) - 22);
                 index.Height = (short)(artInfo.UV.Height - 44);
 
@@ -193,7 +193,7 @@ namespace ClassicUO.Game.GameObjects
             float depth
         )
         {
-            ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(graphic);
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(graphic);
 
             if (gumpInfo.Texture != null)
             {
@@ -221,11 +221,11 @@ namespace ClassicUO.Game.GameObjects
             float depth
         )
         {
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(graphic);
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(graphic);
 
             if (artInfo.Texture != null)
             {
-                ref var index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+                ref var index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
                 index.Width = (short)((artInfo.UV.Width >> 1) - 22);
                 index.Height = (short)(artInfo.UV.Height - 44);
 
@@ -258,15 +258,15 @@ namespace ClassicUO.Game.GameObjects
             bool isWet = false
         )
         {
-            ref UOFileIndex index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+            ref UOFileIndex index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
 
             graphic = (ushort)(graphic + index.AnimOffset);
 
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(graphic);
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(graphic);
 
             if (artInfo.Texture != null)
             {
-                index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+                index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
                 index.Width = (short)((artInfo.UV.Width >> 1) - 22);
                 index.Height = (short)(artInfo.UV.Height - 44);
 

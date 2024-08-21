@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,12 @@ using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Utility;
+<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
+=======
+using ClassicUO.Game.Scenes;
+>>>>>>> externo/main
 
 namespace ClassicUO.Game.Managers
 {
@@ -65,11 +69,25 @@ namespace ClassicUO.Game.Managers
     }
 
 
-    internal static class MessageManager
+    internal sealed class MessageManager
     {
-        public static PromptData PromptData { get; set; }
+        private readonly World _world;
 
+<<<<<<< HEAD
         public static void HandleMessage
+=======
+        public MessageManager(World world) => _world = world;
+
+
+        public PromptData PromptData { get; set; }
+
+        public event EventHandler<MessageEventArgs> MessageReceived;
+
+        public event EventHandler<MessageEventArgs> LocalizedMessageReceived;
+
+
+        public void HandleMessage
+>>>>>>> externo/main
         (
             Entity parent,
             string text,
@@ -89,7 +107,149 @@ namespace ClassicUO.Game.Managers
 
             Profile currentProfile = ProfileManager.CurrentProfile;
 
+<<<<<<< HEAD
             EventSink.InvokeRawMessageReceived(parent, new MessageEventArgs
+=======
+            if (currentProfile != null && currentProfile.OverrideAllFonts)
+            {
+                font = currentProfile.ChatFont;
+                unicode = currentProfile.OverrideAllFontsIsUnicode;
+            }
+
+            switch (type)
+            {
+                case MessageType.Command:
+                case MessageType.Encoded:
+                case MessageType.System:
+                case MessageType.Party:
+                    break;
+
+                case MessageType.Guild:
+                    if (currentProfile.IgnoreGuildMessages) return;
+                    break;
+
+                case MessageType.Alliance:
+                    if (currentProfile.IgnoreAllianceMessages) return;
+                    break;
+
+                case MessageType.Spell:
+                {
+                    //server hue color per default
+                    if (!string.IsNullOrEmpty(text) && SpellDefinition.WordToTargettype.TryGetValue(text, out SpellDefinition spell))
+                    {
+                        if (currentProfile != null && currentProfile.EnabledSpellFormat && !string.IsNullOrWhiteSpace(currentProfile.SpellDisplayFormat))
+                        {
+                            ValueStringBuilder sb = new ValueStringBuilder(currentProfile.SpellDisplayFormat.AsSpan());
+                            {
+                                sb.Replace("{power}".AsSpan(), spell.PowerWords.AsSpan());
+                                sb.Replace("{spell}".AsSpan(), spell.Name.AsSpan());
+
+                                text = sb.ToString().Trim();
+                            }
+                            sb.Dispose();
+                        }
+
+                        //server hue color per default if not enabled
+                        if (currentProfile != null && currentProfile.EnabledSpellHue)
+                        {
+                            if (spell.TargetType == TargetType.Beneficial)
+                            {
+                                hue = currentProfile.BeneficHue;
+                            }
+                            else if (spell.TargetType == TargetType.Harmful)
+                            {
+                                hue = currentProfile.HarmfulHue;
+                            }
+                            else
+                            {
+                                hue = currentProfile.NeutralHue;
+                            }
+                        }
+                    }
+
+                    goto case MessageType.Label;
+                }
+
+                default:
+                case MessageType.Focus:
+                case MessageType.Whisper:
+                case MessageType.Yell:
+                case MessageType.Regular:
+                case MessageType.Label:
+                case MessageType.Limit3Spell:
+
+                    if (parent == null)
+                    {
+                        break;
+                    }
+
+                    // If person who send that message is in ignores list - but filter out Spell Text
+                    if (_world.IgnoreManager.IgnoredCharsList.Contains(parent.Name) && type != MessageType.Spell)
+                        break;
+
+                    TextObject msg = CreateMessage
+                    (
+                        text,
+                        hue,
+                        font,
+                        unicode,
+                        type,
+                        textType
+                    );
+
+                    msg.Owner = parent;
+
+                    if (parent is Item it && !it.OnGround)
+                    {
+                        msg.X = _world.DelayedObjectClickManager.X;
+                        msg.Y = _world.DelayedObjectClickManager.Y;
+                        msg.IsTextGump = true;
+                        bool found = false;
+
+                        for (LinkedListNode<Gump> gump = UIManager.Gumps.Last; gump != null; gump = gump.Previous)
+                        {
+                            Control g = gump.Value;
+
+                            if (!g.IsDisposed)
+                            {
+                                switch (g)
+                                {
+                                    case PaperDollGump paperDoll when g.LocalSerial == it.Container:
+                                        paperDoll.AddText(msg);
+                                        found = true;
+
+                                        break;
+
+                                    case ContainerGump container when g.LocalSerial == it.Container:
+                                        container.AddText(msg);
+                                        found = true;
+
+                                        break;
+
+                                    case TradingGump trade when trade.ID1 == it.Container || trade.ID2 == it.Container:
+                                        trade.AddText(msg);
+                                        found = true;
+
+                                        break;
+                                }
+                            }
+
+                            if (found)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    parent.AddMessage(msg);
+
+                    break;
+            }
+
+            MessageReceived.Raise
+            (
+                new MessageEventArgs
+>>>>>>> externo/main
                 (
                     parent,
                     text,
@@ -102,6 +262,7 @@ namespace ClassicUO.Game.Managers
                     lang
                 ));
 
+<<<<<<< HEAD
             if (currentProfile != null && currentProfile.OverrideAllFonts)
             {
                 font = currentProfile.ChatFont;
@@ -302,9 +463,14 @@ namespace ClassicUO.Game.Managers
                     unicode,
                     lang
                 ));
+=======
+        public void OnLocalizedMessage(Entity entity, MessageEventArgs args)
+        {
+            LocalizedMessageReceived.Raise(args, entity);
+>>>>>>> externo/main
         }
 
-        public static TextObject CreateMessage
+        public TextObject CreateMessage
         (
             string msg,
             ushort hue,
@@ -314,6 +480,42 @@ namespace ClassicUO.Game.Managers
             TextType textType
         )
         {
+<<<<<<< HEAD
+=======
+            if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.OverrideAllFonts)
+            {
+                font = ProfileManager.CurrentProfile.ChatFont;
+                isunicode = ProfileManager.CurrentProfile.OverrideAllFontsIsUnicode;
+            }
+
+            int width = isunicode ? Client.Game.UO.FileManager.Fonts.GetWidthUnicode(font, msg) : Client.Game.UO.FileManager.Fonts.GetWidthASCII(font, msg);
+
+            if (width > 200)
+            {
+                width = isunicode ?
+                    Client.Game.UO.FileManager.Fonts.GetWidthExUnicode
+                    (
+                        font,
+                        msg,
+                        200,
+                        TEXT_ALIGN_TYPE.TS_LEFT,
+                        (ushort) FontStyle.BlackBorder
+                    ) :
+                    Client.Game.UO.FileManager.Fonts.GetWidthExASCII
+                    (
+                        font,
+                        msg,
+                        200,
+                        TEXT_ALIGN_TYPE.TS_LEFT,
+                        (ushort) FontStyle.BlackBorder
+                    );
+            }
+            else
+            {
+                width = 0;
+            }
+
+>>>>>>> externo/main
 
             ushort fixedColor = (ushort)(hue & 0x3FFF);
 
@@ -332,7 +534,7 @@ namespace ClassicUO.Game.Managers
             }
 
 
-            TextObject textObject = TextObject.Create();
+            TextObject textObject = TextObject.Create(_world);
             textObject.Alpha = 0xFF;
             textObject.Type = type;
             //textObject.Hue = fixedColor;

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ namespace ClassicUO.Game.UI.Controls
             ContainsByBounds = true;
             IsFromServer = true;
 
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(_graphic);
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(_graphic);
 
             if (artInfo.Texture == null)
             {
@@ -66,16 +66,26 @@ namespace ClassicUO.Game.UI.Controls
                 return;
             }
 
+<<<<<<< HEAD
             _isPartial = TileDataLoader.Instance.StaticData[_graphic].IsPartialHue;
 
             hueVector = ShaderHueTranslator.GetHueVector(_hue, _isPartial, 1f);
+=======
+            _isPartial = Client.Game.UO.FileManager.TileData.StaticData[_graphic].IsPartialHue;
+>>>>>>> externo/main
         }
 
         public override bool Draw(UltimaBatcher2D batcher, int x, int y)
         {
             base.Draw(batcher, x, y);
 
+<<<<<<< HEAD
             ref readonly var artInfo = ref Client.Game.Arts.GetArt(_graphic);
+=======
+            var hueVector = ShaderHueTranslator.GetHueVector(_hue, _isPartial, 1f);
+
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(_graphic);
+>>>>>>> externo/main
 
             if (artInfo.Texture != null)
             {

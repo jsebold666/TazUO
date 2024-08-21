@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -529,6 +529,7 @@ namespace ClassicUO.Configuration
 
         public static uint GumpsVersion { get; private set; }
 
+<<<<<<< HEAD
         [JsonConverter(typeof(Point2Converter))]
         public Point InfoBarSize { get; set; } = new Point(400, 20);
         public bool InfoBarLocked { get; set; } = false;
@@ -601,20 +602,27 @@ namespace ClassicUO.Configuration
 
 
         public void Save(string path, bool saveGumps = true)
+=======
+        public void Save(World world, string path)
+>>>>>>> externo/main
         {
             Log.Trace($"Saving path:\t\t{path}");
 
             // Save profile settings
-            ConfigurationResolver.Save(this, Path.Combine(path, "profile.json"), ProfileJsonContext.DefaultToUse);
+            ConfigurationResolver.Save(this, Path.Combine(path, "profile.json"), ProfileJsonContext.DefaultToUse.Profile);
 
             // Save opened gumps
+<<<<<<< HEAD
             if (saveGumps)
                 SaveGumps(path);
+=======
+            SaveGumps(world, path);
+>>>>>>> externo/main
 
             Log.Trace("Saving done!");
         }
 
-        private void SaveGumps(string path)
+        private void SaveGumps(World world, string path)
         {
             string gumpsXmlPath = Path.Combine(path, "gumps.xml");
 
@@ -648,13 +656,13 @@ namespace ClassicUO.Configuration
 
                     if (gump.LocalSerial != 0)
                     {
-                        Item item = World.Items.Get(gump.LocalSerial);
+                        Item item = world.Items.Get(gump.LocalSerial);
 
                         if (item != null && !item.IsDestroyed && item.Opened)
                         {
                             while (SerialHelper.IsItem(item.Container))
                             {
-                                item = World.Items.Get(item.Container);
+                                item = world.Items.Get(item.Container);
                             }
 
                             SaveItemsGumpRecursive(item, xml, gumps);
@@ -687,7 +695,7 @@ namespace ClassicUO.Configuration
             }
 
 
-            SkillsGroupManager.Save();
+            world.SkillsGroupManager.Save();
         }
 
         private static void SaveItemsGumpRecursive(Item parent, XmlTextWriter xml, LinkedList<Gump> list)
@@ -736,12 +744,12 @@ namespace ClassicUO.Configuration
         }
 
 
-        public List<Gump> ReadGumps(string path)
+        public List<Gump> ReadGumps(World world, string path)
         {
             List<Gump> gumps = new List<Gump>();
 
             // load skillsgroup
-            SkillsGroupManager.Load();
+            world.SkillsGroupManager.Load();
 
             // load gumps
             string gumpsXmlPath = Path.Combine(path, "gumps.xml");
@@ -791,48 +799,57 @@ namespace ClassicUO.Configuration
                             switch (type)
                             {
                                 case GumpType.Buff:
+<<<<<<< HEAD
                                     if (ProfileManager.CurrentProfile.UseImprovedBuffBar)
                                         gump = new ImprovedBuffGump();
                                     else
                                         gump = new BuffGump(100, 100);
+=======
+                                    gump = new BuffGump(world);
+>>>>>>> externo/main
 
                                     break;
 
                                 case GumpType.Container:
-                                    gump = new ContainerGump();
+                                    gump = new ContainerGump(world);
 
                                     break;
 
                                 case GumpType.CounterBar:
-                                    gump = new CounterBarGump();
+                                    gump = new CounterBarGump(world);
 
                                     break;
 
                                 case GumpType.HealthBar:
                                     if (CustomBarsToggled)
                                     {
-                                        gump = new HealthBarGumpCustom();
+                                        gump = new HealthBarGumpCustom(world);
                                     }
                                     else
                                     {
-                                        gump = new HealthBarGump();
+                                        gump = new HealthBarGump(world);
                                     }
 
                                     break;
 
                                 case GumpType.InfoBar:
-                                    gump = new InfoBarGump();
+                                    gump = new InfoBarGump(world);
 
                                     break;
 
                                 case GumpType.Journal:
+<<<<<<< HEAD
                                     gump = new ResizableJournal();
                                     //x = ProfileManager.CurrentProfile.JournalPosition.X;
                                     //y = ProfileManager.CurrentProfile.JournalPosition.Y;
+=======
+                                    gump = new JournalGump(world);
+
+>>>>>>> externo/main
                                     break;
 
                                 case GumpType.MacroButton:
-                                    gump = new MacroButtonGump();
+                                    gump = new MacroButtonGump(world);
 
                                     break;
                                 case GumpType.MacroButtonEditor:
@@ -841,11 +858,12 @@ namespace ClassicUO.Configuration
                                     break;
 
                                 case GumpType.MiniMap:
-                                    gump = new MiniMapGump();
+                                    gump = new MiniMapGump(world);
 
                                     break;
 
                                 case GumpType.PaperDoll:
+<<<<<<< HEAD
                                     if (pdolc > 0)
                                     {
                                         break;
@@ -864,67 +882,75 @@ namespace ClassicUO.Configuration
                                         y = ProfileManager.CurrentProfile.PaperdollPosition.Y;
                                     }
                                     pdolc++;
+=======
+                                    gump = new PaperDollGump(world);
+>>>>>>> externo/main
 
                                     break;
 
                                 case GumpType.SkillMenu:
                                     if (StandardSkillsGump)
                                     {
-                                        gump = new StandardSkillsGump();
+                                        gump = new StandardSkillsGump(world);
                                     }
                                     else
                                     {
-                                        gump = new SkillGumpAdvanced();
+                                        gump = new SkillGumpAdvanced(world);
                                     }
 
                                     break;
 
                                 case GumpType.SpellBook:
-                                    gump = new SpellbookGump();
+                                    gump = new SpellbookGump(world);
 
                                     break;
 
                                 case GumpType.StatusGump:
+<<<<<<< HEAD
                                     gump = StatusGumpBase.AddStatusGump(0, 0);
                                     x = ProfileManager.CurrentProfile.StatusGumpPosition.X;
                                     y = ProfileManager.CurrentProfile.StatusGumpPosition.Y;
+=======
+                                    gump = StatusGumpBase.AddStatusGump(world, 0, 0);
+
+>>>>>>> externo/main
                                     break;
 
                                 //case GumpType.TipNotice:
                                 //    gump = new TipNoticeGump();
                                 //    break;
                                 case GumpType.AbilityButton:
-                                    gump = new UseAbilityButtonGump();
+                                    gump = new UseAbilityButtonGump(world);
 
                                     break;
 
                                 case GumpType.SpellButton:
-                                    gump = new UseSpellButtonGump();
+                                    gump = new UseSpellButtonGump(world);
 
                                     break;
 
                                 case GumpType.SkillButton:
-                                    gump = new SkillButtonGump();
+                                    gump = new SkillButtonGump(world);
 
                                     break;
 
                                 case GumpType.RacialButton:
-                                    gump = new RacialAbilityButton();
+                                    gump = new RacialAbilityButton(world);
 
                                     break;
 
                                 case GumpType.WorldMap:
-                                    gump = new WorldMapGump();
+                                    gump = new WorldMapGump(world);
 
                                     break;
 
                                 case GumpType.Debug:
-                                    gump = new DebugGump(100, 100);
+                                    gump = new DebugGump(world, 100, 100);
 
                                     break;
 
                                 case GumpType.NetStats:
-                                    gump = new NetworkStatsGump(100, 100);
+                                    gump = new NetworkStatsGump(world, 100, 100);
 
                                     break;
 
@@ -997,34 +1023,34 @@ namespace ClassicUO.Configuration
                                 switch (type)
                                 {
                                     case GumpType.SpellButton:
-                                        gump = new UseSpellButtonGump();
+                                        gump = new UseSpellButtonGump(world);
 
                                         break;
 
                                     case GumpType.SkillButton:
-                                        gump = new SkillButtonGump();
+                                        gump = new SkillButtonGump(world);
 
                                         break;
 
                                     case GumpType.HealthBar:
                                         if (CustomBarsToggled)
                                         {
-                                            gump = new HealthBarGumpCustom();
+                                            gump = new HealthBarGumpCustom(world);
                                         }
                                         else
                                         {
-                                            gump = new HealthBarGump();
+                                            gump = new HealthBarGump(world);
                                         }
 
                                         break;
 
                                     case GumpType.AbilityButton:
-                                        gump = new UseAbilityButtonGump();
+                                        gump = new UseAbilityButtonGump(world);
 
                                         break;
 
                                     case GumpType.MacroButton:
-                                        gump = new MacroButtonGump();
+                                        gump = new MacroButtonGump(world);
 
                                         break;
                                     case GumpType.GridContainer:

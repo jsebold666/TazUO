@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -36,8 +36,8 @@ namespace ClassicUO.Game.GameObjects
 {
     internal sealed partial class LightningEffect : GameEffect
     {
-        public LightningEffect(EffectManager manager, uint src, ushort x, ushort y, sbyte z, ushort hue) 
-            : base(manager, 0x4E20, hue, 400, 0)
+        public LightningEffect(World world, EffectManager manager, uint src, ushort x, ushort y, sbyte z, ushort hue) 
+            : base(world, manager, 0x4E20, hue, 400, 0)
         {
             IsEnabled = true;
             AnimIndex = 0;

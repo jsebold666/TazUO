@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,14 +43,14 @@ namespace ClassicUO.Game.UI.Gumps
     {
         private GumpPic _button;
 
-        public UseAbilityButtonGump() : base(0, 0)
+        public UseAbilityButtonGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
             CanCloseWithRightClick = true;
         }
 
-        public UseAbilityButtonGump(bool primary) : this()
+        public UseAbilityButtonGump(World world, bool primary) : this(world)
         {
             IsPrimary = primary;
             BuildGump();
@@ -75,7 +75,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             Add(_button);
 
-            SetTooltip(ClilocLoader.Instance.GetString(1028838 + (Index - 1)), 80);
+            SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(1028838 + (Index - 1)), 80);
 
             WantUpdateSize = true;
             AcceptMouseInput = true;
@@ -96,11 +96,11 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 if (IsPrimary)
                 {
-                    GameActions.UsePrimaryAbility();
+                    GameActions.UsePrimaryAbility(World);
                 }
                 else
                 {
-                    GameActions.UseSecondaryAbility();
+                    GameActions.UseSecondaryAbility(World);
                 }
 
                 return true;

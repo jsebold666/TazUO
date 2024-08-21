@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ namespace ClassicUO.Game.UI.Gumps
     {
         private Skill _skill;
 
-        public SkillButtonGump(Skill skill, int x, int y) : this()
+        public SkillButtonGump(World world, Skill skill, int x, int y) : this(world)
         {
             X = x;
             Y = y;
@@ -54,7 +54,7 @@ namespace ClassicUO.Game.UI.Gumps
             BuildGump();
         }
 
-        public SkillButtonGump() : base(0, 0)
+        public SkillButtonGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;

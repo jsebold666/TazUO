@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,13 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class AnimDataLoader : UOFileLoader
+    public sealed class AnimDataLoader : UOFileLoader
     {
-        private static AnimDataLoader _instance;
         private UOFileMul _file;
 
-        private AnimDataLoader()
+        public AnimDataLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
-
-        public static AnimDataLoader Instance => _instance ?? (_instance = new AnimDataLoader());
 
         public UOFile AnimDataFile => _file;
 
@@ -58,7 +55,7 @@ namespace ClassicUO.Assets
             (
                 () =>
                 {
-                    string path = UOFileManager.GetUOFilePath("animdata.mul");
+                    string path = FileManager.GetUOFilePath("animdata.mul");
 
                     if (File.Exists(path))
                     {
@@ -70,7 +67,11 @@ namespace ClassicUO.Assets
 
         public unsafe AnimDataFrame CalculateCurrentGraphic(ushort graphic)
         {
-            IntPtr address = _file?.StartAddress ?? IntPtr.Zero;
+            if (_file == null)
+                return default;
+
+            var reader = _file.GetReader();
+            var address = reader.StartAddress;
 
             if (address != IntPtr.Zero)
             {

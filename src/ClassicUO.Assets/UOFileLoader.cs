@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -30,59 +30,59 @@
 
 #endregion
 
-namespace ClassicUO.Game.UI.Controls
+using ClassicUO.Assets;
+using ClassicUO.IO;
+using System;
+using System.Threading.Tasks;
+
+namespace ClassicUO.Assets
 {
-    //class HorizontalScrollArea : Control
-    //{
-    //    private Rectangle _rect;
+    public abstract class UOFileLoader : IDisposable
+    {
+        protected UOFileLoader(UOFileManager fileManager) 
+        {
+            FileManager = fileManager;
+        }
 
-    //    public HorizontalScrollArea(int x, int y, int w, int h)
-    //    {
-    //        X = x;
-    //        Y = y;
-    //        Width = w;
-    //        Height = h;
+        public UOFileManager FileManager { get; }
 
-    //        AcceptMouseInput = true;
-    //        WantUpdateSize = false;
-    //        CanMove = true;
+        public bool IsDisposed { get; private set; }
 
+        public virtual void Dispose()
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
 
-    //        HSliderBar bar = new HSliderBar(0, 0, w, 0, 100, 0, HSliderBarStyle.BlueWidgetNoBar)
-    //        {
-    //            Parent = this
-    //        };
-    //    }
+            IsDisposed = true;
 
+            ClearResources();
+        }
 
-    //    public override void Update()
-    //    {
-    //        base.Update();
-    //    }
+        public UOFileIndex[] Entries;
 
-    //    public override bool Draw(Batcher2D batcher, Point position, Vector3? hue = null)
-    //    {
-    //        Children[0].Draw(batcher, new Point(position.X + Children[0].X, position.Y + Children[0].Y));
-    //        _rect.X = position.X;
-    //        _rect.Y = position.Y;
-    //        _rect.Width = Width;
-    //        _rect.Height = Height;
+        public abstract Task Load();
 
-    //        Rectangle scissor = ScissorStack.CalculateScissors(batcher.TransformMatrix, _rect);
+        public virtual void ClearResources()
+        {
+        }
 
-    //        if (ScissorStack.PushScissors(scissor))
-    //        {
-    //            batcher.EnableScissorTest(true);
+        public ref UOFileIndex GetValidRefEntry(int index)
+        {
+            if (index < 0 || Entries == null || index >= Entries.Length)
+            {
+                return ref UOFileIndex.Invalid;
+            }
 
-    //            int width = 0;
-    //            int maxWidth = 
+            ref UOFileIndex entry = ref Entries[index];
 
+            if (entry.Offset < 0 || entry.Length <= 0 || entry.Offset == 0x0000_0000_FFFF_FFFF)
+            {
+                return ref UOFileIndex.Invalid;
+            }
 
-    //            batcher.EnableScissorTest(false);
-    //            ScissorStack.PopScissors();
-    //        }
-
-    //        return true;
-    //    }
-    //}
+            return ref entry;
+        }
+    }
 }

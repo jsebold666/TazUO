@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,9 +38,8 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class ArtLoader : UOFileLoader
+    public sealed class ArtLoader : UOFileLoader
     {
-        private static ArtLoader _instance;
         private UOFile _file;
         private readonly ushort _graphicMask;
 
@@ -50,22 +49,19 @@ namespace ClassicUO.Assets
         public const int MAX_LAND_DATA_INDEX_COUNT = 0x4000;
         public const int MAX_STATIC_DATA_INDEX_COUNT = 0x14000;
 
-        private ArtLoader(int staticCount, int landCount)
+        public ArtLoader(UOFileManager fileManager) : base(fileManager)
         {
-            _graphicMask = UOFileManager.IsUOPInstallation ? (ushort)0xFFFF : (ushort)0x3FFF;
+            _graphicMask = FileManager.IsUOPInstallation ? (ushort)0xFFFF : (ushort)0x3FFF;
         }
 
-        public static ArtLoader Instance =>
-            _instance
-            ?? (_instance = new ArtLoader(MAX_STATIC_DATA_INDEX_COUNT, MAX_LAND_DATA_INDEX_COUNT));
 
         public override Task Load()
         {
             return Task.Run(() =>
             {
-                string filePath = UOFileManager.GetUOFilePath("artLegacyMUL.uop");
+                string filePath = FileManager.GetUOFilePath("artLegacyMUL.uop");
 
-                if (UOFileManager.IsUOPInstallation && File.Exists(filePath))
+                if (FileManager.IsUOPInstallation && File.Exists(filePath))
                 {
                     _file = new UOFileUop(filePath, "build/artlegacymul/{0:D8}.tga");
                     Entries = new UOFileIndex[
@@ -74,12 +70,12 @@ namespace ClassicUO.Assets
                 }
                 else
                 {
-                    filePath = UOFileManager.GetUOFilePath("art.mul");
-                    string idxPath = UOFileManager.GetUOFilePath("artidx.mul");
+                    filePath = FileManager.GetUOFilePath("art.mul");
+                    string idxPath = FileManager.GetUOFilePath("artidx.mul");
 
                     if (File.Exists(filePath) && File.Exists(idxPath))
                     {
-                        _file = new UOFileMul(filePath, idxPath, MAX_STATIC_DATA_INDEX_COUNT);
+                        _file = new UOFileMul(filePath, idxPath);
                     }
                 }
 
@@ -104,8 +100,9 @@ namespace ClassicUO.Assets
                 return false;
             }
 
-            _file.SetData(entry.Address, entry.FileSize);
-            _file.Seek(entry.Offset);
+            var reader = new StackDataReader(entry.Address, (int)entry.FileSize);
+            reader.Seek(entry.Offset);
+
             //var flags = _file.ReadUInt();
 
             //if (flags > 0xFFFF || flags == 0)
@@ -134,7 +131,7 @@ namespace ClassicUO.Assets
 
                     for (int j = start; j < end; ++j)
                     {
-                        data[pos++] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+                        data[pos++] = HuesHelper.Color16To32(reader.ReadUInt16LE()) | 0xFF_00_00_00;
                     }
                 }
 
@@ -145,15 +142,15 @@ namespace ClassicUO.Assets
 
                     for (int j = i; j < end; ++j)
                     {
-                        data[pos++] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+                        data[pos++] = HuesHelper.Color16To32(reader.ReadUInt16LE()) | 0xFF_00_00_00;
                     }
                 }
             }
             else
             {
-                var flags = _file.ReadUInt();
-                width = _file.ReadShort();
-                height = _file.ReadShort();
+                var flags = reader.ReadUInt32LE();
+                width = reader.ReadInt16LE();
+                height = reader.ReadInt16LE();
 
                 if (width <= 0 || height <= 0 || data.Length < (width * height))
                 {
@@ -169,7 +166,7 @@ namespace ClassicUO.Assets
 
                 ushort fixedGraphic = (ushort)(g - 0x4000);
 
-                if (ReadData(data, width, height, _file))
+                if (ReadData(data, width, height, reader))
                 {
                     // keep the cursor graphic check to cleanup edges
                     //if ((fixedGraphic >= 0x2053 && fixedGraphic <= 0x2062) || (fixedGraphic >= 0x206A && fixedGraphic <= 0x2079))
@@ -212,31 +209,7 @@ namespace ClassicUO.Assets
             return _data.AsSpan(0, width * height);
         }
 
-        private bool ReadHeader(
-            DataReader file,
-            ref UOFileIndex entry,
-            out short width,
-            out short height
-        )
-        {
-            if (entry.Length == 0)
-            {
-                width = 0;
-                height = 0;
-
-                return false;
-            }
-
-            file.SetData(entry.Address, entry.FileSize);
-            file.Seek(entry.Offset);
-            file.Skip(4);
-            width = file.ReadShort();
-            height = file.ReadShort();
-
-            return width > 0 && height > 0;
-        }
-
-        private unsafe bool ReadData(Span<uint> pixels, int width, int height, DataReader file)
+        private unsafe bool ReadData(Span<uint> pixels, int width, int height, StackDataReader file)
         {
             ushort* ptr = (ushort*)file.PositionAddress;
             ushort* lineoffsets = ptr;

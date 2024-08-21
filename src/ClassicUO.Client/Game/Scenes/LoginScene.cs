@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -76,6 +76,9 @@ namespace ClassicUO.Game.Scenes
         private long _reconnectTime;
         private int _reconnectTryCounter = 1;
         private bool _autoLogin;
+        private readonly World _world;
+
+        public LoginScene(World world) => _world = world;
 
 
         public bool Reconnect { get; set; }
@@ -98,6 +101,7 @@ namespace ClassicUO.Game.Scenes
 
             _autoLogin = Settings.GlobalSettings.AutoLogin;
 
+<<<<<<< HEAD
             UIManager.Add(new LoginBackground());
 
             if (string.IsNullOrEmpty(Settings.GlobalSettings.IP))
@@ -138,6 +142,10 @@ namespace ClassicUO.Game.Scenes
             {
                 UIManager.Add(_currentGump = new LoginGump(this));
             }
+=======
+            UIManager.Add(new LoginBackground(_world));
+            UIManager.Add(_currentGump = new LoginGump(_world, this));
+>>>>>>> externo/main
 
             Client.Game.Audio.PlayMusic(Client.Game.Audio.LoginMusicIndex, false, true);
 
@@ -174,11 +182,11 @@ namespace ClassicUO.Game.Scenes
 
             _currentGump?.Dispose();
 
-            // UnRegistering Packet Events           
+            // UnRegistering Packet Events
             NetClient.Socket.Connected -= OnNetClientConnected;
             NetClient.Socket.Disconnected -= OnNetClientDisconnected;
 
-            Client.Game.GameCursor.IsLoading = false;
+            Client.Game.UO.GameCursor.IsLoading = false;
             base.Unload();
         }
 
@@ -188,7 +196,7 @@ namespace ClassicUO.Game.Scenes
 
             if (_lastLoginStep != CurrentLoginStep)
             {
-                Client.Game.GameCursor.IsLoading = false;
+                Client.Game.UO.GameCursor.IsLoading = false;
 
                 // this trick avoid the flickering
                 Gump g = _currentGump;
@@ -238,25 +246,25 @@ namespace ClassicUO.Game.Scenes
 
         private Gump GetGumpForStep()
         {
-            foreach (Item item in World.Items.Values)
+            foreach (Item item in _world.Items.Values)
             {
-                World.RemoveItem(item);
+                _world.RemoveItem(item);
             }
 
-            foreach (Mobile mobile in World.Mobiles.Values)
+            foreach (Mobile mobile in _world.Mobiles.Values)
             {
-                World.RemoveMobile(mobile);
+                _world.RemoveMobile(mobile);
             }
 
-            World.Mobiles.Clear();
-            World.Items.Clear();
+            _world.Mobiles.Clear();
+            _world.Items.Clear();
 
             switch (CurrentLoginStep)
             {
                 case LoginSteps.Main:
                     PopupMessage = null;
 
-                    return new LoginGump(this);
+                    return new LoginGump(_world,this);
 
                 case LoginSteps.Connecting:
                 case LoginSteps.VerifyingAccount:
@@ -264,21 +272,21 @@ namespace ClassicUO.Game.Scenes
                 case LoginSteps.EnteringBritania:
                 case LoginSteps.PopUpMessage:
                 case LoginSteps.CharacterCreationDone:
-                    Client.Game.GameCursor.IsLoading = CurrentLoginStep != LoginSteps.PopUpMessage;
+                    Client.Game.UO.GameCursor.IsLoading = CurrentLoginStep != LoginSteps.PopUpMessage;
 
                     return GetLoadingScreen();
 
-                case LoginSteps.CharacterSelection: return new CharacterSelectionGump();
+                case LoginSteps.CharacterSelection: return new CharacterSelectionGump(_world);
 
                 case LoginSteps.ServerSelection:
                     _pingTime = Time.Ticks + 60000; // reset ping timer
 
-                    return new ServerSelectionGump();
+                    return new ServerSelectionGump(_world);
 
                 case LoginSteps.CharacterCreation:
                     _pingTime = Time.Ticks + 60000; // reset ping timer
 
-                    return new CharCreationGump(this);
+                    return new CharCreationGump(_world,this);
             }
 
             return null;
@@ -300,26 +308,30 @@ namespace ClassicUO.Game.Scenes
                 switch (CurrentLoginStep)
                 {
                     case LoginSteps.Connecting:
+<<<<<<< HEAD
                         labelText = ClilocLoader.Instance.GetString(3000002, ResGeneral.Connecting); // "Connecting..."
+=======
+                        labelText = Client.Game.UO.FileManager.Clilocs.GetString(3000002, ResGeneral.Connecting); // "Connecting..."
+>>>>>>> externo/main
 
                         showButtons = LoginButtons.Cancel;
 
                         break;
 
                     case LoginSteps.VerifyingAccount:
-                        labelText = ClilocLoader.Instance.GetString(3000003, ResGeneral.VerifyingAccount); // "Verifying Account..."
+                        labelText = Client.Game.UO.FileManager.Clilocs.GetString(3000003, ResGeneral.VerifyingAccount); // "Verifying Account..."
 
                         showButtons = LoginButtons.Cancel;
 
                         break;
 
                     case LoginSteps.LoginInToServer:
-                        labelText = ClilocLoader.Instance.GetString(3000053, ResGeneral.LoggingIntoShard); // logging into shard
+                        labelText = Client.Game.UO.FileManager.Clilocs.GetString(3000053, ResGeneral.LoggingIntoShard); // logging into shard
 
                         break;
 
                     case LoginSteps.EnteringBritania:
-                        labelText = ClilocLoader.Instance.GetString(3000001, ResGeneral.EnteringBritannia); // Entering Britania...
+                        labelText = Client.Game.UO.FileManager.Clilocs.GetString(3000001, ResGeneral.EnteringBritannia); // Entering Britania...
 
                         break;
 
@@ -330,7 +342,7 @@ namespace ClassicUO.Game.Scenes
                 }
             }
 
-            return new LoadingGump(labelText, showButtons, OnLoadingGumpButtonClick);
+            return new LoadingGump(_world, labelText, showButtons, OnLoadingGumpButtonClick);
         }
 
         private void OnLoadingGumpButtonClick(int buttonId)
@@ -445,7 +457,7 @@ namespace ClassicUO.Game.Scenes
 
                 CurrentLoginStep = LoginSteps.LoginInToServer;
 
-                World.ServerName = Servers[ServerIndex].Name;
+                _world.ServerName = Servers[ServerIndex].Name;
 
                 NetClient.Socket.Send_SelectServer(index);
             }
@@ -455,7 +467,7 @@ namespace ClassicUO.Game.Scenes
         {
             if (CurrentLoginStep == LoginSteps.CharacterSelection)
             {
-                LastCharacterManager.Save(Account, World.ServerName, Characters[index]);
+                LastCharacterManager.Save(Account, _world.ServerName, Characters[index]);
 
                 CurrentLoginStep = LoginSteps.EnteringBritania;
                 NetClient.Socket.Send_SelectCharacter(index, Characters[index], NetClient.Socket.LocalIP);
@@ -482,7 +494,7 @@ namespace ClassicUO.Game.Scenes
                 }
             }
 
-            LastCharacterManager.Save(Account, World.ServerName, character.Name);
+            LastCharacterManager.Save(Account, _world.ServerName, character.Name);
 
             NetClient.Socket.Send_CreateCharacter(character,
                                                   cityIndex,
@@ -563,11 +575,15 @@ namespace ClassicUO.Game.Scenes
 
             uint address = NetClient.Socket.LocalIP;
 
-            EncryptionHelper.Initialize(true, address, (ENCRYPTION_TYPE)Settings.GlobalSettings.Encryption);
+            NetClient.Socket.Encryption?.Initialize(true, address);
 
-            if (Client.Version >= ClientVersion.CV_6040)
+            if (Client.Game.UO.Version >= ClientVersion.CV_6040)
             {
+<<<<<<< HEAD
                 uint clientVersion = (uint)Client.Version;
+=======
+                uint clientVersion = (uint) Client.Game.UO.Version;
+>>>>>>> externo/main
 
                 byte major = (byte)(clientVersion >> 24);
                 byte minor = (byte)(clientVersion >> 16);
@@ -654,11 +670,11 @@ namespace ClassicUO.Game.Scenes
 
             _currentGump?.Dispose();
 
-            UIManager.Add(_currentGump = new CharacterSelectionGump());
+            UIManager.Add(_currentGump = new CharacterSelectionGump(_world));
             if (!string.IsNullOrWhiteSpace(PopupMessage))
             {
                 Gump g = null;
-                g = new LoadingGump(PopupMessage, LoginButtons.OK, (but) => g.Dispose()) { IsModal = true };
+                g = new LoadingGump(_world,PopupMessage, LoginButtons.OK, (but) => g.Dispose()) { IsModal = true };
                 UIManager.Add(g);
                 PopupMessage = null;
             }
@@ -669,7 +685,11 @@ namespace ClassicUO.Game.Scenes
             ParseCharacterList(ref p);
             ParseCities(ref p);
 
+<<<<<<< HEAD
             World.ClientFeatures.SetFlags((CharacterListFlags)p.ReadUInt32BE());
+=======
+            _world.ClientFeatures.SetFlags((CharacterListFlags) p.ReadUInt32BE());
+>>>>>>> externo/main
             CurrentLoginStep = LoginSteps.CharacterSelection;
 
             uint charToSelect = 0;
@@ -682,7 +702,7 @@ namespace ClassicUO.Game.Scenes
                 _autoLogin = false;
             }
 
-            string lastCharName = LastCharacterManager.GetLastCharacter(Account, World.ServerName);
+            string lastCharName = LastCharacterManager.GetLastCharacter(Account, _world.ServerName);
 
             for (byte i = 0; i < Characters.Length; i++)
             {
@@ -724,13 +744,17 @@ namespace ClassicUO.Game.Scenes
             uint seed = p.ReadUInt32BE();
 
             NetClient.Socket.Disconnect();
+<<<<<<< HEAD
             NetClient.Socket = new NetClient();
             EncryptionHelper.Initialize(false, seed, (ENCRYPTION_TYPE)Settings.GlobalSettings.Encryption);
 
+=======
+>>>>>>> externo/main
             NetClient.Socket.Connect(new IPAddress(ip).ToString(), port);
 
             if (NetClient.Socket.IsConnected)
             {
+                NetClient.Socket.Encryption?.Initialize(false, seed);
                 NetClient.Socket.EnableCompression();
                 unsafe
                 {
@@ -741,7 +765,6 @@ namespace ClassicUO.Game.Scenes
                 NetClient.Socket.Send_SecondLogin(Account, Password, seed);
             }
         }
-
 
         private void ParseCharacterList(ref StackDataReader p)
         {
@@ -761,7 +784,7 @@ namespace ClassicUO.Game.Scenes
             byte count = p.ReadUInt8();
             Cities = new CityInfo[count];
 
-            bool isNew = Client.Version >= ClientVersion.CV_70130;
+            bool isNew = Client.Game.UO.Version >= ClientVersion.CV_70130;
             string[] descriptions = null;
 
             if (!isNew)
@@ -799,7 +822,11 @@ namespace ClassicUO.Game.Scenes
                         cityIndex,
                         cityName,
                         cityBuilding,
+<<<<<<< HEAD
                         ClilocLoader.Instance.GetString((int)cityDescription),
+=======
+                        Client.Game.UO.FileManager.Clilocs.GetString((int) cityDescription),
+>>>>>>> externo/main
                         cityX,
                         cityY,
                         cityZ,
@@ -833,7 +860,7 @@ namespace ClassicUO.Game.Scenes
 
         private string[] ReadCityTextFile(int count)
         {
-            string path = UOFileManager.GetUOFilePath("citytext.enu");
+            string path = Client.Game.UO.FileManager.GetUOFilePath("citytext.enu");
 
             if (!File.Exists(path))
             {
@@ -842,7 +869,7 @@ namespace ClassicUO.Game.Scenes
 
             string[] descr = new string[count];
 
-            // TODO: stackalloc ? 
+            // TODO: stackalloc ?
             byte[] data = new byte[4];
 
             StringBuilder name = new StringBuilder();
@@ -1009,6 +1036,10 @@ namespace ClassicUO.Game.Scenes
                         (byte) ((entry.Address >> 24) & 0xFF)
                     }
                 );
+<<<<<<< HEAD
+=======
+                
+>>>>>>> externo/main
             }
             catch (Exception e)
             {

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ namespace ClassicUO.Game.UI.Gumps
         const ushort SMALL_MAP_GRAPHIC = 5010;
         const ushort BIG_MAP_GRAPHIC = 5011;
 
-        public MiniMapGump() : base(0, 0)
+        public MiniMapGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -83,7 +83,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private void CreateMap()
         {
-            ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(
                 _useLargeMap ? BIG_MAP_GRAPHIC : SMALL_MAP_GRAPHIC
             );
 
@@ -149,7 +149,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             Vector3 hueVector = ShaderHueTranslator.GetHueVector(0);
 
-            ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(
                 _useLargeMap ? BIG_MAP_GRAPHIC : SMALL_MAP_GRAPHIC
             );
 
@@ -269,7 +269,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
             int maxBlockIndex = World.Map.BlocksCount;
-            int mapBlockHeight = MapLoader.Instance.MapBlocksSize[World.MapIndex, 1];
+            int mapBlockHeight = Client.Game.UO.FileManager.Maps.MapBlocksSize[World.MapIndex, 1];
             int index = _useLargeMap ? 1 : 0;
 
             _blankGumpsPixels[index].CopyTo(_blankGumpsPixels[index + 2], 0);
@@ -331,7 +331,7 @@ namespace ClassicUO.Game.UI.Gumps
                                     && stblock.Y == y
                                     && stblock.Color > 0
                                     && stblock.Color != 0xFFFF
-                                    && GameObject.CanBeDrawn(stblock.Color)
+                                    && GameObject.CanBeDrawn(World, stblock.Color)
                                 )
                                 {
                                     if (stblock.Z >= z)
@@ -384,11 +384,18 @@ namespace ClassicUO.Game.UI.Gumps
 
                             if (isLand && color > 0x4000)
                             {
+<<<<<<< HEAD
                                 color = HuesLoader.Instance.GetHueColorRgba5551(16, (ushort) (color - 0x4000));
+=======
+                                color = Client.Game.UO.FileManager.Hues.GetColor16(
+                                    16384,
+                                    (ushort)(color - 0x4000)
+                                ); //28672 is an arbitrary position in hues.mul, is the 14 position in the range
+>>>>>>> externo/main
                             }
                             else
                             {
-                                color = HuesLoader.Instance.GetRadarColorData(color);
+                                color = Client.Game.UO.FileManager.Hues.GetRadarColorData(color);
                             }
 
                             int py = realBlockY + y - lastY;

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -39,16 +39,13 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class SkillsLoader : UOFileLoader
+    public sealed class SkillsLoader : UOFileLoader
     {
-        private static SkillsLoader _instance;
         private UOFileMul _file;
 
-        private SkillsLoader()
+        public SkillsLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
-
-        public static SkillsLoader Instance => _instance ?? (_instance = new SkillsLoader());
 
         public int SkillsCount => Skills.Count;
         public readonly List<SkillEntry> Skills = new List<SkillEntry>();
@@ -65,29 +62,27 @@ namespace ClassicUO.Assets
                         return;
                     }
 
-                    string path = UOFileManager.GetUOFilePath("skills.mul");
-                    string pathidx = UOFileManager.GetUOFilePath("Skills.idx");
+                    string path = FileManager.GetUOFilePath("skills.mul");
+                    string pathidx = FileManager.GetUOFilePath("Skills.idx");
 
                     FileSystemHelper.EnsureFileExists(path);
                     FileSystemHelper.EnsureFileExists(pathidx);
 
-                    _file = new UOFileMul(path, pathidx, 0, 16);
+                    _file = new UOFileMul(path, pathidx);
                     _file.FillEntries(ref Entries);
 
                     for (int i = 0, count = 0; i < Entries.Length; i++)
                     {
-                        ref UOFileIndex entry = ref GetValidRefEntry(i);
+                        ref var entry = ref GetValidRefEntry(i);
+                        if (entry.Length <= 0) continue;
 
-                        if (entry.Length > 0)
-                        {
-                            _file.SetData(entry.Address, entry.FileSize);
-                            _file.Seek(entry.Offset);
-                          
-                            bool hasAction = _file.ReadBool();
-                            string name = Encoding.UTF8.GetString((byte*)_file.PositionAddress, entry.Length - 1).TrimEnd('\0');
+                        var reader = new StackDataReader(entry.Address, (int)entry.FileSize);
+                        reader.Seek(entry.Offset);
 
-                            Skills.Add(new SkillEntry(count++, name, hasAction));
-                        }
+                        bool hasAction = reader.ReadBool();
+                        var name = reader.ReadASCII(entry.Length -1).TrimEnd('\0');
+
+                        Skills.Add(new SkillEntry(count++, name, hasAction));
                     }
 
                     SortedSkills.AddRange(Skills);

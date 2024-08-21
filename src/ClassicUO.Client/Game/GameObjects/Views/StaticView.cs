@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -155,13 +155,13 @@ namespace ClassicUO.Game.GameObjects
                     graphic = Constants.TREE_REPLACE_GRAPHIC;
                 }
 
-                ref var index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+                ref var index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
 
                 Point position = RealScreenPosition;
                 position.X -= index.Width;
                 position.Y -= index.Height;
 
-                return Client.Game.Arts.PixelCheck(
+                return Client.Game.UO.Arts.PixelCheck(
                     graphic,
                     SelectedObject.TranslatedMousePositionByViewport.X - position.X,
                     SelectedObject.TranslatedMousePositionByViewport.Y - position.Y

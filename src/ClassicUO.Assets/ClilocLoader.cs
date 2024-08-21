@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,17 +41,14 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class ClilocLoader : UOFileLoader
+    public sealed class ClilocLoader : UOFileLoader
     {
-        private static ClilocLoader _instance;
         private string _cliloc;
         private readonly Dictionary<int, string> _entries = new Dictionary<int, string>();
 
-        private ClilocLoader()
+        public ClilocLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
-
-        public static ClilocLoader Instance => _instance ?? (_instance = new ClilocLoader());
 
         public Task Load(string lang)
         {
@@ -63,7 +60,7 @@ namespace ClassicUO.Assets
             _cliloc = $"Cliloc.{lang}";
             Log.Trace($"searching for: '{_cliloc}'");
 
-            if (!File.Exists(UOFileManager.GetUOFilePath(_cliloc)))
+            if (!File.Exists(FileManager.GetUOFilePath(_cliloc)))
             {
                 Log.Warn($"'{_cliloc}' not found. Rolled back to Cliloc.enu");
 
@@ -84,7 +81,7 @@ namespace ClassicUO.Assets
                         _cliloc = "Cliloc.enu";
                     }
 
-                    string path = UOFileManager.GetUOFilePath(_cliloc);
+                    string path = FileManager.GetUOFilePath(_cliloc);
 
                     if (!File.Exists(path))
                     {
@@ -93,78 +90,41 @@ namespace ClassicUO.Assets
                     }
 
                     if (string.Compare(_cliloc, "cliloc.enu", StringComparison.InvariantCultureIgnoreCase) != 0)
-                    { 
-                        string enupath = UOFileManager.GetUOFilePath("Cliloc.enu");
-
-                        using (BinaryReader reader = new BinaryReader(new FileStream(enupath, FileMode.Open, FileAccess.Read)))
-                        {
-                            reader.ReadInt32();
-                            reader.ReadInt16();
-
-                            byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(1024);
-
-                            try
-                            {
-                                while (reader.BaseStream.Length != reader.BaseStream.Position)
-                                {
-                                    int number = reader.ReadInt32();
-                                    byte flag = reader.ReadByte();
-                                    int length = reader.ReadInt16();
-
-                                    if (length > buffer.Length)
-                                    {
-                                        System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
-
-                                        buffer = System.Buffers.ArrayPool<byte>.Shared.Rent((length + 1023) & ~1023);
-                                    }
-
-                                    reader.Read(buffer, 0, length);
-                                    string text = string.Intern(Encoding.UTF8.GetString(buffer, 0, length));
-
-                                    _entries[number] = text;
-                                }
-                            }
-                            finally
-                            {
-                                System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
-                            }
-                        }
-                    }
-
-                    using (BinaryReader reader = new BinaryReader(new FileStream(path, FileMode.Open, FileAccess.Read)))
                     {
-                        reader.ReadInt32();
-                        reader.ReadInt16();
-                        byte[] buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(1024);
-
-                        try
-                        {
-                            while (reader.BaseStream.Length != reader.BaseStream.Position)
-                            {
-                                int number = reader.ReadInt32();
-                                byte flag = reader.ReadByte();
-                                int length = reader.ReadInt16();
-
-                                if (length > buffer.Length)
-                                {
-                                    System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
-
-                                    buffer = System.Buffers.ArrayPool<byte>.Shared.Rent((length + 1023) & ~1023);
-                                }
-
-                                reader.Read(buffer, 0, length);
-                                string text = string.Intern(Encoding.UTF8.GetString(buffer, 0, length));
-
-                                _entries[number] = text;
-                            }
-                        }
-                        finally
-                        {
-                            System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
-                        }
+                        string enupath = FileManager.GetUOFilePath("Cliloc.enu");
+                        ReadCliloc(enupath);
                     }
+
+                    ReadCliloc(path);
                 }
             );
+        }
+
+        void ReadCliloc(string path)
+        {
+            using var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+
+            int bytesRead;
+            var totalRead = 0;
+            var buf = new byte[fileStream.Length];
+            while ((bytesRead = fileStream.Read(buf, totalRead, Math.Min(4096, buf.Length - totalRead))) > 0)
+                totalRead += bytesRead;
+
+            var output = buf[3] == 0x8E /*|| FileManager.Version >= ClientVersion.CV_7010400*/ ? BwtDecompress.Decompress(buf) : buf;
+
+            var reader = new StackDataReader(output);
+            reader.ReadInt32LE();
+            reader.ReadInt16LE();
+
+            while (reader.Remaining > 0)
+            {
+                var number = reader.ReadInt32LE();
+                var flag = reader.ReadUInt8();
+                var length = reader.ReadInt16LE();
+                var text = string.Intern(reader.ReadUTF8(length));
+
+                _entries[number] = text;
+            }
         }
 
         public override void ClearResources()

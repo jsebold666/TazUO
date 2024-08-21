@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Managers;
+using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
 using Microsoft.Xna.Framework;
 using System;
@@ -49,7 +50,7 @@ namespace ClassicUO.Game.UI.Gumps
         private Control _alpha;
         private StbTextBox searchBox;
 
-        public NameOverHeadHandlerGump() : base(0, 0)
+        public NameOverHeadHandlerGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -89,7 +90,11 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
+<<<<<<< HEAD
                     IsChecked = NameOverHeadManager.IsPermaToggled,
+=======
+                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.All
+>>>>>>> externo/main
                 }
             );
             stayActive.ValueChanged += (sender, e) => { NameOverHeadManager.SetOverheadToggled(stayActive.IsChecked); CanCloseWithRightClick = stayActive.IsChecked; };
@@ -105,8 +110,13 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
+<<<<<<< HEAD
                     IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealth,
                     X = stayActive.Width + stayActive.X + 5
+=======
+                    Y = all.Y + all.Height,
+                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Mobiles
+>>>>>>> externo/main
                 }
             );
             hideFullHp.SetTooltip("Hide nameplates above 100% health.");
@@ -123,13 +133,36 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
+<<<<<<< HEAD
                     IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode,
                     X = hideFullHp.Width + hideFullHp.X + 5
+=======
+                    Y = mobiles.Y + mobiles.Height,
+                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Items
+>>>>>>> externo/main
                 }
             );
             hideInWarmode.SetTooltip("Only hide 100% hp nameplates in warmode.");
             hideInWarmode.ValueChanged += (sender, e) => { ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode = hideInWarmode.IsChecked; };
 
+<<<<<<< HEAD
+=======
+            Add
+            (
+                mobilesCorpses = new RadioButton
+                (
+                    0,
+                    0x00D0,
+                    0x00D1,
+                    ResGumps.MobilesAndCorpsesOnly,
+                    color: 0xFFFF
+                )
+                {
+                    Y = items.Y + items.Height,
+                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.MobilesCorpses
+                }
+            );
+>>>>>>> externo/main
 
 
             Add(new AlphaBlendControl() { Y = stayActive.Height + stayActive.Y, Width = 150, Height = 20, Hue = 0x0481 });
@@ -137,7 +170,41 @@ namespace ClassicUO.Game.UI.Gumps
             searchBox.Text = NameOverHeadManager.Search;
             searchBox.TextChanged += (s, e) => { NameOverHeadManager.Search = searchBox.Text; };
 
+<<<<<<< HEAD
             DrawChoiceButtons();
+=======
+            all.ValueChanged += (sender, e) =>
+            {
+                if (all.IsChecked)
+                {
+                    World.NameOverHeadManager.TypeAllowed = NameOverheadTypeAllowed.All;
+                }
+            };
+
+            mobiles.ValueChanged += (sender, e) =>
+            {
+                if (mobiles.IsChecked)
+                {
+                    World.NameOverHeadManager.TypeAllowed = NameOverheadTypeAllowed.Mobiles;
+                }
+            };
+
+            items.ValueChanged += (sender, e) =>
+            {
+                if (items.IsChecked)
+                {
+                    World.NameOverHeadManager.TypeAllowed = NameOverheadTypeAllowed.Items;
+                }
+            };
+
+            mobilesCorpses.ValueChanged += (sender, e) =>
+            {
+                if (mobilesCorpses.IsChecked)
+                {
+                    World.NameOverHeadManager.TypeAllowed = NameOverheadTypeAllowed.MobilesCorpses;
+                }
+            };
+>>>>>>> externo/main
         }
 
         public void UpdateCheckboxes()

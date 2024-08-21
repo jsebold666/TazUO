@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -50,7 +50,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
         private const ushort SELECTED_COLOR = 0x0021;
         private const ushort NORMAL_COLOR = 0x034F;
 
-        public ServerSelectionGump() : base(0, 0)
+        public ServerSelectionGump(World world) : base(world, 0, 0)
         {
             //AddChildren(new LoginBackground(true));
 
@@ -70,13 +70,13 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 }
             );
 
-            if (Client.Version >= ClientVersion.CV_500A)
+            if (Client.Game.UO.Version >= ClientVersion.CV_500A)
             {
                 ushort textColor = 0xFFFF;
 
                 Add
                 (
-                    new Label(ClilocLoader.Instance.GetString(1044579), true, textColor, font: 1)
+                    new Label(Client.Game.UO.FileManager.Clilocs.GetString(1044579), true, textColor, font: 1)
                     {
                         X = 155, Y = 70
                     }
@@ -86,7 +86,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 {
                     Add
                     (
-                        new Label(ClilocLoader.Instance.GetString(1044577), true, textColor, font: 1)
+                        new Label(Client.Game.UO.FileManager.Clilocs.GetString(1044577), true, textColor, font: 1)
                         {
                             X = 400, Y = 70
                         }
@@ -94,7 +94,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
                     Add
                     (
-                        new Label(ClilocLoader.Instance.GetString(1044578), true, textColor, font: 1)
+                        new Label(Client.Game.UO.FileManager.Clilocs.GetString(1044578), true, textColor, font: 1)
                         {
                             X = 470, Y = 70
                         }
@@ -103,7 +103,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
                 Add
                 (
-                    new Label(ClilocLoader.Instance.GetString(1044580), true, textColor, font: 1)
+                    new Label(Client.Game.UO.FileManager.Clilocs.GetString(1044580), true, textColor, font: 1)
                     {
                         X = 153, Y = 368
                     }

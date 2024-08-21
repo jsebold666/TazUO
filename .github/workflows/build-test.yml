@@ -26,7 +26,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+<<<<<<< HEAD
        os: [ windows-latest, macos-latest, ubuntu-latest ]
+=======
+       os: [ macos-12, ubuntu-latest, windows-latest ]
+>>>>>>> externo/main
 
     steps:
     - uses: actions/checkout@v4
@@ -40,6 +44,10 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+<<<<<<< HEAD
+=======
+        include-prerelease: false
+>>>>>>> externo/main
         
     - name: Restore
       run: dotnet restore
@@ -48,5 +56,5 @@ jobs:
       run: dotnet build -c Release
       
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test --verbosity normal tests/ClassicUO.UnitTests
    

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,11 @@ using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
+using ClassicUO.Game.Scenes;
 
 namespace ClassicUO.Game.Managers
 {
-    internal class HealthLinesManager
+    internal sealed class HealthLinesManager
     {
         private const int BAR_WIDTH = 34; //28;
         private const int BAR_HEIGHT = 8;
@@ -48,6 +49,10 @@ namespace ClassicUO.Game.Managers
         const ushort BACKGROUND_GRAPHIC = 0x1068;
         const ushort HP_GRAPHIC = 0x1069;
 
+        private readonly World _world;
+
+        public HealthLinesManager(World world) { _world = world; }
+
         public bool IsEnabled =>
             ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.ShowMobilesHP;
 
@@ -55,33 +60,33 @@ namespace ClassicUO.Game.Managers
         {
             var camera = Client.Game.Scene.Camera;
 
-            if (SerialHelper.IsMobile(TargetManager.LastTargetInfo.Serial))
+            if (SerialHelper.IsMobile(_world.TargetManager.LastTargetInfo.Serial))
             {
                 DrawHealthLineWithMath(
                     batcher,
-                    TargetManager.LastTargetInfo.Serial,
+                    _world.TargetManager.LastTargetInfo.Serial,
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
                 DrawTargetIndicator(batcher, TargetManager.LastTargetInfo.Serial);
             }
 
-            if (SerialHelper.IsMobile(TargetManager.SelectedTarget))
+            if (SerialHelper.IsMobile(_world.TargetManager.SelectedTarget))
             {
                 DrawHealthLineWithMath(
                     batcher,
-                    TargetManager.SelectedTarget,
+                    _world.TargetManager.SelectedTarget,
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
                 DrawTargetIndicator(batcher, TargetManager.SelectedTarget);
             }
 
-            if (SerialHelper.IsMobile(TargetManager.LastAttack))
+            if (SerialHelper.IsMobile(_world.TargetManager.LastAttack))
             {
                 DrawHealthLineWithMath(
                     batcher,
-                    TargetManager.LastAttack,
+                    _world.TargetManager.LastAttack,
                     camera.Bounds.Width,
                     camera.Bounds.Height
                 );
@@ -101,8 +106,9 @@ namespace ClassicUO.Game.Managers
             }
 
             int showWhen = ProfileManager.CurrentProfile.MobileHPShowWhen;
+            var animations = Client.Game.UO.Animations;
 
-            foreach (Mobile mobile in World.Mobiles.Values)
+            foreach (Mobile mobile in _world.Mobiles.Values)
             {
                 if (mobile.IsDestroyed)
                 {
@@ -132,7 +138,7 @@ namespace ClassicUO.Game.Managers
                     {
                         if (mobile.HitsPercentage != 0)
                         {
-                            Client.Game.Animations.GetAnimationDimensions(
+                            animations.GetAnimationDimensions(
                                 mobile.AnimIndex,
                                 mobile.GetGraphicForAnimation(),
                                 /*(byte) m.GetDirectionForAnimation()*/
@@ -185,9 +191,9 @@ namespace ClassicUO.Game.Managers
                 }
 
                 if (
-                    mobile.Serial == TargetManager.LastTargetInfo.Serial
-                    || mobile.Serial == TargetManager.SelectedTarget
-                    || mobile.Serial == TargetManager.LastAttack
+                    mobile.Serial == _world.TargetManager.LastTargetInfo.Serial
+                    || mobile.Serial == _world.TargetManager.SelectedTarget
+                    || mobile.Serial == _world.TargetManager.LastAttack
                 )
                 {
                     continue;
@@ -210,7 +216,7 @@ namespace ClassicUO.Game.Managers
 
                 if (mode >= 1)
                 {
-                    DrawHealthLine(batcher, mobile, p.X, p.Y, mobile.Serial != World.Player.Serial);
+                    DrawHealthLine(batcher, mobile, p.X, p.Y, mobile.Serial != _world.Player.Serial);
                 }
             }
         }
@@ -255,7 +261,7 @@ namespace ClassicUO.Game.Managers
             int screenH
         )
         {
-            Entity entity = World.Get(serial);
+            Entity entity = _world.Get(serial);
 
             if (entity == null)
             {
@@ -324,11 +330,15 @@ namespace ClassicUO.Game.Managers
             }
 
 
+<<<<<<< HEAD
             ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(BACKGROUND_GRAPHIC);
             Rectangle bounds = gumpInfo.UV;
 
             if (multiplier > 1)
                 x -= (int)(((BAR_WIDTH * multiplier) / 2) - (BAR_WIDTH / 2));
+=======
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(BACKGROUND_GRAPHIC);
+>>>>>>> externo/main
 
             batcher.Draw(
                 gumpInfo.Texture,
@@ -349,6 +359,23 @@ namespace ClassicUO.Game.Managers
                 {
                     hueVec.X = 53;
                 }
+<<<<<<< HEAD
+=======
+
+                gumpInfo = ref Client.Game.UO.Gumps.GetGump(HP_GRAPHIC);
+
+                batcher.DrawTiled(
+                    gumpInfo.Texture,
+                    new Rectangle(
+                        x + per * MULTIPLER - offset,
+                        y,
+                        (BAR_WIDTH - per) * MULTIPLER - offset / 2,
+                        gumpInfo.UV.Height * MULTIPLER
+                    ),
+                    gumpInfo.UV,
+                    hueVec
+                );
+>>>>>>> externo/main
             }
 
             float hitPerecentage = (float)entity.Hits / (float)entity.HitsMax;
@@ -356,11 +383,22 @@ namespace ClassicUO.Game.Managers
             if (entity.HitsMax == 0)
                 hitPerecentage = 1;
 
+<<<<<<< HEAD
             batcher.Draw(
                 SolidColorTextureCache.GetTexture(Color.White),
                 new Vector2(x + (3 * multiplier), y + (4 * multiplier)),
                 new Rectangle(0, 0, (int)(((BAR_WIDTH * multiplier) - (6 * multiplier)) * hitPerecentage), (bounds.Height * multiplier) - (6 * multiplier)),
                 hueVec
+=======
+                hueVec.X = hue;
+
+                gumpInfo = ref Client.Game.UO.Gumps.GetGump(HP_GRAPHIC);
+                batcher.DrawTiled(
+                    gumpInfo.Texture,
+                    new Rectangle(x, y, per * MULTIPLER, gumpInfo.UV.Height * MULTIPLER),
+                    gumpInfo.UV,
+                    hueVec
+>>>>>>> externo/main
                 );
         }
     }

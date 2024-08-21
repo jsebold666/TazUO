@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class FontsLoader : UOFileLoader
+    public sealed class FontsLoader : UOFileLoader
     {
         private const int UOFONT_SOLID = 0x0001;
         private const int UOFONT_ITALIC = 0x0002;
@@ -61,8 +61,6 @@ namespace ClassicUO.Assets
         private const int MAX_HTML_TEXT_HEIGHT = 18;
         private const byte NOPRINT_CHARS = 32;
         private const float ITALIC_FONT_KOEFFICIENT = 3.3f;
-
-        private static FontsLoader _instance;
 
         public struct Margin 
         { 
@@ -110,9 +108,7 @@ namespace ClassicUO.Assets
         private readonly int[] _offsetCharTable = { 2, 0, 2, 2, 0, 0, 2, 2, 0, 0 };
         private readonly int[] _offsetSymbolTable = { 1, 0, 1, 1, -1, 0, 1, 1, 0, 0 };
 
-        private FontsLoader() { }
-
-        public static FontsLoader Instance => _instance ?? (_instance = new FontsLoader());
+        public FontsLoader(UOFileManager fileManager) : base(fileManager) { }
 
         public int FontCount { get; private set; }
 
@@ -126,12 +122,12 @@ namespace ClassicUO.Assets
         {
             return Task.Run(() =>
             {
-                UOFileMul fonts = new UOFileMul(UOFileManager.GetUOFilePath("fonts.mul"));
+                UOFileMul fonts = new UOFileMul(FileManager.GetUOFilePath("fonts.mul"));
                 UOFileMul[] uniFonts = new UOFileMul[20];
 
                 for (int i = 0; i < 20; i++)
                 {
-                    string path = UOFileManager.GetUOFilePath(
+                    string path = FileManager.GetUOFilePath(
                         "unifont" + (i == 0 ? "" : i.ToString()) + ".mul"
                     );
 
@@ -139,7 +135,7 @@ namespace ClassicUO.Assets
                     {
                         uniFonts[i] = new UOFileMul(path);
 
-                        _unicodeFontAddress[i] = uniFonts[i].StartAddress;
+                        _unicodeFontAddress[i] = uniFonts[i].GetReader().StartAddress;
 
                         _unicodeFontSize[i] = uniFonts[i].Length;
                     }
@@ -148,31 +144,32 @@ namespace ClassicUO.Assets
                 int fontHeaderSize = sizeof(FontHeader);
                 FontCount = 0;
 
-                while (fonts.Position < fonts.Length)
+                var reader = fonts.GetReader();
+                while (reader.Position < fonts.Length)
                 {
                     bool exit = false;
-                    fonts.Skip(1);
+                    reader.Skip(1);
 
                     for (int i = 0; i < 224; i++)
                     {
-                        FontHeader* fh = (FontHeader*)fonts.PositionAddress;
+                        FontHeader* fh = (FontHeader*)reader.PositionAddress;
 
-                        if (fonts.Position + fontHeaderSize >= fonts.Length)
+                        if (reader.Position + fontHeaderSize >= fonts.Length)
                         {
                             continue;
                         }
 
-                        fonts.Skip(fontHeaderSize);
+                        reader.Skip(fontHeaderSize);
                         int bcount = fh->Width * fh->Height * 2;
 
-                        if (fonts.Position + bcount > fonts.Length)
+                        if (reader.Position + bcount > fonts.Length)
                         {
                             exit = true;
 
                             break;
                         }
 
-                        fonts.Skip(bcount);
+                        reader.Skip(bcount);
                     }
 
                     if (exit)
@@ -191,28 +188,28 @@ namespace ClassicUO.Assets
                 }
 
                 _fontData = new FontCharacterData[FontCount, 224];
-                fonts.Seek(0);
+                reader.Seek(0);
 
                 for (int i = 0; i < FontCount; i++)
                 {
-                    byte header = fonts.ReadByte();
+                    byte header = reader.ReadUInt8();
 
                     for (int j = 0; j < 224; j++)
                     {
-                        if (fonts.Position + 3 >= fonts.Length)
+                        if (reader.Position + 3 >= fonts.Length)
                         {
                             continue;
                         }
 
-                        byte w = fonts.ReadByte();
-                        byte h = fonts.ReadByte();
-                        fonts.Skip(1);
+                        byte w = reader.ReadUInt8();
+                        byte h = reader.ReadUInt8();
+                        reader.Skip(1);
                         _fontData[i, j] = new FontCharacterData(
                             w,
                             h,
-                            (ushort*)fonts.PositionAddress
+                            (ushort*)reader.PositionAddress
                         );
-                        fonts.Skip(w * h * sizeof(ushort));
+                        reader.Skip(w * h * sizeof(ushort));
                     }
                 }
 
@@ -678,14 +675,18 @@ namespace ClassicUO.Assets
 
                                     if (isPartial)
                                     {
-                                        pcl = HuesLoader.Instance.GetPartialHueColor(
+                                        pcl = FileManager.Hues.GetPartialHueColor(
                                             pic,
                                             charColor
                                         );
                                     }
                                     else
                                     {
+<<<<<<< HEAD
                                         pcl = HuesLoader.Instance.ApplyHueRgba8888(pic, charColor);
+=======
+                                        pcl = FileManager.Hues.GetColor(pic, charColor);
+>>>>>>> externo/main
                                     }
 
                                     int block = testY * width + x + w;
@@ -1691,8 +1692,14 @@ namespace ClassicUO.Assets
                 }
                 else
                 {
+<<<<<<< HEAD
                     datacolor = 
                         HuesHelper.RgbaToArgb((HuesLoader.Instance.GetHueColorRgba8888(cell, color) << 8) | 0xFF);
+=======
+                    datacolor = HuesHelper.RgbaToArgb(
+                        (FileManager.Hues.GetPolygoneColor(cell, color) << 8) | 0xFF
+                    );
+>>>>>>> externo/main
                 }
 
                 bool isItalic = (flags & UOFONT_ITALIC) != 0;

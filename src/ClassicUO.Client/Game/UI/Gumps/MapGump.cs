@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private uint _pinTimer;
 
-        public MapGump(uint serial, ushort gumpid, int width, int height) : base(serial, 0)
+        public MapGump(World world, uint serial, ushort gumpid, int width, int height) : base(world, serial, 0)
         {
             AcceptMouseInput = false;
             CanMove = true;

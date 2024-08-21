@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,15 @@ namespace ClassicUO.Game.UI.Controls
 {
     public class ClickableColorBox : ColorBox
     {
+<<<<<<< HEAD
         private readonly bool useModernSelector;
+=======
+        private readonly World _world;
+>>>>>>> externo/main
 
         public ClickableColorBox
         (
+            World world,
             int x,
             int y,
             int w,
@@ -52,6 +57,7 @@ namespace ClassicUO.Game.UI.Controls
             bool useModernSelector = false
         ) : base(w, h, hue)
         {
+            _world = world;
             X = x;
             Y = y;
             WantUpdateSize = false;
@@ -107,8 +113,22 @@ namespace ClassicUO.Game.UI.Controls
                         s => Hue = s
                     );
 
+<<<<<<< HEAD
                     UIManager.Add(pickerGump);
                 }
+=======
+                ColorPickerGump pickerGump = new ColorPickerGump
+                (
+                    _world,
+                    0,
+                    0,
+                    100,
+                    100,
+                    s => Hue = s
+                );
+
+                UIManager.Add(pickerGump);
+>>>>>>> externo/main
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ namespace ClassicUO.Game.UI.Gumps
         private int _tooltipOffset = 1112198;
         private int _enqueuePage = -1;
 
-        public RacialAbilitiesBookGump(int x, int y) : base(0, 0)
+        public RacialAbilitiesBookGump(World world, int x, int y) : base(world, 0, 0)
         {
             X = x;
             Y = y;
@@ -208,7 +208,7 @@ namespace ClassicUO.Game.UI.Gumps
                             return;
                         }
 
-                        RacialAbilityButton gump = new RacialAbilityButton((ushort) ((GumpPic) sender).LocalSerial)
+                        RacialAbilityButton gump = new RacialAbilityButton(World, (ushort) ((GumpPic) sender).LocalSerial)
                         {
                             X = Mouse.LClickPosition.X - 20,
                             Y = Mouse.LClickPosition.Y - 20
@@ -229,7 +229,7 @@ namespace ClassicUO.Game.UI.Gumps
                 }
 
                 Add(pic, page1);
-                pic.SetTooltip(ClilocLoader.Instance.GetString(_tooltipOffset + i), 150);
+                pic.SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(_tooltipOffset + i), 150);
 
                 Add
                 (

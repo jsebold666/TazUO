@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -38,31 +38,28 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class TexmapsLoader : UOFileLoader
+    public sealed class TexmapsLoader : UOFileLoader
     {
-        private static TexmapsLoader _instance;
         private UOFile _file;
 
         public const int MAX_LAND_TEXTURES_DATA_INDEX_COUNT = 0x4000;
 
-        private TexmapsLoader(int count) { }
+        public TexmapsLoader(UOFileManager fileManager) : base(fileManager) { }
 
-        public static TexmapsLoader Instance =>
-            _instance ?? (_instance = new TexmapsLoader(MAX_LAND_TEXTURES_DATA_INDEX_COUNT));
 
         public override Task Load()
         {
             return Task.Run(() =>
             {
-                string path = UOFileManager.GetUOFilePath("texmaps.mul");
-                string pathidx = UOFileManager.GetUOFilePath("texidx.mul");
+                string path = FileManager.GetUOFilePath("texmaps.mul");
+                string pathidx = FileManager.GetUOFilePath("texidx.mul");
 
                 FileSystemHelper.EnsureFileExists(path);
                 FileSystemHelper.EnsureFileExists(pathidx);
 
-                _file = new UOFileMul(path, pathidx, MAX_LAND_TEXTURES_DATA_INDEX_COUNT, 10);
+                _file = new UOFileMul(path, pathidx);
                 _file.FillEntries(ref Entries);
-                string pathdef = UOFileManager.GetUOFilePath("TexTerr.def");
+                string pathdef = FileManager.GetUOFilePath("TexTerr.def");
 
                 if (File.Exists(pathdef))
                 {
@@ -110,8 +107,8 @@ namespace ClassicUO.Assets
                 return default;
             }
 
-            _file.SetData(entry.Address, entry.FileSize);
-            _file.Seek(entry.Offset);
+            var reader = new StackDataReader(entry.Address, (int)entry.FileSize);
+            reader.Seek(entry.Offset);
 
             var size = entry.Length == 0x2000 ? 64 : 128;
             var data = new uint[size * size];
@@ -122,7 +119,7 @@ namespace ClassicUO.Assets
 
                 for (int j = 0; j < size; ++j)
                 {
-                    data[pos + j] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+                    data[pos + j] = HuesHelper.Color16To32(reader.ReadUInt16LE()) | 0xFF_00_00_00;
                 }
             }
 

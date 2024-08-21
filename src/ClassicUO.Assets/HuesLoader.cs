@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -42,15 +42,11 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class HuesLoader : UOFileLoader
+    public sealed class HuesLoader : UOFileLoader
     {
-        private static HuesLoader _instance;
-
-        private HuesLoader()
+        public HuesLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
-
-        public static HuesLoader Instance => _instance ?? (_instance = new HuesLoader());
 
         public HuesGroup[] HuesRange { get; private set; }
 
@@ -64,7 +60,7 @@ namespace ClassicUO.Assets
             (
                 () =>
                 {
-                    string path = UOFileManager.GetUOFilePath("hues.mul");
+                    string path = FileManager.GetUOFilePath("hues.mul");
 
                     FileSystemHelper.EnsureFileExists(path);
 
@@ -73,23 +69,25 @@ namespace ClassicUO.Assets
                     int entrycount = (int) file.Length / groupSize;
                     HuesCount = entrycount * 8;
                     HuesRange = new HuesGroup[entrycount];
-                    ulong addr = (ulong) file.StartAddress;
+                    var reader = file.GetReader();
+                    ulong addr = (ulong)reader.StartAddress;
 
                     for (int i = 0; i < entrycount; i++)
                     {
                         HuesRange[i] = Marshal.PtrToStructure<HuesGroup>((IntPtr)(addr + (ulong) (i * groupSize)));
                     }
 
-                    path = UOFileManager.GetUOFilePath("radarcol.mul");
+                    path = FileManager.GetUOFilePath("radarcol.mul");
 
                     FileSystemHelper.EnsureFileExists(path);
 
-                    UOFileMul radarcol = new UOFileMul(path);
+                    var radarcol = new UOFileMul(path);
                     RadarCol = new ushort[(int)(radarcol.Length >> 1)];
 
+                    reader = radarcol.GetReader();
                     fixed (ushort* ptr = RadarCol)
                     {
-                        Unsafe.CopyBlockUnaligned((void*)(byte*)ptr, radarcol.PositionAddress.ToPointer(), (uint)radarcol.Length);
+                        Unsafe.CopyBlockUnaligned((void*)(byte*)ptr, reader.PositionAddress.ToPointer(), (uint)radarcol.Length);
                     }
                     
                     file.Dispose();

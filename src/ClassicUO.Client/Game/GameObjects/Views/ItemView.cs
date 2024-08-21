@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -172,7 +172,7 @@ namespace ClassicUO.Game.GameObjects
             if (
                 !SerialHelper.IsValid(Serial)
                 && IsMulti
-                && TargetManager.TargetingState == CursorTarget.MultiPlacement
+                && World.TargetManager.TargetingState == CursorTarget.MultiPlacement
             )
             {
                 hueVec.Z = 0.5f;
@@ -200,15 +200,22 @@ namespace ClassicUO.Game.GameObjects
             posY += 22;
 
             byte direction = (byte)((byte)Layer & 0x7F & 7);
-            AnimationsLoader.Instance.GetAnimDirection(ref direction, ref IsFlipped);
+            Client.Game.UO.Animations.GetAnimDirection(ref direction, ref IsFlipped);
 
             byte animIndex = (byte)AnimIndex;
             ushort graphic = GetGraphicForAnimation();
 
+<<<<<<< HEAD
             Client.Game.Animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
             var animGroup = Client.Game.Animations.GetAnimType(graphic);
             var animFlags = Client.Game.Animations.GetAnimFlags(graphic);
             byte group = AnimationsLoader.Instance.GetDeathAction(
+=======
+            Client.Game.UO.Animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
+            var animGroup = Client.Game.UO.Animations.GetAnimType(graphic);
+            var animFlags = Client.Game.UO.Animations.GetAnimFlags(graphic);
+            byte group = Client.Game.UO.FileManager.Animations.GetDeathAction(
+>>>>>>> externo/main
                 graphic,
                 animFlags,
                 animGroup,
@@ -259,7 +266,7 @@ namespace ClassicUO.Game.GameObjects
             return true;
         }
 
-        private static void DrawLayer(
+        private void DrawLayer(
             UltimaBatcher2D batcher,
             int posX,
             int posY,
@@ -298,7 +305,7 @@ namespace ClassicUO.Game.GameObjects
                 ispartialhue = itemEquip.ItemData.IsPartialHue;
 
                 if (
-                    AnimationsLoader.Instance.EquipConversions.TryGetValue(
+                    Client.Game.UO.FileManager.Animations.EquipConversions.TryGetValue(
                         graphic,
                         out Dictionary<ushort, EquipConvData> map
                     )
@@ -318,7 +325,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            var frames = Client.Game.Animations.GetAnimationFrames(
+            var frames = Client.Game.UO.Animations.GetAnimationFrames(
                 graphic,
                 animGroup,
                 dir,
@@ -463,7 +470,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 if (
                     ReferenceEquals(SelectedObject.Object, this)
-                    || TargetManager.TargetingState == CursorTarget.MultiPlacement
+                    || World.TargetManager.TargetingState == CursorTarget.MultiPlacement
                 )
                 {
                     return false;
@@ -488,7 +495,7 @@ namespace ClassicUO.Game.GameObjects
                     }
                     else
                     {
-                        ref UOFileIndex index = ref ArtLoader.Instance.GetValidRefEntry(
+                        ref UOFileIndex index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(
                             graphic + 0x4000
                         );
 
@@ -496,9 +503,9 @@ namespace ClassicUO.Game.GameObjects
                     }
                 }
 
-                if (Client.Game.Arts.GetArt(graphic).Texture != null)
+                if (Client.Game.UO.Arts.GetArt(graphic).Texture != null)
                 {
-                    ref var index = ref ArtLoader.Instance.GetValidRefEntry(graphic + 0x4000);
+                    ref var index = ref Client.Game.UO.FileManager.Arts.GetValidRefEntry(graphic + 0x4000);
 
                     Point position = RealScreenPosition;
                     position.X += (int)Offset.X;
@@ -507,7 +514,7 @@ namespace ClassicUO.Game.GameObjects
                     position.Y -= index.Height;
 
                     if (
-                        Client.Game.Arts.PixelCheck(
+                        Client.Game.UO.Arts.PixelCheck(
                             graphic,
                             SelectedObject.TranslatedMousePositionByViewport.X - position.X,
                             SelectedObject.TranslatedMousePositionByViewport.Y - position.Y
@@ -519,7 +526,7 @@ namespace ClassicUO.Game.GameObjects
                     else if (!IsMulti && !IsCoin && Amount > 1 && ItemData.IsStackable)
                     {
                         if (
-                            Client.Game.Arts.PixelCheck(
+                            Client.Game.UO.Arts.PixelCheck(
                                 graphic,
                                 SelectedObject.TranslatedMousePositionByViewport.X - position.X + 5,
                                 SelectedObject.TranslatedMousePositionByViewport.Y - position.Y + 5
@@ -543,12 +550,14 @@ namespace ClassicUO.Game.GameObjects
                     return true;
                 }
 
+                var animations = Client.Game.UO.Animations;
+
                 Point position = RealScreenPosition;
                 position.X += 22;
                 position.Y += 22;
 
                 byte direction = (byte)((byte)Layer & 0x7F & 7);
-                AnimationsLoader.Instance.GetAnimDirection(ref direction, ref IsFlipped);
+                animations.GetAnimDirection(ref direction, ref IsFlipped);
                 byte animIndex = AnimIndex;
                 bool ishuman =
                     MathHelper.InRange(Amount, 0x0190, 0x0193)
@@ -585,7 +594,7 @@ namespace ClassicUO.Game.GameObjects
                         graphic = itemEquip.ItemData.AnimID;
 
                         if (
-                            AnimationsLoader.Instance.EquipConversions.TryGetValue(
+                            Client.Game.UO.FileManager.Animations.EquipConversions.TryGetValue(
                                 graphic,
                                 out Dictionary<ushort, EquipConvData> map
                             )
@@ -603,16 +612,23 @@ namespace ClassicUO.Game.GameObjects
                         continue;
                     }
 
+<<<<<<< HEAD
                     Client.Game.Animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
                     var animGroup = Client.Game.Animations.GetAnimType(graphic);
                     var animFlags = Client.Game.Animations.GetAnimFlags(graphic);
                     byte group = AnimationsLoader.Instance.GetDeathAction(
+=======
+                    animations.ConvertBodyIfNeeded(ref graphic, isCorpse: IsCorpse);
+                    var animGroup = animations.GetAnimType(graphic);
+                    var animFlags = animations.GetAnimFlags(graphic);
+                    byte group = Client.Game.UO.FileManager.Animations.GetDeathAction(
+>>>>>>> externo/main
                         graphic,
                         animFlags,
                         animGroup,
                         UsedLayer
                     );
-                    var frames = Client.Game.Animations.GetAnimationFrames(
+                    var frames = animations.GetAnimationFrames(
                         graphic,
                         group,
                         direction,
@@ -621,7 +637,7 @@ namespace ClassicUO.Game.GameObjects
                         false,
                         IsCorpse
                     );
-
+                    
                     if (frames.IsEmpty)
                     {
                         continue;
@@ -651,7 +667,7 @@ namespace ClassicUO.Game.GameObjects
                         int y = position.Y - (spriteInfo.UV.Height + spriteInfo.Center.Y);
 
                         if (
-                            Client.Game.Animations.PixelCheck(
+                            animations.PixelCheck(
                                 graphic,
                                 group,
                                 direction,

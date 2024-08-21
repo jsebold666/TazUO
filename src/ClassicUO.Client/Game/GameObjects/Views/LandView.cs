@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -106,8 +106,8 @@ namespace ClassicUO.Game.GameObjects
             {
                 posY += Z << 2;
 
-                ref readonly var texmapInfo = ref Client.Game.Texmaps.GetTexmap(
-                    TileDataLoader.Instance.LandData[Graphic].TexID
+                ref readonly var texmapInfo = ref Client.Game.UO.Texmaps.GetTexmap(
+                    Client.Game.UO.FileManager.TileData.LandData[Graphic].TexID
                 );
 
                 if (texmapInfo.Texture != null)
@@ -140,7 +140,7 @@ namespace ClassicUO.Game.GameObjects
             }
             else
             {
-                ref readonly var artInfo = ref Client.Game.Arts.GetLand(Graphic);
+                ref readonly var artInfo = ref Client.Game.UO.Arts.GetLand(Graphic);
 
                 ref readonly var texmapInfo = ref Client.Game.Texmaps.GetTexmap(
                     TileDataLoader.Instance.LandData[Graphic].TexID

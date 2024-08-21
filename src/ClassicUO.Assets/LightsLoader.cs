@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -37,17 +37,13 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class LightsLoader : UOFileLoader
+    public sealed class LightsLoader : UOFileLoader
     {
-        private static LightsLoader _instance;
         private UOFileMul _file;
 
         public const int MAX_LIGHTS_DATA_INDEX_COUNT = 100;
 
-        private LightsLoader(int count) { }
-
-        public static LightsLoader Instance =>
-            _instance ?? (_instance = new LightsLoader(MAX_LIGHTS_DATA_INDEX_COUNT));
+        public LightsLoader(UOFileManager fileManager) : base(fileManager) { }
 
         public UOFileMul File => _file;
 
@@ -55,13 +51,13 @@ namespace ClassicUO.Assets
         {
             return Task.Run(() =>
             {
-                string path = UOFileManager.GetUOFilePath("light.mul");
-                string pathidx = UOFileManager.GetUOFilePath("lightidx.mul");
+                string path = FileManager.GetUOFilePath("light.mul");
+                string pathidx = FileManager.GetUOFilePath("lightidx.mul");
 
                 FileSystemHelper.EnsureFileExists(path);
                 FileSystemHelper.EnsureFileExists(pathidx);
 
-                _file = new UOFileMul(path, pathidx, MAX_LIGHTS_DATA_INDEX_COUNT);
+                _file = new UOFileMul(path, pathidx);
                 _file.FillEntries(ref Entries);
             });
         }
@@ -76,8 +72,8 @@ namespace ClassicUO.Assets
             }
 
             var buffer = new uint[entry.Width * entry.Height];
-            _file.SetData(entry.Address, entry.FileSize);
-            _file.Seek(entry.Offset);
+            var reader = new StackDataReader(entry.Address, (int)entry.FileSize);
+            reader.Seek(entry.Offset);
 
             for (int i = 0; i < entry.Height; i++)
             {
@@ -85,7 +81,7 @@ namespace ClassicUO.Assets
 
                 for (int j = 0; j < entry.Width; j++)
                 {
-                    ushort val = _file.ReadByte();
+                    ushort val = reader.ReadUInt8();
                     // Light can be from -31 to 31. When they are below 0 they are bit inverted
                     if (val > 0x1F)
                     {

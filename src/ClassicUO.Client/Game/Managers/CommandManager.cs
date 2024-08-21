@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,11 @@
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
+<<<<<<< HEAD
 using ClassicUO.Game.UI.Gumps;
+=======
+using ClassicUO.Game.Scenes;
+>>>>>>> externo/main
 using ClassicUO.Input;
 using ClassicUO.Resources;
 using ClassicUO.Utility.Logging;
@@ -43,25 +47,39 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Game.Managers
 {
+<<<<<<< HEAD
     public static class CommandManager
+=======
+    internal sealed class CommandManager
+>>>>>>> externo/main
     {
-        private static readonly Dictionary<string, Action<string[]>> _commands = new Dictionary<string, Action<string[]>>();
+        private readonly Dictionary<string, Action<string[]>> _commands = new Dictionary<string, Action<string[]>>();
+        private readonly World _world;
 
+<<<<<<< HEAD
         public static Dictionary<string, Action<string[]>> Commands { get { return _commands; } }
 
         public static void Initialize()
+=======
+        public CommandManager(World world)
+        {
+            _world = world;
+        }
+
+        public void Initialize()
+>>>>>>> externo/main
         {
             Register
             (
                 "info",
                 s =>
                 {
-                    if (TargetManager.IsTargeting)
+                    if (_world.TargetManager.IsTargeting)
                     {
-                        TargetManager.CancelTarget();
+                        _world.TargetManager.CancelTarget();
                     }
 
-                    TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
+                    _world.TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
                 }
             );
 
@@ -70,9 +88,9 @@ namespace ClassicUO.Game.Managers
                 "datetime",
                 s =>
                 {
-                    if (World.Player != null)
+                    if (_world.Player != null)
                     {
-                        GameActions.Print(string.Format(ResGeneral.CurrentDateTimeNowIs0, DateTime.Now));
+                        GameActions.Print(_world, string.Format(ResGeneral.CurrentDateTimeNowIs0, DateTime.Now));
                     }
                 }
             );
@@ -82,12 +100,12 @@ namespace ClassicUO.Game.Managers
                 "hue",
                 s =>
                 {
-                    if (TargetManager.IsTargeting)
+                    if (_world.TargetManager.IsTargeting)
                     {
-                        TargetManager.CancelTarget();
+                        _world.TargetManager.CancelTarget();
                     }
 
-                    TargetManager.SetTargeting(CursorTarget.HueCommandTarget, CursorType.Target, TargetType.Neutral);
+                    _world.TargetManager.SetTargeting(CursorTarget.HueCommandTarget, CursorType.Target, TargetType.Neutral);
                 }
             );
 
@@ -268,7 +286,7 @@ namespace ClassicUO.Game.Managers
         }
 
 
-        public static void Register(string name, Action<string[]> callback)
+        public void Register(string name, Action<string[]> callback)
         {
             name = name.ToLower();
 
@@ -282,7 +300,7 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        public static void UnRegister(string name)
+        public void UnRegister(string name)
         {
             name = name.ToLower();
 
@@ -292,12 +310,12 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        public static void UnRegisterAll()
+        public void UnRegisterAll()
         {
             _commands.Clear();
         }
 
-        public static void Execute(string name, params string[] args)
+        public void Execute(string name, params string[] args)
         {
             name = name.ToLower();
 
@@ -312,15 +330,15 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        public static void OnHueTarget(Entity entity)
+        public void OnHueTarget(Entity entity)
         {
             if (entity != null)
             {
-                TargetManager.Target(entity);
+                _world.TargetManager.Target(entity);
             }
 
             Mouse.LastLeftButtonClickTime = 0;
-            GameActions.Print(string.Format(ResGeneral.ItemID0Hue1, entity.Graphic, entity.Hue));
+            GameActions.Print(_world, string.Format(ResGeneral.ItemID0Hue1, entity.Graphic, entity.Hue));
         }
     }
 }

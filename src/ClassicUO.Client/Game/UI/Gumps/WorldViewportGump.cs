@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -56,10 +56,14 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly GameScene _scene;
         private readonly SystemChatControl _systemChatControl;
 
+<<<<<<< HEAD
         private static Microsoft.Xna.Framework.Graphics.Texture2D damageWindowOutline = SolidColorTextureCache.GetTexture(Color.White);
         public static Vector3 DamageWindowOutlineHue = ShaderHueTranslator.GetHueVector(32);
 
         public WorldViewportGump(GameScene scene) : base(0, 0)
+=======
+        public WorldViewportGump(World world, GameScene scene) : base(world, 0, 0)
+>>>>>>> externo/main
         {
             _scene = scene;
             AcceptMouseInput = false;
@@ -92,7 +96,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                     UIManager.GetGump<OptionsGump>()?.UpdateVideo();
 
-                    if (Client.Version >= ClientVersion.CV_200)
+                    if (Client.Game.UO.Version >= ClientVersion.CV_200)
                     {
                         NetClient.Socket.Send_GameWindowSize((uint)n.X, (uint)n.Y);
                     }
@@ -113,6 +117,7 @@ namespace ClassicUO.Game.UI.Gumps
             };
 
             UIManager.SystemChat = _systemChatControl = new SystemChatControl(
+                this,
                 BORDER_WIDTH,
                 BORDER_WIDTH,
                 scene.Camera.Bounds.Width,
@@ -423,6 +428,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
             hueVector.Z = Alpha;
 
+<<<<<<< HEAD
             var texture = GetGumpTexture(h_border, out var bounds);
             if (texture != null)
             {
@@ -449,6 +455,9 @@ namespace ClassicUO.Game.UI.Gumps
                     hueVector
                 );
             }
+=======
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(H_BORDER);
+>>>>>>> externo/main
 
             texture = GetGumpTexture(h_bottom_border, out bounds);
             if (texture != null)
@@ -477,6 +486,7 @@ namespace ClassicUO.Game.UI.Gumps
                 );
             }
 
+<<<<<<< HEAD
             texture = GetGumpTexture(v_border, out bounds);
             if (texture != null)
             {
@@ -484,6 +494,31 @@ namespace ClassicUO.Game.UI.Gumps
                 (
                     x,
                     y,
+=======
+            // sotto
+            batcher.DrawTiled(
+                gumpInfo.Texture,
+                new Rectangle(x, y + Height - _borderSize, Width, _borderSize),
+                gumpInfo.UV,
+                hueVector
+            );
+
+            gumpInfo = ref Client.Game.UO.Gumps.GetGump(V_BORDER);
+            //sx
+            batcher.DrawTiled(
+                gumpInfo.Texture,
+                new Rectangle(x, y, _borderSize, Height),
+                gumpInfo.UV,
+                hueVector
+            );
+
+            //dx
+            batcher.DrawTiled(
+                gumpInfo.Texture,
+                new Rectangle(
+                    x + Width - _borderSize,
+                    y + (gumpInfo.UV.Width >> 1),
+>>>>>>> externo/main
                     _borderSize,
                     Height
                 );

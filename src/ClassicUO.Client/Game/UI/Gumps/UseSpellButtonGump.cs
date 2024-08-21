@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -56,17 +56,22 @@ namespace ClassicUO.Game.UI.Gumps
         public bool ShowEdit =>
             Keyboard.Ctrl && Keyboard.Alt && ProfileManager.CurrentProfile.FastSpellsAssign;
 
-        public UseSpellButtonGump() : base(0, 0)
+        public UseSpellButtonGump(World world) : base(world,0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
             CanCloseWithRightClick = true;
+<<<<<<< HEAD
             Width = (int)Math.Round(44 * (ProfileManager.CurrentProfile.SpellIconScale / 100f));
             Height = (int)Math.Round(44 * (ProfileManager.CurrentProfile.SpellIconScale / 100f));
             _mm = Client.Game.GetScene<GameScene>().Macros;
+=======
+
+            _mm = world.Macros;
+>>>>>>> externo/main
         }
 
-        public UseSpellButtonGump(SpellDefinition spell) : this()
+        public UseSpellButtonGump(World world, SpellDefinition spell) : this(world)
         {
             _spell = spell;
             BuildGump();
@@ -89,7 +94,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (cliloc != 0)
             {
-                SetTooltip(ClilocLoader.Instance.GetString(cliloc), 80);
+                SetTooltip(Client.Game.UO.FileManager.Clilocs.GetString(cliloc), 80);
             }
 
             if (ProfileManager.CurrentProfile.SpellIcon_DisplayHotkey)
@@ -141,7 +146,7 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 Vector3 hueVector = ShaderHueTranslator.GetHueVector(0);
 
-                ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(LOCK_GRAPHIC);
+                ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(LOCK_GRAPHIC);
 
                 if (gumpInfo.Texture != null)
                 {
@@ -248,7 +253,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     _mm.MoveToBack(mCast);
                 }
-                GameActions.OpenMacroGump(_spell.Name);
+                GameActions.OpenMacroGump(World, _spell.Name);
             }
 
             if (

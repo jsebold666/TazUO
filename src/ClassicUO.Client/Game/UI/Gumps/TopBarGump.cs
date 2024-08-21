@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -46,9 +46,13 @@ namespace ClassicUO.Game.UI.Gumps
 {
     internal class TopBarGump : Gump
     {
+<<<<<<< HEAD
         private RighClickableButton XmlGumps;
 
         private TopBarGump() : base(0, 0)
+=======
+        private TopBarGump(World world) : base(world, 0, 0)
+>>>>>>> externo/main
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -69,7 +73,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             // big
             int smallWidth = 50;
-            ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(0x098B);
+            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(0x098B);
             if (gumpInfo.Texture != null)
             {
                 smallWidth = gumpInfo.UV.Width;
@@ -77,7 +81,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             int largeWidth = 100;
 
-            gumpInfo = ref Client.Game.Gumps.GetGump(0x098D);
+            gumpInfo = ref Client.Game.UO.Gumps.GetGump(0x098D);
             if (gumpInfo.Texture != null)
             {
                 largeWidth = gumpInfo.UV.Width;
@@ -93,7 +97,7 @@ namespace ClassicUO.Game.UI.Gumps
                 new[] { 1, (int) Buttons.UOStore },
             };
 
-            var cliloc = ClilocLoader.Instance;
+            var cliloc = Client.Game.UO.FileManager.Clilocs;
 
             string[] texts =
             {
@@ -105,7 +109,7 @@ namespace ClassicUO.Game.UI.Gumps
                 cliloc.GetString(1158008, ResGumps.UOStore),
             };
 
-            bool hasUOStore = Client.Version >= ClientVersion.CV_706400;
+            bool hasUOStore = Client.Game.UO.Version >= ClientVersion.CV_706400;
 
             ResizePic background;
 
@@ -296,6 +300,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         public bool IsMinimized { get; private set; }
 
+<<<<<<< HEAD
         public void RefreshXmlGumps()
         {
             XmlGumps.ContextMenu?.Dispose();
@@ -335,6 +340,9 @@ namespace ClassicUO.Game.UI.Gumps
         }
 
         public static void Create()
+=======
+        public static void Create(World world)
+>>>>>>> externo/main
         {
             TopBarGump gump = UIManager.GetGump<TopBarGump>();
 
@@ -349,7 +357,7 @@ namespace ClassicUO.Game.UI.Gumps
                 }
 
                 UIManager.Add(
-                    gump = new TopBarGump
+                    gump = new TopBarGump(world)
                     {
                         X = ProfileManager.CurrentProfile.TopbarGumpPosition.X,
                         Y = ProfileManager.CurrentProfile.TopbarGumpPosition.Y
@@ -394,36 +402,99 @@ namespace ClassicUO.Game.UI.Gumps
         {
             switch ((Buttons)buttonID)
             {
+<<<<<<< HEAD
+=======
+                case Buttons.Map:
+                    GameActions.OpenMiniMap(World);
+
+                    break;
+
+>>>>>>> externo/main
                 case Buttons.Paperdoll:
-                    GameActions.OpenPaperdoll(World.Player);
+                    GameActions.OpenPaperdoll(World, World.Player);
 
                     break;
 
                 case Buttons.Inventory:
-                    GameActions.OpenBackpack();
+                    GameActions.OpenBackpack(World);
 
                     break;
 
                 case Buttons.Journal:
-                    GameActions.OpenJournal();
+                    GameActions.OpenJournal(World);
 
                     break;
 
                 case Buttons.Chat:
-                    GameActions.OpenChat();
+                    GameActions.OpenChat(World);
 
                     break;
 
+<<<<<<< HEAD
+=======
+                case Buttons.GlobalChat:
+                    Log.Warn(ResGumps.ChatButtonPushedNotImplementedYet);
+                    GameActions.Print(
+                        World,
+                        ResGumps.GlobalChatNotImplementedYet,
+                        0x23,
+                        MessageType.System
+                    );
+
+                    break;
+
+>>>>>>> externo/main
                 case Buttons.UOStore:
-                    if (Client.Version >= ClientVersion.CV_706400)
+                    if (Client.Game.UO.Version >= ClientVersion.CV_706400)
                     {
                         NetClient.Socket.Send_OpenUOStore();
                     }
 
                     break;
 
+<<<<<<< HEAD
+=======
+                case Buttons.Help:
+                    GameActions.RequestHelp();
+
+                    break;
+
+                case Buttons.Debug:
+
+                    DebugGump debugGump = UIManager.GetGump<DebugGump>();
+
+                    if (debugGump == null)
+                    {
+                        debugGump = new DebugGump(World, 100, 100);
+                        UIManager.Add(debugGump);
+                    }
+                    else
+                    {
+                        debugGump.IsVisible = !debugGump.IsVisible;
+                        debugGump.SetInScreen();
+                    }
+
+                    break;
+
+                case Buttons.NetStats:
+                    NetworkStatsGump netstatsgump = UIManager.GetGump<NetworkStatsGump>();
+
+                    if (netstatsgump == null)
+                    {
+                        netstatsgump = new NetworkStatsGump(World, 100, 100);
+                        UIManager.Add(netstatsgump);
+                    }
+                    else
+                    {
+                        netstatsgump.IsVisible = !netstatsgump.IsVisible;
+                        netstatsgump.SetInScreen();
+                    }
+
+                    break;
+
+>>>>>>> externo/main
                 case Buttons.WorldMap:
-                    GameActions.OpenWorldMap();
+                    GameActions.OpenWorldMap(World);
 
                     break;
             }

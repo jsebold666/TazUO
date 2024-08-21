@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -37,10 +37,13 @@ using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Input;
 using ClassicUO.Assets;
-using ClassicUO.Renderer;
 using ClassicUO.Resources;
 using SDL2;
+<<<<<<< HEAD
 using Microsoft.Xna.Framework;
+=======
+using ClassicUO.Renderer.Gumps;
+>>>>>>> externo/main
 
 namespace ClassicUO.Game.UI.Controls
 {
@@ -50,6 +53,7 @@ namespace ClassicUO.Game.UI.Controls
         private static readonly string[] _allSubHotkeysNames = Enum.GetNames(typeof(MacroSubType));
         private readonly DataBox _databox;
         private readonly HotkeyBox _hotkeyBox;
+        private readonly Gumps.Gump _gump;
 
         private enum buttonsOption
         {
@@ -60,9 +64,10 @@ namespace ClassicUO.Game.UI.Controls
             OpenButtonEditor
         }
 
-        public MacroControl(string name, bool isFastAssign = false)
+        public MacroControl(Gumps.Gump gump, string name, bool isFastAssign = false)
         {
             CanMove = true;
+<<<<<<< HEAD
             Label _keyBinding;
             Add(_keyBinding = new Label
                 (
@@ -74,6 +79,9 @@ namespace ClassicUO.Game.UI.Controls
                     FontStyle.BlackBorder | FontStyle.Cropped
                  ));
 
+=======
+            _gump = gump;
+>>>>>>> externo/main
             _hotkeyBox = new HotkeyBox();
             _hotkeyBox.HotkeyChanged += BoxOnHotkeyChanged;
             _hotkeyBox.HotkeyCancelled += BoxOnHotkeyCancelled;
@@ -177,7 +185,7 @@ namespace ClassicUO.Game.UI.Controls
             area.Add(_databox);
 
 
-            Macro = Client.Game.GetScene<GameScene>().Macros.FindMacro(name) ?? Macro.CreateEmptyMacro(name);
+            Macro = _gump.World.Macros.FindMacro(name) ?? Macro.CreateEmptyMacro(name);
 
             SetupKeyByDefault();
             SetupMacroUI();
@@ -317,7 +325,7 @@ namespace ClassicUO.Game.UI.Controls
 
             if (_hotkeyBox.Key != SDL.SDL_Keycode.SDLK_UNKNOWN)
             {
-                Macro macro = Client.Game.GetScene<GameScene>().Macros.FindMacro(_hotkeyBox.Key, alt, ctrl, shift);
+                Macro macro = _gump.World.Macros.FindMacro(_hotkeyBox.Key, alt, ctrl, shift);
 
                 if (macro != null)
                 {
@@ -327,14 +335,14 @@ namespace ClassicUO.Game.UI.Controls
                     }
 
                     SetupKeyByDefault();
-                    UIManager.Add(new MessageBoxGump(250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
+                    UIManager.Add(new MessageBoxGump(_gump.World, 250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
 
                     return;
                 }
             }
             else if (_hotkeyBox.MouseButton != MouseButtonType.None)
             {
-                Macro macro = Client.Game.GetScene<GameScene>().Macros.FindMacro(_hotkeyBox.MouseButton, alt, ctrl, shift);
+                Macro macro = _gump.World.Macros.FindMacro(_hotkeyBox.MouseButton, alt, ctrl, shift);
 
                 if (macro != null)
                 {
@@ -344,14 +352,14 @@ namespace ClassicUO.Game.UI.Controls
                     }
 
                     SetupKeyByDefault();
-                    UIManager.Add(new MessageBoxGump(250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
+                    UIManager.Add(new MessageBoxGump(_gump.World, 250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
 
                     return;
                 }
             }
             else if (_hotkeyBox.WheelScroll == true)
             {
-                Macro macro = Client.Game.GetScene<GameScene>().Macros.FindMacro(_hotkeyBox.WheelUp, alt, ctrl, shift);
+                Macro macro = _gump.World.Macros.FindMacro(_hotkeyBox.WheelUp, alt, ctrl, shift);
 
                 if (macro != null)
                 {
@@ -361,7 +369,7 @@ namespace ClassicUO.Game.UI.Controls
                     }
 
                     SetupKeyByDefault();
-                    UIManager.Add(new MessageBoxGump(250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
+                    UIManager.Add(new MessageBoxGump(_gump.World, 250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, macro.Name), null));
 
                     return;
                 }
@@ -413,13 +421,13 @@ namespace ClassicUO.Game.UI.Controls
                 case (int)buttonsOption.CreateNewMacro:
                     UIManager.Gumps.OfType<MacroButtonGump>().FirstOrDefault(s => s.TheMacro == Macro)?.Dispose();
 
-                    MacroButtonGump macroButtonGump = new MacroButtonGump(Macro, Mouse.Position.X, Mouse.Position.Y);
+                    MacroButtonGump macroButtonGump = new MacroButtonGump(_gump.World, Macro, Mouse.Position.X, Mouse.Position.Y);
                     UIManager.Add(macroButtonGump);
                     break;
                 case (int)buttonsOption.OpenMacroOptions:
                     UIManager.Gumps.OfType<MacroGump>().FirstOrDefault()?.Dispose();
 
-                    GameActions.OpenSettings(4);
+                    GameActions.OpenSettings(_gump.World, 4);
                     break;
                 case (int)buttonsOption.OpenButtonEditor:
                     UIManager.Gumps.OfType<MacroButtonEditorGump>().FirstOrDefault()?.Dispose();

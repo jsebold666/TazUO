@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -85,7 +85,7 @@ namespace ClassicUO.Game
 
         public bool Dropped { get; set; }
         public bool UpdatedInWorld { get; set; }
-        public ref StaticTiles ItemData => ref TileDataLoader.Instance.StaticData[Graphic];
+        public ref StaticTiles ItemData => ref Client.Game.UO.FileManager.TileData.StaticData[Graphic];
 
         public void Set(Item item, ushort amount, Point? offset = null)
         {

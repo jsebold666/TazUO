@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly int DEFAULT_HEIGHT = 44;
         private RenderedText _gText;
 
-        public MacroButtonGump(Macro macro, int x, int y) : this()
+        public MacroButtonGump(World world, Macro macro, int x, int y) : this(world)
         {
             X = x;
             Y = y;
@@ -67,7 +67,7 @@ namespace ClassicUO.Game.UI.Gumps
             BuildGump();
         }
 
-        public MacroButtonGump() : base(0, 0)
+        public MacroButtonGump(World world) : base(world,0, 0)
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -208,10 +208,16 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (TheMacro != null)
             {
+<<<<<<< HEAD
                 GameScene gs = Client.Game.GetScene<GameScene>();
                 gs.Macros.SetMacroToExecute(TheMacro.Items as MacroObject);
                 gs.Macros.WaitForTargetTimer = 0;
                 gs.Macros.Update();
+=======
+                World.Macros.SetMacroToExecute(_macro.Items as MacroObject);
+                World.Macros.WaitForTargetTimer = 0;
+                World.Macros.Update();
+>>>>>>> externo/main
             }
         }
 
@@ -277,7 +283,11 @@ namespace ClassicUO.Game.UI.Gumps
             if (TheMacro != null)
             {
                 // hack to give macro buttons a unique id for use in anchor groups
+<<<<<<< HEAD
                 int macroid = Client.Game.GetScene<GameScene>().Macros.GetAllMacros().IndexOf(TheMacro);
+=======
+                int macroid = World.Macros.GetAllMacros().IndexOf(_macro);
+>>>>>>> externo/main
 
                 LocalSerial = (uint)macroid + 1000;
 
@@ -291,7 +301,7 @@ namespace ClassicUO.Game.UI.Gumps
         {
             base.Restore(xml);
 
-            Macro macro = Client.Game.GetScene<GameScene>().Macros.FindMacro(xml.GetAttribute("name"));
+            Macro macro = World.Macros.FindMacro(xml.GetAttribute("name"));
 
             if (macro != null)
             {

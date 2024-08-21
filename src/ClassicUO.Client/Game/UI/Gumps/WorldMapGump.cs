@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -53,7 +53,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
 using static ClassicUO.Game.UI.Gumps.WorldMapGump;
+<<<<<<< HEAD
 using SpriteFont = ClassicUO.Renderer.SpriteFont;
+=======
+using ClassicUO.Game.Scenes;
+>>>>>>> externo/main
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -126,8 +130,9 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly float[] _zooms = new float[10] { 0.125f, 0.25f, 0.5f, 0.75f, 1f, 1.5f, 2f, 4f, 6f, 8f };
         private readonly Color _semiTransparentWhiteForGrid = new Color(255, 255, 255, 56);
 
-        public WorldMapGump() : base
+        public WorldMapGump(World world) : base
         (
+            world,
             400,
             400,
             100,
@@ -151,7 +156,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             LoadSettings();
 
-            GameActions.Print(ResGumps.WorldMapLoading, 0x35);
+            GameActions.Print(World, ResGumps.WorldMapLoading, 0x35);
             Load();
             OnResize();
 
@@ -339,6 +344,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     EntryDialog dialog = new EntryDialog
                     (
+                        World,
                         250,
                         150,
                         ResGumps.EnterLocation,
@@ -348,7 +354,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                             if (string.IsNullOrWhiteSpace(name))
                             {
-                                GameActions.Print(ResGumps.InvalidLocation, 0x35);
+                                GameActions.Print(World, ResGumps.InvalidLocation, 0x35);
 
                                 return;
                             }
@@ -366,19 +372,19 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 catch
                                 {
-                                    GameActions.Print(ResGumps.InvalidLocation, 0x35);
+                                    GameActions.Print(World, ResGumps.InvalidLocation, 0x35);
                                 }
                             }
                             else
                             {
                                 if (!int.TryParse(coords[0], out x))
                                 {
-                                    GameActions.Print(ResGumps.InvalidLocation, 0x35);
+                                    GameActions.Print(World, ResGumps.InvalidLocation, 0x35);
                                 }
 
                                 if (!int.TryParse(coords[1], out y))
                                 {
-                                    GameActions.Print(ResGumps.InvalidLocation, 0x35);
+                                    GameActions.Print(World, ResGumps.InvalidLocation, 0x35);
                                 }
                             }
 
@@ -438,7 +444,7 @@ namespace ClassicUO.Game.UI.Gumps
             _options["markers_manager"] = new ContextMenuItemEntry(ResGumps.MarkersManager,
                 () =>
                 {
-                    var mm = new MarkersManagerGump();
+                    var mm = new MarkersManagerGump(World);
 
                     UIManager.Add(mm);
                 }
@@ -541,7 +547,7 @@ namespace ClassicUO.Game.UI.Gumps
             BuildOptionDictionary();
 
             ContextMenu?.Dispose();
-            ContextMenu = new ContextMenuControl();
+            ContextMenu = new ContextMenuControl(this);
 
             ContextMenuItemEntry follow = new ContextMenuItemEntry(Language.Instance.MapLanguage.Follow);
             follow.Add(new ContextMenuItemEntry(Language.Instance.MapLanguage.Yourself, () => { following = World.Player; }, true));
@@ -807,7 +813,7 @@ namespace ClassicUO.Game.UI.Gumps
             int x = position.X - X - ParentX;
             int y = position.Y - Y - ParentY;
             CanvasToWorld(x, y, out int xMap, out int yMap);
-            TargetManager.Target
+            World.TargetManager.Target
             (
                 0,
                 (ushort)xMap,
@@ -821,7 +827,7 @@ namespace ClassicUO.Game.UI.Gumps
             SaveSettings();
             World.WMapManager.SetEnable(false);
 
-            Client.Game.GameCursor.IsDraggingCursorForced = false;
+            Client.Game.UO.GameCursor.IsDraggingCursorForced = false;
 
             base.Dispose();
         }
@@ -1223,7 +1229,7 @@ namespace ClassicUO.Game.UI.Gumps
                 return;
             }
 
-            var huesLoader = HuesLoader.Instance;
+            var huesLoader = Client.Game.UO.FileManager.Hues;
 
             ref IndexMap indexMap = ref World.Map.GetIndex(chunkX, chunkY);
 
@@ -1258,7 +1264,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                 for (int c = 0; c < count; ++c, ++sb)
                 {
-                    if (sb->Color != 0 && sb->Color != 0xFFFF && GameObject.CanBeDrawn(sb->Color))
+                    if (sb->Color != 0 && sb->Color != 0xFFFF && GameObject.CanBeDrawn(World, sb->Color))
                     {
                         int index = sb->Y * 8 + sb->X;
 
@@ -1384,16 +1390,16 @@ namespace ClassicUO.Game.UI.Gumps
         //            {
         //                int maxX = -1, maxY = -1;
 
-        //                for (int i = 0; i < MapLoader.Instance.MapsDefaultSize.GetLength(0); i++)
+        //                for (int i = 0; i < Client.Game.UO.FileManager.Maps.MapsDefaultSize.GetLength(0); i++)
         //                {
-        //                    if (maxX < MapLoader.Instance.MapsDefaultSize[i, 0])
+        //                    if (maxX < Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 0])
         //                    {
-        //                        maxX = MapLoader.Instance.MapsDefaultSize[i, 0];
+        //                        maxX = Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 0];
         //                    }
 
-        //                    if (maxY < MapLoader.Instance.MapsDefaultSize[i, 1])
+        //                    if (maxY < Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1])
         //                    {
-        //                        maxY = MapLoader.Instance.MapsDefaultSize[i, 1];
+        //                        maxY = Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1];
         //                    }
         //                }
 
@@ -1412,11 +1418,11 @@ namespace ClassicUO.Game.UI.Gumps
 
         //                try
         //                {
-        //                    int realWidth = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 0];
-        //                    int realHeight = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 1];
+        //                    int realWidth = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 0];
+        //                    int realHeight = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 1];
 
-        //                    int fixedWidth = MapLoader.Instance.MapBlocksSize[World.MapIndex, 0];
-        //                    int fixedHeight = MapLoader.Instance.MapBlocksSize[World.MapIndex, 1];
+        //                    int fixedWidth = Client.Game.UO.FileManager.Maps.MapBlocksSize[World.MapIndex, 0];
+        //                    int fixedHeight = Client.Game.UO.FileManager.Maps.MapBlocksSize[World.MapIndex, 1];
 
         //                    const int CHUNK_UNIT_SIZE = 8;
         //                    const int CHUNK_LAND_SIZE = (CHUNK_UNIT_SIZE + OFFSET_PIX_HALF) * (CHUNK_UNIT_SIZE + OFFSET_PIX_HALF);
@@ -1495,16 +1501,16 @@ namespace ClassicUO.Game.UI.Gumps
                         {
                             int maxX = -1, maxY = -1;
 
-                            for (int i = 0; i < MapLoader.Instance.MapsDefaultSize.GetLength(0); i++)
+                            for (int i = 0; i < Client.Game.UO.FileManager.Maps.MapsDefaultSize.GetLength(0); i++)
                             {
-                                if (maxX < MapLoader.Instance.MapsDefaultSize[i, 0])
+                                if (maxX < Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 0])
                                 {
-                                    maxX = MapLoader.Instance.MapsDefaultSize[i, 0];
+                                    maxX = Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 0];
                                 }
 
-                                if (maxY < MapLoader.Instance.MapsDefaultSize[i, 1])
+                                if (maxY < Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1])
                                 {
-                                    maxY = MapLoader.Instance.MapsDefaultSize[i, 1];
+                                    maxY = Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1];
                                 }
                             }
 
@@ -1521,11 +1527,11 @@ namespace ClassicUO.Game.UI.Gumps
 
                         try
                         {
-                            int realWidth = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 0];
-                            int realHeight = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 1];
+                            int realWidth = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 0];
+                            int realHeight = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 1];
 
-                            int fixedWidth = MapLoader.Instance.MapBlocksSize[World.MapIndex, 0];
-                            int fixedHeight = MapLoader.Instance.MapBlocksSize[World.MapIndex, 1];
+                            int fixedWidth = Client.Game.UO.FileManager.Maps.MapBlocksSize[World.MapIndex, 0];
+                            int fixedHeight = Client.Game.UO.FileManager.Maps.MapBlocksSize[World.MapIndex, 1];
 
                             int size = (realWidth + OFFSET_PIX) * (realHeight + OFFSET_PIX);
 
@@ -1541,7 +1547,7 @@ namespace ClassicUO.Game.UI.Gumps
                             }
 
 
-                            var huesLoader = HuesLoader.Instance;
+                            var huesLoader = Client.Game.UO.FileManager.Hues;
 
                             int bx, by, mapX = 0, mapY = 0, x, y;
 
@@ -1587,7 +1593,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                                         for (int c = 0; c < count; ++c, ++sb)
                                         {
-                                            if (sb->Color != 0 && sb->Color != 0xFFFF && GameObject.CanBeDrawn(sb->Color))
+                                            if (sb->Color != 0 && sb->Color != 0xFFFF && GameObject.CanBeDrawn(World, sb->Color))
                                             {
                                                 int block = (mapY + sb->Y + OFFSET_PIX_HALF) * (realWidth + OFFSET_PIX) + mapX + sb->X + OFFSET_PIX_HALF;
 
@@ -1671,7 +1677,7 @@ namespace ClassicUO.Game.UI.Gumps
                             Log.Error($"error loading worldmap: {ex}");
                         }
 
-                        GameActions.Print(ResGumps.WorldMapLoaded, 0x48);
+                        GameActions.Print(World, ResGumps.WorldMapLoaded, 0x48);
                     }
                 }
             );
@@ -1758,13 +1764,13 @@ namespace ClassicUO.Game.UI.Gumps
         {
             public Dictionary<string, ZoneSet> ZoneSetDict { get; } = new Dictionary<string, ZoneSet>();
 
-            public void AddZoneSetByFileName(string filename, bool hidden)
+            public void AddZoneSetByFileName(World world, string filename, bool hidden)
             {
                 try
                 {
                     var zf = System.Text.Json.JsonSerializer.Deserialize(File.ReadAllText(filename), ZonesJsonContext.Default.ZonesFile);
                     ZoneSetDict[filename] = new ZoneSet(zf, filename, hidden);
-                    GameActions.Print(string.Format(ResGumps.MapZoneFileLoaded, ZoneSetDict[filename].NiceFileName), 0x3A /* yellow green */);
+                    GameActions.Print(world, string.Format(ResGumps.MapZoneFileLoaded, ZoneSetDict[filename].NiceFileName), 0x3A /* yellow green */);
                 }
                 catch (Exception ee)
                 {
@@ -1814,7 +1820,7 @@ namespace ClassicUO.Game.UI.Gumps
                     _hiddenZoneFiles.FirstOrDefault(x => x.Contains(filename))
                 );
 
-                _zoneSets.AddZoneSetByFileName(filename, shouldHide);
+                _zoneSets.AddZoneSetByFileName(World, filename, shouldHide);
             }
         }
 
@@ -1831,7 +1837,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     _mapMarkersLoaded = false;
 
-                    GameActions.Print(ResGumps.LoadingWorldMapMarkers, 0x2A);
+                    GameActions.Print(World, ResGumps.LoadingWorldMapMarkers, 0x2A);
 
                     foreach (Texture2D t in _markerIcons.Values)
                     {
@@ -2059,7 +2065,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                             if (markerFile.Markers.Count > 0)
                             {
-                                GameActions.Print($"..{Path.GetFileName(mapFile)} ({markerFile.Markers.Count})", 0x2B);
+                                GameActions.Print(World, $"..{Path.GetFileName(mapFile)} ({markerFile.Markers.Count})", 0x2B);
                             }
                             _markerFiles.Add(markerFile);
                         }
@@ -2076,7 +2082,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                     _mapMarkersLoaded = true;
 
-                    GameActions.Print(string.Format(ResGumps.WorldMapMarkersLoaded0, count), 0x2A);
+                    GameActions.Print(World, string.Format(ResGumps.WorldMapMarkersLoaded0, count), 0x2A);
                 }
             }
 
@@ -2090,7 +2096,7 @@ namespace ClassicUO.Game.UI.Gumps
                 return;
             }
 
-            var entryDialog = new EntryDialog(250, 150, ResGumps.EnterMarkerName, SaveMakerOnPlayer)
+            var entryDialog = new EntryDialog(World, 250, 150, ResGumps.EnterMarkerName, SaveMakerOnPlayer)
             {
                 CanCloseWithRightClick = true
             };
@@ -2107,7 +2113,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (string.IsNullOrWhiteSpace(markerName))
             {
-                GameActions.Print(ResGumps.InvalidMarkerName, 0x2A);
+                GameActions.Print(World, ResGumps.InvalidMarkerName, 0x2A);
             }
 
             var markerColor = "blue";
@@ -3466,7 +3472,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         protected override void OnMouseUp(int x, int y, MouseButtonType button)
         {
-            var allowTarget = _allowPositionalTarget && TargetManager.IsTargeting && TargetManager.TargetingState == CursorTarget.Position;
+            var allowTarget = _allowPositionalTarget && World.TargetManager.IsTargeting && World.TargetManager.TargetingState == CursorTarget.Position;
             if (allowTarget && button == MouseButtonType.Left)
             {
                 HandlePositionTarget();
@@ -3487,6 +3493,7 @@ namespace ClassicUO.Game.UI.Gumps
                 _lastScroll.Y = _center.Y;
             }
 
+<<<<<<< HEAD
             if (button == MouseButtonType.Right && Keyboard.Ctrl)
             {
                 CanvasToWorld(_lastMousePosition.Value.X, _lastMousePosition.Value.Y, out int wX, out int wY);
@@ -3494,13 +3501,16 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
             Client.Game.GameCursor.IsDraggingCursorForced = false;
+=======
+            Client.Game.UO.GameCursor.IsDraggingCursorForced = false;
+>>>>>>> externo/main
 
             base.OnMouseUp(x, y, button);
         }
 
         protected override void OnMouseDown(int x, int y, MouseButtonType button)
         {
-            if (!Client.Game.GameCursor.ItemHold.Enabled)
+            if (!Client.Game.UO.GameCursor.ItemHold.Enabled)
             {
                 if (button == MouseButtonType.Left && (Keyboard.Alt || _freeView) || button == MouseButtonType.Middle)
                 {
@@ -3518,8 +3528,12 @@ namespace ClassicUO.Game.UI.Gumps
                             _isScrolling = true;
                             CanMove = false;
 
+<<<<<<< HEAD
                             Client.Game.GameCursor.IsDraggingCursorForced = true;
                         }
+=======
+                        Client.Game.UO.GameCursor.IsDraggingCursorForced = true;
+>>>>>>> externo/main
                     }
                 }
 
@@ -3538,7 +3552,7 @@ namespace ClassicUO.Game.UI.Gumps
                     UserMarkersGump existingGump = UIManager.GetGump<UserMarkersGump>();
 
                     existingGump?.Dispose();
-                    UIManager.Add(new UserMarkersGump(_mouseCenter.X, _mouseCenter.Y, userFile.Markers));
+                    UIManager.Add(new UserMarkersGump(World, _mouseCenter.X, _mouseCenter.Y, userFile.Markers));
                 }
             }
 
@@ -3593,14 +3607,14 @@ namespace ClassicUO.Game.UI.Gumps
                     _center.Y = 0;
                 }
 
-                if (_center.X > MapLoader.Instance.MapsDefaultSize[World.MapIndex, 0])
+                if (_center.X > Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 0])
                 {
-                    _center.X = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 0];
+                    _center.X = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 0];
                 }
 
-                if (_center.Y > MapLoader.Instance.MapsDefaultSize[World.MapIndex, 1])
+                if (_center.Y > Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 1])
                 {
-                    _center.Y = MapLoader.Instance.MapsDefaultSize[World.MapIndex, 1];
+                    _center.Y = Client.Game.UO.FileManager.Maps.MapsDefaultSize[World.MapIndex, 1];
                 }
             }
             else

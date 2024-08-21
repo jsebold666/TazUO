@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,11 @@ namespace ClassicUO.IO
 {
     public class UOFileMul : UOFile
     {
-        private readonly int _count, _patch;
         private readonly UOFileIdxMul _idxFile;
 
-        public UOFileMul(string file, string idxfile, int count, int patch = -1) : this(file)
+        public UOFileMul(string file, string idxfile) : this(file)
         {
             _idxFile = new UOFileIdxMul(idxfile);
-            _count = count;
-            _patch = patch;
         }
 
         public UOFileMul(string file) : base(file)
@@ -59,16 +56,18 @@ namespace ClassicUO.IO
             int count = (int) file.Length / 12;
             entries = new UOFileIndex[count];
 
+            var reader = file.GetReader();
+            var startAddress = GetReader().StartAddress;
             for (int i = 0; i < count; i++)
             {
                 ref UOFileIndex e = ref entries[i];
-                e.Address = StartAddress;   // .mul mmf address
+                e.Address = startAddress;   // .mul mmf address
                 e.FileSize = (uint) Length; // .mul mmf length
-                e.Offset = file.ReadUInt(); // .idx offset
-                e.Length = file.ReadInt();  // .idx length
+                e.Offset = reader.ReadUInt32LE(); // .idx offset
+                e.Length = reader.ReadInt32LE();  // .idx length
                 e.DecompressedLength = 0;   // UNUSED HERE --> .UOP
 
-                int size = file.ReadInt();
+                int size = reader.ReadInt32LE();
 
                 if (size > 0)
                 {

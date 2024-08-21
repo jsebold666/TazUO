@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -308,7 +308,7 @@ namespace ClassicUO.Game.UI.Controls
         {
             if (IsUnicode)
             {
-                return FontsLoader.Instance.GetInfoUnicode
+                return Client.Game.UO.FileManager.Fonts.GetInfoUnicode
                 (
                     _rendererText.Font,
                     text,
@@ -320,7 +320,7 @@ namespace ClassicUO.Game.UI.Controls
                 );
             }
 
-            return FontsLoader.Instance.GetInfoASCII
+            return Client.Game.UO.FileManager.Fonts.GetInfoASCII
             (
                 _rendererText.Font,
                 text,
@@ -378,7 +378,7 @@ namespace ClassicUO.Game.UI.Controls
                 }
 
 
-                int realWidth = _rendererText.IsUnicode ? FontsLoader.Instance.GetWidthUnicode(_rendererText.Font, text) : FontsLoader.Instance.GetWidthASCII(_rendererText.Font, text);
+                int realWidth = _rendererText.IsUnicode ? Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_rendererText.Font, text) : Client.Game.UO.FileManager.Fonts.GetWidthASCII(_rendererText.Font, text);
 
                 if (realWidth > _rendererText.MaxWidth)
                 {
@@ -391,7 +391,7 @@ namespace ClassicUO.Game.UI.Controls
                     }
 
                     //MultilinesFontInfo info = _rendererText.IsUnicode
-                    //                              ? FontsLoader.Instance.GetInfoUnicode(
+                    //                              ? Client.Game.UO.FileManager.Fonts.GetInfoUnicode(
                     //                                                                    _rendererText.Font,
                     //                                                                    text,
                     //                                                                    text.Length,
@@ -399,7 +399,7 @@ namespace ClassicUO.Game.UI.Controls
                     //                                                                    (ushort) _rendererText.FontStyle,
                     //                                                                    realWidth
                     //                                                                   )
-                    //                              : FontsLoader.Instance.GetInfoASCII(
+                    //                              : Client.Game.UO.FileManager.Fonts.GetInfoASCII(
                     //                                                                  _rendererText.Font,
                     //                                                                  text,
                     //                                                                  text.Length,

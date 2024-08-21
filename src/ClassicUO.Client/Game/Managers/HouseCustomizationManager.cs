@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ using System.Linq;
 using ClassicUO.Assets;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
+using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Network;
 using Microsoft.Xna.Framework;
@@ -55,37 +56,45 @@ namespace ClassicUO.Game.Managers
         public int X, Y, Z;
     }
 
+<<<<<<< HEAD
     public class HouseCustomizationManager
+=======
+    internal sealed class HouseCustomizationManager
+>>>>>>> externo/main
     {
-        public static readonly List<CustomHouseWallCategory> Walls = new List<CustomHouseWallCategory>();
-        public static readonly List<CustomHouseFloor> Floors = new List<CustomHouseFloor>();
-        public static readonly List<CustomHouseDoor> Doors = new List<CustomHouseDoor>();
-        public static readonly List<CustomHouseMiscCategory> Miscs = new List<CustomHouseMiscCategory>();
-        public static readonly List<CustomHouseStair> Stairs = new List<CustomHouseStair>();
-        public static readonly List<CustomHouseTeleport> Teleports = new List<CustomHouseTeleport>();
-        public static readonly List<CustomHouseRoofCategory> Roofs = new List<CustomHouseRoofCategory>();
-        public static readonly List<CustomHousePlaceInfo> ObjectsInfo = new List<CustomHousePlaceInfo>();
+        public readonly List<CustomHouseWallCategory> Walls = new List<CustomHouseWallCategory>();
+        public readonly List<CustomHouseFloor> Floors = new List<CustomHouseFloor>();
+        public readonly List<CustomHouseDoor> Doors = new List<CustomHouseDoor>();
+        public readonly List<CustomHouseMiscCategory> Miscs = new List<CustomHouseMiscCategory>();
+        public readonly List<CustomHouseStair> Stairs = new List<CustomHouseStair>();
+        public readonly List<CustomHouseTeleport> Teleports = new List<CustomHouseTeleport>();
+        public readonly List<CustomHouseRoofCategory> Roofs = new List<CustomHouseRoofCategory>();
+        public readonly List<CustomHousePlaceInfo> ObjectsInfo = new List<CustomHousePlaceInfo>();
 
-        static HouseCustomizationManager()
+        private readonly World _world;
+
+        public HouseCustomizationManager(World world, uint serial)
         {
-            ParseFileWithCategory<CustomHouseWall, CustomHouseWallCategory>(Walls, UOFileManager.GetUOFilePath("walls.txt"));
-
-            ParseFile(Floors, UOFileManager.GetUOFilePath("floors.txt"));
-            ParseFile(Doors, UOFileManager.GetUOFilePath("doors.txt"));
-
-            ParseFileWithCategory<CustomHouseMisc, CustomHouseMiscCategory>(Miscs, UOFileManager.GetUOFilePath("misc.txt"));
-
-            ParseFile(Stairs, UOFileManager.GetUOFilePath("stairs.txt"));
-            ParseFile(Teleports, UOFileManager.GetUOFilePath("teleprts.txt"));
-
-            ParseFileWithCategory<CustomHouseRoof, CustomHouseRoofCategory>(Roofs, UOFileManager.GetUOFilePath("roof.txt"));
-
-            ParseFile(ObjectsInfo, UOFileManager.GetUOFilePath("suppinfo.txt"));
-        }
-
-        public HouseCustomizationManager(uint serial)
-        {
+            _world = world;
             Serial = serial;
+
+            var fileManager = Client.Game.UO.FileManager;
+            // TODO: don't load the file txt every time the housemanager get initialized
+            ParseFileWithCategory<CustomHouseWall, CustomHouseWallCategory>(Walls, fileManager.GetUOFilePath("walls.txt"));
+
+            ParseFile(Floors, fileManager.GetUOFilePath("floors.txt"));
+            ParseFile(Doors, fileManager.GetUOFilePath("doors.txt"));
+
+            ParseFileWithCategory<CustomHouseMisc, CustomHouseMiscCategory>(Miscs, fileManager.GetUOFilePath("misc.txt"));
+
+            ParseFile(Stairs, fileManager.GetUOFilePath("stairs.txt"));
+            ParseFile(Teleports, fileManager.GetUOFilePath("teleprts.txt"));
+
+            ParseFileWithCategory<CustomHouseRoof, CustomHouseRoofCategory>(Roofs, fileManager.GetUOFilePath("roof.txt"));
+
+            ParseFile(ObjectsInfo, fileManager.GetUOFilePath("suppinfo.txt"));
+            // 
+
 
             InitializeHouse();
         }
@@ -105,7 +114,7 @@ namespace ClassicUO.Game.Managers
 
         private void InitializeHouse()
         {
-            Item foundation = World.Items.Get(Serial);
+            Item foundation = _world.Items.Get(Serial);
 
             if (foundation != null)
             {
@@ -143,9 +152,9 @@ namespace ClassicUO.Game.Managers
 
         public void GenerateFloorPlace()
         {
-            Item foundationItem = World.Items.Get(Serial);
+            Item foundationItem = _world.Items.Get(Serial);
 
-            if (foundationItem != null && World.HouseManager.TryGetHouse(Serial, out House house))
+            if (foundationItem != null && _world.HouseManager.TryGetHouse(Serial, out House house))
             {
                 house.ClearCustomHouseComponents(CUSTOM_HOUSE_MULTI_OBJECT_FLAGS.CHMOF_GENERIC_INTERNAL);
 
@@ -627,11 +636,11 @@ namespace ClassicUO.Game.Managers
                         SeekGraphic(place.Graphic);
                     }
                 }
-                else if (place.Z >= World.Player.Z + zOffset && place.Z < World.Player.Z + 20)
+                else if (place.Z >= _world.Player.Z + zOffset && place.Z < _world.Player.Z + 20)
                 {
-                    Item foundationItem = World.Items.Get(Serial);
+                    Item foundationItem = _world.Items.Get(Serial);
 
-                    if (foundationItem == null || !World.HouseManager.TryGetHouse(Serial, out House house))
+                    if (foundationItem == null || !_world.HouseManager.TryGetHouse(Serial, out House house))
                     {
                         return;
                     }
@@ -661,11 +670,11 @@ namespace ClassicUO.Game.Managers
 
                             if (type == CUSTOM_HOUSE_BUILD_TYPE.CHBT_ROOF)
                             {
-                                NetClient.Socket.Send_CustomHouseDeleteRoof(place.Graphic, place.X - foundationItem.X, place.Y - foundationItem.Y, z);
+                                NetClient.Socket.Send_CustomHouseDeleteRoof(_world, place.Graphic, place.X - foundationItem.X, place.Y - foundationItem.Y, z);
                             }
                             else
                             {
-                                NetClient.Socket.Send_CustomHouseDeleteItem(place.Graphic, place.X - foundationItem.X, place.Y - foundationItem.Y, z);
+                                NetClient.Socket.Send_CustomHouseDeleteItem(_world, place.Graphic, place.X - foundationItem.X, place.Y - foundationItem.Y, z);
                             }
 
                             place.Destroy();
@@ -710,7 +719,7 @@ namespace ClassicUO.Game.Managers
 
                                     if (graphic != 0)
                                     {
-                                        NetClient.Socket.Send_CustomHouseAddStair(graphic, placeX - foundationItem.X, placeY - foundationItem.Y);
+                                        NetClient.Socket.Send_CustomHouseAddStair(_world, graphic, placeX - foundationItem.X, placeY - foundationItem.Y);
                                     }
                                 }
                             }
@@ -784,11 +793,11 @@ namespace ClassicUO.Game.Managers
 
                                     if (type == CUSTOM_HOUSE_BUILD_TYPE.CHBT_ROOF)
                                     {
-                                        NetClient.Socket.Send_CustomHouseAddRoof(item.Graphic, x, y, item.Z);
+                                        NetClient.Socket.Send_CustomHouseAddRoof(_world, item.Graphic, x, y, item.Z);
                                     }
                                     else
                                     {
-                                        NetClient.Socket.Send_CustomHouseAddItem(item.Graphic, x, y);
+                                        NetClient.Socket.Send_CustomHouseAddItem(_world, item.Graphic, x, y);
                                     }
                                 }
                             }
@@ -859,7 +868,7 @@ namespace ClassicUO.Game.Managers
 
         public void SetTargetMulti()
         {
-            TargetManager.SetTargetingMulti
+            _world.TargetManager.SetTargetingMulti
             (
                 0,
                 0,
@@ -1359,7 +1368,7 @@ namespace ClassicUO.Game.Managers
                 //    return false;
                 //}
 
-                Item foundationItem = World.Items.Get(Serial);
+                Item foundationItem = _world.Items.Get(Serial);
 
                 int minZ = (foundationItem?.Z ?? 0) + 7 + (CurrentFloor - 1) * 20;
                 int maxZ = minZ + 20;
@@ -1406,7 +1415,7 @@ namespace ClassicUO.Game.Managers
                         return false;
                     }
 
-                    if (type != CUSTOM_HOUSE_BUILD_TYPE.CHBT_FLOOR && foundationItem != null && World.HouseManager.TryGetHouse(Serial, out House house))
+                    if (type != CUSTOM_HOUSE_BUILD_TYPE.CHBT_FLOOR && foundationItem != null && _world.HouseManager.TryGetHouse(Serial, out House house))
                     {
                         //var multi = house.GetMultiAt(gobj.X + item.X, gobj.Y + item.Y);
 
@@ -1582,7 +1591,7 @@ namespace ClassicUO.Game.Managers
 
         public bool ValidateItemPlace(Item foundationItem, Multi item, int minZ, int maxZ, List<Point> validatedFloors)
         {
-            if (item == null || !World.HouseManager.TryGetHouse(foundationItem, out House house) || !item.IsCustom)
+            if (item == null || !_world.HouseManager.TryGetHouse(foundationItem, out House house) || !item.IsCustom)
             {
                 return true;
             }
@@ -1956,7 +1965,7 @@ namespace ClassicUO.Game.Managers
             return false;
         }
 
-        private static void ParseFile<T>(List<T> list, string path) where T : CustomHouseObject, new()
+        private void ParseFile<T>(List<T> list, string path) where T : CustomHouseObject, new()
         {
             FileInfo file = new FileInfo(path);
 
@@ -1980,7 +1989,7 @@ namespace ClassicUO.Game.Managers
 
                     if (item.Parse(line))
                     {
-                        if (item.FeatureMask == 0 || ((int) World.ClientLockedFeatures.Flags & item.FeatureMask) != 0)
+                        if (item.FeatureMask == 0 || ((int)_world.ClientLockedFeatures.Flags & item.FeatureMask) != 0)
                         {
                             list.Add(item);
                         }
@@ -1989,7 +1998,7 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        private static void ParseFileWithCategory<T, U>(List<U> list, string path) where T : CustomHouseObject, new() where U : CustomHouseObjectCategory<T>, new()
+        private void ParseFileWithCategory<T, U>(List<U> list, string path) where T : CustomHouseObject, new() where U : CustomHouseObjectCategory<T>, new()
         {
             FileInfo file = new FileInfo(path);
 
@@ -2013,7 +2022,7 @@ namespace ClassicUO.Game.Managers
 
                     if (item.Parse(line))
                     {
-                        if (item.FeatureMask != 0 && ((int) World.ClientLockedFeatures.Flags & item.FeatureMask) == 0)
+                        if (item.FeatureMask != 0 && ((int)_world.ClientLockedFeatures.Flags & item.FeatureMask) == 0)
                         {
                             continue;
                         }

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly RenderedTextList _journalEntries;
         private readonly ScrollFlag _scrollBar;
 
-        public JournalGump() : base(0, 0)
+        public JournalGump(World world) : base(world, 0, 0)
         {
             Height = 300;
             CanMove = true;
@@ -74,7 +74,7 @@ namespace ClassicUO.Game.UI.Gumps
             const ushort DARK_MODE_JOURNAL_HUE = 903;
 
             string str = ResGumps.DarkMode;
-            int width = FontsLoader.Instance.GetWidthASCII(6, str);
+            int width = Client.Game.UO.FileManager.Fonts.GetWidthASCII(6, str);
 
             Checkbox darkMode;
 
@@ -299,7 +299,7 @@ namespace ClassicUO.Game.UI.Gumps
             var usrSend = entry.Name != string.Empty ? $"{entry.Name}" : string.Empty;
 
             // Check if ignored person
-            if (!string.IsNullOrEmpty(usrSend) && IgnoreManager.IgnoredCharsList.Contains(usrSend))
+            if (!string.IsNullOrEmpty(usrSend) && World.IgnoreManager.IgnoredCharsList.Contains(usrSend))
                 return;
 
             string text = $"{usrSend}: {entry.Text}";

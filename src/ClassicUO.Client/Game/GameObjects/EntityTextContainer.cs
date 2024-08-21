@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -82,13 +82,13 @@ namespace ClassicUO.Game.GameObjects
     internal class OverheadDamage
     {
         private const int DAMAGE_Y_MOVING_TIME = 25;
-
         private readonly Deque<TextObject> _messages;
-
         private Rectangle _rectangle;
+        private readonly World _world;
 
-        public OverheadDamage(GameObject parent)
+        public OverheadDamage(World world, GameObject parent)
         {
+            _world = world;
             Parent = parent;
             _messages = new Deque<TextObject>();
         }
@@ -104,8 +104,9 @@ namespace ClassicUO.Game.GameObjects
 
         public void Add(int damage)
         {
-            TextObject text_obj = TextObject.Create();
+            TextObject text_obj = TextObject.Create(_world);
 
+<<<<<<< HEAD
             ushort hue = ProfileManager.CurrentProfile == null ? (ushort)0x0021 : ProfileManager.CurrentProfile.DamageHueOther;
 
             if (ReferenceEquals(Parent, World.Player))
@@ -123,6 +124,14 @@ namespace ClassicUO.Game.GameObjects
             }
 
             text_obj.TextBox = new UI.Controls.TextBox(damage.ToString(), ProfileManager.CurrentProfile.OverheadChatFont, ProfileManager.CurrentProfile.OverheadChatFontSize, ProfileManager.CurrentProfile.OverheadChatWidth, hue, align: FontStashSharp.RichText.TextHorizontalAlignment.Center) { AcceptMouseInput = !ProfileManager.CurrentProfile.DisableMouseInteractionOverheadText };
+=======
+            text_obj.RenderedText = RenderedText.Create(
+                damage.ToString(),
+                (ushort)(ReferenceEquals(Parent, _world.Player) ? 0x0034 : 0x0021),
+                3,
+                false
+            );
+>>>>>>> externo/main
 
             text_obj.Time = Time.Ticks + 1500;
 
@@ -203,7 +212,7 @@ namespace ClassicUO.Game.GameObjects
                         offY = -22;
                     }
 
-                    Client.Game.Animations.GetAnimationDimensions(
+                    Client.Game.UO.Animations.GetAnimationDimensions(
                         m.AnimIndex,
                         m.GetGraphicForAnimation(),
                         /*(byte) m.GetDirectionForAnimation()*/
@@ -224,7 +233,7 @@ namespace ClassicUO.Game.GameObjects
                 }
                 else
                 {
-                    ref readonly var artInfo = ref Client.Game.Arts.GetArt(Parent.Graphic);
+                    ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(Parent.Graphic);
 
                     if (artInfo.Texture != null)
                     {
