@@ -529,7 +529,6 @@ namespace ClassicUO.Configuration
 
         public static uint GumpsVersion { get; private set; }
 
-<<<<<<< HEAD
         [JsonConverter(typeof(Point2Converter))]
         public Point InfoBarSize { get; set; } = new Point(400, 20);
         public bool InfoBarLocked { get; set; } = false;
@@ -601,10 +600,7 @@ namespace ClassicUO.Configuration
         public bool EnableGumpCloseAnimation { get; set; } = true;
 
 
-        public void Save(string path, bool saveGumps = true)
-=======
         public void Save(World world, string path)
->>>>>>> externo/main
         {
             Log.Trace($"Saving path:\t\t{path}");
 
@@ -612,12 +608,7 @@ namespace ClassicUO.Configuration
             ConfigurationResolver.Save(this, Path.Combine(path, "profile.json"), ProfileJsonContext.DefaultToUse.Profile);
 
             // Save opened gumps
-<<<<<<< HEAD
-            if (saveGumps)
-                SaveGumps(path);
-=======
             SaveGumps(world, path);
->>>>>>> externo/main
 
             Log.Trace("Saving done!");
         }
@@ -799,14 +790,10 @@ namespace ClassicUO.Configuration
                             switch (type)
                             {
                                 case GumpType.Buff:
-<<<<<<< HEAD
                                     if (ProfileManager.CurrentProfile.UseImprovedBuffBar)
                                         gump = new ImprovedBuffGump();
-                                    else
-                                        gump = new BuffGump(100, 100);
-=======
-                                    gump = new BuffGump(world);
->>>>>>> externo/main
+                                    else    
+                                        gump = new BuffGump(world);
 
                                     break;
 
@@ -838,14 +825,8 @@ namespace ClassicUO.Configuration
                                     break;
 
                                 case GumpType.Journal:
-<<<<<<< HEAD
-                                    gump = new ResizableJournal();
-                                    //x = ProfileManager.CurrentProfile.JournalPosition.X;
-                                    //y = ProfileManager.CurrentProfile.JournalPosition.Y;
-=======
                                     gump = new JournalGump(world);
 
->>>>>>> externo/main
                                     break;
 
                                 case GumpType.MacroButton:
@@ -863,7 +844,6 @@ namespace ClassicUO.Configuration
                                     break;
 
                                 case GumpType.PaperDoll:
-<<<<<<< HEAD
                                     if (pdolc > 0)
                                     {
                                         break;
@@ -877,14 +857,10 @@ namespace ClassicUO.Configuration
                                     }
                                     else
                                     {
-                                        gump = new PaperDollGump(serial, serial == World.Player.Serial);
+                                        gump = new PaperDollGump(world);
                                         x = ProfileManager.CurrentProfile.PaperdollPosition.X;
                                         y = ProfileManager.CurrentProfile.PaperdollPosition.Y;
                                     }
-                                    pdolc++;
-=======
-                                    gump = new PaperDollGump(world);
->>>>>>> externo/main
 
                                     break;
 
@@ -906,14 +882,10 @@ namespace ClassicUO.Configuration
                                     break;
 
                                 case GumpType.StatusGump:
-<<<<<<< HEAD
-                                    gump = StatusGumpBase.AddStatusGump(0, 0);
+                                    gump = StatusGumpBase.AddStatusGump(world, 0, 0);
                                     x = ProfileManager.CurrentProfile.StatusGumpPosition.X;
                                     y = ProfileManager.CurrentProfile.StatusGumpPosition.Y;
-=======
-                                    gump = StatusGumpBase.AddStatusGump(world, 0, 0);
 
->>>>>>> externo/main
                                     break;
 
                                 //case GumpType.TipNotice:

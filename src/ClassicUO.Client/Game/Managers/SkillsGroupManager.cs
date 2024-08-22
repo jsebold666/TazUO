@@ -186,7 +186,6 @@ namespace ClassicUO.Game.Managers
 
     internal sealed class SkillsGroupManager
     {
-<<<<<<< HEAD
         private static bool _isActive;
         public static readonly List<SkillsGroup> Groups = new List<SkillsGroup>();
         public static bool IsActive
@@ -197,12 +196,10 @@ namespace ClassicUO.Game.Managers
                 _isActive = value;
             }
         }
-=======
         private readonly World _world;
 
         public SkillsGroupManager(World world) => _world = world;
 
->>>>>>> externo/main
 
         public readonly List<SkillsGroup> Groups = new List<SkillsGroup>();
 

@@ -170,26 +170,6 @@ namespace ClassicUO.Assets
 
             List<Task> tasks = new List<Task>
             {
-<<<<<<< HEAD
-                AnimationsLoader.Instance.Load(),
-                AnimDataLoader.Instance.Load(),
-                ArtLoader.Instance.Load(),
-                MapLoader.Instance.Load(),
-                ClilocLoader.Instance.Load(lang),
-                GumpsLoader.Instance.Load(),
-                FontsLoader.Instance.Load(),
-                HuesLoader.Instance.Load(),
-                TileDataLoader.Instance.Load(),
-                MultiLoader.Instance.Load(),
-                SkillsLoader.Instance.Load().ContinueWith(t => ProfessionLoader.Instance.Load()),
-                TexmapsLoader.Instance.Load(),
-                SpeechesLoader.Instance.Load(),
-                LightsLoader.Instance.Load(),
-                SoundsLoader.Instance.Load(),
-                MultiMapLoader.Instance.Load(),
-                PNGLoader.Instance.Load(),
-                TrueTypeLoader.Instance.Load()
-=======
                 Animations.Load(),
                 AnimData.Load(),
                 Arts.Load(),
@@ -206,7 +186,8 @@ namespace ClassicUO.Assets
                 Lights.Load(),
                 Sounds.Load(),
                 MultiMaps.Load()
->>>>>>> externo/main
+                PNGLoader.Load(),
+                TrueTypeLoader.Load()
             };
 
             if (!Task.WhenAll(tasks).Wait(TimeSpan.FromSeconds(15)))

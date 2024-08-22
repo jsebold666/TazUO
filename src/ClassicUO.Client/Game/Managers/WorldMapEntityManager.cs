@@ -72,22 +72,14 @@ namespace ClassicUO.Game.Managers
         //}
     }
 
-<<<<<<< HEAD
-    public class WorldMapEntityManager
-=======
     internal sealed class WorldMapEntityManager
->>>>>>> externo/main
     {
         private bool _ackReceived;
         private uint _lastUpdate, _lastPacketSend, _lastPacketRecv;
         private readonly List<WMapEntity> _toRemove = new List<WMapEntity>();
-<<<<<<< HEAD
-        public WMapEntity _corpse;
-=======
         private readonly World _world;
-
+        public WMapEntity _corpse;
         public WorldMapEntityManager(World world) { _world = world; }
->>>>>>> externo/main
 
         public bool Enabled
         {

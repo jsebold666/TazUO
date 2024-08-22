@@ -330,15 +330,7 @@ namespace ClassicUO.Game.Managers
             }
 
 
-<<<<<<< HEAD
-            ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(BACKGROUND_GRAPHIC);
-            Rectangle bounds = gumpInfo.UV;
-
-            if (multiplier > 1)
-                x -= (int)(((BAR_WIDTH * multiplier) / 2) - (BAR_WIDTH / 2));
-=======
             ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(BACKGROUND_GRAPHIC);
->>>>>>> externo/main
 
             batcher.Draw(
                 gumpInfo.Texture,
@@ -359,8 +351,6 @@ namespace ClassicUO.Game.Managers
                 {
                     hueVec.X = 53;
                 }
-<<<<<<< HEAD
-=======
 
                 gumpInfo = ref Client.Game.UO.Gumps.GetGump(HP_GRAPHIC);
 
@@ -375,7 +365,6 @@ namespace ClassicUO.Game.Managers
                     gumpInfo.UV,
                     hueVec
                 );
->>>>>>> externo/main
             }
 
             float hitPerecentage = (float)entity.Hits / (float)entity.HitsMax;
@@ -383,13 +372,6 @@ namespace ClassicUO.Game.Managers
             if (entity.HitsMax == 0)
                 hitPerecentage = 1;
 
-<<<<<<< HEAD
-            batcher.Draw(
-                SolidColorTextureCache.GetTexture(Color.White),
-                new Vector2(x + (3 * multiplier), y + (4 * multiplier)),
-                new Rectangle(0, 0, (int)(((BAR_WIDTH * multiplier) - (6 * multiplier)) * hitPerecentage), (bounds.Height * multiplier) - (6 * multiplier)),
-                hueVec
-=======
                 hueVec.X = hue;
 
                 gumpInfo = ref Client.Game.UO.Gumps.GetGump(HP_GRAPHIC);
@@ -398,7 +380,6 @@ namespace ClassicUO.Game.Managers
                     new Rectangle(x, y, per * MULTIPLER, gumpInfo.UV.Height * MULTIPLER),
                     gumpInfo.UV,
                     hueVec
->>>>>>> externo/main
                 );
         }
     }

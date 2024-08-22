@@ -36,11 +36,7 @@ using ClassicUO.Game.GameObjects;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
-    public class HouseManager
-=======
     internal sealed class HouseManager
->>>>>>> externo/main
     {
         private readonly Dictionary<uint, House> _houses = new Dictionary<uint, House>();
         private readonly World _world;

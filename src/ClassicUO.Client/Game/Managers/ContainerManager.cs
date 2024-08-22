@@ -258,10 +258,6 @@ namespace ClassicUO.Game.Managers
             {
                 MakeDefault();
 
-<<<<<<< HEAD
-                using (var stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                using (var writer = new StreamWriter(stream))
-=======
                 using var stream2 = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
                 using var writer = new StreamWriter(stream2);
                 writer.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -279,7 +275,6 @@ namespace ClassicUO.Game.Managers
                 writer.WriteLine();
 
                 foreach (KeyValuePair<ushort, ContainerData> e in _data)
->>>>>>> externo/main
                 {
                     writer.WriteLine(
                         $"{e.Value.Graphic} {e.Value.OpenSound} {e.Value.ClosedSound} {e.Value.Bounds.X} {e.Value.Bounds.Y} {e.Value.Bounds.Width} {e.Value.Bounds.Height} {e.Value.IconizedGraphic} {e.Value.MinimizerArea.X} {e.Value.MinimizerArea.Y}"

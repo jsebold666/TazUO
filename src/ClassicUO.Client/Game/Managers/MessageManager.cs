@@ -36,12 +36,7 @@ using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Utility;
-<<<<<<< HEAD
-using System;
-using System.Collections.Generic;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.Managers
 {
@@ -73,9 +68,6 @@ namespace ClassicUO.Game.Managers
     {
         private readonly World _world;
 
-<<<<<<< HEAD
-        public static void HandleMessage
-=======
         public MessageManager(World world) => _world = world;
 
 
@@ -87,7 +79,6 @@ namespace ClassicUO.Game.Managers
 
 
         public void HandleMessage
->>>>>>> externo/main
         (
             Entity parent,
             string text,
@@ -107,9 +98,6 @@ namespace ClassicUO.Game.Managers
 
             Profile currentProfile = ProfileManager.CurrentProfile;
 
-<<<<<<< HEAD
-            EventSink.InvokeRawMessageReceived(parent, new MessageEventArgs
-=======
             if (currentProfile != null && currentProfile.OverrideAllFonts)
             {
                 font = currentProfile.ChatFont;
@@ -249,7 +237,6 @@ namespace ClassicUO.Game.Managers
             MessageReceived.Raise
             (
                 new MessageEventArgs
->>>>>>> externo/main
                 (
                     parent,
                     text,
@@ -262,7 +249,6 @@ namespace ClassicUO.Game.Managers
                     lang
                 ));
 
-<<<<<<< HEAD
             if (currentProfile != null && currentProfile.OverrideAllFonts)
             {
                 font = currentProfile.ChatFont;
@@ -463,11 +449,10 @@ namespace ClassicUO.Game.Managers
                     unicode,
                     lang
                 ));
-=======
+
         public void OnLocalizedMessage(Entity entity, MessageEventArgs args)
         {
             LocalizedMessageReceived.Raise(args, entity);
->>>>>>> externo/main
         }
 
         public TextObject CreateMessage
@@ -480,8 +465,6 @@ namespace ClassicUO.Game.Managers
             TextType textType
         )
         {
-<<<<<<< HEAD
-=======
             if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.OverrideAllFonts)
             {
                 font = ProfileManager.CurrentProfile.ChatFont;
@@ -515,7 +498,6 @@ namespace ClassicUO.Game.Managers
                 width = 0;
             }
 
->>>>>>> externo/main
 
             ushort fixedColor = (ushort)(hue & 0x3FFF);
 

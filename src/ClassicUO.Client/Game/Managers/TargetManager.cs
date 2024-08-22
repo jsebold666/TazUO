@@ -133,13 +133,13 @@ namespace ClassicUO.Game.Managers
         }
     }
 
-<<<<<<< HEAD
-    public static class TargetManager
+    internal sealed class TargetManager
     {
-        private static uint _targetCursorId, _lastAttack;
-        private static readonly byte[] _lastDataBuffer = new byte[19];
+        private uint _targetCursorId;
+        private readonly World _world;
+        private readonly byte[] _lastDataBuffer = new byte[19];
 
-        public static uint SelectedTarget;
+         public static uint SelectedTarget;
 
         public static uint LastAttack
         {
@@ -179,15 +179,6 @@ namespace ClassicUO.Game.Managers
                 }
             }
         }
-
-        public static readonly LastTargetInfo LastTargetInfo = new LastTargetInfo();
-=======
-    internal sealed class TargetManager
-    {
-        private uint _targetCursorId;
-        private readonly World _world;
-        private readonly byte[] _lastDataBuffer = new byte[19];
->>>>>>> externo/main
 
 
         public TargetManager(World world) { _world = world; }
@@ -443,11 +434,7 @@ namespace ClassicUO.Game.Managers
 
                         if (SerialHelper.IsItem(serial))
                         {
-<<<<<<< HEAD
-                            GameActions.GrabItem(serial, ((Item)entity).Amount);
-=======
                             GameActions.GrabItem(_world, serial, ((Item) entity).Amount);
->>>>>>> externo/main
                         }
 
                         ClearTargetingWithoutTargetCancelPacket();

@@ -49,11 +49,7 @@ using ClassicUO.Network;
 
 namespace ClassicUO.Game
 {
-<<<<<<< HEAD
-    public static class World
-=======
     internal sealed class World
->>>>>>> externo/main
     {
         private readonly EffectManager _effectManager;
         private readonly List<uint> _toRemove = new List<uint>();
@@ -94,12 +90,9 @@ namespace ClassicUO.Game
 
         public ActiveSpellIconsManager ActiveSpellIcons = new ActiveSpellIconsManager();
 
-<<<<<<< HEAD
         public static ObjectPropertiesListManager OPL { get; } = new ObjectPropertiesListManager();
         public static DurabilityManager DurabilityManager { get; } = new DurabilityManager();
-=======
         public uint LastObject, ObjectToRemove;
->>>>>>> externo/main
 
         public ObjectPropertiesListManager OPL { get; } = new ObjectPropertiesListManager();
 
@@ -824,11 +817,7 @@ namespace ClassicUO.Game
         }
 
 
-<<<<<<< HEAD
-        public static void Clear()
-=======
         public void Clear()
->>>>>>> externo/main
         {
             foreach (Mobile mobile in Mobiles.Values)
             {

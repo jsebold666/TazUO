@@ -5,13 +5,10 @@
     <ApplicationIcon>cuoicon.ico</ApplicationIcon>
     <AssemblyName>cuo</AssemblyName>
     <RootNamespace>ClassicUO</RootNamespace>
-<<<<<<< HEAD
     <AssemblyVersion>3.23.1</AssemblyVersion>
     <FileVersion>3.23.1</FileVersion>
-=======
     <PublishAot>true</PublishAot>
     <PlatformTarget>x64</PlatformTarget>
->>>>>>> externo/main
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

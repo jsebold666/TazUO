@@ -239,16 +239,12 @@ namespace ClassicUO.Assets
                 return false;
             }
 
-<<<<<<< HEAD
             if (SoundOverrideLoader.Instance.TryGetSoundOverride(sound, out data, out name))
             {
                 return true;
             }
 
-            ref UOFileIndex entry = ref GetValidRefEntry(sound);
-=======
             ref var entry = ref GetValidRefEntry(sound);
->>>>>>> externo/main
 
             var reader = new StackDataReader(entry.Address, (int)entry.FileSize);
             reader.Seek(entry.Offset);

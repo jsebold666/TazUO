@@ -195,17 +195,10 @@ namespace ClassicUO.Assets
                     var run = reader.ReadUInt16LE();
                     var rbga = 0u;
 
-<<<<<<< HEAD
-                        if (color != 0 && val != 0)
-                        {
-                            val = HuesLoader.Instance.ApplyHueRgba5551(gmul[i].Value, color);
-                        }
-=======
                     if (color != 0 && value != 0)
                     {
                         value = FileManager.Hues.GetColor16(value, color);
                     }
->>>>>>> externo/main
 
                     if (value != 0)
                     {
@@ -224,7 +217,6 @@ namespace ClassicUO.Assets
                 Height = (int)h
             };
         }
-<<<<<<< HEAD
 
         //private unsafe void AddPNGSpriteToAtlas(TextureAtlas atlas, uint index, Texture2D texture)
         //{
@@ -262,8 +254,6 @@ namespace ClassicUO.Assets
             public readonly ushort Value;
             public readonly ushort Run;
         }
-=======
->>>>>>> externo/main
     }
 
     public ref struct GumpInfo

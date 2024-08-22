@@ -33,11 +33,8 @@
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
-<<<<<<< HEAD
-using ClassicUO.Game.UI.Gumps;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
+using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Input;
 using ClassicUO.Resources;
 using ClassicUO.Utility.Logging;
@@ -47,27 +44,17 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
-    public static class CommandManager
-=======
     internal sealed class CommandManager
->>>>>>> externo/main
     {
         private readonly Dictionary<string, Action<string[]>> _commands = new Dictionary<string, Action<string[]>>();
         private readonly World _world;
 
-<<<<<<< HEAD
-        public static Dictionary<string, Action<string[]>> Commands { get { return _commands; } }
-
-        public static void Initialize()
-=======
         public CommandManager(World world)
         {
             _world = world;
         }
 
         public void Initialize()
->>>>>>> externo/main
         {
             Register
             (

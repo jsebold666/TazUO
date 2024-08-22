@@ -1371,8 +1371,6 @@ namespace ClassicUO.Assets
             }
 
             if (index.Position == 0xFFFF_FFFF || index.Size == 0xFFFF_FFFF || index.Size <= 0)
-<<<<<<< HEAD
-=======
             {
                 return Span<FrameInfo>.Empty;
             }
@@ -1380,7 +1378,6 @@ namespace ClassicUO.Assets
             var file = _files[fileIndex];
 
             if (index.Position + index.Size > file.Length)
->>>>>>> externo/main
             {
                 return Span<FrameInfo>.Empty;
             }
@@ -1388,7 +1385,6 @@ namespace ClassicUO.Assets
             var reader = file.GetReader();
             reader.Seek(index.Position);
 
-<<<<<<< HEAD
             if (index.Position + index.Size > file.Length)
             {
                 return Span<FrameInfo>.Empty;
@@ -1401,14 +1397,13 @@ namespace ClassicUO.Assets
                 )
             );
             reader.Seek(0);
-=======
+            
             //var zlibReader = new StackDataReader(
             //    new ReadOnlySpan<byte>(
             //        (byte*)file.StartAddress.ToPointer() + index.Position,
             //        (int)index.Size
             //    )
             //);
->>>>>>> externo/main
 
             var palette = new ReadOnlySpan<ushort>(reader.PositionAddress.ToPointer(), 512 / sizeof(ushort));
             reader.Skip(512);

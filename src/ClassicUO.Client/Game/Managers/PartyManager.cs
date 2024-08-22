@@ -40,11 +40,7 @@ using ClassicUO.Resources;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
-    public class PartyManager
-=======
     internal sealed class PartyManager
->>>>>>> externo/main
     {
         private const int PARTY_SIZE = 10;
 

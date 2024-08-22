@@ -43,12 +43,9 @@ using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
-<<<<<<< HEAD
 using MathHelper = ClassicUO.Utility.MathHelper;
-=======
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.GameObjects
 {

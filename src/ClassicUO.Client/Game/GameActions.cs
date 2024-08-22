@@ -86,7 +86,6 @@ namespace ClassicUO.Game
         {
             if (ProfileManager.CurrentProfile.UseModernPaperdoll && serial == World.Player.Serial)
             {
-<<<<<<< HEAD
                 ModernPaperdoll modernPaperdoll = UIManager.GetGump<ModernPaperdoll>(serial);
                 if (modernPaperdoll == null)
                     UIManager.Add(new ModernPaperdoll(serial));
@@ -95,9 +94,8 @@ namespace ClassicUO.Game
                     modernPaperdoll.SetInScreen();
                     modernPaperdoll.BringOnTop();
                 }
-=======
+                
                 DoubleClick(world, serial | 0x80000000);
->>>>>>> externo/main
             }
             else
             {
@@ -126,15 +124,12 @@ namespace ClassicUO.Game
 
             if (opt == null)
             {
-<<<<<<< HEAD
-                ModernOptionsGump optionsGump = new ModernOptionsGump();
-=======
+                //ModernOptionsGump optionsGump = new ModernOptionsGump();
                 OptionsGump optionsGump = new OptionsGump(world)
                 {
                     X = (Client.Game.Window.ClientBounds.Width >> 1) - 300,
                     Y = (Client.Game.Window.ClientBounds.Height >> 1) - 250
                 };
->>>>>>> externo/main
 
                 UIManager.Add(optionsGump);
                 optionsGump.ChangePage(page);
@@ -153,19 +148,13 @@ namespace ClassicUO.Game
 
             if (StatusGumpBase.GetStatusGump() == null)
             {
-<<<<<<< HEAD
-                UIManager.Add(StatusGumpBase.AddStatusGump(ProfileManager.CurrentProfile.StatusGumpPosition.X, ProfileManager.CurrentProfile.StatusGumpPosition.Y));
-=======
-                UIManager.Add(StatusGumpBase.AddStatusGump(world, 100, 100));
->>>>>>> externo/main
+                UIManager.Add(StatusGumpBase.AddStatusGump(world, ProfileManager.CurrentProfile.StatusGumpPosition.X, ProfileManager.CurrentProfile.StatusGumpPosition.Y));
             }
         }
 
         public static void OpenJournal(World world)
         {
-<<<<<<< HEAD
-            UIManager.Add(new ResizableJournal());
-=======
+            //UIManager.Add(new ResizableJournal());
             JournalGump journalGump = UIManager.GetGump<JournalGump>();
 
             if (journalGump == null)
@@ -182,7 +171,6 @@ namespace ClassicUO.Game
                     journalGump.IsMinimized = false;
                 }
             }
->>>>>>> externo/main
         }
 
         public static void OpenSkills(World world)
@@ -216,7 +204,6 @@ namespace ClassicUO.Game
             }
         }
 
-<<<<<<< HEAD
         public static void BandageSelf()
         {
             Item bandage = World.Player.FindBandage();
@@ -225,11 +212,7 @@ namespace ClassicUO.Game
                 NetClient.Socket.Send_TargetSelectedObject(bandage.Serial, World.Player.Serial);
             }
         }
-
-        public static void OpenWorldMap()
-=======
         public static void OpenWorldMap(World world)
->>>>>>> externo/main
         {
             WorldMapGump worldMap = UIManager.GetGump<WorldMapGump>();
 
@@ -309,22 +292,8 @@ namespace ClassicUO.Game
             Gump backpackGump = UIManager.GetGump<ContainerGump>(backpack);
             if (backpackGump == null)
             {
-<<<<<<< HEAD
-                backpackGump = UIManager.GetGump<GridContainer>(backpack);
-                if (backpackGump == null)
-                {
-                    GameActions.DoubleClick(backpack);
-                    return true;
-                }
-                else
-                {
-                    backpackGump.RequestUpdateContents();
-                    backpackGump.SetInScreen();
-                    backpackGump.BringOnTop();
-                }
-=======
                 DoubleClick(world,backpack);
->>>>>>> externo/main
+                return true;
             }
             else
             {
@@ -586,17 +555,10 @@ namespace ClassicUO.Game
                 amount = item.Amount;
             }
 
-<<<<<<< HEAD
-            Client.Game.GameCursor.ItemHold.Clear();
-            Client.Game.GameCursor.ItemHold.Set(item, (ushort)amount, offset);
-            Client.Game.GameCursor.ItemHold.IsGumpTexture = is_gump;
-            Socket.Send_PickUpRequest(item, (ushort)amount);
-=======
             Client.Game.UO.GameCursor.ItemHold.Clear();
             Client.Game.UO.GameCursor.ItemHold.Set(item, (ushort) amount, offset);
             Client.Game.UO.GameCursor.ItemHold.IsGumpTexture = is_gump;
             Socket.Send_PickUpRequest(item, (ushort) amount);
->>>>>>> externo/main
 
             if (item.OnGround)
             {
@@ -861,11 +823,7 @@ namespace ClassicUO.Game
             {
                 for (int i = 0; i < 2; i++)
                 {
-<<<<<<< HEAD
-                    World.Player.Abilities[i] &= (Ability)0x7F;
-=======
                     world.Player.Abilities[i] &= (Ability) 0x7F;
->>>>>>> externo/main
                 }
 
                 Socket.Send_UseCombatAbility(world, (byte)ability);
@@ -886,11 +844,7 @@ namespace ClassicUO.Game
             {
                 for (int i = 0; i < 2; i++)
                 {
-<<<<<<< HEAD
-                    World.Player.Abilities[i] &= (Ability)0x7F;
-=======
                     world.Player.Abilities[i] &= (Ability) 0x7F;
->>>>>>> externo/main
                 }
 
                 Socket.Send_UseCombatAbility(world, (byte)ability);

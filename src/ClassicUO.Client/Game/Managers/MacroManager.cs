@@ -51,11 +51,7 @@ using static SDL2.SDL;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
-    public class MacroManager : LinkedObject
-=======
     internal sealed class MacroManager : LinkedObject
->>>>>>> externo/main
     {
         public static readonly string[] MacroNames = Enum.GetNames(typeof(MacroType));
         private readonly uint[] _itemsInHand = new uint[2];
@@ -535,11 +531,7 @@ namespace ClassicUO.Game.Managers
 
                     if (!_world.Player.Pathfinder.AutoWalking)
                     {
-<<<<<<< HEAD
-                        World.Player.Walk((Direction)dt, false);
-=======
                         _world.Player.Walk((Direction) dt, false);
->>>>>>> externo/main
                     }
 
                     break;
@@ -1165,11 +1157,7 @@ namespace ClassicUO.Game.Managers
                             break;
                         }
 
-<<<<<<< HEAD
-                        Item item = World.Player.FindItemByLayer(Layer.OneHanded + (byte)handIndex);
-=======
                         Item item = _world.Player.FindItemByLayer(Layer.OneHanded + (byte) handIndex);
->>>>>>> externo/main
 
                         if (item != null)
                         {
@@ -1501,12 +1489,8 @@ namespace ClassicUO.Game.Managers
                     }
                     else
                     {
-<<<<<<< HEAD
-                        BuffGump buff = UIManager.GetGump<BuffGump>();
-=======
                         UIManager.Add(new BuffGump(_world, 100, 100));
                     }
->>>>>>> externo/main
 
                         if (buff != null)
                         {
@@ -1897,11 +1881,7 @@ namespace ClassicUO.Game.Managers
                 {
                     if (ent != null)
                     {
-<<<<<<< HEAD
-                        GameActions.MessageOverhead(string.Format(ResGeneral.Target0, ent.Name), Notoriety.GetHue(((Mobile)ent).NotorietyFlag), World.Player);
-=======
                         GameActions.MessageOverhead(_world, string.Format(ResGeneral.Target0, ent.Name), Notoriety.GetHue(((Mobile) ent).NotorietyFlag), _world.Player);
->>>>>>> externo/main
 
                         _world.TargetManager.SelectedTarget = serial;
                         _world.TargetManager.LastTargetInfo.SetEntity(serial);

@@ -71,13 +71,6 @@ namespace ClassicUO
         public static void Boot(UnmanagedAssistantHost pluginHost, string[] args)
         {
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-<<<<<<< HEAD
-            Language.Load();
-#if !NETFRAMEWORK
-            DllMap.Initialise();
-#endif
-=======
->>>>>>> externo/main
 
             Log.Start(LogTypes.All);
 
@@ -85,16 +78,6 @@ namespace ClassicUO
 
             CUOEnviroment.GameThread = Thread.CurrentThread;
             CUOEnviroment.GameThread.Name = "CUO_MAIN_THREAD";
-<<<<<<< HEAD
-
-#if DEBUG
-            ScriptCompiler.Compile(true, true);
-#else
-            ScriptCompiler.Compile(false, true);
-#endif
-
-=======
->>>>>>> externo/main
 #if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
@@ -294,12 +277,7 @@ namespace ClassicUO
                         break;
                 }
 
-<<<<<<< HEAD
-                Client.Run();
-
-=======
                 Client.Run(pluginHost);
->>>>>>> externo/main
             }
 
             Log.Trace("Closing...");

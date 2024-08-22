@@ -106,7 +106,6 @@ namespace ClassicUO.Game.GameObjects
         {
             TextObject text_obj = TextObject.Create(_world);
 
-<<<<<<< HEAD
             ushort hue = ProfileManager.CurrentProfile == null ? (ushort)0x0021 : ProfileManager.CurrentProfile.DamageHueOther;
 
             if (ReferenceEquals(Parent, World.Player))
@@ -123,15 +122,14 @@ namespace ClassicUO.Game.GameObjects
                     hue = ProfileManager.CurrentProfile == null ? (ushort)0x1F : ProfileManager.CurrentProfile.DamageHueLastAttck;
             }
 
-            text_obj.TextBox = new UI.Controls.TextBox(damage.ToString(), ProfileManager.CurrentProfile.OverheadChatFont, ProfileManager.CurrentProfile.OverheadChatFontSize, ProfileManager.CurrentProfile.OverheadChatWidth, hue, align: FontStashSharp.RichText.TextHorizontalAlignment.Center) { AcceptMouseInput = !ProfileManager.CurrentProfile.DisableMouseInteractionOverheadText };
-=======
-            text_obj.RenderedText = RenderedText.Create(
-                damage.ToString(),
-                (ushort)(ReferenceEquals(Parent, _world.Player) ? 0x0034 : 0x0021),
-                3,
-                false
-            );
->>>>>>> externo/main
+            text_obj.RenderedText = RenderedText.Create(damage.ToString(), ProfileManager.CurrentProfile.OverheadChatFont, ProfileManager.CurrentProfile.OverheadChatFontSize, ProfileManager.CurrentProfile.OverheadChatWidth, hue, align: FontStashSharp.RichText.TextHorizontalAlignment.Center) { AcceptMouseInput = !ProfileManager.CurrentProfile.DisableMouseInteractionOverheadText };
+            
+            // text_obj.RenderedText = RenderedText.Create(
+            //     damage.ToString(),
+            //     (ushort)(ReferenceEquals(Parent, _world.Player) ? 0x0034 : 0x0021),
+            //     3,
+            //     false
+            // );
 
             text_obj.Time = Time.Ticks + 1500;
 

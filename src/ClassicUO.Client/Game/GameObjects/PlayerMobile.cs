@@ -39,12 +39,9 @@ using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Network;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
-<<<<<<< HEAD
+using ClassicUO.Game.Scenes;
 using System.Collections.Generic;
 using System.Linq;
-=======
-using ClassicUO.Game.Scenes;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -52,13 +49,9 @@ namespace ClassicUO.Game.GameObjects
     {
         private readonly Dictionary<BuffIconType, BuffIcon> _buffIcons = new Dictionary<BuffIconType, BuffIcon>();
 
-<<<<<<< HEAD
         private static SpellVisualRangeManager.CastTimerProgressBar castTimer;
 
-        public PlayerMobile(uint serial) : base(serial)
-=======
         public PlayerMobile(World world, uint serial) : base(world, serial)
->>>>>>> externo/main
         {
             Skills = new Skill[Client.Game.UO.FileManager.Skills.SkillsCount];
 
@@ -68,7 +61,6 @@ namespace ClassicUO.Game.GameObjects
                 Skills[i] = new Skill(skill.Name, skill.Index, skill.HasAction);
             }
 
-<<<<<<< HEAD
             Skill.SkillValueChangedEvent += (s, e) =>
             {
                 if (ProfileManager.CurrentProfile.DisplaySkillBarOnChange)
@@ -78,10 +70,9 @@ namespace ClassicUO.Game.GameObjects
             };
 
             UIManager.Add(castTimer = new SpellVisualRangeManager.CastTimerProgressBar());
-=======
+            
             Walker = new WalkerManager(this);
             Pathfinder = new Pathfinder(world);
->>>>>>> externo/main
         }
 
         public Skill[] Skills { get; }

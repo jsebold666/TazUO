@@ -42,22 +42,9 @@ using MathHelper = ClassicUO.Utility.MathHelper;
 
 namespace ClassicUO.Game
 {
-<<<<<<< HEAD
-    public static class Pathfinder
-    {
-        private const int PATHFINDER_MAX_NODES = 15000;
-        private static int _goalNode;
-        private static bool _goalFound;
-        private static int _activeOpenNodes, _activeCloseNodes, _pathfindDistance;
-        private static readonly PathNode[] _openList = new PathNode[PATHFINDER_MAX_NODES];
-        private static readonly PathNode[] _closedList = new PathNode[PATHFINDER_MAX_NODES];
-        private static readonly PathNode[] _path = new PathNode[PATHFINDER_MAX_NODES];
-        private static int _pointIndex, _pathSize;
-        private static bool _run;
-=======
     internal sealed class Pathfinder
     {
-        private const int PATHFINDER_MAX_NODES = 10000;
+        private const int PATHFINDER_MAX_NODES = 15000;
         private int _goalNode;
         private bool _goalFound;
         private int _activeOpenNodes, _activeCloseNodes, _pathfindDistance;
@@ -66,7 +53,6 @@ namespace ClassicUO.Game
         private readonly PathNode[] _path = new PathNode[PATHFINDER_MAX_NODES];
         private int _pointIndex, _pathSize;
         private bool _run;
->>>>>>> externo/main
         private static readonly int[] _offsetX =
         {
             0, 1, 1, 1, 0, -1, -1, -1, 0, 1
@@ -81,7 +67,6 @@ namespace ClassicUO.Game
         };
         private Point _startPoint, _endPoint;
 
-<<<<<<< HEAD
         public static Point StartPoint => _startPoint;
         public static Point EndPoint => _endPoint;
         public static int PathSize => _pathSize;
@@ -94,13 +79,11 @@ namespace ClassicUO.Game
 
         public static bool FastRotation { get; set; }
 
-
-        private static bool CreateItemList(List<PathObject> list, int x, int y, int stepState)
-=======
+        private static bool CreateItemList(List<PathObject> list, int x, int y, int stepState) { get; set; }
+        
         private readonly World _world;
 
         public Pathfinder(World world)
->>>>>>> externo/main
         {
             _world = world;
         }

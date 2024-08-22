@@ -84,15 +84,6 @@ namespace ClassicUO.Game.Managers
         MobilesAndCorpses = AllMobiles | MonsterCorpses | HumanoidCorpses,
     }
 
-<<<<<<< HEAD
-    public static class NameOverHeadManager
-    {
-        private static NameOverHeadHandlerGump _gump;
-        private static SDL.SDL_Keycode _lastKeySym = SDL.SDL_Keycode.SDLK_UNKNOWN;
-        private static SDL.SDL_Keymod _lastKeyMod = SDL.SDL_Keymod.KMOD_NONE;
-
-        public static string LastActiveNameOverheadOption
-=======
     internal sealed class NameOverHeadManager
     {
         private NameOverHeadHandlerGump _gump;
@@ -101,36 +92,28 @@ namespace ClassicUO.Game.Managers
         public NameOverHeadManager(World world) { _world = world; }
 
         public NameOverheadTypeAllowed TypeAllowed
->>>>>>> externo/main
         {
             get => ProfileManager.CurrentProfile.LastActiveNameOverheadOption;
             set => ProfileManager.CurrentProfile.LastActiveNameOverheadOption = value;
         }
 
-<<<<<<< HEAD
         public static NameOverheadOptions ActiveOverheadOptions { get; set; }
 
         public static bool IsPermaToggled
-=======
         public bool IsToggled
->>>>>>> externo/main
         {
             get => ProfileManager.CurrentProfile.NameOverheadToggled;
             private set => ProfileManager.CurrentProfile.NameOverheadToggled = value;
         }
 
-<<<<<<< HEAD
         public static bool IsTemporarilyShowing { get; private set; }
         public static bool IsShowing => IsPermaToggled || IsTemporarilyShowing || Keyboard.Ctrl && Keyboard.Shift;
 
         private static List<NameOverheadOption> Options { get; set; } = new List<NameOverheadOption>();
 
         public static string Search { get; set; } = string.Empty;
-
-        public static bool IsAllowed(Entity serial)
-=======
+        
         public bool IsAllowed(Entity serial)
->>>>>>> externo/main
         {
             if (serial == null)
                 return false;
@@ -164,13 +147,10 @@ namespace ClassicUO.Game.Managers
             if (ActiveOverheadOptions.HasFlag(NameOverheadOptions.OwnFollowers) && mobile.IsRenamable && mobile.NotorietyFlag != NotorietyFlag.Invulnerable && mobile.NotorietyFlag != NotorietyFlag.Enemy)
                 return true;
 
-<<<<<<< HEAD
-            // Mobile notorieties
-            if (ActiveOverheadOptions.HasFlag(NameOverheadOptions.Innocent) && mobile.NotorietyFlag == NotorietyFlag.Innocent)
-=======
+            if (ActiveOverheadOptions.HasFlag(NameOverheadOptions.Innocent) && mobile.NotorietyFlag == NotorietyFlag.Innocent) 
+                return true;
+            
             if (TypeAllowed.HasFlag(NameOverheadTypeAllowed.Corpses) && SerialHelper.IsItem(serial.Serial) && _world.Items.Get(serial)?.IsCorpse == true)
-            {
->>>>>>> externo/main
                 return true;
 
             if (ActiveOverheadOptions.HasFlag(NameOverheadOptions.Ally) && mobile.NotorietyFlag == NotorietyFlag.Ally)

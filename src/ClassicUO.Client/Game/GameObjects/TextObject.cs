@@ -41,7 +41,6 @@ namespace ClassicUO.Game.GameObjects
 {
     public class TextObject : BaseGameObject
     {
-<<<<<<< HEAD
         private static readonly QueuedPool<TextObject> _queue = new QueuedPool<TextObject>
         (
             1000,
@@ -66,34 +65,7 @@ namespace ClassicUO.Game.GameObjects
                 o.Clear();
             }
         );
-=======
-        //private static readonly QueuedPool<TextObject> _queue = new QueuedPool<TextObject>
-        //(
-        //    1000,
-        //    o =>
-        //    {
-        //        o.IsDestroyed = false;
-        //        o.Alpha = 0xFF;
-        //        o.Hue = 0;
-        //        o.Time = 0;
-        //        o.IsTransparent = false;
-        //        o.SecondTime = 0;
-        //        o.Type = 0;
-        //        o.X = 0;
-        //        o.Y = 0;
-        //        o.RealScreenPosition = Point.Zero;
-        //        o.OffsetY = 0;
-        //        o.Owner = null;
-        //        o.UnlinkD();
-        //        o.IsTextGump = false;
-        //        o.RenderedText?.Destroy();
-        //        o.RenderedText = null;
-        //        o.Clear();
-        //    }
-        //);
-
         public TextObject(World world) : base(world) { }
->>>>>>> externo/main
 
         public byte Alpha;
         public TextObject DLeft, DRight;

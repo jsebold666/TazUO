@@ -682,11 +682,7 @@ namespace ClassicUO.Assets
                                     }
                                     else
                                     {
-<<<<<<< HEAD
-                                        pcl = HuesLoader.Instance.ApplyHueRgba8888(pic, charColor);
-=======
                                         pcl = FileManager.Hues.GetColor(pic, charColor);
->>>>>>> externo/main
                                     }
 
                                     int block = testY * width + x + w;
@@ -1692,14 +1688,9 @@ namespace ClassicUO.Assets
                 }
                 else
                 {
-<<<<<<< HEAD
-                    datacolor = 
-                        HuesHelper.RgbaToArgb((HuesLoader.Instance.GetHueColorRgba8888(cell, color) << 8) | 0xFF);
-=======
                     datacolor = HuesHelper.RgbaToArgb(
                         (FileManager.Hues.GetPolygoneColor(cell, color) << 8) | 0xFF
                     );
->>>>>>> externo/main
                 }
 
                 bool isItalic = (flags & UOFONT_ITALIC) != 0;

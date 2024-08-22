@@ -69,20 +69,12 @@ namespace ClassicUO.Assets
                         _file = new UOFile(path, true);
                     }
 
-<<<<<<< HEAD
-                    var facetFiles = Directory.GetFiles(UOFileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
-                        .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
-                        .Where(s => s.Success)
-                        .Select(s => Path.Combine(UOFileManager.BasePath, s.Value))
-                        .OrderBy(s => s)
-=======
                     _facets = Directory.GetFiles(FileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
                         .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
                         .Where(s => s.Success)
                         .Select(s => Path.Combine(FileManager.BasePath, s.Value))
                         .OrderBy(s => s)
                         .Select(s => new UOFileMul(s))
->>>>>>> externo/main
                         .ToArray();
                 }
             );
@@ -152,13 +144,8 @@ namespace ClassicUO.Assets
 
             while (reader.Position < _file.Length)
             {
-<<<<<<< HEAD
-                byte pic = _file.ReadByte();
-                byte size = (byte)(pic & 0x7F);
-=======
                 byte pic = reader.ReadUInt8();
                 byte size = (byte) (pic & 0x7F);
->>>>>>> externo/main
                 bool colored = (pic & 0x80) != 0;
 
                 int currentHeight = y * pheight;

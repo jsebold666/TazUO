@@ -36,11 +36,7 @@ using ClassicUO.Utility.Collections;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
-    public class CorpseManager
-=======
     internal sealed class CorpseManager
->>>>>>> externo/main
     {
         private readonly Deque<CorpseInfo> _corpses = new Deque<CorpseInfo>();
         private readonly World _world;

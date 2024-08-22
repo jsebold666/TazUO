@@ -69,13 +69,11 @@ namespace ClassicUO
         public UltimaOnline()
         {
 
-<<<<<<< HEAD
-            ScriptCompiler.InvokeAfterCompiling("Configure");
+            // ScriptCompiler.InvokeAfterCompiling("Configure");
 
-            Load();
-=======
+            // Load();
+
         }
->>>>>>> externo/main
 
         public unsafe void Load(GameController game)
         {
@@ -106,22 +104,6 @@ namespace ClassicUO
                     TEXTURE_WIDTH * TEXTURE_HEIGHT * sizeof(uint)
                 );
 
-<<<<<<< HEAD
-                Log.Trace("Loading plugins...");
-
-                foreach (string p in Settings.GlobalSettings.Plugins)
-                {
-                    Plugin.Create(p);
-                }
-
-                Log.Trace("Done!");
-
-                UoAssist.Start();
-
-                ScriptCompiler.InvokeAfterCompiling("Initialize");
-
-                Game.Run();
-=======
                 LightColors.CreateLightTextures(buffer, LIGHTS_TEXTURE_HEIGHT);
                 hueSamplers[1].SetDataPointerEXT(
                     0,
@@ -129,7 +111,6 @@ namespace ClassicUO
                     (IntPtr)ptr,
                     LIGHTS_TEXTURE_WIDTH * LIGHTS_TEXTURE_HEIGHT * sizeof(uint)
                 );
->>>>>>> externo/main
             }
 
             game.GraphicsDevice.Textures[1] = hueSamplers[0];
@@ -268,16 +249,9 @@ namespace ClassicUO
                 // https://github.com/FNA-XNA/FNA/wiki/7:-FNA-Environment-Variables#fna_graphics_enable_highdpi
                 CUOEnviroment.IsHighDPI = Environment.GetEnvironmentVariable("FNA_GRAPHICS_ENABLE_HIGHDPI") == "1";
 
-<<<<<<< HEAD
-                if (EncryptionHelper.Type != (ENCRYPTION_TYPE)Settings.GlobalSettings.Encryption)
-                {
-                    Log.Warn($"Encryption found: {EncryptionHelper.Type}");
-                    Settings.GlobalSettings.Encryption = (byte)EncryptionHelper.Type;
-=======
                 if (CUOEnviroment.IsHighDPI)
                 {
                     Log.Trace("HIGH DPI - ENABLED");
->>>>>>> externo/main
                 }
 
                 Game.Run();

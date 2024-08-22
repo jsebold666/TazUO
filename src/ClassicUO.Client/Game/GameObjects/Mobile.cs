@@ -39,11 +39,8 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
-<<<<<<< HEAD
-using System;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
+using System;
 
 namespace ClassicUO.Game.GameObjects
 {
@@ -431,13 +428,8 @@ namespace ClassicUO.Game.GameObjects
                 //    out var useUOP
                 //);
 
-<<<<<<< HEAD
-                AnimationGroupsType type = Client.Game.Animations.GetAnimType(graphic);
-                AnimationFlags flags = Client.Game.Animations.GetAnimFlags(graphic);
-=======
                 AnimationGroupsType type = animations.GetAnimType(graphic);
                 AnimationFlags  flags = animations.GetAnimFlags(graphic);
->>>>>>> externo/main
                 AnimationGroups animGroup = AnimationGroups.None;
 
                 bool isLowExtended = false;

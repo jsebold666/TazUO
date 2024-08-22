@@ -151,13 +151,9 @@ namespace ClassicUO.Game.Scenes
 
             Client.Game.UO.GameCursor.ItemHold.Clear();
 
-<<<<<<< HEAD
             NameOverHeadManager.Load();
-
-=======
             _world.Macros.Clear();
             _world.Macros.Load();
->>>>>>> externo/main
             _animatedStaticsManager = new AnimatedStaticsManager();
             _animatedStaticsManager.Initialize();
             _world.InfoBars.Load();
@@ -174,11 +170,7 @@ namespace ClassicUO.Game.Scenes
             }
 
             NetClient.Socket.Disconnected += SocketOnDisconnected;
-<<<<<<< HEAD
-            EventSink.MessageReceived += ChatOnMessageReceived;
-=======
             _world.MessageManager.MessageReceived += ChatOnMessageReceived;
->>>>>>> externo/main
             UIManager.ContainerScale = ProfileManager.CurrentProfile.ContainersScale / 100f;
 
             SDL.SDL_SetWindowMinimumSize(Client.Game.Window.Handle, 640, 480);
@@ -347,19 +339,7 @@ namespace ClassicUO.Game.Scenes
 
             if (!string.IsNullOrEmpty(text))
             {
-<<<<<<< HEAD
-                World.Journal.Add
-                (
-                    text,
-                    hue,
-                    name,
-                    e.TextType,
-                    e.IsUnicode,
-                    e.Type
-                );
-=======
-                _world.Journal.Add(text, hue, name, e.TextType, e.IsUnicode);
->>>>>>> externo/main
+                _world.Journal.Add(text, hue, name, e.TextType, e.IsUnicode, e.Type);
             }
         }
 
@@ -883,18 +863,13 @@ namespace ClassicUO.Game.Scenes
             _world.Player.Pathfinder.ProcessAutoWalk();
             _world.DelayedObjectClickManager.Update();
 
-            if (!MoveCharacterByMouseInput() && !currentProfile.DisableArrowBtn && !MoveCharByController())
+            if (!MoveCharacterByMouseInput() && !currentProfile.DisableArrowBtn)
             {
-                Direction dir = DirectionHelper.DirectionFromKeyboardArrows(
-                    _flags[0],
-                    _flags[2],
-                    _flags[1],
-                    _flags[3]
-                );
+                Direction dir = DirectionHelper.DirectionFromKeyboardArrows(_flags[0], _flags[2], _flags[1], _flags[3]);
 
-                if (_world.InGame && !_world.Player.Pathfinder.AutoWalking && dir != Direction.NONE)
+                if (World.InGame && !Pathfinder.AutoWalking && dir != Direction.NONE)
                 {
-                    _world.Player.Walk(dir, currentProfile.AlwaysRun);
+                    World.Player.Walk(dir, currentProfile.AlwaysRun);
                 }
             }
 

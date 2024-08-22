@@ -71,11 +71,7 @@ namespace ClassicUO.Game.Managers
                 Profile profile = ProfileManager.CurrentProfile;
 
                 return profile != null &&
-<<<<<<< HEAD
-                    Client.Game.GameCursor.AllowDrawSDLCursor &&
-=======
                     Client.Game.UO.GameCursor.AllowDrawSDLCursor &&
->>>>>>> externo/main
                     DraggingControl == null &&
                     MouseOverControl == null &&
                     !IsModalOpen &&

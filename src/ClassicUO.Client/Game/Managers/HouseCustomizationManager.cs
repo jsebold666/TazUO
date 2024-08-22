@@ -56,11 +56,7 @@ namespace ClassicUO.Game.Managers
         public int X, Y, Z;
     }
 
-<<<<<<< HEAD
-    public class HouseCustomizationManager
-=======
     internal sealed class HouseCustomizationManager
->>>>>>> externo/main
     {
         public readonly List<CustomHouseWallCategory> Walls = new List<CustomHouseWallCategory>();
         public readonly List<CustomHouseFloor> Floors = new List<CustomHouseFloor>();

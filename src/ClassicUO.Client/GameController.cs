@@ -63,23 +63,14 @@ namespace ClassicUO
 
         private bool _ignoreNextTextInput;
         private readonly float[] _intervalFixedUpdate = new float[2];
-<<<<<<< HEAD
         private double _totalElapsed, _currentFpsTime, _nextSlowUpdate;
-=======
-        private double _totalElapsed, _currentFpsTime;
->>>>>>> externo/main
         private uint _totalFrames;
         private UltimaBatcher2D _uoSpriteBatch;
         private bool _suppressedDraw;
         private Texture2D _background;
 
-<<<<<<< HEAD
         private static Vector3 bgHueShader = new Vector3(0, 0, 0.3f);
-
-        public GameController()
-=======
         public GameController(IPluginHost pluginHost)
->>>>>>> externo/main
         {
             GraphicManager = new GraphicsDeviceManager(this);
 
@@ -134,23 +125,6 @@ namespace ClassicUO
 
             Fonts.Initialize(GraphicsDevice);
             SolidColorTextureCache.Initialize(GraphicsDevice);
-<<<<<<< HEAD
-            PNGLoader.Instance.GraphicsDevice = GraphicsDevice;
-            System.Threading.Tasks.Task loadResourceAssets = PNGLoader.Instance.LoadResourceAssets();
-
-            Animations = new Renderer.Animations.Animations(GraphicsDevice);
-            Arts = new Renderer.Arts.Art(GraphicsDevice);
-            Gumps = new Renderer.Gumps.Gump(GraphicsDevice);
-            Texmaps = new Renderer.Texmaps.Texmap(GraphicsDevice);
-            Lights = new Renderer.Lights.Light(GraphicsDevice);
-            MultiMaps = new Renderer.MultiMaps.MultiMap(GraphicsDevice);
-            Sounds = new Renderer.Sounds.Sound();
-
-            LightColors.LoadLights();
-
-            GameCursor = new GameCursor();
-=======
->>>>>>> externo/main
             Audio = new AudioManager();
             Audio.Initialize();
 
@@ -158,11 +132,6 @@ namespace ClassicUO
             using var ms = new MemoryStream(bytes);
             _background = Texture2D.FromStream(GraphicsDevice, ms);
 
-<<<<<<< HEAD
-            loadResourceAssets.Wait(10000);
-
-            SetScene(new LoginScene());
-=======
 #if false
             SetScene(new MainScene(this));
 #else
@@ -182,7 +151,6 @@ namespace ClassicUO
 
             SetScene(new LoginScene(UO.World));
 #endif
->>>>>>> externo/main
             SetWindowPositionBySettings();
         }
 
