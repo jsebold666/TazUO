@@ -2,7 +2,7 @@
 
 // Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -151,6 +151,7 @@ namespace ClassicUO.Renderer
             _basicUOEffect.Brighlight.SetValue(f);
         }
 
+<<<<<<< HEAD
         // For IFontStashRenderer
         public void Draw(Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 scale, float depth)
         {
@@ -245,8 +246,14 @@ namespace ClassicUO.Renderer
         }
 
         public void DrawString(SpriteFont spriteFont, string text, int x, int y, Vector3 color)
+=======
+        public void DrawString(SpriteFont spriteFont, ReadOnlySpan<char> text, int x, int y, Vector3 color)
+            => DrawString(spriteFont, text, new Vector2(x, y), color);
+
+        public void DrawString(SpriteFont spriteFont, ReadOnlySpan<char> text, Vector2 position, Vector3 color)
+>>>>>>> externo/main
         {
-            if (string.IsNullOrEmpty(text))
+            if (text.IsEmpty)
             {
                 return;
             }
@@ -326,17 +333,13 @@ namespace ClassicUO.Renderer
                 Rectangle cGlyph = glyphData[index];
 
                 float offsetX = baseOffset.X + (curOffset.X + cCrop.X) * axisDirX;
-
                 float offsetY = baseOffset.Y + (curOffset.Y + cCrop.Y) * axisDirY;
 
+                var pos = new Vector2(offsetX, offsetY);
                 Draw
                 (
                     textureValue,
-                    new Vector2
-                    (
-                        x + (int)Math.Round(offsetX),
-                        y + (int)Math.Round(offsetY)
-                    ),
+                    position + pos,
                     cGlyph,
                     color
                 );
@@ -1586,12 +1589,12 @@ namespace ClassicUO.Renderer
     }
 
 
-    partial class Resources
+    public partial class Resources
     {
-        [EmbedResourceCSharp.FileEmbed("shaders/IsometricWorld.fxc")]
+        [FileEmbed.FileEmbed("shaders/IsometricWorld.fxc")]
         public static partial ReadOnlySpan<byte> GetUOShader();
 
-        [EmbedResourceCSharp.FileEmbed("shaders/xBR.fxc")]
+        [FileEmbed.FileEmbed("shaders/xBR.fxc")]
         public static partial ReadOnlySpan<byte> GetXBRShader();
     }
 }

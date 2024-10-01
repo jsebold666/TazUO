@@ -180,9 +180,10 @@ namespace ClassicUO.Game.UI.Gumps
         }
 
         public bool IsChessboard =>
-            Graphic
-            == 0x091A /*|| Graphic == 0x092E*/
-        ;
+            Graphic == 0x091A;
+
+        public bool IsBackgammonBoard =>
+            Graphic == 0x092E;
 
         private void BuildGump()
         {
@@ -415,7 +416,7 @@ namespace ClassicUO.Game.UI.Gumps
                         Rectangle containerBounds = World.ContainerManager.Get(gump.Graphic).Bounds;
 
                         ref readonly var spriteInfo = ref (
-                            gump.IsChessboard
+                            (gump.IsChessboard || gump.IsBackgammonBoard)
                                 ? ref Client.Game.UO.Gumps.GetGump(
                                     (ushort)(
                                         Client.Game.UO.GameCursor.ItemHold.DisplayedGraphic
@@ -582,7 +583,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private float GetScale()
         {
-            return IsChessboard ? 1f : UIManager.ContainerScale;
+            return (IsChessboard || IsBackgammonBoard) ? 1f : UIManager.ContainerScale;
         }
 
         private void ItemsOnAdded()
@@ -638,12 +639,12 @@ namespace ClassicUO.Game.UI.Gumps
                     item.Serial,
                     (ushort)(
                         item.DisplayedGraphic
-                        - (IsChessboard ? Constants.ITEM_GUMP_TEXTURE_OFFSET : 0)
+                        - ((IsChessboard || IsBackgammonBoard) ? Constants.ITEM_GUMP_TEXTURE_OFFSET : 0)
                     ),
                     item.Hue,
                     item.X,
                     item.Y,
-                    IsChessboard
+                    (IsChessboard || IsBackgammonBoard)
                 );
 
                 itemControl.IsVisible = !IsMinimized;
@@ -682,7 +683,7 @@ namespace ClassicUO.Game.UI.Gumps
             int boundHeight = dataBounds.Height + (IsChessboard ? 20 : 0);
 
             ref readonly var spriteInfo = ref (
-                IsChessboard
+                (IsChessboard || IsBackgammonBoard)
                     ? ref Client.Game.UO.Gumps.GetGump(
                         (ushort)(
                             item.DisplayedGraphic

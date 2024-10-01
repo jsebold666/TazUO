@@ -11,11 +11,7 @@ using ClassicUO.Utility.Logging;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
     public static class IgnoreManager
-=======
-    internal sealed class IgnoreManager
->>>>>>> externo/main
     {
         private readonly World _world;
 

@@ -3225,6 +3225,15 @@ namespace ClassicUO.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset maps cache.
+        /// </summary>
+        public static string ResetMapsCache {
+            get {
+                return ResourceManager.GetString("ResetMapsCache", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Resize game window.
         /// </summary>
         public static string ResizeGameWindow {

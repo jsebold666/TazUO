@@ -40,11 +40,7 @@ using ClassicUO.Utility.Logging;
 
 namespace ClassicUO.Game.Managers
 {
-<<<<<<< HEAD
     public class JournalManager
-=======
-    internal sealed class JournalManager
->>>>>>> externo/main
     {
         private StreamWriter _fileWriter;
         private bool _writerHasException;

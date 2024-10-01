@@ -372,28 +372,21 @@ namespace ClassicUO.Game.Scenes
             }
             catch { }
 
-<<<<<<< HEAD
             EventSink.InvokeOnDisconnected(null);
 
             TargetManager.Reset();
-=======
-            _world.TargetManager.Reset();
->>>>>>> externo/main
+             _world.TargetManager.Reset();
 
             // special case for wmap. this allow us to save settings
             UIManager.GetGump<WorldMapGump>()?.SaveSettings();
 
-<<<<<<< HEAD
-            ProfileManager.CurrentProfile?.Save(ProfileManager.ProfilePath);
+            ProfileManager.CurrentProfile?.Save(_world, ProfileManager.ProfilePath);
             TileMarkerManager.Instance.Save();
             SpellVisualRangeManager.Instance.Save();
             SpellVisualRangeManager.Instance.OnSceneUnload();
             AutoLootManager.Instance.Save();
 
             NameOverHeadManager.Save();
-=======
-            ProfileManager.CurrentProfile?.Save(_world, ProfileManager.ProfilePath);
->>>>>>> externo/main
 
             _world.Macros.Save();
             _world.Macros.Clear();
@@ -416,14 +409,10 @@ namespace ClassicUO.Game.Scenes
             _world.DelayedObjectClickManager.Clear();
 
             _useItemQueue?.Clear();
-<<<<<<< HEAD
             _useItemQueue = null;
             Hotkeys = null;
             Macros = null;
-            EventSink.MessageReceived -= ChatOnMessageReceived;
-=======
             _world.MessageManager.MessageReceived -= ChatOnMessageReceived;
->>>>>>> externo/main
 
             Settings.GlobalSettings.WindowSize = new Point(
                 Client.Game.Window.ClientBounds.Width,

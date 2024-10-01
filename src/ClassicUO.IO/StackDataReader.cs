@@ -21,9 +21,6 @@ namespace ClassicUO.IO
             Position = 0;
         }
 
-        public StackDataReader(IntPtr ptr, int length) : this(new ReadOnlySpan<byte>(ptr.ToPointer(), length))
-        {
-        }
 
         public int Position { get; private set; }
         public long Length { get; }
@@ -190,7 +187,26 @@ namespace ClassicUO.IO
             return v;
         }
 
+        public int Read(Span<byte> buffer)
+        {
+            if (Position + buffer.Length > Length)
+            {
+                return -1;
+            }
 
+            _data.Slice(Position, buffer.Length).CopyTo(buffer);
+            Skip(buffer.Length);
+            return buffer.Length;
+        }
+
+        [MethodImpl(IMPL_OPTION)]
+        public T Read<T>() where T : unmanaged
+        {
+            Unsafe.SkipInit<T>(out var v);
+            var p = new Span<byte>(&v, sizeof(T));
+            Read(p);
+            return v;
+        }
 
 
 

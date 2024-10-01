@@ -2,7 +2,7 @@
 
 // Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,7 +39,7 @@ namespace ClassicUO.Assets
 {
     public abstract class UOFileLoader : IDisposable
     {
-        protected UOFileLoader(UOFileManager fileManager) 
+        protected UOFileLoader(UOFileManager fileManager)
         {
             FileManager = fileManager;
         }
@@ -60,29 +60,11 @@ namespace ClassicUO.Assets
             ClearResources();
         }
 
-        public UOFileIndex[] Entries;
 
-        public abstract Task Load();
+        public abstract void Load();
 
         public virtual void ClearResources()
         {
-        }
-
-        public ref UOFileIndex GetValidRefEntry(int index)
-        {
-            if (index < 0 || Entries == null || index >= Entries.Length)
-            {
-                return ref UOFileIndex.Invalid;
-            }
-
-            ref UOFileIndex entry = ref Entries[index];
-
-            if (entry.Offset < 0 || entry.Length <= 0 || entry.Offset == 0x0000_0000_FFFF_FFFF)
-            {
-                return ref UOFileIndex.Invalid;
-            }
-
-            return ref entry;
         }
     }
 }

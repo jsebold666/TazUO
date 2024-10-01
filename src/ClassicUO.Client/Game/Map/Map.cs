@@ -137,7 +137,7 @@ namespace ClassicUO.Game.Map
                 return -125;
             }
 
-            ref IndexMap blockIndex = ref GetIndex(x >> 3, y >> 3);
+            ref var blockIndex = ref GetIndex(x >> 3, y >> 3);
 
             if (blockIndex.MapAddress == 0)
             {
@@ -149,10 +149,8 @@ namespace ClassicUO.Game.Map
 
             unsafe
             {
-                MapBlock* mp = (MapBlock*) blockIndex.MapAddress;
-                MapCells* cells = (MapCells*) &mp->Cells;
-
-                return cells[(my << 3) + mx].Z;
+                blockIndex.MapFile.Seek((long)blockIndex.MapAddress, System.IO.SeekOrigin.Begin);
+                return blockIndex.MapFile.Read<MapBlock>().Cells[(my << 3) + mx].Z;
             }
         }
 

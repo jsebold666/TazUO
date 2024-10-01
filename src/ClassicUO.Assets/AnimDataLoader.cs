@@ -2,7 +2,7 @@
 
 // Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -49,43 +49,35 @@ namespace ClassicUO.Assets
 
         public UOFile AnimDataFile => _file;
 
-        public override Task Load()
+        public override void Load()
         {
-            return Task.Run
-            (
-                () =>
-                {
-                    string path = FileManager.GetUOFilePath("animdata.mul");
+            var path = FileManager.GetUOFilePath("animdata.mul");
 
-                    if (File.Exists(path))
-                    {
-                        _file = new UOFileMul(path);
-                    }
-                }
-            );
+            if (File.Exists(path))
+            {
+                _file = new UOFileMul(path);
+            }
         }
 
-        public unsafe AnimDataFrame CalculateCurrentGraphic(ushort graphic)
+        public AnimDataFrame CalculateCurrentGraphic(ushort graphic)
         {
             if (_file == null)
                 return default;
 
-            var reader = _file.GetReader();
-            var address = reader.StartAddress;
-
-            if (address != IntPtr.Zero)
+            var pos = (graphic * 68 + 4 * ((graphic >> 3) + 1));
+            if (pos >= _file.Length)
             {
-                IntPtr addr = address + (graphic * 68 + 4 * ((graphic >> 3) + 1));
-
-                if (addr.ToInt64() < address.ToInt64() + _file.Length)
-                {
-                    ref AnimDataFrame a = ref Unsafe.AsRef<AnimDataFrame>((void*)addr);
-
-                    return a;
-                }
+                return default;
             }
 
-            return default;
+            _file.Seek(pos, SeekOrigin.Begin);
+
+            Span<byte> buf = stackalloc byte[Unsafe.SizeOf<AnimDataFrame>()];
+            _file.Read(buf);
+
+            var span = MemoryMarshal.Cast<byte, AnimDataFrame>(buf);
+            return span[0];
+
         }
     }
 

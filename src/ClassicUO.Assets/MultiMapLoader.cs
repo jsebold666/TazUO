@@ -2,7 +2,7 @@
 
 // Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -56,28 +56,22 @@ namespace ClassicUO.Assets
             return map >= 0 && map < _facets.Length && _facets[map] != null;
         }
 
-        public override Task Load()
+        public override void Load()
         {
-            return Task.Run
-            (
-                () =>
-                {
-                    string path = FileManager.GetUOFilePath("Multimap.rle");
+            string path = FileManager.GetUOFilePath("Multimap.rle");
 
-                    if (File.Exists(path))
-                    {
-                        _file = new UOFile(path, true);
-                    }
+            if (File.Exists(path))
+            {
+                _file = new UOFile(path);
+            }
 
-                    _facets = Directory.GetFiles(FileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
-                        .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
-                        .Where(s => s.Success)
-                        .Select(s => Path.Combine(FileManager.BasePath, s.Value))
-                        .OrderBy(s => s)
-                        .Select(s => new UOFileMul(s))
-                        .ToArray();
-                }
-            );
+            _facets = Directory.GetFiles(FileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
+                .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
+                .Where(s => s.Success)
+                .Select(s => Path.Combine(FileManager.BasePath, s.Value))
+                .OrderBy(s => s)
+                .Select(s => new UOFileMul(s))
+                .ToArray();
         }
 
         public unsafe MultiMapInfo LoadMap
@@ -97,11 +91,10 @@ namespace ClassicUO.Assets
                 return default;
             }
 
-            var reader = _file.GetReader();
-            reader.Seek(0);
+            _file.Seek(0, SeekOrigin.Begin);
 
-            int w = reader.ReadInt32LE();
-            int h = reader.ReadInt32LE();
+            int w = _file.ReadInt32();
+            int h = _file.ReadInt32();
 
             if (w < 1 || h < 1)
             {
@@ -142,9 +135,9 @@ namespace ClassicUO.Assets
             int maxPixelValue = 1;
             int startHeight = starty * pheight;
 
-            while (reader.Position < _file.Length)
+            while (_file.Position < _file.Length)
             {
-                byte pic = reader.ReadUInt8();
+                byte pic = _file.ReadUInt8();
                 byte size = (byte) (pic & 0x7F);
                 bool colored = (pic & 0x80) != 0;
 
@@ -245,11 +238,11 @@ namespace ClassicUO.Assets
                 return default;
             }
 
-            var reader = _facets[facet].GetReader();
-            reader.Seek(0);
+            var file = _facets[facet];
+            file.Seek(0, SeekOrigin.Begin);
 
-            int w = reader.ReadUInt16LE();
-            int h = reader.ReadUInt16LE();
+            int w = file.ReadUInt16();
+            int h = file.ReadUInt16();
 
             if (w < 1 || h < 1)
             {
@@ -271,13 +264,13 @@ namespace ClassicUO.Assets
             {
                 int x = 0;
 
-                int colorCount = reader.ReadInt32LE() / 3;
+                int colorCount = file.ReadInt32() / 3;
 
                 for (int i = 0; i < colorCount; i++)
                 {
-                    int size = reader.ReadUInt8();
+                    int size = file.ReadUInt8();
 
-                    uint color = HuesHelper.Color16To32(reader.ReadUInt16LE()) | 0xFF_00_00_00;
+                    uint color = HuesHelper.Color16To32(file.ReadUInt16()) | 0xFF_00_00_00;
 
                     for (int j = 0; j < size; j++)
                     {

@@ -745,12 +745,24 @@ namespace ClassicUO.Game.Scenes
 
             NetClient.Socket.Disconnect();
 <<<<<<< HEAD
+<<<<<<< HEAD
             NetClient.Socket = new NetClient();
             EncryptionHelper.Initialize(false, seed, (ENCRYPTION_TYPE)Settings.GlobalSettings.Encryption);
 
 =======
 >>>>>>> externo/main
             NetClient.Socket.Connect(new IPAddress(ip).ToString(), port);
+=======
+
+            // Ignore the packet, connect with the original IP regardless (i.e. websocket proxying)
+            if (Settings.GlobalSettings.IgnoreRelayIp || ip == 0)
+            {
+                Log.Trace("Ignoring relay server packet IP address");
+                NetClient.Socket.Connect(Settings.GlobalSettings.IP, Settings.GlobalSettings.Port);
+            }
+            else
+                NetClient.Socket.Connect(new IPAddress(ip).ToString(), port);
+>>>>>>> externo/main
 
             if (NetClient.Socket.IsConnected)
             {
