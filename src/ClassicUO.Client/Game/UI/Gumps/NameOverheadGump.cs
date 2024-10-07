@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@ using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using ClassicUO.Game.Scenes;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -76,7 +77,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
         }
 
-        public NameOverheadGump(uint serial) : base(serial, 0)
+        public NameOverheadGump(World world, uint serial) : base(world, serial, 0)
         {
             CanMove = false;
             AcceptMouseInput = true;
@@ -120,7 +121,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                     if (string.IsNullOrEmpty(item.ItemData.Name))
                     {
-                        t += ClilocLoader.Instance.GetString(1020000 + item.Graphic, true, t);
+                        t += Client.Game.UO.FileManager.Clilocs.GetString(1020000 + item.Graphic, true, t);
                     }
                     else
                     {
@@ -142,7 +143,33 @@ namespace ClassicUO.Game.UI.Gumps
                     return false;
                 }
 
-                _text.UpdateText(t);
+                Client.Game.UO.FileManager.Fonts.SetUseHTML(true);
+                Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = true;
+
+                int width = Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_renderedText.Font, t);
+
+                if (width > Constants.OBJECT_HANDLES_GUMP_WIDTH)
+                {
+                    t = Client.Game.UO.FileManager.Fonts.GetTextByWidthUnicode(
+                        _renderedText.Font,
+                        t.AsSpan(),
+                        Constants.OBJECT_HANDLES_GUMP_WIDTH,
+                        true,
+                        TEXT_ALIGN_TYPE.TS_CENTER,
+                        (ushort)FontStyle.BlackBorder
+                    );
+
+                    width = Constants.OBJECT_HANDLES_GUMP_WIDTH;
+                }
+
+                _renderedText.MaxWidth = width;
+                _renderedText.Text = t;
+
+                Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = false;
+                Client.Game.UO.FileManager.Fonts.SetUseHTML(false);
+
+                Width = _background.Width = Math.Max(60, _renderedText.Width) + 4;
+                Height = _background.Height = Constants.OBJECT_HANDLES_GUMP_HEIGHT + 4;
 
                 Width = _background.Width = Math.Max(60, _text.Width) + 4;
                 Height = _background.Height = CurrentHeight = Math.Max(Constants.OBJECT_HANDLES_GUMP_HEIGHT, _text.Height) + 4;
@@ -157,7 +184,28 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 string t = entity.Name;
 
-                _text.UpdateText(t);
+                int width = Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_renderedText.Font, t);
+
+                if (width > Constants.OBJECT_HANDLES_GUMP_WIDTH)
+                {
+                    t = Client.Game.UO.FileManager.Fonts.GetTextByWidthUnicode(
+                        _renderedText.Font,
+                        t.AsSpan(),
+                        Constants.OBJECT_HANDLES_GUMP_WIDTH,
+                        true,
+                        TEXT_ALIGN_TYPE.TS_CENTER,
+                        (ushort)FontStyle.BlackBorder
+                    );
+
+                    width = Constants.OBJECT_HANDLES_GUMP_WIDTH;
+                }
+
+                _renderedText.MaxWidth = width;
+
+                _renderedText.Text = t;
+
+                Width = _background.Width = Math.Max(60, _renderedText.Width) + 4;
+                Height = _background.Height = Constants.OBJECT_HANDLES_GUMP_HEIGHT + 4;
 
                 Width = _background.Width = Math.Max(60, _text.Width) + 4;
                 Height = _background.Height = Math.Max(Constants.OBJECT_HANDLES_GUMP_HEIGHT, _text.Height) + 4;
@@ -241,7 +289,7 @@ namespace ClassicUO.Game.UI.Gumps
                     );
 
                     UIManager.Add(
-                        gump = new HealthBarGumpCustom(entity)
+                        gump = new HealthBarGumpCustom(World, entity)
                         {
                             X = Mouse.Position.X - (rect.Width >> 1),
                             Y = Mouse.Position.Y - (rect.Height >> 1)
@@ -250,10 +298,10 @@ namespace ClassicUO.Game.UI.Gumps
                 }
                 else
                 {
-                    ref readonly var gumpInfo = ref Client.Game.Gumps.GetGump(0x0804);
+                    ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(0x0804);
 
                     UIManager.Add(
-                        gump = new HealthBarGump(entity)
+                        gump = new HealthBarGump(World, entity)
                         {
                             X = Mouse.LClickPosition.X - (gumpInfo.UV.Width >> 1),
                             Y = Mouse.LClickPosition.Y - (gumpInfo.UV.Height >> 1)
@@ -265,7 +313,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else if (entity != null)
             {
-                GameActions.PickUp(LocalSerial, 0, 0);
+                GameActions.PickUp(World, LocalSerial, 0, 0);
 
                 //if (entity.Texture != null)
                 //    GameActions.PickUp(LocalSerial, entity.Texture.Width >> 1, entity.Texture.Height >> 1);
@@ -282,18 +330,18 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     if (World.Player.InWarMode)
                     {
-                        GameActions.Attack(LocalSerial);
+                        GameActions.Attack(World, LocalSerial);
                     }
                     else
                     {
-                        GameActions.DoubleClick(LocalSerial);
+                        GameActions.DoubleClick(World, LocalSerial);
                     }
                 }
                 else
                 {
-                    if (!GameActions.OpenCorpse(LocalSerial))
+                    if (!GameActions.OpenCorpse(World, LocalSerial))
                     {
-                        GameActions.DoubleClick(LocalSerial);
+                        GameActions.DoubleClick(World, LocalSerial);
                     }
                 }
 
@@ -320,7 +368,7 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 _leftMouseIsDown = false;
 
-                if (!Client.Game.GameCursor.ItemHold.Enabled)
+                if (!Client.Game.UO.GameCursor.ItemHold.Enabled)
                 {
                     if (
                         UIManager.IsDragging
@@ -334,29 +382,29 @@ namespace ClassicUO.Game.UI.Gumps
                     }
                 }
 
-                if (TargetManager.IsTargeting)
+                if (World.TargetManager.IsTargeting)
                 {
-                    switch (TargetManager.TargetingState)
+                    switch (World.TargetManager.TargetingState)
                     {
                         case CursorTarget.Internal:
                         case CursorTarget.Position:
                         case CursorTarget.Object:
                         case CursorTarget.Grab:
                         case CursorTarget.SetGrabBag:
-                            TargetManager.Target(LocalSerial);
+                            World.TargetManager.Target(LocalSerial);
                             Mouse.LastLeftButtonClickTime = 0;
 
                             break;
 
                         case CursorTarget.SetTargetClientSide:
-                            TargetManager.Target(LocalSerial);
+                            World.TargetManager.Target(LocalSerial);
                             Mouse.LastLeftButtonClickTime = 0;
-                            UIManager.Add(new InspectorGump(World.Get(LocalSerial)));
+                            UIManager.Add(new InspectorGump(World, World.Get(LocalSerial)));
 
                             break;
 
                         case CursorTarget.HueCommandTarget:
-                            CommandManager.OnHueTarget(World.Get(LocalSerial));
+                            World.CommandManager.OnHueTarget(World.Get(LocalSerial));
 
                             break;
                     }
@@ -364,8 +412,8 @@ namespace ClassicUO.Game.UI.Gumps
                 else
                 {
                     if (
-                        Client.Game.GameCursor.ItemHold.Enabled
-                        && !Client.Game.GameCursor.ItemHold.IsFixedPosition
+                        Client.Game.UO.GameCursor.ItemHold.Enabled
+                        && !Client.Game.UO.GameCursor.ItemHold.IsFixedPosition
                     )
                     {
                         uint drop_container = 0xFFFF_FFFF;
@@ -395,7 +443,7 @@ namespace ClassicUO.Game.UI.Gumps
                                         it2.ItemData.IsSurface
                                         || it2.ItemData.IsStackable
                                             && it2.DisplayedGraphic
-                                                == Client.Game.GameCursor.ItemHold.DisplayedGraphic
+                                                == Client.Game.UO.GameCursor.ItemHold.DisplayedGraphic
                                     )
                                 )
                                 {
@@ -430,7 +478,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 if (can_drop)
                                 {
                                     GameActions.DropItem(
-                                        Client.Game.GameCursor.ItemHold.Serial,
+                                        Client.Game.UO.GameCursor.ItemHold.Serial,
                                         dropX,
                                         dropY,
                                         dropZ,
@@ -440,9 +488,9 @@ namespace ClassicUO.Game.UI.Gumps
                             }
                         }
                     }
-                    else if (!DelayedObjectClickManager.IsEnabled)
+                    else if (!World.DelayedObjectClickManager.IsEnabled)
                     {
-                        DelayedObjectClickManager.Set(
+                        World.DelayedObjectClickManager.Set(
                             LocalSerial,
                             Mouse.Position.X,
                             Mouse.Position.Y,
@@ -475,7 +523,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                 _positionLocked = true;
 
-                Client.Game.Animations.GetAnimationDimensions(
+                Client.Game.UO.Animations.GetAnimationDimensions(
                     m.AnimIndex,
                     m.GetGraphicForAnimation(),
                     /*(byte) m.GetDirectionForAnimation()*/
@@ -533,7 +581,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else
             {
-                if (entity == TargetManager.LastTargetInfo.Serial)
+                if (entity == World.TargetManager.LastTargetInfo.Serial)
                 {
                     if (!_isLastTarget) //Only set this if it was not already last target
                     {
@@ -635,7 +683,7 @@ namespace ClassicUO.Game.UI.Gumps
                 }
                 else
                 {
-                    Client.Game.Animations.GetAnimationDimensions(
+                    Client.Game.UO.Animations.GetAnimationDimensions(
                         m.AnimIndex,
                         m.GetGraphicForAnimation(),
                         /*(byte) m.GetDirectionForAnimation()*/
@@ -697,7 +745,7 @@ namespace ClassicUO.Game.UI.Gumps
                     }
                 }
 
-                var bounds = Client.Game.Arts.GetRealArtBounds(item.Graphic);
+                var bounds = Client.Game.UO.Arts.GetRealArtBounds(item.Graphic);
 
                 x = item.RealScreenPosition.X + (int)item.Offset.X + 22 + 5;
                 y =

@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -35,122 +35,32 @@ using System.Collections.Generic;
 
 namespace ClassicUO.IO
 {
-    public class UOFileUop : UOFile
+    public enum CompressionType : ushort
+    {
+        None,
+        Zlib,
+        ZlibBwt = 3
+    }
+
+    public sealed class UOFileUop : UOFile
     {
         private const uint UOP_MAGIC_NUMBER = 0x50594D;
         private readonly bool _hasExtra;
-        private readonly Dictionary<ulong, UOFileIndex> _hashes = new Dictionary<ulong, UOFileIndex>();
         private readonly string _pattern;
+        private readonly Dictionary<ulong, UOFileIndex> _hashes = new Dictionary<ulong, UOFileIndex>();
 
         public UOFileUop(string path, string pattern, bool hasextra = false) : base(path)
         {
             _pattern = pattern;
             _hasExtra = hasextra;
-            Load();
         }
 
-        public int TotalEntriesCount { get; private set; }
         public string Pattern => _pattern;
-        public Dictionary<ulong, UOFileIndex> Hashes => _hashes;
 
-        
-        protected override void Load()
-        {
-            base.Load();
-
-            Seek(0);
-
-            if (ReadUInt() != UOP_MAGIC_NUMBER)
-            {
-                throw new ArgumentException("Bad uop file");
-            }
-
-            uint version = ReadUInt();
-            uint format_timestamp = ReadUInt();
-            long nextBlock = ReadLong();
-            uint block_size = ReadUInt();
-            int count = ReadInt();
-
-
-            Seek(nextBlock);
-            int total = 0;
-            int real_total = 0;
-
-            do
-            {
-                int filesCount = ReadInt();
-                nextBlock = ReadLong();
-                total += filesCount;
-
-                for (int i = 0; i < filesCount; i++)
-                {
-                    long offset = ReadLong();
-                    int headerLength = ReadInt();
-                    int compressedLength = ReadInt();
-                    int decompressedLength = ReadInt();
-                    ulong hash = ReadULong();
-                    uint data_hash = ReadUInt();
-                    short flag = ReadShort();
-                    int length = flag == 1 ? compressedLength : decompressedLength;
-
-                    if (offset == 0)
-                    {
-                        continue;
-                    }
-
-                    real_total++;
-                    offset += headerLength;
-
-                    if (_hasExtra)
-                    {
-                        long curpos = Position;
-                        Seek(offset);
-                        short extra1 = (short) ReadInt();
-                        short extra2 = (short) ReadInt();
-
-                        _hashes.Add
-                        (
-                            hash,
-                            new UOFileIndex
-                            (
-                                StartAddress,
-                                (uint) Length,
-                                offset + 8,
-                                compressedLength - 8,
-                                decompressedLength,
-                                extra1,
-                                extra2
-                            )
-                        );
-
-                        Seek(curpos);
-                    }
-                    else
-                    {
-                        _hashes.Add
-                        (
-                            hash,
-                            new UOFileIndex
-                            (
-                                StartAddress,
-                                (uint) Length,
-                                offset,
-                                compressedLength,
-                                decompressedLength
-                            )
-                        );
-                    }
-                }
-
-                Seek(nextBlock);
-            } while (nextBlock != 0);
-
-            TotalEntriesCount = real_total;
-        }
 
         public void ClearHashes()
         {
-            _hashes.Clear();
+            // _hashes.Clear();
         }
 
         public override void Dispose()
@@ -165,16 +75,109 @@ namespace ClassicUO.IO
             return _hashes.TryGetValue(hash, out data);
         }
 
-        public override void FillEntries(ref UOFileIndex[] entries)
+        public override void FillEntries()
         {
-            for (int i = 0; i < entries.Length; i++)
+            Seek(0, System.IO.SeekOrigin.Begin);
+
+            if (ReadUInt32() != UOP_MAGIC_NUMBER)
+            {
+                throw new ArgumentException("Bad uop file");
+            }
+
+            var version = ReadUInt32();
+            var format_timestamp = ReadUInt32();
+            var nextBlock = ReadInt64();
+            var block_size = ReadUInt32();
+            var count = ReadInt32();
+
+
+            Seek(nextBlock, System.IO.SeekOrigin.Begin);
+            int total = 0;
+            int real_total = 0;
+
+            do
+            {
+                var filesCount = ReadInt32();
+                nextBlock = ReadInt64();
+                total += filesCount;
+
+                for (int i = 0; i < filesCount; i++)
+                {
+                    long offset = ReadInt64();
+                    int headerLength = ReadInt32();
+                    int compressedLength = ReadInt32();
+                    int decompressedLength = ReadInt32();
+                    var hash = ReadUInt64();
+                    uint data_hash = ReadUInt32();
+                    short flag = ReadInt16();
+                    int length = flag == 1 ? compressedLength : decompressedLength;
+
+                    if (offset == 0)
+                    {
+                        continue;
+                    }
+
+                    real_total++;
+
+                    offset += headerLength;
+
+                    if (_hasExtra && flag != 3)
+                    {
+                        var pos = Position;
+                        Seek(offset, System.IO.SeekOrigin.Begin);
+
+                        var extra1 = ReadInt32();
+                        var extra2 = ReadInt32();
+
+                        _hashes.Add
+                        (
+                            hash,
+                            new UOFileIndex
+                            (
+                                null,
+                                offset + 8,
+                                compressedLength - 8,
+                                decompressedLength,
+                                (CompressionType)flag,
+                                extra1,
+                                extra2
+                            )
+                        );
+
+                        Seek(pos, System.IO.SeekOrigin.Begin);
+                    }
+                    else
+                    {
+                        _hashes.Add
+                        (
+                            hash,
+                            new UOFileIndex
+                            (
+                                null,
+                                offset,
+                                compressedLength,
+                                decompressedLength,
+                                (CompressionType)flag,
+                                0,
+                                0
+                            )
+                        );
+                    }
+                }
+
+                Seek(nextBlock, System.IO.SeekOrigin.Begin);
+            } while (nextBlock != 0);
+
+            Entries = new UOFileIndex[ushort.MaxValue];
+
+            for (int i = 0; i < Entries.Length; i++)
             {
                 string file = string.Format(_pattern, i);
                 ulong hash = CreateHash(file);
 
-                if (_hashes.TryGetValue(hash, out UOFileIndex data))
+                if (_hashes.TryGetValue(hash, out var e))
                 {
-                    entries[i] = data;
+                    Entries[i] = e;
                 }
             }
         }
@@ -183,14 +186,14 @@ namespace ClassicUO.IO
         {
             uint eax, ecx, edx, ebx, esi, edi;
             eax = ecx = edx = ebx = esi = edi = 0;
-            ebx = edi = esi = (uint) s.Length + 0xDEADBEEF;
+            ebx = edi = esi = (uint)s.Length + 0xDEADBEEF;
             int i = 0;
 
             for (i = 0; i + 12 < s.Length; i += 12)
             {
-                edi = (uint) ((s[i + 7] << 24) | (s[i + 6] << 16) | (s[i + 5] << 8) | s[i + 4]) + edi;
-                esi = (uint) ((s[i + 11] << 24) | (s[i + 10] << 16) | (s[i + 9] << 8) | s[i + 8]) + esi;
-                edx = (uint) ((s[i + 3] << 24) | (s[i + 2] << 16) | (s[i + 1] << 8) | s[i]) - esi;
+                edi = (uint)((s[i + 7] << 24) | (s[i + 6] << 16) | (s[i + 5] << 8) | s[i + 4]) + edi;
+                esi = (uint)((s[i + 11] << 24) | (s[i + 10] << 16) | (s[i + 9] << 8) | s[i + 8]) + esi;
+                edx = (uint)((s[i + 3] << 24) | (s[i + 2] << 16) | (s[i + 1] << 8) | s[i]) - esi;
                 edx = (edx + ebx) ^ (esi >> 28) ^ (esi << 4);
                 esi += edi;
                 edi = (edi - edx) ^ (edx >> 26) ^ (edx << 6);
@@ -210,15 +213,15 @@ namespace ClassicUO.IO
                 switch (s.Length - i)
                 {
                     case 12:
-                        esi += (uint) s[i + 11] << 24;
+                        esi += (uint)s[i + 11] << 24;
                         goto case 11;
 
                     case 11:
-                        esi += (uint) s[i + 10] << 16;
+                        esi += (uint)s[i + 10] << 16;
                         goto case 10;
 
                     case 10:
-                        esi += (uint) s[i + 9] << 8;
+                        esi += (uint)s[i + 9] << 8;
                         goto case 9;
 
                     case 9:
@@ -226,15 +229,15 @@ namespace ClassicUO.IO
                         goto case 8;
 
                     case 8:
-                        edi += (uint) s[i + 7] << 24;
+                        edi += (uint)s[i + 7] << 24;
                         goto case 7;
 
                     case 7:
-                        edi += (uint) s[i + 6] << 16;
+                        edi += (uint)s[i + 6] << 16;
                         goto case 6;
 
                     case 6:
-                        edi += (uint) s[i + 5] << 8;
+                        edi += (uint)s[i + 5] << 8;
                         goto case 5;
 
                     case 5:
@@ -242,15 +245,15 @@ namespace ClassicUO.IO
                         goto case 4;
 
                     case 4:
-                        ebx += (uint) s[i + 3] << 24;
+                        ebx += (uint)s[i + 3] << 24;
                         goto case 3;
 
                     case 3:
-                        ebx += (uint) s[i + 2] << 16;
+                        ebx += (uint)s[i + 2] << 16;
                         goto case 2;
 
                     case 2:
-                        ebx += (uint) s[i + 1] << 8;
+                        ebx += (uint)s[i + 1] << 8;
                         goto case 1;
 
                     case 1:
@@ -267,10 +270,10 @@ namespace ClassicUO.IO
                 edi = (edi ^ edx) - ((edx >> 18) ^ (edx << 14));
                 eax = (esi ^ edi) - ((edi >> 8) ^ (edi << 24));
 
-                return ((ulong) edi << 32) | eax;
+                return ((ulong)edi << 32) | eax;
             }
 
-            return ((ulong) esi << 32) | eax;
+            return ((ulong)esi << 32) | eax;
         }
     }
 }

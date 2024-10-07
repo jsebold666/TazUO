@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -44,66 +44,68 @@ using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
 using MathHelper = ClassicUO.Utility.MathHelper;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace ClassicUO.Game.GameObjects
 {
     public partial class Item : Entity
     {
-        private static readonly QueuedPool<Item> _pool = new QueuedPool<Item>(
-            Constants.PREDICTABLE_CHUNKS * 3,
-            i =>
-            {
-                i.IsDestroyed = false;
-                i.Graphic = 0;
-                i.Amount = 0;
-                i.Container = 0xFFFF_FFFF;
-                i._isMulti = false;
-                i.Layer = 0;
-                i.Price = 0;
-                i.UsedLayer = false;
-                i._displayedGraphic = null;
-                i.X = 0;
-                i.Y = 0;
-                i.Z = 0;
+        //private static readonly QueuedPool<Item> _pool = new QueuedPool<Item>(
+        //    Constants.PREDICTABLE_CHUNKS * 3,
+        //    i =>
+        //    {
+        //        i.IsDestroyed = false;
+        //        i.Graphic = 0;
+        //        i.Amount = 0;
+        //        i.Container = 0xFFFF_FFFF;
+        //        i._isMulti = false;
+        //        i.Layer = 0;
+        //        i.Price = 0;
+        //        i.UsedLayer = false;
+        //        i._displayedGraphic = null;
+        //        i.X = 0;
+        //        i.Y = 0;
+        //        i.Z = 0;
 
-                i.LightID = 0;
-                i.MultiDistanceBonus = 0;
-                i.Flags = 0;
-                i.WantUpdateMulti = true;
-                i.MultiInfo = null;
-                i.MultiGraphic = 0;
+        //        i.LightID = 0;
+        //        i.MultiDistanceBonus = 0;
+        //        i.Flags = 0;
+        //        i.WantUpdateMulti = true;
+        //        i.MultiInfo = null;
+        //        i.MultiGraphic = 0;
 
-                i.AlphaHue = 0;
-                i.Name = null;
-                i.Direction = 0;
-                i.AnimIndex = 0;
-                i.Hits = 0;
-                i.HitsMax = 0;
-                i.LastStepTime = 0;
-                i.LastAnimationChangeTime = 0;
+        //        i.AlphaHue = 0;
+        //        i.Name = null;
+        //        i.Direction = 0;
+        //        i.AnimIndex = 0;
+        //        i.Hits = 0;
+        //        i.HitsMax = 0;
+        //        i.LastStepTime = 0;
+        //        i.LastAnimationChangeTime = 0;
 
-                i.Clear();
+        //        i.Clear();
 
-                i.IsClicked = false;
-                i.IsDamageable = false;
-                i.Offset = Vector3.Zero;
-                i.HitsPercentage = 0;
-                i.Opened = false;
-                i.TextContainer?.Clear();
-                i.IsFlipped = false;
-                i.FrameInfo = Rectangle.Empty;
-                i.ObjectHandlesStatus = ObjectHandlesStatus.NONE;
-                i.AlphaHue = 0;
-                i.AllowedToDraw = true;
-                i.ExecuteAnimation = true;
-                i.HitsRequest = HitsRequestStatus.None;
-            }
-        );
+        //        i.IsClicked = false;
+        //        i.IsDamageable = false;
+        //        i.Offset = Vector3.Zero;
+        //        i.HitsPercentage = 0;
+        //        i.Opened = false;
+        //        i.TextContainer?.Clear();
+        //        i.IsFlipped = false;
+        //        i.FrameInfo = Rectangle.Empty;
+        //        i.ObjectHandlesStatus = ObjectHandlesStatus.NONE;
+        //        i.AlphaHue = 0;
+        //        i.AllowedToDraw = true;
+        //        i.ExecuteAnimation = true;
+        //        i.HitsRequest = HitsRequestStatus.None;
+        //    }
+        //);
 
         private ushort? _displayedGraphic;
         private bool _isMulti;
 
-        public Item() : base(0) { }
+        public Item(World world) : base(world, 0) { }
 
         public bool IsCoin => Graphic == 0x0EEA || Graphic == 0x0EED || Graphic == 0x0EF0;
 
@@ -197,7 +199,7 @@ namespace ClassicUO.Game.GameObjects
         }
 
         public ref StaticTiles ItemData =>
-            ref TileDataLoader.Instance.StaticData[IsMulti ? MultiGraphic : Graphic];
+            ref Client.Game.UO.FileManager.TileData.StaticData[IsMulti ? MultiGraphic : Graphic];
 
         public bool IsLootable =>
             ItemData.Layer != (int)Layer.Hair
@@ -219,9 +221,9 @@ namespace ClassicUO.Game.GameObjects
         public bool UsedLayer;
         public bool WantUpdateMulti = true;
 
-        public static Item Create(uint serial)
+        public static Item Create(World world, uint serial)
         {
-            Item i = _pool.GetOne();
+            Item i = new Item(world); // _pool.GetOne();
             i.Serial = serial;
 
             return i;
@@ -256,7 +258,7 @@ namespace ClassicUO.Game.GameObjects
 
             base.Destroy();
 
-            _pool.ReturnOne(this);
+            //_pool.ReturnOne(this);
         }
 
         private unsafe void LoadMulti()
@@ -270,7 +272,7 @@ namespace ClassicUO.Game.GameObjects
 
             if (!World.HouseManager.TryGetHouse(Serial, out House house))
             {
-                house = new House(Serial, 0, false);
+                house = new House(World, Serial, 0, false);
                 World.HouseManager.Add(Serial, house);
             }
             else
@@ -278,185 +280,61 @@ namespace ClassicUO.Game.GameObjects
                 house.ClearComponents();
             }
 
-            ref UOFileIndex entry = ref MultiLoader.Instance.GetValidRefEntry(Graphic);
-            MultiLoader.Instance.File.SetData(entry.Address, entry.FileSize);
-            bool movable = false;
+            var movable = false;
+            var multis = Client.Game.UO.FileManager.Multis.GetMultis(Graphic);
 
-            if (MultiLoader.Instance.IsUOP)
+            for (var i = 0; i < multis.Count; ++i)
             {
-                if (entry.Length > 0 && entry.DecompressedLength > 0)
+                var block = multis[i];
+
+                if (block.X < minX)
                 {
-                    MultiLoader.Instance.File.Seek(entry.Offset);
-
-                    byte[] buffer = null;
-                    Span<byte> span =
-                        entry.DecompressedLength <= 1024
-                            ? stackalloc byte[entry.DecompressedLength]
-                            : (
-                                buffer = System.Buffers.ArrayPool<byte>.Shared.Rent(
-                                    entry.DecompressedLength
-                                )
-                            );
-
-                    try
-                    {
-                        fixed (byte* dataPtr = span)
-                        {
-                            ZLib.Decompress(
-                                MultiLoader.Instance.File.PositionAddress,
-                                entry.Length,
-                                0,
-                                (IntPtr)dataPtr,
-                                entry.DecompressedLength
-                            );
-
-                            StackDataReader reader = new StackDataReader(
-                                span.Slice(0, entry.DecompressedLength)
-                            );
-                            reader.Skip(4);
-
-                            int count = reader.ReadInt32LE();
-
-                            int sizeOf = sizeof(MultiBlockNew);
-
-                            for (int i = 0; i < count; i++)
-                            {
-                                MultiBlockNew* block = (MultiBlockNew*)(
-                                    reader.PositionAddress + i * sizeOf
-                                );
-
-                                if (block->Unknown != 0)
-                                {
-                                    reader.Skip((int)(block->Unknown * 4));
-                                }
-
-                                if (block->X < minX)
-                                {
-                                    minX = block->X;
-                                }
-
-                                if (block->X > maxX)
-                                {
-                                    maxX = block->X;
-                                }
-
-                                if (block->Y < minY)
-                                {
-                                    minY = block->Y;
-                                }
-
-                                if (block->Y > maxY)
-                                {
-                                    maxY = block->Y;
-                                }
-
-                                if (block->Flags == 0 || block->Flags == 0x100)
-                                {
-                                    Multi m = Multi.Create(block->ID);
-                                    m.MultiOffsetX = block->X;
-                                    m.MultiOffsetY = block->Y;
-                                    m.MultiOffsetZ = block->Z;
-                                    m.Hue = Hue;
-                                    m.AlphaHue = 255;
-                                    m.IsCustom = false;
-                                    m.State = CUSTOM_HOUSE_MULTI_OBJECT_FLAGS.CHMOF_DONT_REMOVE;
-                                    m.IsMovable = ItemData.IsMultiMovable;
-
-                                    m.SetInWorldTile(
-                                        (ushort)(X + block->X),
-                                        (ushort)(Y + block->Y),
-                                        (sbyte)(Z + block->Z)
-                                    );
-
-                                    house.Components.Add(m);
-
-                                    if (m.ItemData.IsMultiMovable)
-                                    {
-                                        movable = true;
-                                    }
-                                }
-                                else if (i == 0)
-                                {
-                                    MultiGraphic = block->ID;
-                                }
-                            }
-
-                            reader.Release();
-                        }
-                    }
-                    finally
-                    {
-                        if (buffer != null)
-                        {
-                            System.Buffers.ArrayPool<byte>.Shared.Return(buffer);
-                        }
-                    }
+                    minX = block.X;
                 }
-                else
-                {
-                    Log.Warn($"[MultiCollection.uop] invalid entry (0x{Graphic:X4})");
-                }
-            }
-            else
-            {
-                int count = entry.Length / MultiLoader.Instance.Offset;
-                MultiLoader.Instance.File.Seek(entry.Offset);
 
-                for (int i = 0; i < count; i++)
+                if (block.X > maxX)
                 {
-                    MultiBlock* block = (MultiBlock*)(
-                        MultiLoader.Instance.File.PositionAddress + i * MultiLoader.Instance.Offset
+                    maxX = block.X;
+                }
+
+                if (block.Y < minY)
+                {
+                    minY = block.Y;
+                }
+
+                if (block.Y > maxY)
+                {
+                    maxY = block.Y;
+                }
+
+                if (block.IsVisible)
+                {
+                    Multi m = Multi.Create(World, block.ID);
+                    m.MultiOffsetX = block.X;
+                    m.MultiOffsetY = block.Y;
+                    m.MultiOffsetZ = block.Z;
+                    m.Hue = Hue;
+                    m.AlphaHue = 255;
+                    m.IsCustom = false;
+                    m.State = CUSTOM_HOUSE_MULTI_OBJECT_FLAGS.CHMOF_DONT_REMOVE;
+                    m.IsMovable = ItemData.IsMultiMovable;
+
+                    m.SetInWorldTile(
+                        (ushort)(X + block.X),
+                        (ushort)(Y + block.Y),
+                        (sbyte)(Z + block.Z)
                     );
 
-                    if (block->X < minX)
+                    house.Components.Add(m);
+
+                    if (m.ItemData.IsMultiMovable)
                     {
-                        minX = block->X;
+                        movable = true;
                     }
-
-                    if (block->X > maxX)
-                    {
-                        maxX = block->X;
-                    }
-
-                    if (block->Y < minY)
-                    {
-                        minY = block->Y;
-                    }
-
-                    if (block->Y > maxY)
-                    {
-                        maxY = block->Y;
-                    }
-
-                    if (block->Flags != 0)
-                    {
-                        Multi m = Multi.Create(block->ID);
-                        m.MultiOffsetX = block->X;
-                        m.MultiOffsetY = block->Y;
-                        m.MultiOffsetZ = block->Z;
-                        m.Hue = Hue;
-                        m.AlphaHue = 255;
-                        m.IsCustom = false;
-                        m.State = CUSTOM_HOUSE_MULTI_OBJECT_FLAGS.CHMOF_DONT_REMOVE;
-                        m.IsMovable = ItemData.IsMultiMovable;
-
-                        m.SetInWorldTile(
-                            (ushort)(X + block->X),
-                            (ushort)(Y + block->Y),
-                            (sbyte)(Z + block->Z)
-                        );
-
-                        house.Components.Add(m);
-
-                        if (m.ItemData.IsMultiMovable)
-                        {
-                            movable = true;
-                        }
-                    }
-                    else if (i == 0)
-                    {
-                        MultiGraphic = block->ID;
-                    }
+                }
+                else if (i == 0)
+                {
+                    MultiGraphic = block.ID;
                 }
             }
 
@@ -492,7 +370,7 @@ namespace ClassicUO.Game.GameObjects
                 Client.Game.GetScene<GameScene>()?.UpdateMaxDrawZ(true);
             }
 
-            BoatMovingManager.ClearSteps(Serial);
+            World.BoatMovingManager.ClearSteps(Serial);
         }
 
         public override void CheckGraphicChange(byte animIndex = 0)
@@ -501,7 +379,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 if (!IsCorpse)
                 {
-                    AllowedToDraw = CanBeDrawn(Graphic);
+                    AllowedToDraw = CanBeDrawn(World, Graphic);
                 }
                 else
                 {
@@ -523,7 +401,7 @@ namespace ClassicUO.Game.GameObjects
             }
             else if (WantUpdateMulti)
             {
-                UoAssist.SignalAddMulti((ushort)(Graphic | 0x4000), X, Y);
+                World.UoAssist.SignalAddMulti((ushort)(Graphic | 0x4000), X, Y);
 
                 if (
                     MultiDistanceBonus == 0
@@ -681,7 +559,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 Point p = RealScreenPosition;
 
-                var bounds = Client.Game.Arts.GetRealArtBounds(Graphic);
+                var bounds = Client.Game.UO.Arts.GetRealArtBounds(Graphic);
                 p.Y -= bounds.Height >> 1;
 
                 p.X += (int)Offset.X + 22;
@@ -731,52 +609,56 @@ namespace ClassicUO.Game.GameObjects
 
         public override void ProcessAnimation(bool evalutate = false)
         {
-            if (IsCorpse)
+            if (!IsCorpse)
             {
-                var dir = (byte)Layer;
+                return;
+            }
 
-                if (LastAnimationChangeTime < Time.Ticks)
+            var dir = (byte)Layer;
+
+            if (LastAnimationChangeTime < Time.Ticks)
+            {
+                byte frameIndex = (byte)(AnimIndex + (ExecuteAnimation ? 1 : 0));
+                ushort id = GetGraphicForAnimation();
+
+                bool mirror = false;
+
+                var animations = Client.Game.UO.Animations;
+                animations.GetAnimDirection(ref dir, ref mirror);
+
+                if (id < animations.MaxAnimationCount && dir < 5)
                 {
-                    byte frameIndex = (byte)(AnimIndex + (ExecuteAnimation ? 1 : 0));
-                    ushort id = GetGraphicForAnimation();
+                    animations.ConvertBodyIfNeeded(ref id);
+                    var animGroup = animations.GetAnimType(id);
+                    var animFlags = animations.GetAnimFlags(id);
+                    byte action = Client.Game.UO.FileManager.Animations.GetDeathAction(
+                        id,
+                        animFlags,
+                        animGroup,
+                        UsedLayer
+                    );
+                    var frames = animations.GetAnimationFrames(
+                        id,
+                        action,
+                        dir,
+                        out _,
+                        out _,
+                        isCorpse: true
+                    );
 
-                    bool mirror = false;
-                    AnimationsLoader.Instance.GetAnimDirection(ref dir, ref mirror);
-
-                    if (id < Client.Game.Animations.MaxAnimationCount && dir < 5)
+                    if (frames.Length > 0)
                     {
-                        Client.Game.Animations.ConvertBodyIfNeeded(ref id);
-                        var animGroup = Client.Game.Animations.GetAnimType(id);
-                        var animFlags = Client.Game.Animations.GetAnimFlags(id);                   
-                        byte action = AnimationsLoader.Instance.GetDeathAction(
-                            id,
-                            animFlags,
-                            animGroup,
-                            UsedLayer
-                        );
-                        var frames = Client.Game.Animations.GetAnimationFrames(
-                            id,
-                            action,
-                            dir,
-                            out _,
-                            out _,
-                            isCorpse: true
-                        );
-
-                        if (frames.Length > 0)
+                        // when the animation is done, stop to animate the corpse
+                        if (frameIndex >= frames.Length)
                         {
-                            // when the animation is done, stop to animate the corpse
-                            if (frameIndex >= frames.Length)
-                            {
-                                frameIndex = (byte)(frames.Length - 1);
-                            }
-
-                            AnimIndex = (byte)(frameIndex % frames.Length);
+                            frameIndex = (byte)(frames.Length - 1);
                         }
-                    }
 
-                    LastAnimationChangeTime = Time.Ticks + Constants.CHARACTER_ANIMATION_DELAY;
+                        AnimIndex = (byte)(frameIndex % frames.Length);
+                    }
                 }
+
+                LastAnimationChangeTime = Time.Ticks + Constants.CHARACTER_ANIMATION_DELAY;
             }
         }
     }

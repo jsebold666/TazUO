@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -73,18 +73,6 @@ namespace ClassicUO.Utility
             }
 
             return path;
-        }
-
-        public static string RemoveInvalidChars(string text)
-        {
-            char[] invalid = Path.GetInvalidFileNameChars();
-
-            for (int j = 0; j < invalid.Length; j++)
-            {
-                text = text.Replace(invalid[j].ToString(), "");
-            }
-
-            return text;
         }
 
         public static void EnsureFileExists(string path)

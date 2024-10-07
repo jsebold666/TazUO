@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -40,9 +40,13 @@ using ClassicUO.Resources;
 
 namespace ClassicUO.Game.Managers
 {
-    public class PartyManager
+    internal sealed class PartyManager
     {
         private const int PARTY_SIZE = 10;
+
+        private readonly World _world;
+
+        public PartyManager(World world) { _world = world; }
 
         public uint Leader { get; set; }
         public uint Inviter { get; set; }
@@ -113,7 +117,7 @@ namespace ClassicUO.Game.Managers
                         UIManager.GetGump<BaseHealthBarGump>(to_remove)?.RequestUpdateContents();
                     }
 
-                    bool remove_all = !add && to_remove == World.Player;
+                    bool remove_all = !add && to_remove == _world.Player;
                     int done = 0;
 
                     for (int i = 0; i < count; i++)
@@ -130,7 +134,7 @@ namespace ClassicUO.Game.Managers
                         {
                             if (!Contains(serial))
                             {
-                                Members[i] = new PartyMember(serial);
+                                Members[i] = new PartyMember(_world, serial);
                             }
 
                             done++;
@@ -149,7 +153,7 @@ namespace ClassicUO.Game.Managers
                         }
                         else
                         {
-                            if (serial == World.Player)
+                            if (serial == _world.Player)
                             {
                             }
                         }
@@ -186,7 +190,7 @@ namespace ClassicUO.Game.Managers
                     {
                         if (Members[i] != null && Members[i].Serial == ser)
                         {
-                            MessageManager.HandleMessage
+                            _world.MessageManager.HandleMessage
                             (
                                 null,
                                 name,
@@ -208,7 +212,7 @@ namespace ClassicUO.Game.Managers
 
                     if (ProfileManager.CurrentProfile.PartyInviteGump)
                     {
-                        UIManager.Add(new PartyInviteGump(Inviter));
+                        UIManager.Add(new PartyInviteGump(_world, Inviter));
                     }
 
                     break;
@@ -244,10 +248,12 @@ namespace ClassicUO.Game.Managers
 
     public class PartyMember : IEquatable<PartyMember>
     {
+        private readonly World _world;
         private string _name;
 
-        public PartyMember(uint serial)
+        public PartyMember(World world, uint serial)
         {
+            _world = world;
             Serial = serial;
             _name = Name;
         }
@@ -256,7 +262,7 @@ namespace ClassicUO.Game.Managers
         {
             get
             {
-                Mobile mobile = World.Mobiles.Get(Serial);
+                Mobile mobile = _world.Mobiles.Get(Serial);
 
                 if (mobile != null)
                 {

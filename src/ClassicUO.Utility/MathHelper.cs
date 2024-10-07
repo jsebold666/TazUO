@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -61,9 +61,9 @@ namespace ClassicUO.Utility
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong Combine(int val1, int val2)
+        public static ulong Combine(uint val1, uint val2)
         {
-            return (ulong) val1 | ((ulong) val2 << 32);
+            return (val1 | (val2 << 32));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

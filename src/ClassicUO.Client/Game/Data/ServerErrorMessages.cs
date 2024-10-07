@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ namespace ClassicUO.Game.Data
 
         public static string GetError(byte packetID, byte code)
         {
-            ClilocLoader cliloc = ClilocLoader.Instance;
+            var cliloc = Client.Game.UO.FileManager.Clilocs;
 
             switch (packetID)
             {

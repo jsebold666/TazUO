@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -33,6 +33,7 @@
 using ClassicUO.IO;
 using ClassicUO.Utility;
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -40,52 +41,50 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class SpeechesLoader : UOFileLoader
+    public sealed class SpeechesLoader : UOFileLoader
     {
-        private static SpeechesLoader _instance;
         private SpeechEntry[] _speech;
 
-        private SpeechesLoader()
+        public SpeechesLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
 
-        public static SpeechesLoader Instance => _instance ?? (_instance = new SpeechesLoader());
 
-        public override unsafe Task Load()
+        public override unsafe void Load()
         {
-            return Task.Run
-            (
-                () =>
+            string path = FileManager.GetUOFilePath("speech.mul");
+
+            if (!File.Exists(path))
+            {
+                _speech = Array.Empty<SpeechEntry>();
+
+                return;
+            }
+
+            var file = new UOFileMul(path);
+            var entries = new List<SpeechEntry>();
+
+            var buf = new byte[256];
+            while (file.Position < file.Length)
+            {
+                file.Read(buf.AsSpan(0, sizeof(ushort) * 2));
+                var id = BinaryPrimitives.ReadUInt16BigEndian(buf);
+                var length = BinaryPrimitives.ReadUInt16BigEndian(buf.AsSpan(sizeof(ushort)));
+
+                if (length > 0)
                 {
-                    string path = UOFileManager.GetUOFilePath("speech.mul");
+                    if (length > buf.Length)
+                        buf = new byte[length];
 
-                    if (!File.Exists(path))
-                    {
-                        _speech = Array.Empty<SpeechEntry>();
+                    file.Read(buf.AsSpan(0, length));
+                    var text = string.Intern(Encoding.UTF8.GetString(buf.AsSpan(0, length)));
 
-                        return;
-                    }
-
-                    UOFileMul file = new UOFileMul(path);
-                    List<SpeechEntry> entries = new List<SpeechEntry>();
-
-                    while (file.Position < file.Length)
-                    {
-                        int id = file.ReadUShortReversed();
-                        int length = file.ReadUShortReversed();
-
-                        if (length > 0)
-                        {
-                            entries.Add(new SpeechEntry(id, string.Intern(Encoding.UTF8.GetString((byte*) file.PositionAddress, length))));
-
-                            file.Skip(length);
-                        }
-                    }
-
-                    _speech = entries.ToArray();
-                    file.Dispose();
+                    entries.Add(new SpeechEntry(id, text));
                 }
-            );
+            }
+
+            _speech = entries.ToArray();
+            file.Dispose();
         }
 
         public bool IsMatch(string input, in SpeechEntry entry)
@@ -120,13 +119,11 @@ namespace ClassicUO.Assets
                 while (idx >= 0)
                 {
                     // "bank" or " bank" or "bank " or " bank " or "!bank" or "bank!"
-                    if ((idx - 1 < 0 || char.IsWhiteSpace(input[idx - 1]) || !char.IsLetter(input[idx - 1])) && 
+                    if ((idx - 1 < 0 || char.IsWhiteSpace(input[idx - 1]) || !char.IsLetter(input[idx - 1])) &&
                         (idx + split[i].Length >= input.Length || char.IsWhiteSpace(input[idx + split[i].Length]) || !char.IsLetter(input[idx + split[i].Length]) ))
                     {
                         return true;
                     }
-
-                    
 
                     idx = input.IndexOf(split[i], idx + 1, StringComparison.InvariantCultureIgnoreCase);
                 }
@@ -139,7 +136,7 @@ namespace ClassicUO.Assets
         {
             List<SpeechEntry> list = new List<SpeechEntry>();
 
-            if (UOFileManager.Version < ClientVersion.CV_305D)
+            if (FileManager.Version < ClientVersion.CV_305D)
             {
                 return list;
             }

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using ClassicUO.Resources;
 using Microsoft.Xna.Framework;
+using ClassicUO.Game.Scenes;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -63,7 +64,7 @@ namespace ClassicUO.Game.UI.Gumps
         private int _pagesCount;
         private bool firstItemsLoaded = false;
 
-        public GridLootGump(uint local) : base(local, 0)
+        public GridLootGump(World world, uint local) : base(world, local, 0)
         {
             _corpse = World.Items.Get(local);
 
@@ -210,8 +211,8 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else if (buttonID == 2)
             {
-                GameActions.Print(ResGumps.TargetContainerToGrabItemsInto);
-                TargetManager.SetTargeting(CursorTarget.SetGrabBag, 0, TargetType.Neutral);
+                GameActions.Print(World, ResGumps.TargetContainerToGrabItemsInto);
+                World.TargetManager.SetTargeting(CursorTarget.SetGrabBag, 0, TargetType.Neutral);
             }
             else
             {
@@ -251,7 +252,7 @@ namespace ClassicUO.Game.UI.Gumps
                         continue;
                     }
 
-                    GridLootItem gridItem = new GridLootItem(it, GRID_ITEM_SIZE);
+                    GridLootItem gridItem = new GridLootItem(this, it, GRID_ITEM_SIZE);
 
                     if (x >= MAX_WIDTH - 20)
                     {
@@ -308,7 +309,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (count == 0)
             {
-                GameActions.Print(ResGumps.CorpseIsEmpty);
+                GameActions.Print(World, ResGumps.CorpseIsEmpty);
                 Dispose();
             }
             else if (_hideIfEmpty && !IsVisible)
@@ -443,13 +444,15 @@ namespace ClassicUO.Game.UI.Gumps
 
         private class GridLootItem : Control
         {
+            private readonly GridLootGump _gump;
             private readonly HitBox _hit;
 
-            public GridLootItem(uint serial, int size)
+            public GridLootItem(GridLootGump gump, uint serial, int size)
             {
+                _gump = gump;
                 LocalSerial = serial;
 
-                Item item = World.Items.Get(serial);
+                Item item = _gump.World.Items.Get(serial);
 
                 if (item == null)
                 {
@@ -489,7 +492,7 @@ namespace ClassicUO.Game.UI.Gumps
                 _hit = new HitBox(0, 15, size, size, null, 0f);
                 Add(_hit);
 
-                if (World.ClientFeatures.TooltipsEnabled)
+                if (_gump.World.ClientFeatures.TooltipsEnabled)
                 {
                     _hit.SetTooltip(item);
                 }
@@ -498,7 +501,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     if (e.Button == MouseButtonType.Left)
                     {
-                        GameActions.GrabItem(item, (ushort)amount.Value);
+                        GameActions.GrabItem(_gump.World, item, (ushort)amount.Value);
                     }
                 };
 
@@ -512,15 +515,15 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 base.Draw(batcher, x, y);
 
-                Item item = World.Items.Get(LocalSerial);
+                Item item = _gump.World.Items.Get(LocalSerial);
 
                 Vector3 hueVector;
 
                 if (item != null)
                 {
-                    ref readonly var artInfo = ref Client.Game.Arts.GetArt(item.DisplayedGraphic);
+                    ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(item.DisplayedGraphic);
 
-                    var rect = Client.Game.Arts.GetRealArtBounds(item.DisplayedGraphic);
+                    var rect = Client.Game.UO.Arts.GetRealArtBounds(item.DisplayedGraphic);
 
                     hueVector = ShaderHueTranslator.GetHueVector(
                         item.Hue,

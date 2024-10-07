@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,15 +43,15 @@ namespace ClassicUO.Game.GameObjects
     {
         private readonly EffectManager _manager;
 
-        protected GameEffect(EffectManager manager, ushort graphic, ushort hue, int duration, byte speed)
+        protected GameEffect(World world, EffectManager manager, ushort graphic, ushort hue, int duration, byte speed) : base(world)
         {
             _manager = manager;
 
             Graphic = graphic;
             Hue = hue;
-            AllowedToDraw = CanBeDrawn(graphic);
+            AllowedToDraw = CanBeDrawn(world, graphic);
             AlphaHue = 0xFF;
-            AnimDataFrame = AnimDataLoader.Instance?.CalculateCurrentGraphic(graphic) ?? default;
+            AnimDataFrame = Client.Game?.UO?.FileManager?.AnimData?.CalculateCurrentGraphic(graphic) ?? default;
             IsEnabled = true;
             AnimIndex = 0;
             
@@ -167,7 +167,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 (var targetX, var targetY, var targetZ) = GetTarget();
 
-                FixedEffect effect = new FixedEffect(_manager, 0x36CB, Hue, 400, 0);
+                FixedEffect effect = new FixedEffect(World, _manager, 0x36CB, Hue, 400, 0);
                 effect.Blend = Blend;
                 effect.SetSource(targetX, targetY, targetZ);
 

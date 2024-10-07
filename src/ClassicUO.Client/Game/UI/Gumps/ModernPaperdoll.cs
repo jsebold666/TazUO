@@ -298,7 +298,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                             if (equipment == null)
                             {
-                                GameActions.Equip(World.Player);
+                                GameActions.Equip(_world, _world.Player);
                                 Mouse.CancelDoubleClick = true;
                             }
                         }

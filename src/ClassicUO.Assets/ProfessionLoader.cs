@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,7 +30,6 @@
 
 #endregion
 
-using ClassicUO.IO;
 using ClassicUO.Utility;
 using System.Collections.Generic;
 using System.IO;
@@ -38,113 +37,116 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class ProfessionInfo
+    public sealed class ProfessionInfo
     {
-        public static readonly int[,] _VoidSkills = new int[4, 2]
+        public ProfessionInfo(ClientVersion clientVersion)
         {
-            { 0, InitialSkillValue }, { 0, InitialSkillValue },
-            { 0, UOFileManager.Version < ClientVersion.CV_70160 ? 0 : InitialSkillValue }, { 0, InitialSkillValue }
-        };
-        public static readonly int[] _VoidStats = new int[3] { 60, RemainStatValue, RemainStatValue };
-        public static int InitialSkillValue => UOFileManager.Version >= ClientVersion.CV_70160 ? 30 : 50;
-        public static int RemainStatValue => UOFileManager.Version >= ClientVersion.CV_70160 ? 15 : 10;
+            (SkillDefVal, StatsVal) = GetDefaults(clientVersion);
+        }
+
+        public static (int[,] defaultSkillsValues, int[] defaultStatsValues) GetDefaults(ClientVersion clientVersion)
+        {
+            int initialSkillValue = clientVersion >= ClientVersion.CV_70160 ? 30 : 50;
+            int remainStatValue = clientVersion >= ClientVersion.CV_70160 ? 15 : 10;
+
+            return
+            (
+                new int[4, 2]
+                {
+                    { 0, initialSkillValue }, { 0, initialSkillValue },
+                    { 0, clientVersion < ClientVersion.CV_70160 ? 0 : initialSkillValue }, { 0, initialSkillValue }
+                },
+                new int[3] { 60, remainStatValue, remainStatValue }
+            );
+        }
+
+
         public string Name { get; set; }
         public string TrueName { get; set; }
         public int Localization { get; set; }
         public int Description { get; set; }
         public int DescriptionIndex { get; set; }
         public ProfessionLoader.PROF_TYPE Type { get; set; }
-
         public ushort Graphic { get; set; }
-
         public bool TopLevel { get; set; }
-        public int[,] SkillDefVal { get; set; } = _VoidSkills;
-        public int[] StatsVal { get; set; } = _VoidStats;
+        public int[,] SkillDefVal { get; set; }
+        public int[] StatsVal { get; set; }
         public List<string> Children { get; set; }
     }
 
-    public class ProfessionLoader : UOFileLoader
+    public sealed class ProfessionLoader : UOFileLoader
     {
-        private static ProfessionLoader _instance;
         private readonly string[] _Keys =
         {
             "begin", "name", "truename", "desc", "toplevel", "gump", "type", "children", "skill",
             "stat", "str", "int", "dex", "end", "true", "category", "nameid", "descid"
         };
 
-        private ProfessionLoader()
+        public ProfessionLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
 
-        public static ProfessionLoader Instance => _instance ?? (_instance = new ProfessionLoader());
-
         public Dictionary<ProfessionInfo, List<ProfessionInfo>> Professions { get; } = new Dictionary<ProfessionInfo, List<ProfessionInfo>>();
 
-        public override Task Load()
+        public override void Load()
         {
-            return Task.Run
-            (
-                () =>
+            bool result = false;
+
+            FileInfo file = new FileInfo(FileManager.GetUOFilePath("Prof.txt"));
+
+            if (file.Exists)
+            {
+                if (file.Length > 0x100000) //1megabyte limit of string file
                 {
-                    bool result = false;
+                    throw new InternalBufferOverflowException($"{file.FullName} exceeds the maximum 1Megabyte allowed size for a string text file, please, check that the file is correct and not corrupted -> {file.Length} file size");
+                }
 
-                    FileInfo file = new FileInfo(UOFileManager.GetUOFilePath("Prof.txt"));
+                //what if file doesn't exist? we skip section completely...directly into advanced selection
+                TextFileParser read = new TextFileParser(File.ReadAllText(file.FullName), new[] { ' ', '\t', ',' }, new[] { '#', ';' }, new[] { '"', '"' });
 
-                    if (file.Exists)
+                while (!read.IsEOF())
+                {
+                    List<string> strings = read.ReadTokens();
+
+                    if (strings.Count > 0)
                     {
-                        if (file.Length > 0x100000) //1megabyte limit of string file
+                        if (strings[0].ToLower() == "begin")
                         {
-                            throw new InternalBufferOverflowException($"{file.FullName} exceeds the maximum 1Megabyte allowed size for a string text file, please, check that the file is correct and not corrupted -> {file.Length} file size");
-                        }
+                            result = ParseFilePart(read);
 
-                        //what if file doesn't exist? we skip section completely...directly into advanced selection
-                        TextFileParser read = new TextFileParser(File.ReadAllText(file.FullName), new[] { ' ', '\t', ',' }, new[] { '#', ';' }, new[] { '"', '"' });
-
-                        while (!read.IsEOF())
-                        {
-                            List<string> strings = read.ReadTokens();
-
-                            if (strings.Count > 0)
+                            if (!result)
                             {
-                                if (strings[0].ToLower() == "begin")
-                                {
-                                    result = ParseFilePart(read);
-
-                                    if (!result)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    Professions[new ProfessionInfo
-                    {
-                        Name = "Advanced",
-                        Localization = 1061176,
-                        Description = 1061226,
-                        Graphic = 5545,
-                        TopLevel = true,
-                        Type = PROF_TYPE.PROFESSION,
-                        DescriptionIndex = -1,
-                        TrueName = "advanced"
-                    }] = null;
-
-                    foreach (KeyValuePair<ProfessionInfo, List<ProfessionInfo>> kvp in Professions)
-                    {
-                        kvp.Key.Children = null;
-
-                        if (kvp.Value != null)
-                        {
-                            foreach (ProfessionInfo info in kvp.Value)
-                            {
-                                info.Children = null;
+                                break;
                             }
                         }
                     }
                 }
-            );
+            }
+
+            Professions[new ProfessionInfo(FileManager.Version)
+            {
+                Name = "Advanced",
+                Localization = 1061176,
+                Description = 1061226,
+                Graphic = 5545,
+                TopLevel = true,
+                Type = PROF_TYPE.PROFESSION,
+                DescriptionIndex = -1,
+                TrueName = "advanced"
+            }] = null;
+
+            foreach (KeyValuePair<ProfessionInfo, List<ProfessionInfo>> kvp in Professions)
+            {
+                kvp.Key.Children = null;
+
+                if (kvp.Value != null)
+                {
+                    foreach (ProfessionInfo info in kvp.Value)
+                    {
+                        info.Children = null;
+                    }
+                }
+            }
         }
 
         private int GetKeyCode(string key)
@@ -284,9 +286,9 @@ namespace ClassicUO.Assets
                                 }
                             }
 
-                            for (int j = 0; j < SkillsLoader.Instance.SkillsCount; j++)
+                            for (int j = 0; j < FileManager.Skills.SkillsCount; j++)
                             {
-                                SkillEntry skill = SkillsLoader.Instance.Skills[j];
+                                var skill = FileManager.Skills.Skills[j];
 
                                 if (strings[1] == skill.Name || ((SkillEntry.HardCodedName) skill.Index).ToString().ToLower() == strings[1].ToLower())
                                 {
@@ -330,7 +332,7 @@ namespace ClassicUO.Assets
 
                     {
                         int.TryParse(strings[1], out nameClilocID);
-                        name = ClilocLoader.Instance.GetString(nameClilocID, true, name);
+                        name = FileManager.Clilocs.GetString(nameClilocID, true, name);
 
                         break;
                     }
@@ -350,7 +352,7 @@ namespace ClassicUO.Assets
 
             if (type == PROF_TYPE.CATEGORY)
             {
-                info = new ProfessionInfo
+                info = new ProfessionInfo(FileManager.Version)
                 {
                     Children = childrens
                 };
@@ -359,7 +361,7 @@ namespace ClassicUO.Assets
             }
             else if (type == PROF_TYPE.PROFESSION)
             {
-                info = new ProfessionInfo
+                info = new ProfessionInfo(FileManager.Version)
                 {
                     StatsVal = stats,
                     SkillDefVal = skillIndex

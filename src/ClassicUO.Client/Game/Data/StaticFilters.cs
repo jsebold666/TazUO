@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ namespace ClassicUO.Game.Data
         public static readonly List<ushort> CaveTiles = new List<ushort>();
         public static readonly List<ushort> TreeTiles = new List<ushort>();
 
-        public static void Load()
+        public static void Load(TileDataLoader tileData)
         {
             string path = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Client");
 
@@ -115,7 +115,7 @@ namespace ClassicUO.Game.Data
                     {
                         ushort g = vegetationTiles[i];
 
-                        if (TileDataLoader.Instance.StaticData[g].IsImpassable)
+                        if (tileData.StaticData[g].IsImpassable)
                         {
                             continue;
                         }
@@ -167,7 +167,7 @@ namespace ClassicUO.Game.Data
                                 break;
                         }
 
-                        if (!TileDataLoader.Instance.StaticData[graphic].IsImpassable)
+                        if (!tileData.StaticData[graphic].IsImpassable)
                         {
                             writerveg.WriteLine(graphic);
                         }
@@ -241,7 +241,7 @@ namespace ClassicUO.Game.Data
         {
             //foreach (ushort graphic in CaveTiles)
             //{
-            //    ArtTexture texture = ArtLoader.Instance.GetTexture(graphic);
+            //    ArtTexture texture = Client.Game.UO.FileManager.Arts.GetTexture(graphic);
 
             //    if (texture != null)
             //    {
@@ -249,14 +249,14 @@ namespace ClassicUO.Game.Data
             //    }
             //}
 
-            //ArtLoader.Instance.CleaUnusedResources(short.MaxValue);
+            //Client.Game.UO.FileManager.Arts.CleaUnusedResources(short.MaxValue);
         }
 
         public static void CleanTreeTextures()
         {
             //foreach (ushort graphic in TreeTiles)
             //{
-            //    ArtTexture texture = ArtLoader.Instance.GetTexture(graphic);
+            //    ArtTexture texture = Client.Game.UO.FileManager.Arts.GetTexture(graphic);
 
             //    if (texture != null)
             //    {
@@ -264,7 +264,7 @@ namespace ClassicUO.Game.Data
             //    }
             //}
 
-            //ArtLoader.Instance.CleaUnusedResources(short.MaxValue);
+            //Client.Game.UO.FileManager.Arts.CleaUnusedResources(short.MaxValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

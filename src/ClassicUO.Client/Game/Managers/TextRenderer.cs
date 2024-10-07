@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ namespace ClassicUO.Game.Managers
     {
         private readonly List<Rectangle> _bounds = new List<Rectangle>();
 
-        public TextRenderer()
+        public TextRenderer(World world) : base (world)
         {
             FirstNode = this;
         }

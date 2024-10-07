@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -204,13 +204,10 @@ namespace ClassicUO.Network.Encryption
 
             if (use_md5)
             {
-                var md5B = new MD5Behaviour();
                 var ctx = new MD5Behaviour.MD5Context();
-                md5B.Initialize(ref ctx);
-
-                md5B.Update(ref ctx, _cipher_table.AsSpan(0, 256));
-
-                md5B.Finalize(ref ctx);
+                MD5Behaviour.Initialize(ref ctx);
+                MD5Behaviour.Update(ref ctx, _cipher_table.AsSpan(0, 256));
+                MD5Behaviour.Finalize(ref ctx);
 
                 _xor_data = new byte[16];
                 for (int i = 0; i < 16; ++i)
@@ -574,7 +571,6 @@ namespace ClassicUO.Network.Encryption
         private static readonly int ROUNDS_192 = 16;    /* default number of rounds for 192-bit keys*/
         private static readonly int ROUNDS_256 = 16;    /* default number of rounds for 256-bit keys*/
         private static readonly int MAX_KEY_BITS = 256; /* max number of bits of key */
-        private static readonly int MIN_KEY_BITS = 128; /* min number of bits of key (zero pad) */
 
         //#define		VALID_SIG	 0x48534946	/* initialization signature ('FISH') */
         //#define		MCT_OUTER			400	/* MCT outer loop */

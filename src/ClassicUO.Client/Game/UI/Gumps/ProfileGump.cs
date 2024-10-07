@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly ScrollArea _scrollArea;
         private readonly StbTextBox _textBox;
 
-        public ProfileGump(uint serial, string header, string footer, string body, bool canEdit) : base(serial, 0)
+        public ProfileGump(World world, uint serial, string header, string footer, string body, bool canEdit) : base(world, serial, 0)
         {
             Height = 300 + _diffY;
             CanMove = true;
@@ -207,7 +207,7 @@ namespace ClassicUO.Game.UI.Gumps
         {
             _textBox.Height = Math.Max
             (
-                FontsLoader.Instance.GetHeightUnicode
+                Client.Game.UO.FileManager.Fonts.GetHeightUnicode
                 (
                     1,
                     _textBox.Text,

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -76,55 +76,52 @@ namespace ClassicUO.Utility
         CV_704565 = (7 << 24) | (0 << 16) | (45 << 8) | 65,          //
         CV_705301 = (7 << 24) | (0 << 16) | (53 << 8) | 01,          // Alternate backpack skins
         CV_706000 = (7 << 24) | (0 << 16) | (60 << 8) | 0,
-        CV_706400 = (7 << 24) | (0 << 16) | (64 << 8) | 0, // Endless Journey background
-        CV_70796 = (7 << 24) | (0 << 16) | (79 << 8) | 6   // Display houses content option
+        CV_706400 = (7 << 24) | (0 << 16) | (64 << 8) | 0,           // Endless Journey background
+        CV_70796 = (7 << 24) | (0 << 16) | (79 << 8) | 6,            // Display houses content option
+        CV_7010400 = (7 << 24) | (0 << 16) | (104 << 8) | 0,         // new file format
     }
 
     public static class ClientVersionHelper
     {
         public static bool TryParseFromFile(string clientpath, out string version)
         {
-            if (File.Exists(clientpath))
-            {
-                using (FileStream fs = new FileStream(clientpath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    byte[] buffer = new byte[fs.Length];
-
-                    fs.Read(buffer, 0, (int) fs.Length);
-
-                    // VS_VERSION_INFO (unicode)
-                    Span<byte> vsVersionInfo = stackalloc byte[]
-                    {
-                        0x56, 0x00, 0x53, 0x00, 0x5F, 0x00, 0x56,
-                        0x00, 0x45, 0x00, 0x52, 0x00, 0x53, 0x00,
-                        0x49, 0x00, 0x4F, 0x00, 0x4E, 0x00, 0x5F,
-                        0x00, 0x49, 0x00, 0x4E, 0x00, 0x46, 0x00,
-                        0x4F, 0x00
-                    };
-
-
-                    for (var i = 0; i < buffer.Length; i++)
-                    {
-                        if (vsVersionInfo.SequenceEqual(buffer.AsSpan(i, 30)))
-                        {
-                            var offset = i + 42; // 30 + 12
-
-                            var minorPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset));
-                            var majorPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 2));
-                            var privatePart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 4));
-                            var buildPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 6));
-
-                            version = $"{majorPart}.{minorPart}.{buildPart}.{privatePart}";
-
-                            return true;
-                        }
-                    }
-                } 
-            }
-
             version = null;
 
-            return false;
+            if (!File.Exists(clientpath))
+            {
+                return false;
+            }
+     
+            var buffer = File.ReadAllBytes(clientpath);
+
+            // VS_VERSION_INFO (unicode)
+            Span<byte> vsVersionInfo = stackalloc byte[]
+            {
+                0x56, 0x00, 0x53, 0x00, 0x5F, 0x00, 0x56,
+                0x00, 0x45, 0x00, 0x52, 0x00, 0x53, 0x00,
+                0x49, 0x00, 0x4F, 0x00, 0x4E, 0x00, 0x5F,
+                0x00, 0x49, 0x00, 0x4E, 0x00, 0x46, 0x00,
+                0x4F, 0x00
+            };
+
+            for (var i = 0; i < buffer.Length - vsVersionInfo.Length; i++)
+            {
+                if (vsVersionInfo.SequenceEqual(buffer.AsSpan(i, vsVersionInfo.Length)))
+                {
+                    var offset = i + 42; // 30 + 12
+
+                    var minorPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset));
+                    var majorPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 2));
+                    var privatePart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 4));
+                    var buildPart = BinaryPrimitives.ReadUInt16LittleEndian(buffer.AsSpan(offset + 6));
+
+                    version = $"{majorPart}.{minorPart}.{buildPart}.{privatePart}";
+
+                    break;
+                }
+            }
+
+            return !string.IsNullOrEmpty(version);
         }
 
         public static bool IsClientVersionValid(string versionText, out ClientVersion version)

@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@ namespace ClassicUO.Game.UI.Controls
             ContainsByBounds = true;
             IsFromServer = true;
 
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(_graphic);
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(_graphic);
 
             if (artInfo.Texture == null)
             {
@@ -66,8 +66,7 @@ namespace ClassicUO.Game.UI.Controls
                 return;
             }
 
-            _isPartial = TileDataLoader.Instance.StaticData[_graphic].IsPartialHue;
-
+            _isPartial = Client.Game.UO.FileManager.TileData.StaticData[_graphic].IsPartialHue;
             hueVector = ShaderHueTranslator.GetHueVector(_hue, _isPartial, 1f);
         }
 
@@ -75,7 +74,9 @@ namespace ClassicUO.Game.UI.Controls
         {
             base.Draw(batcher, x, y);
 
-            ref readonly var artInfo = ref Client.Game.Arts.GetArt(_graphic);
+            var hueVector = ShaderHueTranslator.GetHueVector(_hue, _isPartial, 1f);
+
+            ref readonly var artInfo = ref Client.Game.UO.Arts.GetArt(_graphic);
 
             if (artInfo.Texture != null)
             {

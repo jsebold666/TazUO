@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -30,23 +30,19 @@
 
 #endregion
 
-using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Input;
+using ClassicUO.Assets;
 using ClassicUO.Network;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace ClassicUO.Game.Managers
 {
-    public enum CursorTarget
+    internal enum CursorTarget
     {
         Invalid = -1,
         Object = 0,
@@ -56,17 +52,15 @@ namespace ClassicUO.Game.Managers
         Grab,
         SetGrabBag,
         HueCommandTarget,
-        IgnorePlayerTarget,
-        MoveItemContainer,
-        Internal
+        IgnorePlayerTarget
     }
 
-    public class CursorType
+    internal class CursorType
     {
         public static readonly uint Target = 6983686;
     }
 
-    public enum TargetType
+    internal enum TargetType
     {
         Neutral,
         Harmful,
@@ -74,7 +68,7 @@ namespace ClassicUO.Game.Managers
         Cancel
     }
 
-    public class MultiTargetInfo
+    internal class MultiTargetInfo
     {
         public MultiTargetInfo(ushort model, ushort x, ushort y, ushort z, ushort hue)
         {
@@ -88,7 +82,7 @@ namespace ClassicUO.Game.Managers
         public readonly ushort XOff, YOff, ZOff, Model, Hue;
     }
 
-    public class LastTargetInfo
+    internal class LastTargetInfo
     {
         public bool IsEntity => SerialHelper.IsValid(Serial);
         public bool IsStatic => !IsEntity && Graphic != 0 && Graphic != 0xFFFF;
@@ -134,76 +128,41 @@ namespace ClassicUO.Game.Managers
         }
     }
 
-    public static class TargetManager
+    internal sealed class TargetManager
     {
-        private static uint _targetCursorId, _lastAttack;
-        private static readonly byte[] _lastDataBuffer = new byte[19];
-
-        public static uint SelectedTarget;
-
-        public static uint LastAttack
-        {
-            get { return _lastAttack; }
-            set
-            {
-                _lastAttack = value;
-                if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.OpenHealthBarForLastAttack)
-                {
-                    if (ProfileManager.CurrentProfile.UseOneHPBarForLastAttack)
-                    {
-                        if (BaseHealthBarGump.LastAttackBar != null && !BaseHealthBarGump.LastAttackBar.IsDisposed)
-                        {
-                            if (BaseHealthBarGump.LastAttackBar.LocalSerial != value)
-                            {
-                                BaseHealthBarGump.LastAttackBar.SetNewMobile(value);
-                            }
-                        }
-                        else
-                        {
-                            if (ProfileManager.CurrentProfile.CustomBarsToggled)
-                                UIManager.Add(BaseHealthBarGump.LastAttackBar = new HealthBarGumpCustom(value) { Location = ProfileManager.CurrentProfile.LastTargetHealthBarPos, IsLastTarget = true });
-                            else
-                                UIManager.Add(BaseHealthBarGump.LastAttackBar = new HealthBarGump(value) { Location = ProfileManager.CurrentProfile.LastTargetHealthBarPos, IsLastTarget = true });
-                        }
-                    }
-                    else
-                    {
-                        if (UIManager.GetGump<BaseHealthBarGump>(value) == null)
-                        {
-                            if (ProfileManager.CurrentProfile.CustomBarsToggled)
-                                UIManager.Add(new HealthBarGumpCustom(value) { Location = ProfileManager.CurrentProfile.LastTargetHealthBarPos, IsLastTarget = true });
-                            else
-                                UIManager.Add(new HealthBarGump(value) { Location = ProfileManager.CurrentProfile.LastTargetHealthBarPos, IsLastTarget = true });
-                        }
-                    }
-                }
-            }
-        }
-
-        public static readonly LastTargetInfo LastTargetInfo = new LastTargetInfo();
+        private uint _targetCursorId;
+        private readonly World _world;
+        private readonly byte[] _lastDataBuffer = new byte[19];
 
 
-        public static MultiTargetInfo MultiTargetInfo { get; private set; }
+        public TargetManager(World world) { _world = world; }
 
-        public static CursorTarget TargetingState { get; private set; } = CursorTarget.Invalid;
+        public uint LastAttack, SelectedTarget;
 
-        public static bool IsTargeting { get; private set; }
+        public readonly LastTargetInfo LastTargetInfo = new LastTargetInfo();
 
-        public static TargetType TargetingType { get; private set; }
 
-        private static void ClearTargetingWithoutTargetCancelPacket()
+        public MultiTargetInfo MultiTargetInfo { get; private set; }
+
+        public CursorTarget TargetingState { get; private set; } = CursorTarget.Invalid;
+
+        public bool IsTargeting { get; private set; }
+
+        public TargetType TargetingType { get; private set; }
+
+        private void ClearTargetingWithoutTargetCancelPacket()
         {
             if (TargetingState == CursorTarget.MultiPlacement)
             {
                 MultiTargetInfo = null;
                 TargetingState = 0;
-                World.HouseManager.Remove(0);
+                _world.HouseManager.Remove(0);
             }
 
             IsTargeting = false;
         }
 
-        public static void Reset()
+        public void Reset()
         {
             ClearTargetingWithoutTargetCancelPacket();
 
@@ -213,7 +172,7 @@ namespace ClassicUO.Game.Managers
             TargetingType = 0;
         }
 
-        public static void SetTargeting(CursorTarget targeting, uint cursorID, TargetType cursorType)
+        public void SetTargeting(CursorTarget targeting, uint cursorID, TargetType cursorType)
         {
             if (targeting == CursorTarget.Invalid)
             {
@@ -242,18 +201,18 @@ namespace ClassicUO.Game.Managers
         }
 
 
-        public static void CancelTarget()
+        public void CancelTarget()
         {
             if (TargetingState == CursorTarget.MultiPlacement)
             {
-                World.HouseManager.Remove(0);
+                _world.HouseManager.Remove(0);
 
-                if (World.CustomHouseManager != null)
+                if (_world.CustomHouseManager != null)
                 {
-                    World.CustomHouseManager.Erasing = false;
-                    World.CustomHouseManager.SeekTile = false;
-                    World.CustomHouseManager.SelectedGraphic = 0;
-                    World.CustomHouseManager.CombinedStair = false;
+                    _world.CustomHouseManager.Erasing = false;
+                    _world.CustomHouseManager.SeekTile = false;
+                    _world.CustomHouseManager.SelectedGraphic = 0;
+                    _world.CustomHouseManager.CombinedStair = false;
 
                     UIManager.GetGump<HouseCustomizationGump>()?.Update();
                 }
@@ -268,7 +227,7 @@ namespace ClassicUO.Game.Managers
             Reset();
         }
 
-        public static void SetTargetingMulti
+        public void SetTargetingMulti
         (
             uint deedSerial,
             ushort model,
@@ -291,15 +250,14 @@ namespace ClassicUO.Game.Managers
             );
         }
 
-
-        public static void Target(uint serial)
+        public void Target(uint serial)
         {
             if (!IsTargeting)
             {
                 return;
             }
 
-            Entity entity = World.InGame ? World.Get(serial) : null;
+            Entity entity = _world.InGame ? _world.Get(serial) : null;
 
             if (entity != null)
             {
@@ -307,23 +265,18 @@ namespace ClassicUO.Game.Managers
                 {
                     case CursorTarget.Invalid: return;
 
-                    case CursorTarget.Internal:
-                        LastTargetInfo.SetEntity(serial);
-                        ClearTargetingWithoutTargetCancelPacket();
-                        Mouse.CancelDoubleClick = true;
-                        break;
                     case CursorTarget.MultiPlacement:
                     case CursorTarget.Position:
                     case CursorTarget.Object:
                     case CursorTarget.HueCommandTarget:
                     case CursorTarget.SetTargetClientSide:
 
-                        if (entity != World.Player)
+                        if (entity != _world.Player)
                         {
                             LastTargetInfo.SetEntity(serial);
                         }
 
-                        if (SerialHelper.IsMobile(serial) && serial != World.Player && (World.Player.NotorietyFlag == NotorietyFlag.Innocent || World.Player.NotorietyFlag == NotorietyFlag.Ally))
+                        if (SerialHelper.IsMobile(serial) && serial != _world.Player && (_world.Player.NotorietyFlag == NotorietyFlag.Innocent || _world.Player.NotorietyFlag == NotorietyFlag.Ally))
                         {
                             Mobile mobile = entity as Mobile;
 
@@ -344,6 +297,7 @@ namespace ClassicUO.Game.Managers
                                 {
                                     QuestionGump messageBox = new QuestionGump
                                     (
+                                        _world,
                                         "This may flag\nyou criminal!",
                                         s =>
                                         {
@@ -361,7 +315,7 @@ namespace ClassicUO.Game.Managers
 
                                                 if (LastTargetInfo.Serial != serial)
                                                 {
-                                                    GameActions.RequestMobileStatus(serial);
+                                                    GameActions.RequestMobileStatus(_world, serial);
                                                 }
                                             }
                                         }
@@ -374,7 +328,7 @@ namespace ClassicUO.Game.Managers
                             }
                         }
 
-                        if (TargetingState != CursorTarget.SetTargetClientSide && TargetingState != CursorTarget.Internal)
+                        if (TargetingState != CursorTarget.SetTargetClientSide)
                         {
                             _lastDataBuffer[0] = 0x6C;
 
@@ -415,7 +369,7 @@ namespace ClassicUO.Game.Managers
 
                             if (SerialHelper.IsMobile(serial) && LastTargetInfo.Serial != serial)
                             {
-                                GameActions.RequestMobileStatus(serial);
+                                GameActions.RequestMobileStatus(_world, serial);
                             }
                         }
 
@@ -429,7 +383,7 @@ namespace ClassicUO.Game.Managers
 
                         if (SerialHelper.IsItem(serial))
                         {
-                            GameActions.GrabItem(serial, ((Item)entity).Amount);
+                            GameActions.GrabItem(_world, serial, ((Item)entity).Amount);
                         }
 
                         ClearTargetingWithoutTargetCancelPacket();
@@ -441,7 +395,7 @@ namespace ClassicUO.Game.Managers
                         if (SerialHelper.IsItem(serial))
                         {
                             ProfileManager.CurrentProfile.GrabBagSerial = serial;
-                            GameActions.Print(string.Format(ResGeneral.GrabBagSet0, serial));
+                            GameActions.Print(_world, string.Format(ResGeneral.GrabBagSet0, serial));
                         }
 
                         ClearTargetingWithoutTargetCancelPacket();
@@ -450,22 +404,15 @@ namespace ClassicUO.Game.Managers
                     case CursorTarget.IgnorePlayerTarget:
                         if (SelectedObject.Object is Entity pmEntity)
                         {
-                            IgnoreManager.AddIgnoredTarget(pmEntity);
+                            _world.IgnoreManager.AddIgnoredTarget(pmEntity);
                         }
                         CancelTarget();
-                        return;
-                    case CursorTarget.MoveItemContainer:
-                        if (SerialHelper.IsItem(serial))
-                        {
-                            MultiItemMoveGump.OnContainerTarget(serial);
-                        }
-                        ClearTargetingWithoutTargetCancelPacket();
                         return;
                 }
             }
         }
 
-        public static void Target(ushort graphic, ushort x, ushort y, short z, bool wet = false)
+        public void Target(ushort graphic, ushort x, ushort y, short z, bool wet = false)
         {
             if (!IsTargeting)
             {
@@ -481,14 +428,14 @@ namespace ClassicUO.Game.Managers
             }
             else
             {
-                if (graphic >= TileDataLoader.Instance.StaticData.Length)
+                if (graphic >= Client.Game.UO.FileManager.TileData.StaticData.Length)
                 {
                     return;
                 }
 
-                ref StaticTiles itemData = ref TileDataLoader.Instance.StaticData[graphic];
+                ref StaticTiles itemData = ref Client.Game.UO.FileManager.TileData.StaticData[graphic];
 
-                if (Client.Version >= ClientVersion.CV_7090 && itemData.IsSurface)
+                if (Client.Game.UO.Version >= ClientVersion.CV_7090 && itemData.IsSurface)
                 {
                     z += itemData.Height;
                 }
@@ -499,13 +446,13 @@ namespace ClassicUO.Game.Managers
             TargetPacket(graphic, x, y, (sbyte)z);
         }
 
-        public static void SendMultiTarget(ushort x, ushort y, sbyte z)
+        public void SendMultiTarget(ushort x, ushort y, sbyte z)
         {
             TargetPacket(0, x, y, z);
             MultiTargetInfo = null;
         }
 
-        public static void TargetLast()
+        public void TargetLast()
         {
             if (!IsTargeting)
             {
@@ -525,7 +472,7 @@ namespace ClassicUO.Game.Managers
             ClearTargetingWithoutTargetCancelPacket();
         }
 
-        private static void TargetPacket(ushort graphic, ushort x, ushort y, sbyte z)
+        private void TargetPacket(ushort graphic, ushort x, ushort y, sbyte z)
         {
             if (!IsTargeting)
             {
@@ -572,88 +519,6 @@ namespace ClassicUO.Game.Managers
 
             Mouse.CancelDoubleClick = true;
             ClearTargetingWithoutTargetCancelPacket();
-        }
-    }
-
-    public static class TargetHelper
-    {
-        private static CancellationTokenSource _executingSource = new CancellationTokenSource();
-
-        /// <summary>
-        /// Request the player to target a gump
-        /// </summary>
-        /// <param name="onTarget"></param>
-        public static async void TargetGump(Action<Gump> onTarget)
-        {
-            var serial = await TargetAsync();
-            if (serial == 0) return;
-
-            var g = UIManager.GetGump(serial);
-            if (g == null)
-            {
-                GameActions.Print($"Failed to find the targeted gump (0x{serial:X}).");
-                return;
-            }
-
-            onTarget(g);
-        }
-
-        /// <summary>
-        /// Request the player target an item or mobile
-        /// </summary>
-        /// <param name="onTargeted"></param>
-        /// <returns></returns>
-        public static async Task TargetObject(Action<Entity> onTargeted)
-        {
-            var serial = await TargetAsync();
-            if (serial == 0) return;
-
-            var untyped = World.Get(serial);
-            if (untyped == null)
-            {
-                GameActions.Print($"Failed to find the targeted entity (0x{serial:X}).");
-                return;
-            }
-
-            onTargeted(untyped);
-        }
-
-        public static async Task<uint> TargetAsync()
-        {
-            if (TargetManager.IsTargeting) TargetManager.CancelTarget();
-
-            if (CUOEnviroment.Debug)
-            {
-                GameActions.Print($"Waiting for Target.");
-            }
-
-            // Abort any previous running task
-            var newSource = new CancellationTokenSource();
-            Interlocked.Exchange(ref _executingSource, newSource).Cancel();
-
-            // Set target
-            TargetManager.SetTargeting(CursorTarget.Internal, CursorType.Target, TargetType.Neutral);
-
-            // Wait for target
-            while (!newSource.IsCancellationRequested && TargetManager.IsTargeting)
-            {
-                try
-                {
-                    await Task.Delay(250, newSource.Token);
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-
-            if (newSource.IsCancellationRequested)
-            {
-                GameActions.Print($"Target request was cancelled.");
-                return 0;
-            }
-
-            return TargetManager.LastTargetInfo.Serial;
         }
     }
 }

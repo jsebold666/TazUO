@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ namespace ClassicUO.Game.UI.Gumps
         private bool _updating;
 
 
-        public SplitMenuGump(uint serial, Point offset) : base(serial, 0)
+        public SplitMenuGump(World world, uint serial, Point offset) : base(world, serial, 0)
         {
             Item item = World.Items.Get(serial);
 
@@ -185,7 +185,7 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (_slider.Value > 0)
             {
-                GameActions.PickUp(LocalSerial, _offset.X, _offset.Y, _slider.Value);
+                GameActions.PickUp(World, LocalSerial, _offset.X, _offset.Y, _slider.Value);
             }
 
             Dispose();

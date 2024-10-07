@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,9 @@ namespace ClassicUO.Game.UI
 
         public static int X, Y;
         public static int Width, Height;
+        private readonly World _world;
+
+        public Tooltip(World world) => _world = world;
 
         public string Text { get; protected set; }
 
@@ -62,7 +65,7 @@ namespace ClassicUO.Game.UI
 
         public bool Draw(UltimaBatcher2D batcher, int x, int y)
         {
-            if (SerialHelper.IsValid(Serial) && World.OPL.TryGetRevision(Serial, out uint revision) && _hash != revision)
+            if (SerialHelper.IsValid(Serial) && _world.OPL.TryGetRevision(Serial, out uint revision) && _hash != revision)
             {
                 _hash = revision;
                 Text = ReadProperties(Serial, out _textHTML);
@@ -95,6 +98,8 @@ namespace ClassicUO.Game.UI
                 zoom = ProfileManager.CurrentProfile.TooltipDisplayZoom / 100f;
             }
 
+            Client.Game.UO.FileManager.Fonts.SetUseHTML(true);
+            Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = true;
 
             if (_textBox == null || _dirty)
             {
@@ -142,7 +147,47 @@ namespace ClassicUO.Game.UI
                 IsEnabled = true;
             }
 
-            if (_textBox == null || _textBox.IsDisposed)
+            if (_renderedText.Text != Text)
+            {
+                if (_maxWidth == 0)
+                {
+                    int width = Client.Game.UO.FileManager.Fonts.GetWidthUnicode(font, Text);
+
+                    if (width > 600)
+                    {
+                        width = 600;
+                    }
+
+                    width = Client.Game.UO.FileManager.Fonts.GetWidthExUnicode
+                    (
+                        font,
+                        Text,
+                        width,
+                        TEXT_ALIGN_TYPE.TS_CENTER,
+                        (ushort) FontStyle.BlackBorder
+                    );
+
+                    if (width > 600)
+                    {
+                        width = 600;
+                    }
+
+                    _renderedText.MaxWidth = width;
+                }
+                else
+                {
+                    _renderedText.MaxWidth = _maxWidth;
+                }
+
+                _renderedText.Font = font;
+                _renderedText.Hue = hue;
+                _renderedText.Text = _textHTML;
+            }
+
+            Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = false;
+            Client.Game.UO.FileManager.Fonts.SetUseHTML(false);
+
+            if (_renderedText.Texture == null || _renderedText.Texture.IsDisposed)
             {
                 return false;
             }
@@ -224,7 +269,7 @@ namespace ClassicUO.Game.UI
             {
                 uint revision2 = 0;
 
-                if (Serial == 0 || Serial != serial || World.OPL.TryGetRevision(Serial, out uint revision) && World.OPL.TryGetRevision(serial, out revision2) && revision != revision2)
+                if (Serial == 0 || Serial != serial || _world.OPL.TryGetRevision(Serial, out uint revision) && _world.OPL.TryGetRevision(serial, out revision2) && revision != revision2)
                 {
                     Serial = serial;
                     _hash = revision2;
@@ -245,7 +290,7 @@ namespace ClassicUO.Game.UI
             string result = null;
             htmltext = string.Empty;
 
-            if (SerialHelper.IsValid(serial) && World.OPL.TryGetNameAndData(serial, out string name, out string data))
+            if (SerialHelper.IsValid(serial) && _world.OPL.TryGetNameAndData(serial, out string name, out string data))
             {
                 ValueStringBuilder sbHTML = new ValueStringBuilder();
                 {
@@ -260,7 +305,7 @@ namespace ClassicUO.Game.UI
                             }
                             else
                             {
-                                Mobile mob = World.Mobiles.Get(serial);
+                                Mobile mob = _world.Mobiles.Get(serial);
 
                                 if (mob != null)
                                 {

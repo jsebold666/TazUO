@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -42,51 +42,36 @@ using System.Threading.Tasks;
 
 namespace ClassicUO.Assets
 {
-    public class MultiMapLoader : UOFileLoader
+    public sealed class MultiMapLoader : UOFileLoader
     {
-        private static MultiMapLoader _instance;
         private UOFileMul[] _facets;
         private UOFile _file;
 
-        private MultiMapLoader()
+        public MultiMapLoader(UOFileManager fileManager) : base(fileManager)
         {
         }
-
-        public static MultiMapLoader Instance => _instance ?? (_instance = new MultiMapLoader());
 
         public bool HasFacet(int map)
         {
             return map >= 0 && map < _facets.Length && _facets[map] != null;
         }
 
-        public override Task Load()
+        public override void Load()
         {
-            return Task.Run
-            (
-                () =>
-                {
-                    string path = UOFileManager.GetUOFilePath("Multimap.rle");
+            string path = FileManager.GetUOFilePath("Multimap.rle");
 
-                    if (File.Exists(path))
-                    {
-                        _file = new UOFile(path, true);
-                    }
+            if (File.Exists(path))
+            {
+                _file = new UOFile(path);
+            }
 
-                    var facetFiles = Directory.GetFiles(UOFileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
-                        .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
-                        .Where(s => s.Success)
-                        .Select(s => Path.Combine(UOFileManager.BasePath, s.Value))
-                        .OrderBy(s => s)
-                        .ToArray();
-
-                    _facets = new UOFileMul[facetFiles.Length];
-
-                    for (int i = 0; i < facetFiles.Length; i++)
-                    {
-                        _facets[i] = new UOFileMul(facetFiles[i]);
-                    }
-                }
-            );
+            _facets = Directory.GetFiles(FileManager.BasePath, "*.mul", SearchOption.TopDirectoryOnly)
+                .Select(s => Regex.Match(s, "facet0.*\\.mul", RegexOptions.IgnoreCase))
+                .Where(s => s.Success)
+                .Select(s => Path.Combine(FileManager.BasePath, s.Value))
+                .OrderBy(s => s)
+                .Select(s => new UOFileMul(s))
+                .ToArray();
         }
 
         public unsafe MultiMapInfo LoadMap
@@ -106,10 +91,10 @@ namespace ClassicUO.Assets
                 return default;
             }
 
-            _file.Seek(0);
+            _file.Seek(0, SeekOrigin.Begin);
 
-            int w = _file.ReadInt();
-            int h = _file.ReadInt();
+            int w = _file.ReadInt32();
+            int h = _file.ReadInt32();
 
             if (w < 1 || h < 1)
             {
@@ -152,8 +137,8 @@ namespace ClassicUO.Assets
 
             while (_file.Position < _file.Length)
             {
-                byte pic = _file.ReadByte();
-                byte size = (byte)(pic & 0x7F);
+                byte pic = _file.ReadUInt8();
+                byte size = (byte) (pic & 0x7F);
                 bool colored = (pic & 0x80) != 0;
 
                 int currentHeight = y * pheight;
@@ -196,11 +181,11 @@ namespace ClassicUO.Assets
             }
 
             int s = Marshal.SizeOf<HuesGroup>();
-            IntPtr ptr = Marshal.AllocHGlobal(s * HuesLoader.Instance.HuesRange.Length);
+            IntPtr ptr = Marshal.AllocHGlobal(s * FileManager.Hues.HuesRange.Length);
 
-            for (int i = 0; i < HuesLoader.Instance.HuesRange.Length; i++)
+            for (int i = 0; i < FileManager.Hues.HuesRange.Length; i++)
             {
-                Marshal.StructureToPtr(HuesLoader.Instance.HuesRange[i], ptr + i * s, false);
+                Marshal.StructureToPtr(FileManager.Hues.HuesRange[i], ptr + i * s, false);
             }
 
             ushort* huesData = (ushort*)(byte*)(ptr + 30800);
@@ -253,11 +238,11 @@ namespace ClassicUO.Assets
                 return default;
             }
 
-            _facets[facet].Seek(0);
+            var file = _facets[facet];
+            file.Seek(0, SeekOrigin.Begin);
 
-            int w = _facets[facet].ReadShort();
-
-            int h = _facets[facet].ReadShort();
+            int w = file.ReadUInt16();
+            int h = file.ReadUInt16();
 
             if (w < 1 || h < 1)
             {
@@ -279,13 +264,13 @@ namespace ClassicUO.Assets
             {
                 int x = 0;
 
-                int colorCount = _facets[facet].ReadInt() / 3;
+                int colorCount = file.ReadInt32() / 3;
 
                 for (int i = 0; i < colorCount; i++)
                 {
-                    int size = _facets[facet].ReadByte();
+                    int size = file.ReadUInt8();
 
-                    uint color = HuesHelper.Color16To32(_facets[facet].ReadUShort()) | 0xFF_00_00_00;
+                    uint color = HuesHelper.Color16To32(file.ReadUInt16()) | 0xFF_00_00_00;
 
                     for (int j = 0; j < size; j++)
                     {

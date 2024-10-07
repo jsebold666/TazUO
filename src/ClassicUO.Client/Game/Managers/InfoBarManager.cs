@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -41,13 +41,15 @@ using ClassicUO.Utility.Logging;
 
 namespace ClassicUO.Game.Managers
 {
-    internal class InfoBarManager
+    internal sealed class InfoBarManager
     {
+        private readonly World _world;
         private readonly List<InfoBarItem> infoBarItems;
 
-        public InfoBarManager()
+        public InfoBarManager(World world)
         {
             infoBarItems = new List<InfoBarItem>();
+            _world = world; 
         }
 
         public List<InfoBarItem> GetInfoBars()
@@ -57,12 +59,7 @@ namespace ClassicUO.Game.Managers
 
         public static string[] GetVars()
         {
-            if (!CUOEnviroment.IsOutlands)
-            {
-                return Enum.GetNames(typeof(InfoBarVars));
-            }
-
-            return Enum.GetNames(typeof(InfoBarVarsOutlands));
+            return Enum.GetNames(typeof(InfoBarVars));
         }
 
         public void AddItem(InfoBarItem ibi)
@@ -180,35 +177,6 @@ namespace ClassicUO.Game.Managers
         DamageChanceInc,
         SwingSpeedInc,
         StatsCap,
-        NameNotoriety,
-        TithingPoints
-    }
-
-    internal enum InfoBarVarsOutlands
-    {
-        HP = 0,
-        Mana,
-        Stamina,
-        Weight,
-        Followers,
-        Gold,
-        Damage,
-        Armor,
-        FoodSatisfaction,
-        MurderTimer,
-        CriminalTimer,
-        PvpCooldown,
-        BandageTimer,
-        LowerReagentCost,
-        SpellDamageInc,
-        FasterCasting,
-        FasterCastRecovery,
-        HitChanceInc,
-        DefenseChanceInc,
-        LowerManaCost,
-        DamageChanceInc,
-        SwingSpeedInc,
-        MurderCount,
         NameNotoriety,
         TithingPoints
     }

@@ -1,8 +1,8 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
-// 
+//
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
 // 1. Redistributions of source code must retain the above copyright
@@ -16,7 +16,7 @@
 // 4. Neither the name of the copyright holder nor the
 //    names of its contributors may be used to endorse or promote products
 //    derived from this software without specific prior written permission.
-// 
+//
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
 // EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 // WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -263,7 +263,7 @@ namespace ClassicUO.Game.UI.Controls
                         value = value.Substring(0, _maxCharCount);
                     }
                 }
-                
+
                 //Sanitize(ref value);
 
                 _rendererText.Text = value;
@@ -308,7 +308,7 @@ namespace ClassicUO.Game.UI.Controls
         {
             if (IsUnicode)
             {
-                return FontsLoader.Instance.GetInfoUnicode
+                return Client.Game.UO.FileManager.Fonts.GetInfoUnicode
                 (
                     _rendererText.Font,
                     text,
@@ -320,7 +320,7 @@ namespace ClassicUO.Game.UI.Controls
                 );
             }
 
-            return FontsLoader.Instance.GetInfoASCII
+            return Client.Game.UO.FileManager.Fonts.GetInfoASCII
             (
                 _rendererText.Font,
                 text,
@@ -378,7 +378,7 @@ namespace ClassicUO.Game.UI.Controls
                 }
 
 
-                int realWidth = _rendererText.IsUnicode ? FontsLoader.Instance.GetWidthUnicode(_rendererText.Font, text) : FontsLoader.Instance.GetWidthASCII(_rendererText.Font, text);
+                int realWidth = _rendererText.IsUnicode ? Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_rendererText.Font, text) : Client.Game.UO.FileManager.Fonts.GetWidthASCII(_rendererText.Font, text);
 
                 if (realWidth > _rendererText.MaxWidth)
                 {
@@ -391,7 +391,7 @@ namespace ClassicUO.Game.UI.Controls
                     }
 
                     //MultilinesFontInfo info = _rendererText.IsUnicode
-                    //                              ? FontsLoader.Instance.GetInfoUnicode(
+                    //                              ? Client.Game.UO.FileManager.Fonts.GetInfoUnicode(
                     //                                                                    _rendererText.Font,
                     //                                                                    text,
                     //                                                                    text.Length,
@@ -399,7 +399,7 @@ namespace ClassicUO.Game.UI.Controls
                     //                                                                    (ushort) _rendererText.FontStyle,
                     //                                                                    realWidth
                     //                                                                   )
-                    //                              : FontsLoader.Instance.GetInfoASCII(
+                    //                              : Client.Game.UO.FileManager.Fonts.GetInfoASCII(
                     //                                                                  _rendererText.Font,
                     //                                                                  text,
                     //                                                                  text.Length,
@@ -859,16 +859,16 @@ namespace ClassicUO.Game.UI.Controls
                         }
                     }
 
-                    if (_maxCharCount > 0 && int.TryParse(Stb.text + c, out int val))
-                    {
-                        if (val > _maxCharCount)
-                        {
-                            _is_writing = false;
-                            SetText(_maxCharCount.ToString());
-
-                            return;
-                        }
-                    }
+                    // if (int.TryParse(Stb.text + c, out int val))
+                    // {
+                    //     if (val > _maxCharCount)
+                    //     {
+                    //         _is_writing = false;
+                    //         SetText(_maxCharCount.ToString());
+                    //
+                    //         return;
+                    //     }
+                    // }
                 }
 
 
@@ -898,7 +898,7 @@ namespace ClassicUO.Game.UI.Controls
 
                 batcher.ClipEnd();
             }
-            
+
             return true;
         }
 
@@ -944,7 +944,7 @@ namespace ClassicUO.Game.UI.Controls
 
                             int endX = 0;
 
-                            // calculate width 
+                            // calculate width
                             for (int k = 0; k < count; k++)
                             {
                                 endX += _rendererText.GetCharWidth(info.Data[startSelectionIndex + k].Item);

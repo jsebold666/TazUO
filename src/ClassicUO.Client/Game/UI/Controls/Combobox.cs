@@ -1,6 +1,6 @@
 ﻿#region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -157,6 +157,8 @@ namespace ClassicUO.Game.UI.Controls
             (
                 new ComboboxGump
                 (
+                    // might crash 
+                    (RootParent as Gump).World,
                     ScreenCoordinateX,
                     comboY,
                     Width,
@@ -179,6 +181,7 @@ namespace ClassicUO.Game.UI.Controls
 
             public ComboboxGump
             (
+                World world,
                 int x,
                 int y,
                 int width,
@@ -186,7 +189,7 @@ namespace ClassicUO.Game.UI.Controls
                 string[] items,
                 byte font,
                 Combobox combobox
-            ) : base(0, 0)
+            ) : base(world, 0, 0)
             {
                 CanMove = false;
                 AcceptMouseInput = true;
