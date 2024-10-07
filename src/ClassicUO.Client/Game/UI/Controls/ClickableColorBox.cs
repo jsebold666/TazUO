@@ -40,11 +40,8 @@ namespace ClassicUO.Game.UI.Controls
 {
     public class ClickableColorBox : ColorBox
     {
-<<<<<<< HEAD
         private readonly bool useModernSelector;
-=======
         private readonly World _world;
->>>>>>> externo/main
 
         public ClickableColorBox
         (
@@ -113,10 +110,6 @@ namespace ClassicUO.Game.UI.Controls
                         s => Hue = s
                     );
 
-<<<<<<< HEAD
-                    UIManager.Add(pickerGump);
-                }
-=======
                 ColorPickerGump pickerGump = new ColorPickerGump
                 (
                     _world,
@@ -128,7 +121,6 @@ namespace ClassicUO.Game.UI.Controls
                 );
 
                 UIManager.Add(pickerGump);
->>>>>>> externo/main
             }
         }
     }

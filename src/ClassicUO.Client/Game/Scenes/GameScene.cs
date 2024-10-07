@@ -672,22 +672,13 @@ namespace ClassicUO.Game.Scenes
 
             GetViewPort();
 
-<<<<<<< HEAD
-            var useObjectHandles = NameOverHeadManager.IsShowing;
-=======
             var useObjectHandles = _world.NameOverHeadManager.IsToggled || Keyboard.Ctrl && Keyboard.Shift;
->>>>>>> externo/main
             if (useObjectHandles != _useObjectHandles)
             {
                 _useObjectHandles = useObjectHandles;
                 if (_useObjectHandles)
                 {
-<<<<<<< HEAD
-                    NameOverHeadManager.Open();
-
-=======
                     _world.NameOverHeadManager.Open();
->>>>>>> externo/main
                 }
                 else
                 {
@@ -834,7 +825,6 @@ namespace ClassicUO.Game.Scenes
                 _timePing = (long)Time.Ticks + 1000;
             }
 
-<<<<<<< HEAD
             if (currentProfile.ForceResyncOnHang && Time.Ticks - NetClient.Socket.Statistics.LastPingReceived > 5000 && Time.Ticks - _lastResync > 5000)
             {
                 //Last ping > ~5 seconds
@@ -843,10 +833,7 @@ namespace ClassicUO.Game.Scenes
                 GameActions.Print("Possible connection hang, resync attempted", 32, MessageType.System);
             }
 
-            World.Update();
-=======
             _world.Update();
->>>>>>> externo/main
             _animatedStaticsManager.Process();
             _world.BoatMovingManager.Update();
             _world.Player.Pathfinder.ProcessAutoWalk();
@@ -856,23 +843,15 @@ namespace ClassicUO.Game.Scenes
             {
                 Direction dir = DirectionHelper.DirectionFromKeyboardArrows(_flags[0], _flags[2], _flags[1], _flags[3]);
 
-                if (World.InGame && !Pathfinder.AutoWalking && dir != Direction.NONE)
+                if (World.InGame && !_world.Player.Pathfinder.AutoWalking && dir != Direction.NONE)
                 {
                     World.Player.Walk(dir, currentProfile.AlwaysRun);
                 }
             }
 
-<<<<<<< HEAD
-            if (currentProfile.FollowingMode && SerialHelper.IsMobile(currentProfile.FollowingTarget) && !Pathfinder.AutoWalking)
-            {
-                Mobile follow = World.Mobiles.Get(currentProfile.FollowingTarget);
-=======
-            if (
-                _followingMode && SerialHelper.IsMobile(_followingTarget) && !_world.Player.Pathfinder.AutoWalking
-            )
+            if (currentProfile.FollowingMode && SerialHelper.IsMobile(_followingTarget) && !_world.Player.Pathfinder.AutoWalking)
             {
                 Mobile follow = _world.Mobiles.Get(_followingTarget);
->>>>>>> externo/main
 
                 if (follow != null)
                 {
@@ -884,14 +863,13 @@ namespace ClassicUO.Game.Scenes
                     }
                     else if (distance > currentProfile.AutoFollowDistance)
                     {
-<<<<<<< HEAD
-                        if (!Pathfinder.WalkTo(follow.X, follow.Y, follow.Z, currentProfile.AutoFollowDistance) && !World.Player.IsParalyzed)
+                        if (!Pathfinder.WalkTo(follow.X, follow.Y, follow.Z, currentProfile.AutoFollowDistance) && !_world.Player.IsParalyzed)
                         {
                             StopFollowing(); //Can't get there
                         }
-=======
+
                         _world.Player.Pathfinder.WalkTo(follow.X, follow.Y, follow.Z, 1);
->>>>>>> externo/main
+
                     }
                 }
                 else
@@ -1444,15 +1422,9 @@ namespace ClassicUO.Game.Scenes
         {
             if (ProfileManager.CurrentProfile.FollowingMode)
             {
-<<<<<<< HEAD
-                ProfileManager.CurrentProfile.FollowingMode = false;
-                ProfileManager.CurrentProfile.FollowingTarget = 0;
-                Pathfinder.StopAutoWalk();
-=======
                 _followingMode = false;
                 _followingTarget = 0;
                 _world.Player.Pathfinder.StopAutoWalk();
->>>>>>> externo/main
 
                 _world.MessageManager.HandleMessage(
                     _world.Player,

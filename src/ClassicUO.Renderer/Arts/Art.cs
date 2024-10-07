@@ -1,7 +1,6 @@
 using System;
 using ClassicUO.Assets;
 using ClassicUO.Utility;
-using FontStashSharp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SDL2;
@@ -41,16 +40,7 @@ namespace ClassicUO.Renderer.Arts
 
             if (spriteInfo.Texture == null)
             {
-<<<<<<< HEAD
-                ArtInfo artInfo = PNGLoader.Instance.LoadArtTexture(idx);
-
-                if (artInfo.Pixels == null || artInfo.Pixels.IsEmpty)
-                {
-                    artInfo = ArtLoader.Instance.GetArt(idx);
-                }
-=======
                 var artInfo = _artLoader.GetArt(idx);
->>>>>>> externo/main
                 if (!artInfo.Pixels.IsEmpty)
                 {
                     spriteInfo.Texture = _atlas.AddSprite(
@@ -163,16 +153,12 @@ namespace ClassicUO.Renderer.Arts
                             {
                                 c.PackedValue = *pixels_ptr;
                                 *pixels_ptr =
-<<<<<<< HEAD
-                                    HuesLoader.Instance.ApplyHueRgba8888(HuesHelper.Color32To16(*pixels_ptr), customHue);
-=======
                                     HuesHelper.Color16To32(
                                         _huesLoader.GetColor16(
                                             HuesHelper.ColorToHue(c),
                                             customHue
                                         )
                                     ) | 0xFF_00_00_00;
->>>>>>> externo/main
                             }
                         }
 

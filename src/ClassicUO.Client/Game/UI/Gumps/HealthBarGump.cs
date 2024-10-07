@@ -42,13 +42,10 @@ using ClassicUO.Resources;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using SDL2;
-<<<<<<< HEAD
 using System;
 using System.Text.Json.Serialization;
 using System.Xml;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -56,15 +53,11 @@ namespace ClassicUO.Game.UI.Gumps
     {
         private bool _targetBroke;
 
-<<<<<<< HEAD
         public bool IsLastAttackBar { get; set; } = false;
         public static BaseHealthBarGump LastAttackBar { get; set; }
         protected bool HasBeenBuilt { get; set; } = false;
 
-        protected BaseHealthBarGump(Entity entity) : this(0, 0)
-=======
-        protected BaseHealthBarGump(World world, Entity entity) : this(world, 0, 0)
->>>>>>> externo/main
+         protected BaseHealthBarGump(World world, Entity entity) : this(world, 0, 0)
         {
             if (entity == null || entity.IsDestroyed)
             {
@@ -380,13 +373,8 @@ namespace ClassicUO.Game.UI.Gumps
                 }
                 else
                 {
-<<<<<<< HEAD
                     if (StatusGumpBase.GetStatusGump() == null)
-                        UIManager.Add(StatusGumpBase.AddStatusGump(ProfileManager.CurrentProfile.StatusGumpPosition.X, ProfileManager.CurrentProfile.StatusGumpPosition.Y));
-=======
-                    UIManager.Add(StatusGumpBase.AddStatusGump(World, ScreenCoordinateX, ScreenCoordinateY));
-                    Dispose();
->>>>>>> externo/main
+                        UIManager.Add(StatusGumpBase.AddStatusGump(World, ProfileManager.CurrentProfile.StatusGumpPosition.X, ProfileManager.CurrentProfile.StatusGumpPosition.Y));
                 }
             }
 
@@ -749,14 +737,9 @@ namespace ClassicUO.Game.UI.Gumps
                     _bars[0].IsVisible = true;
                 }
 
-<<<<<<< HEAD
-                if (mobile != null && mobile != World.Player)
-                    if (TargetManager.LastTargetInfo.Serial != World.Player && !_outOfRange)
-=======
                 if (World.TargetManager.LastTargetInfo.Serial != World.Player && !_outOfRange && mobile != null)
                 {
                     if (mobile == World.TargetManager.LastTargetInfo.Serial)
->>>>>>> externo/main
                     {
                         int tDistance = mobile.Distance;
                         if (mobile == TargetManager.LastTargetInfo.Serial)
@@ -806,8 +789,6 @@ namespace ClassicUO.Game.UI.Gumps
                             }
                         }
                     }
-<<<<<<< HEAD
-=======
                     else if (mobile != World.TargetManager.LastTargetInfo.Serial)
                     {
                         _border[0].LineColor = HPB_COLOR_BLACK;
@@ -818,7 +799,6 @@ namespace ClassicUO.Game.UI.Gumps
                         }
                     }
                 }
->>>>>>> externo/main
 
                 if (mobile != null)
                 {

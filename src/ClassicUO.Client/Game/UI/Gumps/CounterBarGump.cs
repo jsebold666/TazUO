@@ -60,14 +60,9 @@ namespace ClassicUO.Game.UI.Gumps
 
         //private bool _isVertical;
 
-<<<<<<< HEAD
-        public CounterBarGump() : base(0, 0) 
-        {
+        public CounterBarGump(World world) : base(world, 0, 0) { 
             CurrentCounterBarGump = this;
         }
-=======
-        public CounterBarGump(World world) : base(world, 0, 0) { }
->>>>>>> externo/main
 
         public CounterBarGump(
             World world,
@@ -360,13 +355,10 @@ namespace ClassicUO.Game.UI.Gumps
             private int _amount;
             private readonly ImageWithText _image;
             private uint _time;
-<<<<<<< HEAD
             private const uint HIGHLIGHT_DURATION = 1000;
             private uint _endHighlight;
             private bool _highlight;
-=======
             private readonly CounterBarGump _gump;
->>>>>>> externo/main
 
             public CounterItem(CounterBarGump gump, int x, int y, int w, int h)
             {

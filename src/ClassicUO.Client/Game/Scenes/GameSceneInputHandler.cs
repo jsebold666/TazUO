@@ -93,11 +93,7 @@ namespace ClassicUO.Game.Scenes
 
                 bool run = mouseRange >= 190;
 
-<<<<<<< HEAD
-                if (World.Player.IsDrivingBoat && UIManager.GetGump<BoatControl>() == null)
-=======
-                if (_world.Player.IsDrivingBoat)
->>>>>>> externo/main
+                if (_world.Player.IsDrivingBoat && UIManager.GetGump<BoatControl>() == null)
                 {
                     if (!_boatIsMoving || _boatRun != run || _lastBoatDirection != facing - 1)
                     {
@@ -268,12 +264,7 @@ namespace ClassicUO.Game.Scenes
                 rect = Client.Game.UO.Gumps.GetGump(0x0804).UV;
             }
 
-<<<<<<< HEAD
-
-            foreach (Mobile mobile in World.Mobiles.Values)
-=======
             foreach (Mobile mobile in _world.Mobiles.Values)
->>>>>>> externo/main
             {
                 if ((
                         (ProfileManager.CurrentProfile.DragSelect_PlayersModifier == 1 && ctrl) ||
@@ -684,12 +675,8 @@ namespace ClassicUO.Game.Scenes
                     case CursorTarget.SetGrabBag:
                     case CursorTarget.Position:
                     case CursorTarget.Object:
-<<<<<<< HEAD
-                    case CursorTarget.MultiPlacement when World.CustomHouseManager == null:
-=======
                     case CursorTarget.MultiPlacement when _world.CustomHouseManager == null:
 
->>>>>>> externo/main
                         {
                             BaseGameObject obj = lastObj;
 
@@ -1287,14 +1274,11 @@ namespace ClassicUO.Game.Scenes
                             );
                             customgump?.Dispose();
 
-<<<<<<< HEAD
-=======
                             if (obj == _world.Player)
                             {
                                 StatusGumpBase.GetStatusGump()?.Dispose();
                             }
 
->>>>>>> externo/main
                             if (ProfileManager.CurrentProfile.CustomBarsToggled)
                             {
                                 Rectangle rect = new Rectangle(

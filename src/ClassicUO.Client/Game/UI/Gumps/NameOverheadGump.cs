@@ -41,11 +41,8 @@ using ClassicUO.Renderer;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-<<<<<<< HEAD
 using System;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -146,9 +143,6 @@ namespace ClassicUO.Game.UI.Gumps
                     return false;
                 }
 
-<<<<<<< HEAD
-                _text.UpdateText(t);
-=======
                 Client.Game.UO.FileManager.Fonts.SetUseHTML(true);
                 Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = true;
 
@@ -176,7 +170,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                 Width = _background.Width = Math.Max(60, _renderedText.Width) + 4;
                 Height = _background.Height = Constants.OBJECT_HANDLES_GUMP_HEIGHT + 4;
->>>>>>> externo/main
 
                 Width = _background.Width = Math.Max(60, _text.Width) + 4;
                 Height = _background.Height = CurrentHeight = Math.Max(Constants.OBJECT_HANDLES_GUMP_HEIGHT, _text.Height) + 4;
@@ -191,9 +184,6 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 string t = entity.Name;
 
-<<<<<<< HEAD
-                _text.UpdateText(t);
-=======
                 int width = Client.Game.UO.FileManager.Fonts.GetWidthUnicode(_renderedText.Font, t);
 
                 if (width > Constants.OBJECT_HANDLES_GUMP_WIDTH)
@@ -216,7 +206,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                 Width = _background.Width = Math.Max(60, _renderedText.Width) + 4;
                 Height = _background.Height = Constants.OBJECT_HANDLES_GUMP_HEIGHT + 4;
->>>>>>> externo/main
 
                 Width = _background.Width = Math.Max(60, _text.Width) + 4;
                 Height = _background.Height = Math.Max(Constants.OBJECT_HANDLES_GUMP_HEIGHT, _text.Height) + 4;
@@ -735,7 +724,6 @@ namespace ClassicUO.Game.UI.Gumps
                     return false;
                 }
 
-<<<<<<< HEAD
                 if (!string.IsNullOrEmpty(NameOverHeadManager.Search))
                 {
                     string sText = NameOverHeadManager.Search.ToLower();
@@ -757,10 +745,7 @@ namespace ClassicUO.Game.UI.Gumps
                     }
                 }
 
-                var bounds = Client.Game.Arts.GetRealArtBounds(item.Graphic);
-=======
                 var bounds = Client.Game.UO.Arts.GetRealArtBounds(item.Graphic);
->>>>>>> externo/main
 
                 x = item.RealScreenPosition.X + (int)item.Offset.X + 22 + 5;
                 y =

@@ -208,16 +208,9 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (TheMacro != null)
             {
-<<<<<<< HEAD
-                GameScene gs = Client.Game.GetScene<GameScene>();
-                gs.Macros.SetMacroToExecute(TheMacro.Items as MacroObject);
-                gs.Macros.WaitForTargetTimer = 0;
-                gs.Macros.Update();
-=======
                 World.Macros.SetMacroToExecute(_macro.Items as MacroObject);
                 World.Macros.WaitForTargetTimer = 0;
                 World.Macros.Update();
->>>>>>> externo/main
             }
         }
 
@@ -283,11 +276,7 @@ namespace ClassicUO.Game.UI.Gumps
             if (TheMacro != null)
             {
                 // hack to give macro buttons a unique id for use in anchor groups
-<<<<<<< HEAD
-                int macroid = Client.Game.GetScene<GameScene>().Macros.GetAllMacros().IndexOf(TheMacro);
-=======
                 int macroid = World.Macros.GetAllMacros().IndexOf(_macro);
->>>>>>> externo/main
 
                 LocalSerial = (uint)macroid + 1000;
 

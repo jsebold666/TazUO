@@ -92,16 +92,6 @@ namespace ClassicUO.Game.UI.Controls
                 return false;
             }
 
-<<<<<<< HEAD
-            ref readonly var gumpInfoUp0 = ref Client.Game.Gumps.GetGump(BUTTON_UP_0);
-            ref readonly var gumpInfoUp1 = ref Client.Game.Gumps.GetGump(BUTTON_UP_1);
-            ref readonly var gumpInfoDown0 = ref Client.Game.Gumps.GetGump(BUTTON_DOWN_0);
-            ref readonly var gumpInfoDown1 = ref Client.Game.Gumps.GetGump(BUTTON_DOWN_1);
-            ref readonly var gumpInfoBackground0 = ref Client.Game.Gumps.GetGump(BACKGROUND_0);
-            ref readonly var gumpInfoBackground1 = ref Client.Game.Gumps.GetGump(BACKGROUND_1);
-            ref readonly var gumpInfoBackground2 = ref Client.Game.Gumps.GetGump(BACKGROUND_2);
-            ref readonly var gumpInfoSlider = ref Client.Game.Gumps.GetGump(SLIDER);
-=======
             var hueVector = ShaderHueTranslator.GetHueVector(0);
 
             ref readonly var gumpInfoUp0 = ref Client.Game.UO.Gumps.GetGump(BUTTON_UP_0);
@@ -112,7 +102,6 @@ namespace ClassicUO.Game.UI.Controls
             ref readonly var gumpInfoBackground1 = ref Client.Game.UO.Gumps.GetGump(BACKGROUND_1);
             ref readonly var gumpInfoBackground2 = ref Client.Game.UO.Gumps.GetGump(BACKGROUND_2);
             ref readonly var gumpInfoSlider = ref Client.Game.UO.Gumps.GetGump(SLIDER);
->>>>>>> externo/main
 
             // draw scrollbar background
             int middleHeight =

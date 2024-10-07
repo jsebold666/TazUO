@@ -505,12 +505,7 @@ namespace ClassicUO.Network
 
                 if (damage > 0)
                 {
-<<<<<<< HEAD
-                    World.WorldTextManager.AddDamage(entity, damage);
-                    EventSink.InvokeOnEntityDamage(entity, damage);
-=======
-                    world.WorldTextManager.AddDamage(entity, damage);
->>>>>>> externo/main
+                    
                 }
             }
         }
@@ -1396,11 +1391,8 @@ namespace ClassicUO.Network
                     UIManager.Add(gump = new ShopGump(serial, true, 150, 5));
 
 
-<<<<<<< HEAD
-=======
                 ShopGump gump = new ShopGump(world, serial, true, 150, 5);
                 UIManager.Add(gump);
->>>>>>> externo/main
 
                 for (Layer layer = Layer.ShopBuyRestock; layer < Layer.ShopBuy + 1; layer++)
                 {
@@ -1585,7 +1577,6 @@ namespace ClassicUO.Network
                     }
                     else
                     {
-<<<<<<< HEAD
 
                         ContainerGump container = UIManager.GetGump<ContainerGump>(serial);
                         bool playsound = false;
@@ -1601,41 +1592,24 @@ namespace ClassicUO.Network
                         }
                         else
                         {
-                            ContainerManager.CalculateContainerPosition(serial, graphic);
-                            x = ContainerManager.X;
-                            y = ContainerManager.Y;
+                            world.ContainerManager.CalculateContainerPosition(serial, graphic);
+                            x = world.ContainerManager.X;
+                            y = world.ContainerManager.Y;
                             playsound = true;
                         }
 
 
-                        UIManager.Add
-                        (
-                            new ContainerGump(item, graphic, playsound)
-                            {
-                                X = x,
-                                Y = y,
-                                InvalidateContents = true
-                            }
-                        );
-                    }
-
-                    EventSink.InvokeOnOpenContainer(item, serial);
-=======
-                        world.ContainerManager.CalculateContainerPosition(serial, graphic);
-                        x = world.ContainerManager.X;
-                        y = world.ContainerManager.Y;
-                        playsound = true;
-                    }
-
-                    UIManager.Add(
+                       UIManager.Add(
                         new ContainerGump(world, item, graphic, playsound)
                         {
                             X = x,
                             Y = y,
                             InvalidateContents = true
                         }
-                    );
->>>>>>> externo/main
+                        );
+                    }
+
+                    EventSink.InvokeOnOpenContainer(item, serial);
 
                     UIManager.RemovePosition(serial);
                 }
@@ -1861,8 +1835,7 @@ namespace ClassicUO.Network
                     world.Player.DeathScreenTimer = Time.Ticks + Constants.DEATH_SCREEN_TIMER;
                 }
 
-<<<<<<< HEAD
-                GameActions.RequestWarMode(false);
+                GameActions.RequestWarMode(world.Player, false);
                 World.WMapManager._corpse = new WMapEntity(World.Player.Serial)
                 {
                     X = World.Player.X,
@@ -1874,10 +1847,7 @@ namespace ClassicUO.Network
                     Name = $"Your Corpse"
                 };
 
-                EventSink.InvokeOnPlayerDeath(World.Player, World.Player.Serial);
-=======
-                GameActions.RequestWarMode(world.Player, false);
->>>>>>> externo/main
+                EventSink.InvokeOnPlayerDeath(world.Player, world.Player.Serial);
             }
         }
 
@@ -2455,12 +2425,8 @@ namespace ClassicUO.Network
                 byte count = p.ReadUInt8();
                 byte temp = p.ReadUInt8();
 
-<<<<<<< HEAD
-                weather.Generate(type, count, temp);
-                EventSink.InvokeOnSetWeather(null, new WeatherEventArgs(type, count, temp));
-=======
                 world.Weather.Generate(type, count, temp);
->>>>>>> externo/main
+                EventSink.InvokeOnSetWeather(null, new WeatherEventArgs(type, count, temp));
             }
         }
 
@@ -2828,7 +2794,6 @@ namespace ClassicUO.Network
             }
             else
             {
-<<<<<<< HEAD
                 if (gump != null && (gump.LocalSerial != vendor || !gump.IsBuyGump))
                 {
                     gump.Dispose();
@@ -2837,13 +2802,9 @@ namespace ClassicUO.Network
 
                 if (gump == null)
                 {
-                    gump = new ShopGump(vendor, true, 150, 5);
+                    gump = new ShopGump(world, vendor, true, 150, 5);
                     UIManager.Add(gump);
                 }
-=======
-                gump = new ShopGump(world, vendor, true, 150, 5);
-                UIManager.Add(gump);
->>>>>>> externo/main
             }
 
             if (container.Layer == Layer.ShopBuyRestock || container.Layer == Layer.ShopBuy)
@@ -3221,13 +3182,10 @@ namespace ClassicUO.Network
                 {
                     UIManager.Add(new ModernPaperdoll(mobile.Serial));
                 }
-<<<<<<< HEAD
-=======
 
                 UIManager.Add(
                     new PaperDollGump(world, mobile, (flags & 0x02) != 0) { Location = location }
                 );
->>>>>>> externo/main
             }
             else
             {
@@ -3325,22 +3283,15 @@ namespace ClassicUO.Network
                     facet = p.ReadUInt16BE();
                 }
 
-<<<<<<< HEAD
-                multiMapInfo = Client.Game.MultiMaps.GetMap(facet, width, height, startX, startY, endX, endY);
+                multiMapInfo = Client.Game.UO.MultiMaps.GetMap(facet, width, height, startX, startY, endX, endY);
 
                 gump.MapInfos(startX, startY, endX, endY, facet);
             }
             else
             {
-                multiMapInfo = Client.Game.MultiMaps.GetMap(null, width, height, startX, startY, endX, endY);
+                multiMapInfo = Client.Game.UO.MultiMaps.GetMap(null, width, height, startX, startY, endX, endY);
 
                 gump.MapInfos(startX, startY, endX, endY);
-=======
-                multiMapInfo = Client.Game.UO.MultiMaps.GetMap(facet, width, height, startX, startY, endX, endY);            }
-            else
-            {
-                multiMapInfo = Client.Game.UO.MultiMaps.GetMap(null, width, height, startX, startY, endX, endY);
->>>>>>> externo/main
             }
 
             if (multiMapInfo.Texture != null)
@@ -3538,17 +3489,13 @@ namespace ClassicUO.Network
 
             ShopGump gump = UIManager.GetGump<ShopGump>(vendor);
             gump?.Dispose();
-<<<<<<< HEAD
             ModernShopGump modernGump = UIManager.GetGump<ModernShopGump>(vendor);
             modernGump?.Dispose();
 
             if (ProfileManager.CurrentProfile.UseModernShopGump)
                 modernGump = new ModernShopGump(vendor, false);
             else
-                gump = new ShopGump(vendor, false, 100, 0);
-=======
-            gump = new ShopGump(world, vendor, false, 100, 0);
->>>>>>> externo/main
+                gump = new ShopGump(world, vendor, false, 100, 0);
 
             for (int i = 0; i < countItems; i++)
             {
@@ -3626,12 +3573,8 @@ namespace ClassicUO.Network
 
             if (entity == world.Player)
             {
-<<<<<<< HEAD
-                UoAssist.SignalHits();
-                SpellVisualRangeManager.Instance.ClearCasting();
-=======
                 world.UoAssist.SignalHits();
->>>>>>> externo/main
+                SpellVisualRangeManager.Instance.ClearCasting();
             }
         }
 
@@ -4091,9 +4034,6 @@ namespace ClassicUO.Network
 
                     UIManager.GetGump<ChatGump>()?.UpdateConference();
 
-<<<<<<< HEAD
-                    GameActions.Print(string.Format(ResGeneral.YouHaveJoinedThe0Channel, channelName), ProfileManager.CurrentProfile.ChatMessageHue, MessageType.ChatSystem, 1);
-=======
                     GameActions.Print(
                         world,
                         string.Format(ResGeneral.YouHaveJoinedThe0Channel, channelName),
@@ -4101,7 +4041,6 @@ namespace ClassicUO.Network
                         MessageType.Regular,
                         1
                     );
->>>>>>> externo/main
 
                     break;
 
@@ -4109,9 +4048,6 @@ namespace ClassicUO.Network
                     p.Skip(4);
                     channelName = p.ReadUnicodeBE();
 
-<<<<<<< HEAD
-                    GameActions.Print(string.Format(ResGeneral.YouHaveLeftThe0Channel, channelName), ProfileManager.CurrentProfile.ChatMessageHue, MessageType.ChatSystem, 1);
-=======
                     GameActions.Print(
                         world,
                         string.Format(ResGeneral.YouHaveLeftThe0Channel, channelName),
@@ -4119,7 +4055,6 @@ namespace ClassicUO.Network
                         MessageType.Regular,
                         1
                     );
->>>>>>> externo/main
 
                     break;
 
@@ -4143,9 +4078,6 @@ namespace ClassicUO.Network
                     }
 
                     //Color c = new Color(49, 82, 156, 0);
-<<<<<<< HEAD
-                    MessageManager.HandleMessage(null, msgSent, username, ProfileManager.CurrentProfile.ChatMessageHue, MessageType.ChatSystem, 3, TextType.OBJECT, true);
-=======
                     GameActions.Print(
                         world,
                         $"{username}: {msgSent}",
@@ -4153,7 +4085,6 @@ namespace ClassicUO.Network
                         MessageType.Regular,
                         1
                     );
->>>>>>> externo/main
 
                     //GameActions.Print($"{username}: {msgSent}", ProfileManager.CurrentProfile.ChatMessageHue, MessageType.ChatSystem, 1);
                     break;
@@ -4194,9 +4125,6 @@ namespace ClassicUO.Network
                             }
                         }
 
-<<<<<<< HEAD
-                        GameActions.Print(msg, ProfileManager.CurrentProfile.ChatMessageHue, MessageType.ChatSystem, 1);
-=======
                         GameActions.Print(
                             world,
                             msg,
@@ -4204,7 +4132,6 @@ namespace ClassicUO.Network
                             MessageType.Regular,
                             1
                         );
->>>>>>> externo/main
                     }
 
                     break;
@@ -5068,13 +4995,9 @@ namespace ClassicUO.Network
                     return;
             }
 
-<<<<<<< HEAD
             EventSink.InvokeClilocMessageReceived(entity, new MessageEventArgs(entity, text, name, hue, type, (byte)font, text_type, true) { Cliloc = cliloc });
 
-            MessageManager.HandleMessage(
-=======
             world.MessageManager.HandleMessage(
->>>>>>> externo/main
                 entity,
                 text,
                 name,
@@ -5758,11 +5681,7 @@ namespace ClassicUO.Network
                         ushort arg_length = p.ReadUInt16BE();
                         var str = p.ReadUnicodeLE(2);
                         var args = str + p.ReadUnicodeLE();
-<<<<<<< HEAD
-                        string title = ClilocLoader.Instance.Translate(
-=======
                         string title = Client.Game.UO.FileManager.Clilocs.Translate(
->>>>>>> externo/main
                             (int)titleCliloc,
                             args,
                             true
@@ -5807,13 +5726,8 @@ namespace ClassicUO.Network
                         }
 
                         string text = $"<left>{title}{description}{wtf}</left>";
-<<<<<<< HEAD
-                        bool alreadyExists = World.Player.IsBuffIconExists(ic);
-                        World.Player.AddBuff(ic, BuffTable.Table[iconID], timer, text, title);
-=======
                         bool alreadyExists = world.Player.IsBuffIconExists(ic);
                         world.Player.AddBuff(ic, BuffTable.Table[iconID], timer, text);
->>>>>>> externo/main
 
                         if (!alreadyExists)
                         {
@@ -6472,14 +6386,8 @@ namespace ClassicUO.Network
                     }
                     else
                     {
-<<<<<<< HEAD
-                        UIManager.GetGump<PaperDollGump>(Client.Game.GameCursor.ItemHold.Container)?.RequestUpdateContents();
-                        UIManager.GetGump<ModernPaperdoll>(Client.Game.GameCursor.ItemHold.Container)?.RequestUpdateContents();
-=======
-                        UIManager
-                            .GetGump<PaperDollGump>(Client.Game.UO.GameCursor.ItemHold.Container)
-                            ?.RequestUpdateContents();
->>>>>>> externo/main
+                        UIManager.GetGump<PaperDollGump>(Client.Game.UO.GameCursor.ItemHold.Container)?.RequestUpdateContents();
+                        UIManager.GetGump<ModernPaperdoll>(Client.Game.UO.GameCursor.ItemHold.Container)?.RequestUpdateContents();
                     }
                 }
 

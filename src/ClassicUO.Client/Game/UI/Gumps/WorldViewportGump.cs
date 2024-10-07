@@ -56,14 +56,10 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly GameScene _scene;
         private readonly SystemChatControl _systemChatControl;
 
-<<<<<<< HEAD
         private static Microsoft.Xna.Framework.Graphics.Texture2D damageWindowOutline = SolidColorTextureCache.GetTexture(Color.White);
         public static Vector3 DamageWindowOutlineHue = ShaderHueTranslator.GetHueVector(32);
 
-        public WorldViewportGump(GameScene scene) : base(0, 0)
-=======
-        public WorldViewportGump(World world, GameScene scene) : base(world, 0, 0)
->>>>>>> externo/main
+          public WorldViewportGump(World world, GameScene scene) : base(world, 0, 0)
         {
             _scene = scene;
             AcceptMouseInput = false;
@@ -428,7 +424,6 @@ namespace ClassicUO.Game.UI.Gumps
             }
             hueVector.Z = Alpha;
 
-<<<<<<< HEAD
             var texture = GetGumpTexture(h_border, out var bounds);
             if (texture != null)
             {
@@ -455,9 +450,8 @@ namespace ClassicUO.Game.UI.Gumps
                     hueVector
                 );
             }
-=======
-            ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(H_BORDER);
->>>>>>> externo/main
+
+             ref readonly var gumpInfo = ref Client.Game.UO.Gumps.GetGump(H_BORDER);
 
             texture = GetGumpTexture(h_bottom_border, out bounds);
             if (texture != null)
@@ -486,39 +480,13 @@ namespace ClassicUO.Game.UI.Gumps
                 );
             }
 
-<<<<<<< HEAD
             texture = GetGumpTexture(v_border, out bounds);
             if (texture != null)
-            {
+                {
                 pos = new Rectangle
                 (
                     x,
                     y,
-=======
-            // sotto
-            batcher.DrawTiled(
-                gumpInfo.Texture,
-                new Rectangle(x, y + Height - _borderSize, Width, _borderSize),
-                gumpInfo.UV,
-                hueVector
-            );
-
-            gumpInfo = ref Client.Game.UO.Gumps.GetGump(V_BORDER);
-            //sx
-            batcher.DrawTiled(
-                gumpInfo.Texture,
-                new Rectangle(x, y, _borderSize, Height),
-                gumpInfo.UV,
-                hueVector
-            );
-
-            //dx
-            batcher.DrawTiled(
-                gumpInfo.Texture,
-                new Rectangle(
-                    x + Width - _borderSize,
-                    y + (gumpInfo.UV.Width >> 1),
->>>>>>> externo/main
                     _borderSize,
                     Height
                 );

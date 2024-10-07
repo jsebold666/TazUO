@@ -46,13 +46,8 @@ namespace ClassicUO.Game.UI.Gumps
 {
     internal class TopBarGump : Gump
     {
-<<<<<<< HEAD
         private RighClickableButton XmlGumps;
-
-        private TopBarGump() : base(0, 0)
-=======
         private TopBarGump(World world) : base(world, 0, 0)
->>>>>>> externo/main
         {
             CanMove = true;
             AcceptMouseInput = true;
@@ -300,7 +295,6 @@ namespace ClassicUO.Game.UI.Gumps
 
         public bool IsMinimized { get; private set; }
 
-<<<<<<< HEAD
         public void RefreshXmlGumps()
         {
             XmlGumps.ContextMenu?.Dispose();
@@ -339,10 +333,7 @@ namespace ClassicUO.Game.UI.Gumps
             XmlGumps.ContextMenu.Add(reload);
         }
 
-        public static void Create()
-=======
         public static void Create(World world)
->>>>>>> externo/main
         {
             TopBarGump gump = UIManager.GetGump<TopBarGump>();
 
@@ -402,14 +393,11 @@ namespace ClassicUO.Game.UI.Gumps
         {
             switch ((Buttons)buttonID)
             {
-<<<<<<< HEAD
-=======
                 case Buttons.Map:
                     GameActions.OpenMiniMap(World);
 
                     break;
 
->>>>>>> externo/main
                 case Buttons.Paperdoll:
                     GameActions.OpenPaperdoll(World, World.Player);
 
@@ -430,8 +418,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                     break;
 
-<<<<<<< HEAD
-=======
                 case Buttons.GlobalChat:
                     Log.Warn(ResGumps.ChatButtonPushedNotImplementedYet);
                     GameActions.Print(
@@ -443,7 +429,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                     break;
 
->>>>>>> externo/main
                 case Buttons.UOStore:
                     if (Client.Game.UO.Version >= ClientVersion.CV_706400)
                     {
@@ -452,8 +437,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                     break;
 
-<<<<<<< HEAD
-=======
                 case Buttons.Help:
                     GameActions.RequestHelp();
 
@@ -492,7 +475,6 @@ namespace ClassicUO.Game.UI.Gumps
 
                     break;
 
->>>>>>> externo/main
                 case Buttons.WorldMap:
                     GameActions.OpenWorldMap(World);
 

@@ -3431,12 +3431,8 @@ namespace ClassicUO.Game.UI.Gumps
                 startX,
                 startY
             );
-<<<<<<< HEAD
-            _useLargeContianersGumps.IsVisible = Client.Version >= ClientVersion.CV_706000;
-=======
 
             _useLargeContianersGumps.IsVisible = Client.Game.UO.Version >= ClientVersion.CV_706000;
->>>>>>> externo/main
 
             if (_useLargeContianersGumps.IsVisible)
             {

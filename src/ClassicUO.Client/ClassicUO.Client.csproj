@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <ApplicationIcon>cuoicon.ico</ApplicationIcon>
     <AssemblyName>cuo</AssemblyName>
     <RootNamespace>ClassicUO</RootNamespace>
-    <AssemblyVersion>3.23.1</AssemblyVersion>
-    <FileVersion>3.23.1</FileVersion>
     <PublishAot>true</PublishAot>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -81,18 +79,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform" Version="4.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="cuoapi">
       <HintPath>..\..\external\cuoapi\cuoapi.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Net.Http">
-      <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Net.Http.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll</HintPath>
     </Reference>
   </ItemGroup>
 

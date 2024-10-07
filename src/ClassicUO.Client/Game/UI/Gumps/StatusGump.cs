@@ -79,7 +79,6 @@ namespace ClassicUO.Game.UI.Gumps
                 case ButtonType.BuffIcon:
                     if (ProfileManager.CurrentProfile.UseImprovedBuffBar)
                     {
-<<<<<<< HEAD
                         Gump gump = UIManager.GetGump<ImprovedBuffGump>();
 
                         if (gump == null)
@@ -91,9 +90,8 @@ namespace ClassicUO.Game.UI.Gumps
                             gump.SetInScreen();
                             gump.BringOnTop();
                         }
-=======
+                        
                         UIManager.Add(new BuffGump(World, 100, 100));
->>>>>>> externo/main
                     }
                     else
                     {
@@ -248,11 +246,7 @@ namespace ClassicUO.Game.UI.Gumps
         public StatusGumpOld(World world) : base(world)
         {
             Point p = Point.Zero;
-<<<<<<< HEAD
-            _labels = new Label[(int)MobileStats.NumStats];
-=======
             _labels = new Label[(int) MobileStats.NumStats];
->>>>>>> externo/main
 
             Add(new GumpPic(0, 0, 0x0802, 0));
             p.X = 244;
@@ -618,7 +612,6 @@ namespace ClassicUO.Game.UI.Gumps
 
     internal class StatusGumpModern : StatusGumpBase
     {
-<<<<<<< HEAD
         private static Settings _settings;
         private static Settings settings
         {
@@ -641,10 +634,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
         }
 
-        public StatusGumpModern()
-=======
         public StatusGumpModern(World world) : base(world)
->>>>>>> externo/main
         {
             Point p = Point.Zero;
             int xOffset = 0;
@@ -1655,7 +1645,6 @@ namespace ClassicUO.Game.UI.Gumps
             NumStats
         }
     }
-<<<<<<< HEAD
 
     internal class StatusGumpOutlands : StatusGumpBase
     {
@@ -2216,6 +2205,4 @@ namespace ClassicUO.Game.UI.Gumps
             Stam
         }
     }
-=======
->>>>>>> externo/main
 }

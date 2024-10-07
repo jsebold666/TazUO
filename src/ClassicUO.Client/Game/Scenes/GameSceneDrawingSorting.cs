@@ -1138,21 +1138,12 @@ namespace ClassicUO.Game.Scenes
             int winGameWidth = Camera.Bounds.Width;
             int winGameHeight = Camera.Bounds.Height;
             int winGameCenterX = winGamePosX + (winGameWidth >> 1);
-<<<<<<< HEAD
-            int winGameCenterY = winGamePosY + (winGameHeight >> 1) + (World.Player.Z << 2);
-            winGameCenterX -= (int)World.Player.Offset.X - ProfileManager.CurrentProfile.PlayerOffset.X;
-            winGameCenterY -= (int)(World.Player.Offset.Y - World.Player.Offset.Z - ProfileManager.CurrentProfile.PlayerOffset.Y);
-
-            int tileOffX = World.Player.X - ProfileManager.CurrentProfile.PlayerOffset.X;
-            int tileOffY = World.Player.Y - ProfileManager.CurrentProfile.PlayerOffset.Y;
-=======
             int winGameCenterY = winGamePosY + (winGameHeight >> 1) + (_world.Player.Z << 2);
             winGameCenterX -= (int)_world.Player.Offset.X;
             winGameCenterY -= (int)(_world.Player.Offset.Y - _world.Player.Offset.Z);
 
             int tileOffX = _world.Player.X;
             int tileOffY = _world.Player.Y;
->>>>>>> externo/main
 
             int winDrawOffsetX = (tileOffX - tileOffY) * 22 - winGameCenterX;
             int winDrawOffsetY = (tileOffX + tileOffY) * 22 - winGameCenterY;

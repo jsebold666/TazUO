@@ -836,26 +836,6 @@ namespace ClassicUO.Game
             ability ^= (Ability)0x80;
         }
 
-        public static void UseSecondaryAbility(World world)
-        {
-            ref Ability ability = ref world.Player.Abilities[1];
-
-            if (((byte)ability & 0x80) == 0)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    world.Player.Abilities[i] &= (Ability) 0x7F;
-                }
-
-                Socket.Send_UseCombatAbility(world, (byte)ability);
-            }
-            else
-            {
-                Socket.Send_UseCombatAbility(world, 0);
-            }
-
-            ability ^= (Ability)0x80;
-        }
 
         // ===================================================
         [Obsolete("temporary workaround to not break assistants")]

@@ -47,18 +47,15 @@ namespace ClassicUO.Game.UI
         private uint _lastHoverTime;
         private TextBox _textBox;
         private string _textHTML;
-<<<<<<< HEAD
         private bool _dirty = false;
 
         public static bool IsEnabled = false;
 
         public static int X, Y;
         public static int Width, Height;
-=======
         private readonly World _world;
 
         public Tooltip(World world) => _world = world;
->>>>>>> externo/main
 
         public string Text { get; protected set; }
 
@@ -101,11 +98,8 @@ namespace ClassicUO.Game.UI
                 zoom = ProfileManager.CurrentProfile.TooltipDisplayZoom / 100f;
             }
 
-<<<<<<< HEAD
-=======
             Client.Game.UO.FileManager.Fonts.SetUseHTML(true);
             Client.Game.UO.FileManager.Fonts.RecalculateWidthByInfo = true;
->>>>>>> externo/main
 
             if (_textBox == null || _dirty)
             {
@@ -153,9 +147,6 @@ namespace ClassicUO.Game.UI
                 IsEnabled = true;
             }
 
-<<<<<<< HEAD
-            if (_textBox == null || _textBox.IsDisposed)
-=======
             if (_renderedText.Text != Text)
             {
                 if (_maxWidth == 0)
@@ -197,7 +188,6 @@ namespace ClassicUO.Game.UI
             Client.Game.UO.FileManager.Fonts.SetUseHTML(false);
 
             if (_renderedText.Texture == null || _renderedText.Texture.IsDisposed)
->>>>>>> externo/main
             {
                 return false;
             }

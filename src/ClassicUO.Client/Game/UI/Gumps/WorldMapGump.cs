@@ -30,16 +30,13 @@
 
 #endregion
 
-<<<<<<< HEAD
 using ClassicUO.Assets;
-=======
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
->>>>>>> externo/main
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
@@ -62,19 +59,14 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml;
 using static ClassicUO.Game.UI.Gumps.WorldMapGump;
-<<<<<<< HEAD
-<<<<<<< HEAD
 using SpriteFont = ClassicUO.Renderer.SpriteFont;
-=======
 using ClassicUO.Game.Scenes;
->>>>>>> externo/main
-=======
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Formats.Png;
 using ClassicUO.Network.Encryption;
 using System.Text;
 using System.Runtime.InteropServices;
->>>>>>> externo/main
+
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -112,7 +104,6 @@ namespace ClassicUO.Game.UI.Gumps
         private bool _mapMarkersLoaded;
         private List<string> _hiddenZoneFiles;
         private ZoneSets _zoneSets = new ZoneSets();
-<<<<<<< HEAD
 
         private static Mobile following;
 
@@ -124,8 +115,6 @@ namespace ClassicUO.Game.UI.Gumps
 
         public static readonly List<WMapMarkerFile> _markerFiles = new List<WMapMarkerFile>();
 
-=======
->>>>>>> externo/main
         private SpriteFont _markerFont = Fonts.Map1;
         private int _markerFontIndex = 1;
         private readonly Dictionary<string, ContextMenuItemEntry> _options = new Dictionary<string, ContextMenuItemEntry>();
@@ -145,12 +134,9 @@ namespace ClassicUO.Game.UI.Gumps
         private int _zoomIndex = 4;
         private bool _showGridIfZoomed = true;
         private bool _allowPositionalTarget = false;
-<<<<<<< HEAD
 
         private GumpPic _northIcon;
 
-=======
->>>>>>> externo/main
         private WMapMarker _gotoMarker;
         
 
@@ -1249,7 +1235,6 @@ namespace ClassicUO.Game.UI.Gumps
         }
 
         #region Loading
-<<<<<<< HEAD
 
 
         private unsafe void LoadMapChunk(Span<uint> buffer, Span<sbyte> allZ, int chunkX, int chunkY)
@@ -1509,8 +1494,6 @@ namespace ClassicUO.Game.UI.Gumps
         //    );
         //}
 
-=======
->>>>>>> externo/main
         private unsafe Task Load()
         {
             return Task.Run(LoadMap);
@@ -1564,7 +1547,6 @@ namespace ClassicUO.Game.UI.Gumps
                     for (int i = 0; i < 16; ++i)
                         strSb.AppendFormat("{0:x2}", md5Ctx.Digest(i));
 
-<<<<<<< HEAD
                                 if (maxY < Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1])
                                 {
                                     maxY = Client.Game.UO.FileManager.Maps.MapsDefaultSize[i, 1];
@@ -1736,9 +1718,8 @@ namespace ClassicUO.Game.UI.Gumps
 
                         GameActions.Print(World, ResGumps.WorldMapLoaded, 0x48);
                     }
-=======
+
                     return strSb.ToString();
->>>>>>> externo/main
                 }
 
                 var sum = calculateMd5(mapReader) + calculateMd5(staticsReader);
@@ -3750,17 +3731,13 @@ namespace ClassicUO.Game.UI.Gumps
                 _lastScroll.Y = _center.Y;
             }
 
-<<<<<<< HEAD
             if (button == MouseButtonType.Right && Keyboard.Ctrl)
             {
                 CanvasToWorld(_lastMousePosition.Value.X, _lastMousePosition.Value.Y, out int wX, out int wY);
                 Pathfinder.WalkTo(wX, wY, 0, 1);
             }
 
-            Client.Game.GameCursor.IsDraggingCursorForced = false;
-=======
             Client.Game.UO.GameCursor.IsDraggingCursorForced = false;
->>>>>>> externo/main
 
             base.OnMouseUp(x, y, button);
         }
@@ -3784,13 +3761,9 @@ namespace ClassicUO.Game.UI.Gumps
                             _lastScroll.Y = _center.Y;
                             _isScrolling = true;
                             CanMove = false;
-
-<<<<<<< HEAD
-                            Client.Game.GameCursor.IsDraggingCursorForced = true;
+                             Client.Game.UO.GameCursor.IsDraggingCursorForced = true;
                         }
-=======
-                        Client.Game.UO.GameCursor.IsDraggingCursorForced = true;
->>>>>>> externo/main
+
                     }
                 }
 

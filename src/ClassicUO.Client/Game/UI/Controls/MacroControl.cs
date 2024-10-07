@@ -39,11 +39,8 @@ using ClassicUO.Input;
 using ClassicUO.Assets;
 using ClassicUO.Resources;
 using SDL2;
-<<<<<<< HEAD
 using Microsoft.Xna.Framework;
-=======
 using ClassicUO.Renderer.Gumps;
->>>>>>> externo/main
 
 namespace ClassicUO.Game.UI.Controls
 {
@@ -67,7 +64,6 @@ namespace ClassicUO.Game.UI.Controls
         public MacroControl(Gumps.Gump gump, string name, bool isFastAssign = false)
         {
             CanMove = true;
-<<<<<<< HEAD
             Label _keyBinding;
             Add(_keyBinding = new Label
                 (
@@ -78,10 +74,8 @@ namespace ClassicUO.Game.UI.Controls
                     0xFF,
                     FontStyle.BlackBorder | FontStyle.Cropped
                  ));
-
-=======
             _gump = gump;
->>>>>>> externo/main
+
             _hotkeyBox = new HotkeyBox();
             _hotkeyBox.HotkeyChanged += BoxOnHotkeyChanged;
             _hotkeyBox.HotkeyCancelled += BoxOnHotkeyCancelled;

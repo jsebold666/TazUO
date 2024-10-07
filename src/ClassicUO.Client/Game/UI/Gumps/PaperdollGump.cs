@@ -175,12 +175,8 @@ namespace ClassicUO.Game.UI.Gumps
             var showPaperdollBooks =
                 LocalSerial == World.Player && World.ClientFeatures.PaperdollBooks;
             var showRacialAbilitiesBook =
-<<<<<<< HEAD
-                showPaperdollBooks && Client.Version >= ClientVersion.CV_7000;
-=======
                 showPaperdollBooks && Client.Game.UO.Version >= ClientVersion.CV_7000;
 
->>>>>>> externo/main
             if (LocalSerial == World.Player)
             {
                 Add(_picBase = new GumpPic(0, 0, settings.Graphic_Background_Player, settings.Hue_Background_Player));
@@ -398,17 +394,12 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (showPaperdollBooks)
             {
-<<<<<<< HEAD
-                Add(_combatBook = new GumpPic(settings.Position_X_CombatBook, settings.Position_Y_CombatBook, settings.Graphic_Button_Combat, 0));
+                Add(_combatBook = new GumpPic(settings.Position_X_CombatBook, settings.Position_Y_CombatBook, settings.Graphic_Button_Combat, ));
                 _combatBook.ScaleWidthAndHeight(Scale).ScaleXAndY(Scale).SetInternalScale(Scale);
-                _combatBook.MouseDoubleClick += (sender, e) => GameActions.OpenAbilitiesBook();
-=======
-                Add(_combatBook = new GumpPic(156, 200, 0x2B34, 0));
                 _combatBook.MouseDoubleClick += (sender, e) =>
                 {
                     GameActions.OpenAbilitiesBook(World);
                 };
->>>>>>> externo/main
 
                 if (showRacialAbilitiesBook)
                 {
@@ -767,16 +758,12 @@ namespace ClassicUO.Game.UI.Gumps
 
                         if (status == null)
                         {
-<<<<<<< HEAD
-                            UIManager.Add(StatusGumpBase.AddStatusGump(ProfileManager.CurrentProfile.StatusGumpPosition.X, ProfileManager.CurrentProfile.StatusGumpPosition.Y));
-=======
                             UIManager.Add(
                                 StatusGumpBase.AddStatusGump(World,
                                     Mouse.Position.X - 100,
                                     Mouse.Position.Y - 25
                                 )
                             );
->>>>>>> externo/main
                         }
                         else
                         {
@@ -945,16 +932,10 @@ namespace ClassicUO.Game.UI.Gumps
 
             private class ItemGumpFixed : ItemGump
             {
-<<<<<<< HEAD
-                private Point originalSize;
-                private Point point;
-                private readonly Rectangle graphicSize;
-=======
                 private readonly PaperDollGump _gump;
                 private readonly Point _originalSize;
                 private readonly Point _point;
                 private readonly Rectangle _rect;
->>>>>>> externo/main
 
                 public ItemGumpFixed(PaperDollGump gump, Item item, int w, int h)
                     : base(gump, item.Serial, item.DisplayedGraphic, item.Hue, item.X, item.Y)
@@ -964,11 +945,7 @@ namespace ClassicUO.Game.UI.Gumps
                     Height = h;
                     WantUpdateSize = false;
 
-<<<<<<< HEAD
-                    graphicSize = Client.Game.Arts.GetRealArtBounds(item.DisplayedGraphic);
-=======
                     _rect = Client.Game.UO.Arts.GetRealArtBounds(item.DisplayedGraphic);
->>>>>>> externo/main
 
                     originalSize.X = Width;
                     originalSize.Y = Height;

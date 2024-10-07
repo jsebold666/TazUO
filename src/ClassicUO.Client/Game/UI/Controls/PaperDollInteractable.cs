@@ -301,13 +301,8 @@ namespace ClassicUO.Game.UI.Controls
                                 && !_paperDollGump.World.Player.IsDead
                                 && layer != Layer.Beard
                                 && layer != Layer.Hair
-<<<<<<< HEAD
-                                && ((_paperDollGump != null && _paperDollGump.CanLift) || (_paperDollGump != null && LocalSerial == World.Player)),
+                                && ((_paperDollGump != null && _paperDollGump.CanLift) || (_paperDollGump != null && LocalSerial == _world.Player)),
                         }.ScaleWidthAndHeight(Scale).SetInternalScale(InternalScale)
-=======
-                                && (_paperDollGump.CanLift || LocalSerial == _paperDollGump.World.Player)
-                        }
->>>>>>> externo/main
                     );
                 }
                 else if (

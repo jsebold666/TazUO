@@ -138,11 +138,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             WantUpdateSize = false;
 
-<<<<<<< HEAD
-            EventSink.MessageReceived += ChatOnMessageReceived;
-=======
             _gump.World.MessageManager.MessageReceived += ChatOnMessageReceived;
->>>>>>> externo/main
             Mode = ChatMode.Default;
 
             IsActive = !ProfileManager.CurrentProfile.ActivateChatAfterEnter;
@@ -316,11 +312,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         public override void Dispose()
         {
-<<<<<<< HEAD
-            EventSink.MessageReceived -= ChatOnMessageReceived;
-=======
             _gump.World.MessageManager.MessageReceived -= ChatOnMessageReceived;
->>>>>>> externo/main
             base.Dispose();
         }
 

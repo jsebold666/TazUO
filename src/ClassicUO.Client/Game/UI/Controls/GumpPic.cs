@@ -81,11 +81,7 @@ namespace ClassicUO.Game.UI.Controls
                 return false;
             }
 
-<<<<<<< HEAD
-            if (Client.Game.Gumps.PixelCheck(Graphic, x - Offset.X, y - Offset.Y, InternalScale))
-=======
             if (Client.Game.UO.Gumps.PixelCheck(Graphic, x - Offset.X, y - Offset.Y))
->>>>>>> externo/main
             {
                 return true;
             }

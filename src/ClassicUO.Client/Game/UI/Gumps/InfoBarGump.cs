@@ -50,13 +50,11 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly List<InfoBarControl> _infobarControls = new List<InfoBarControl>();
         private long _refreshTime;
 
-<<<<<<< HEAD
         public override bool IsLocked => _isLocked;
 
-        public InfoBarGump() : base(ProfileManager.CurrentProfile.InfoBarSize.X, ProfileManager.CurrentProfile.InfoBarSize.Y, 50, 20, 0, 0)
-=======
-        public InfoBarGump(World world) : base(world, 0, 0)
->>>>>>> externo/main
+        public InfoBarGump(World world) : base(world, ProfileManager.CurrentProfile.InfoBarSize.X, ProfileManager.CurrentProfile.InfoBarSize.Y, 50, 20, 0, 0)
+
+        //public InfoBarGump(World world) : base(world, 0, 0)
         {
             CanBeLocked = true; //For base gump locking, resizable uses a special locking procedure
             CanMove = true;
@@ -161,15 +159,11 @@ namespace ClassicUO.Game.UI.Gumps
 
     internal class InfoBarControl : Control
     {
-<<<<<<< HEAD
-        private readonly TextBox _data;
-        private readonly TextBox _label;
         private readonly ResizableStaticPic _pic;
-=======
+
         private readonly InfoBarGump _gump;
         private readonly Label _data;
         private readonly Label _label;
->>>>>>> externo/main
         private ushort _warningLinesHue;
 
         public InfoBarControl(InfoBarGump gump, string label, InfoBarVars var, ushort hue)
@@ -362,11 +356,7 @@ namespace ClassicUO.Game.UI.Gumps
             switch (var)
             {
                 case InfoBarVars.HP:
-<<<<<<< HEAD
-                    percent = World.Player.Hits / (float)World.Player.HitsMax;
-=======
                     percent = _gump.World.Player.Hits / (float) _gump.World.Player.HitsMax;
->>>>>>> externo/main
 
                     if (percent <= 0.25)
                     {
@@ -386,11 +376,7 @@ namespace ClassicUO.Game.UI.Gumps
                     }
 
                 case InfoBarVars.Mana:
-<<<<<<< HEAD
-                    percent = World.Player.Mana / (float)World.Player.ManaMax;
-=======
                     percent = _gump.World.Player.Mana / (float) _gump.World.Player.ManaMax;
->>>>>>> externo/main
 
                     if (percent <= 0.25)
                     {
@@ -410,11 +396,7 @@ namespace ClassicUO.Game.UI.Gumps
                     }
 
                 case InfoBarVars.Stamina:
-<<<<<<< HEAD
-                    percent = World.Player.Stamina / (float)World.Player.StaminaMax;
-=======
                     percent = _gump.World.Player.Stamina / (float)_gump.World.Player.StaminaMax;
->>>>>>> externo/main
 
                     if (percent <= 0.25)
                     {
@@ -434,11 +416,7 @@ namespace ClassicUO.Game.UI.Gumps
                     }
 
                 case InfoBarVars.Weight:
-<<<<<<< HEAD
-                    percent = World.Player.Weight / (float)World.Player.WeightMax;
-=======
                     percent = _gump.World.Player.Weight / (float)_gump.World.Player.WeightMax;
->>>>>>> externo/main
 
                     if (percent >= 1)
                     {

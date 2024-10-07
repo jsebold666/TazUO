@@ -90,17 +90,11 @@ namespace ClassicUO.Game.UI.Controls
 
         public override bool Draw(UltimaBatcher2D batcher, int x, int y)
         {
-<<<<<<< HEAD
-            ref readonly var gumpInfoFlag = ref Client.Game.Gumps.GetGump(BUTTON_FLAG);
-            ref readonly var gumpInfoUp = ref Client.Game.Gumps.GetGump(BUTTON_UP);
-            ref readonly var gumpInfoDown = ref Client.Game.Gumps.GetGump(BUTTON_DOWN);
-=======
             var hueVector = ShaderHueTranslator.GetHueVector(0);
 
             ref readonly var gumpInfoFlag = ref Client.Game.UO.Gumps.GetGump(BUTTON_FLAG);
             ref readonly var gumpInfoUp = ref Client.Game.UO.Gumps.GetGump(BUTTON_UP);
             ref readonly var gumpInfoDown = ref Client.Game.UO.Gumps.GetGump(BUTTON_DOWN);
->>>>>>> externo/main
 
             if (MaxValue != MinValue && gumpInfoFlag.Texture != null)
             {

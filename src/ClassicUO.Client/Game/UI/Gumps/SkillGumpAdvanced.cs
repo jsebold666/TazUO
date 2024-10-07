@@ -477,8 +477,6 @@ namespace ClassicUO.Game.UI.Gumps
             }
 
 
-<<<<<<< HEAD
-=======
                 Label skillName = new Label(skill.Name, true, 1153, font: 3);
                 Label skillValueBase = new Label(skill.Base.ToString(), true, 1153, font: 3);
                 Label skillValue = new Label(skill.Value.ToString(), true, 1153, font: 3);
@@ -493,7 +491,6 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 _databox.Add(t);
             }
->>>>>>> externo/main
 
             _databox.WantUpdateSize = true;
             _databox.ReArrangeChildren();
@@ -586,9 +583,6 @@ namespace ClassicUO.Game.UI.Gumps
         private readonly SkillGumpAdvanced _gump;
         private readonly Button _activeUse;
         private readonly Skill _skill;
-<<<<<<< HEAD
-        public SkillListEntry(Skill skill)
-=======
 
         public SkillListEntry(
             SkillGumpAdvanced gump,
@@ -598,7 +592,6 @@ namespace ClassicUO.Game.UI.Gumps
             Label skillcap,
             Skill skill
         )
->>>>>>> externo/main
         {
             _gump = gump;
             Height = 20;

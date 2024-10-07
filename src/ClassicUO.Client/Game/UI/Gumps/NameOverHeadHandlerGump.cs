@@ -90,11 +90,7 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
-<<<<<<< HEAD
-                    IsChecked = NameOverHeadManager.IsPermaToggled,
-=======
                     IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.All
->>>>>>> externo/main
                 }
             );
             stayActive.ValueChanged += (sender, e) => { NameOverHeadManager.SetOverheadToggled(stayActive.IsChecked); CanCloseWithRightClick = stayActive.IsChecked; };
@@ -110,13 +106,9 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
-<<<<<<< HEAD
-                    IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealth,
-                    X = stayActive.Width + stayActive.X + 5
-=======
                     Y = all.Y + all.Height,
-                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Mobiles
->>>>>>> externo/main
+                    IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealth
+                    X = stayActive.Width + stayActive.X + 5
                 }
             );
             hideFullHp.SetTooltip("Hide nameplates above 100% health.");
@@ -133,20 +125,13 @@ namespace ClassicUO.Game.UI.Gumps
                     color: 0xFFFF
                 )
                 {
-<<<<<<< HEAD
-                    IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode,
-                    X = hideFullHp.Width + hideFullHp.X + 5
-=======
                     Y = mobiles.Y + mobiles.Height,
                     IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Items
->>>>>>> externo/main
                 }
             );
             hideInWarmode.SetTooltip("Only hide 100% hp nameplates in warmode.");
             hideInWarmode.ValueChanged += (sender, e) => { ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode = hideInWarmode.IsChecked; };
 
-<<<<<<< HEAD
-=======
             Add
             (
                 mobilesCorpses = new RadioButton
@@ -162,7 +147,6 @@ namespace ClassicUO.Game.UI.Gumps
                     IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.MobilesCorpses
                 }
             );
->>>>>>> externo/main
 
 
             Add(new AlphaBlendControl() { Y = stayActive.Height + stayActive.Y, Width = 150, Height = 20, Hue = 0x0481 });
@@ -170,9 +154,7 @@ namespace ClassicUO.Game.UI.Gumps
             searchBox.Text = NameOverHeadManager.Search;
             searchBox.TextChanged += (s, e) => { NameOverHeadManager.Search = searchBox.Text; };
 
-<<<<<<< HEAD
             DrawChoiceButtons();
-=======
             all.ValueChanged += (sender, e) =>
             {
                 if (all.IsChecked)
@@ -204,7 +186,6 @@ namespace ClassicUO.Game.UI.Gumps
                     World.NameOverHeadManager.TypeAllowed = NameOverheadTypeAllowed.MobilesCorpses;
                 }
             };
->>>>>>> externo/main
         }
 
         public void UpdateCheckboxes()

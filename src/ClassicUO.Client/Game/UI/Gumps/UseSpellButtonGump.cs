@@ -61,14 +61,9 @@ namespace ClassicUO.Game.UI.Gumps
             CanMove = true;
             AcceptMouseInput = true;
             CanCloseWithRightClick = true;
-<<<<<<< HEAD
             Width = (int)Math.Round(44 * (ProfileManager.CurrentProfile.SpellIconScale / 100f));
             Height = (int)Math.Round(44 * (ProfileManager.CurrentProfile.SpellIconScale / 100f));
-            _mm = Client.Game.GetScene<GameScene>().Macros;
-=======
-
             _mm = world.Macros;
->>>>>>> externo/main
         }
 
         public UseSpellButtonGump(World world, SpellDefinition spell) : this(world)

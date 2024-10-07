@@ -45,13 +45,8 @@ namespace ClassicUO.Game.UI.Gumps
 {
     public class Gump : Control
     {
-<<<<<<< HEAD
         private bool isLocked = false;
-
-        public Gump(uint local, uint server)
-=======
         public Gump(World world, uint local, uint server)
->>>>>>> externo/main
         {
             World = world;
             LocalSerial = local;
@@ -60,13 +55,10 @@ namespace ClassicUO.Game.UI.Gumps
             AcceptKeyboardInput = false;
         }
 
-<<<<<<< HEAD
         public bool CanBeSaved => GumpType != Gumps.GumpType.None || ServerSerial != 0;
-=======
         public World World { get; }
 
         public bool CanBeSaved => GumpType != Gumps.GumpType.None;
->>>>>>> externo/main
 
         public virtual GumpType GumpType { get; }
 
