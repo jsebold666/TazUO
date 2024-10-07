@@ -24,6 +24,8 @@ namespace ClassicUO.Assets
         public static PNGLoader _instance;
         public static PNGLoader Instance => _instance ?? (_instance = new PNGLoader());
 
+        private readonly GumpsLoader _gumpsLoader;
+
         public Texture2D GetImageTexture(string fullImagePath)
         {
             Texture2D texture = null;
@@ -202,7 +204,7 @@ namespace ClassicUO.Assets
 
                         if (gumpInfo.Pixels == null || gumpInfo.Pixels.IsEmpty)
                         {
-                            gumpInfo = GumpsLoader.Instance.GetGump(i);
+                            gumpInfo = _gumpsLoader.GetGump(1);
                             if (gumpInfo.Pixels != null && !gumpInfo.Pixels.IsEmpty)
                             {
                                 continue;

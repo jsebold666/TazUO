@@ -30,11 +30,16 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Assets;
+using ClassicUO.Renderer;
 using ClassicUO.Utility;
 using ClassicUO.Game.Scenes;
 
@@ -55,7 +60,7 @@ namespace ClassicUO.Game.Managers
     //    SmallLight = 9
     //}
 
-    public enum AffixType : byte
+    internal enum AffixType : byte
     {
         Append = 0x00,
         Prepend = 0x01,
@@ -121,42 +126,42 @@ namespace ClassicUO.Game.Managers
                     break;
 
                 case MessageType.Spell:
-                {
-                    //server hue color per default
-                    if (!string.IsNullOrEmpty(text) && SpellDefinition.WordToTargettype.TryGetValue(text, out SpellDefinition spell))
                     {
-                        if (currentProfile != null && currentProfile.EnabledSpellFormat && !string.IsNullOrWhiteSpace(currentProfile.SpellDisplayFormat))
+                        //server hue color per default
+                        if (!string.IsNullOrEmpty(text) && SpellDefinition.WordToTargettype.TryGetValue(text, out SpellDefinition spell))
                         {
-                            ValueStringBuilder sb = new ValueStringBuilder(currentProfile.SpellDisplayFormat.AsSpan());
+                            if (currentProfile != null && currentProfile.EnabledSpellFormat && !string.IsNullOrWhiteSpace(currentProfile.SpellDisplayFormat))
                             {
-                                sb.Replace("{power}".AsSpan(), spell.PowerWords.AsSpan());
-                                sb.Replace("{spell}".AsSpan(), spell.Name.AsSpan());
+                                ValueStringBuilder sb = new ValueStringBuilder(currentProfile.SpellDisplayFormat.AsSpan());
+                                {
+                                    sb.Replace("{power}".AsSpan(), spell.PowerWords.AsSpan());
+                                    sb.Replace("{spell}".AsSpan(), spell.Name.AsSpan());
 
-                                text = sb.ToString().Trim();
+                                    text = sb.ToString().Trim();
+                                }
+                                sb.Dispose();
                             }
-                            sb.Dispose();
+
+                            //server hue color per default if not enabled
+                            if (currentProfile != null && currentProfile.EnabledSpellHue)
+                            {
+                                if (spell.TargetType == TargetType.Beneficial)
+                                {
+                                    hue = currentProfile.BeneficHue;
+                                }
+                                else if (spell.TargetType == TargetType.Harmful)
+                                {
+                                    hue = currentProfile.HarmfulHue;
+                                }
+                                else
+                                {
+                                    hue = currentProfile.NeutralHue;
+                                }
+                            }
                         }
 
-                        //server hue color per default if not enabled
-                        if (currentProfile != null && currentProfile.EnabledSpellHue)
-                        {
-                            if (spell.TargetType == TargetType.Beneficial)
-                            {
-                                hue = currentProfile.BeneficHue;
-                            }
-                            else if (spell.TargetType == TargetType.Harmful)
-                            {
-                                hue = currentProfile.HarmfulHue;
-                            }
-                            else
-                            {
-                                hue = currentProfile.NeutralHue;
-                            }
-                        }
+                        goto case MessageType.Label;
                     }
-
-                    goto case MessageType.Label;
-                }
 
                 default:
                 case MessageType.Focus:
@@ -247,208 +252,10 @@ namespace ClassicUO.Game.Managers
                     textType,
                     unicode,
                     lang
-                ));
-
-            if (currentProfile != null && currentProfile.OverrideAllFonts)
-            {
-                font = currentProfile.ChatFont;
-                unicode = currentProfile.OverrideAllFontsIsUnicode;
-            }
-
-            switch (type)
-            {
-                case MessageType.ChatSystem:
-                    break;
-                case MessageType.Command:
-                case MessageType.Encoded:
-                case MessageType.System:
-                    break;
-                case MessageType.Party:
-                    {
-                        if (!ProfileManager.CurrentProfile.DisplayPartyChatOverhead)
-                            break;
-                        if (parent == null)
-                        {
-                            bool handled = false;
-                            foreach (PartyMember member in World.Party.Members)
-                                if (member != null)
-                                    if (member.Name == name)
-                                    {
-                                        Mobile m = World.Mobiles.Get(member.Serial);
-                                        if (m != null)
-                                        {
-                                            parent = m;
-                                            handled = true;
-                                            break;
-                                        }
-
-                                    }
-                            if (!handled) break;
-                        }
-
-                        // If person who send that message is in ignores list - but filter out Spell Text
-                        if (IgnoreManager.IgnoredCharsList.Contains(parent.Name) && type != MessageType.Spell)
-                            break;
-
-                        TextObject msg = CreateMessage
-                        (
-                            text,
-                            hue,
-                            font,
-                            unicode,
-                            type,
-                            textType
-                        );
-
-                        parent.AddMessage(msg);
-                        break;
-                    }
-                case MessageType.Guild:
-                    if (currentProfile.IgnoreGuildMessages) return;
-                    break;
-
-                case MessageType.Alliance:
-                    if (currentProfile.IgnoreAllianceMessages) return;
-                    break;
-
-                case MessageType.Spell:
-                    {
-                        //server hue color per default
-                        if (!string.IsNullOrEmpty(text) && SpellDefinition.WordToTargettype.TryGetValue(text, out SpellDefinition spell))
-                        {
-                            if (currentProfile != null && currentProfile.EnabledSpellFormat && !string.IsNullOrWhiteSpace(currentProfile.SpellDisplayFormat))
-                            {
-                                ValueStringBuilder sb = new ValueStringBuilder(currentProfile.SpellDisplayFormat.AsSpan());
-                                {
-                                    sb.Replace("{power}".AsSpan(), spell.PowerWords.AsSpan());
-                                    sb.Replace("{spell}".AsSpan(), spell.Name.AsSpan());
-
-                                    text = sb.ToString().Trim();
-                                }
-                                sb.Dispose();
-                            }
-
-                            //server hue color per default if not enabled
-                            if (currentProfile != null && currentProfile.EnabledSpellHue)
-                            {
-                                if (spell.TargetType == TargetType.Beneficial)
-                                {
-                                    hue = currentProfile.BeneficHue;
-                                }
-                                else if (spell.TargetType == TargetType.Harmful)
-                                {
-                                    hue = currentProfile.HarmfulHue;
-                                }
-                                else
-                                {
-                                    hue = currentProfile.NeutralHue;
-                                }
-                            }
-                        }
-
-                        goto case MessageType.Label;
-                    }
-
-                default:
-                case MessageType.Focus:
-                case MessageType.Whisper:
-                case MessageType.Yell:
-                case MessageType.Regular:
-                case MessageType.Label:
-                    if (textType == TextType.OBJECT)
-                    {
-                        for (LinkedListNode<Gump> gump = UIManager.Gumps.Last; gump != null; gump = gump.Previous)
-                        {
-                            if (gump.Value is GridContainer && !gump.Value.IsDisposed)
-                            {
-                                ((GridContainer)gump.Value).HandleObjectMessage(parent, text, hue);
-                            }
-                        }
-                    }
-                    goto case MessageType.Limit3Spell;
-                case MessageType.Limit3Spell:
-                    {
-                        if (parent == null)
-                        {
-                            break;
-                        }
-
-                        // If person who send that message is in ignores list - but filter out Spell Text
-                        if (IgnoreManager.IgnoredCharsList.Contains(parent.Name) && type != MessageType.Spell)
-                            break;
-
-                        TextObject msg = CreateMessage
-                        (
-                            text,
-                            hue,
-                            font,
-                            unicode,
-                            type,
-                            textType
-                        );
-
-                        msg.Owner = parent;
-
-                        if (parent is Item it && !it.OnGround)
-                        {
-                            msg.X = DelayedObjectClickManager.X;
-                            msg.Y = DelayedObjectClickManager.Y;
-                            msg.IsTextGump = true;
-                            bool found = false;
-
-                            for (LinkedListNode<Gump> gump = UIManager.Gumps.Last; gump != null; gump = gump.Previous)
-                            {
-                                Control g = gump.Value;
-
-                                if (!g.IsDisposed)
-                                {
-                                    switch (g)
-                                    {
-                                        case PaperDollGump paperDoll when g.LocalSerial == it.Container:
-                                            paperDoll.AddText(msg);
-                                            found = true;
-
-                                            break;
-
-                                        case ContainerGump container when g.LocalSerial == it.Container:
-                                            container.AddText(msg);
-                                            found = true;
-
-                                            break;
-
-                                        case TradingGump trade when trade.ID1 == it.Container || trade.ID2 == it.Container:
-                                            trade.AddText(msg);
-                                            found = true;
-
-                                            break;
-                                    }
-                                }
-
-                                if (found)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-
-                        parent.AddMessage(msg);
-
-                        break;
-                    }
-            }
-
-            EventSink.InvokeMessageReceived(parent, new MessageEventArgs
-                (
-                    parent,
-                    text,
-                    name,
-                    hue,
-                    type,
-                    font,
-                    textType,
-                    unicode,
-                    lang
-                ));
+                ),
+                parent
+            );
+        }
 
         public void OnLocalizedMessage(Entity entity, MessageEventArgs args)
         {
@@ -482,7 +289,7 @@ namespace ClassicUO.Game.Managers
                         msg,
                         200,
                         TEXT_ALIGN_TYPE.TS_LEFT,
-                        (ushort) FontStyle.BlackBorder
+                        (ushort)FontStyle.BlackBorder
                     ) :
                     Client.Game.UO.FileManager.Fonts.GetWidthExASCII
                     (
@@ -490,7 +297,7 @@ namespace ClassicUO.Game.Managers
                         msg,
                         200,
                         TEXT_ALIGN_TYPE.TS_LEFT,
-                        (ushort) FontStyle.BlackBorder
+                        (ushort)FontStyle.BlackBorder
                     );
             }
             else
@@ -519,32 +326,35 @@ namespace ClassicUO.Game.Managers
             TextObject textObject = TextObject.Create(_world);
             textObject.Alpha = 0xFF;
             textObject.Type = type;
-            //textObject.Hue = fixedColor;
+            textObject.Hue = fixedColor;
 
             if (!isunicode && textType == TextType.OBJECT)
             {
                 fixedColor = 0x7FFF;
             }
 
-            //Ignored the fixedColor in the textbox creation because it seems to interfere with correct colors, but if issues arrise I left the fixColor code here
+            textObject.RenderedText = RenderedText.Create
+            (
+                msg,
+                fixedColor,
+                font,
+                isunicode,
+                FontStyle.BlackBorder,
+                TEXT_ALIGN_TYPE.TS_LEFT,
+                width,
+                30,
+                false,
+                false,
+                textType == TextType.OBJECT
+            );
 
-            textObject.TextBox = new TextBox(
-                    msg,
-                    ProfileManager.CurrentProfile.OverheadChatFont,
-                    ProfileManager.CurrentProfile.OverheadChatFontSize,
-                    ProfileManager.CurrentProfile.OverheadChatWidth,
-                    hue,
-                    FontStashSharp.RichText.TextHorizontalAlignment.Center,
-                    true
-                )
-            { AcceptMouseInput = !ProfileManager.CurrentProfile.DisableMouseInteractionOverheadText };
-
-            textObject.Time = CalculateTimeToLive(textObject.TextBox);
+            textObject.Time = CalculateTimeToLive(textObject.RenderedText);
+            textObject.RenderedText.Hue = textObject.Hue;
 
             return textObject;
         }
 
-        private static long CalculateTimeToLive(TextBox rtext)
+        private static long CalculateTimeToLive(RenderedText rtext)
         {
             Profile currentProfile = ProfileManager.CurrentProfile;
 
@@ -564,16 +374,7 @@ namespace ClassicUO.Game.Managers
                     delay = 10;
                 }
 
-                int fakeLines = 0;
-                if (rtext.Text.Length > 99)
-                    fakeLines = 3;
-                else if (rtext.Text.Length > 66)
-                    fakeLines = 2;
-                else
-                    fakeLines = 1;
-
-
-                timeToLive = (long)(4000 * fakeLines * delay / 100.0f);
+                timeToLive = (long)(4000 * rtext.LinesCount * delay / 100.0f);
             }
             else
             {

@@ -103,6 +103,7 @@ namespace ClassicUO.Game.UI.Controls
                 {
                     ColorPickerGump pickerGump = new ColorPickerGump
                     (
+                        _world,
                         0,
                         0,
                         100,
@@ -110,17 +111,8 @@ namespace ClassicUO.Game.UI.Controls
                         s => Hue = s
                     );
 
-                ColorPickerGump pickerGump = new ColorPickerGump
-                (
-                    _world,
-                    0,
-                    0,
-                    100,
-                    100,
-                    s => Hue = s
-                );
-
-                UIManager.Add(pickerGump);
+                    UIManager.Add(pickerGump);
+                }
             }
         }
     }

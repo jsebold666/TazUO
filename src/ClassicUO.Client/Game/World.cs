@@ -90,8 +90,6 @@ namespace ClassicUO.Game
 
         public ActiveSpellIconsManager ActiveSpellIcons = new ActiveSpellIconsManager();
 
-        public static ObjectPropertiesListManager OPL { get; } = new ObjectPropertiesListManager();
-        public static DurabilityManager DurabilityManager { get; } = new DurabilityManager();
         public uint LastObject, ObjectToRemove;
 
         public ObjectPropertiesListManager OPL { get; } = new ObjectPropertiesListManager();
@@ -150,8 +148,6 @@ namespace ClassicUO.Game
         public WorldTextManager WorldTextManager { get; }
 
         public JournalManager Journal { get; } = new JournalManager();
-
-        public static CoolDownBarManager CoolDownBarManager { get; } = new CoolDownBarManager();
 
 
         public int MapIndex
@@ -311,14 +307,10 @@ namespace ClassicUO.Game
                             if (SerialHelper.IsMobile(container.Serial))
                             {
                                 UIManager.GetGump<PaperDollGump>(container.Serial)?.RequestUpdateContents();
-                                UIManager.GetGump<ModernPaperdoll>(container.Serial)?.RequestUpdateContents();
                             }
                             else if (SerialHelper.IsItem(container.Serial))
                             {
                                 UIManager.GetGump<ContainerGump>(container.Serial)?.RequestUpdateContents();
-                                #region GridContainer
-                                UIManager.GetGump<GridContainer>(container.Serial)?.RequestUpdateContents();
-                                #endregion
 
                                 if (container.Graphic == 0x2006)
                                 {
@@ -531,14 +523,10 @@ namespace ClassicUO.Game
                 if (SerialHelper.IsMobile(containerSerial))
                 {
                     UIManager.GetGump<PaperDollGump>(containerSerial)?.RequestUpdateContents();
-                    UIManager.GetGump<ModernPaperdoll>(containerSerial)?.RequestUpdateContents();
                 }
                 else if (SerialHelper.IsItem(containerSerial))
                 {
                     UIManager.GetGump<ContainerGump>(containerSerial)?.RequestUpdateContents();
-                    #region GridContainer
-                    UIManager.GetGump<GridContainer>(containerSerial)?.RequestUpdateContents();
-                    #endregion
                 }
 
                 Entity container = Get(containerSerial);
@@ -830,8 +818,6 @@ namespace ClassicUO.Game
             }
 
             UIManager.GetGump<BaseHealthBarGump>(Player?.Serial)?.Dispose();
-
-            GridContainer.ClearInstance();
 
             ObjectToRemove = 0;
             LastObject = 0;

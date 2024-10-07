@@ -30,17 +30,14 @@
 
 #endregion
 
-using ClassicUO.Configuration;
-using ClassicUO.Game.Data;
-using ClassicUO.Game.Managers;
-using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Assets;
 using ClassicUO.Renderer;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public class TextContainer : LinkedObject
+    internal class TextContainer : LinkedObject
     {
         public int Size,
             MaxSize = 5;
@@ -106,30 +103,12 @@ namespace ClassicUO.Game.GameObjects
         {
             TextObject text_obj = TextObject.Create(_world);
 
-            ushort hue = ProfileManager.CurrentProfile == null ? (ushort)0x0021 : ProfileManager.CurrentProfile.DamageHueOther;
-
-            if (ReferenceEquals(Parent, World.Player))
-                hue = ProfileManager.CurrentProfile == null ? (ushort)0x0034 : ProfileManager.CurrentProfile.DamageHueSelf;
-            else if (Parent is Mobile)
-            {
-                Mobile _parent = (Mobile)Parent;
-                if (_parent.IsRenamable && _parent.NotorietyFlag != NotorietyFlag.Invulnerable && _parent.NotorietyFlag != NotorietyFlag.Enemy)
-                    hue = ProfileManager.CurrentProfile == null ? (ushort)0x0033 : ProfileManager.CurrentProfile.DamageHuePet;
-                else if (_parent.NotorietyFlag == NotorietyFlag.Ally)
-                    hue = ProfileManager.CurrentProfile == null ? (ushort)0x0030 : ProfileManager.CurrentProfile.DamageHueAlly;
-
-                if (_parent.Serial == TargetManager.LastAttack)
-                    hue = ProfileManager.CurrentProfile == null ? (ushort)0x1F : ProfileManager.CurrentProfile.DamageHueLastAttck;
-            }
-
-            text_obj.RenderedText = RenderedText.Create(damage.ToString(), ProfileManager.CurrentProfile.OverheadChatFont, ProfileManager.CurrentProfile.OverheadChatFontSize, ProfileManager.CurrentProfile.OverheadChatWidth, hue, align: FontStashSharp.RichText.TextHorizontalAlignment.Center) { AcceptMouseInput = !ProfileManager.CurrentProfile.DisableMouseInteractionOverheadText };
-            
-            // text_obj.RenderedText = RenderedText.Create(
-            //     damage.ToString(),
-            //     (ushort)(ReferenceEquals(Parent, _world.Player) ? 0x0034 : 0x0021),
-            //     3,
-            //     false
-            // );
+            text_obj.RenderedText = RenderedText.Create(
+                damage.ToString(),
+                (ushort)(ReferenceEquals(Parent, _world.Player) ? 0x0034 : 0x0021),
+                3,
+                false
+            );
 
             text_obj.Time = Time.Ticks + 1500;
 
@@ -164,17 +143,17 @@ namespace ClassicUO.Game.GameObjects
 
                 if (delta <= 0)
                 {
-                    _rectangle.Height -= c.TextBox?.Height ?? 0;
+                    _rectangle.Height -= c.RenderedText?.Height ?? 0;
                     c.Destroy();
                     _messages.RemoveAt(i--);
                 }
                 //else if (delta < 250)
                 //    c.Alpha = 1f - delta / 250;
-                else if (c.TextBox != null)
+                else if (c.RenderedText != null)
                 {
-                    if (_rectangle.Width < c.TextBox.Width)
+                    if (_rectangle.Width < c.RenderedText.Width)
                     {
-                        _rectangle.Width = c.TextBox.Width;
+                        _rectangle.Width = c.RenderedText.Width;
                     }
                 }
             }
@@ -187,7 +166,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            int offY = -NameOverheadGump.CurrentHeight;
+            int offY = 0;
 
             Point p = new Point();
 
@@ -259,15 +238,16 @@ namespace ClassicUO.Game.GameObjects
 
             foreach (TextObject item in _messages)
             {
-                if (item.IsDestroyed || item.TextBox == null || item.TextBox.IsDisposed)
+                if (item.IsDestroyed || item.RenderedText == null || item.RenderedText.IsDestroyed)
                 {
                     continue;
                 }
 
-                item.X = p.X - (item.TextBox.Width >> 1);
-                item.Y = p.Y - offY - item.TextBox.Height - item.OffsetY;
-                item.TextBox.Draw(batcher, item.X, item.Y);
-                offY += item.TextBox.Height;
+                item.X = p.X - (item.RenderedText.Width >> 1);
+                item.Y = p.Y - offY - item.RenderedText.Height - item.OffsetY;
+
+                item.RenderedText.Draw(batcher, item.X, item.Y, item.Alpha / 255f);
+                offY += item.RenderedText.Height;
             }
         }
 

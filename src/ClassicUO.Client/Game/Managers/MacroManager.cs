@@ -30,6 +30,12 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
@@ -41,13 +47,6 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
 using SDL2;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using static SDL2.SDL;
 
 namespace ClassicUO.Game.Managers
 {
@@ -85,10 +84,6 @@ namespace ClassicUO.Game.Managers
 
         public bool WaitingBandageTarget { get; set; }
 
-        public static MacroManager TryGetMacroManager()
-        {
-            return Client.Game.GetScene<GameScene>().Macros;
-        }
 
         public void Load()
         {
@@ -139,12 +134,6 @@ namespace ClassicUO.Game.Managers
             List<Macro> list = GetAllMacros();
 
             string path = Path.Combine(ProfileManager.ProfilePath, "macros.xml");
-
-            if (!File.Exists(path))
-            {
-                Directory.CreateDirectory(ProfileManager.ProfilePath);
-                File.Create(path).Close();
-            }
 
             using (XmlTextWriter xml = new XmlTextWriter(path, Encoding.UTF8)
             {
@@ -324,28 +313,6 @@ namespace ClassicUO.Game.Managers
             return macros;
         }
 
-        public Macro FindMacro(SDL_GameControllerButton button)
-        {
-            Macro obj = (Macro)Items;
-
-            while (obj != null)
-            {
-                if (obj.ControllerButtons != null)
-                {
-                    if (obj.ControllerButtons.Length > 0)
-                    {
-                        if (Controller.AreButtonsPressed(obj.ControllerButtons))
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                obj = (Macro)obj.Next;
-            }
-
-            return obj;
-        }
 
         public Macro FindMacro(SDL.SDL_Keycode key, bool alt, bool ctrl, bool shift)
         {
@@ -531,7 +498,7 @@ namespace ClassicUO.Game.Managers
 
                     if (!_world.Player.Pathfinder.AutoWalking)
                     {
-                        _world.Player.Walk((Direction) dt, false);
+                        _world.Player.Walk((Direction)dt, false);
                     }
 
                     break;
@@ -717,7 +684,6 @@ namespace ClassicUO.Game.Managers
                                     if (macro.Code == MacroType.Close)
                                     {
                                         UIManager.GetGump<OptionsGump>()?.Dispose();
-                                        UIManager.GetGump<ModernOptionsGump>()?.Dispose();
                                     }
 
                                     break;
@@ -1157,7 +1123,7 @@ namespace ClassicUO.Game.Managers
                             break;
                         }
 
-                        Item item = _world.Player.FindItemByLayer(Layer.OneHanded + (byte) handIndex);
+                        Item item = _world.Player.FindItemByLayer(Layer.OneHanded + (byte)handIndex);
 
                         if (item != null)
                         {
@@ -1236,7 +1202,7 @@ namespace ClassicUO.Game.Managers
 
                 case MacroType.CloseGump:
 
-                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is ImprovedBuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
+                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
 
                     break;
 
@@ -1359,7 +1325,7 @@ namespace ClassicUO.Game.Managers
                             if (bandage != null)
                             {
                                 WaitingBandageTarget = true;
-                                GameActions.DoubleClick(_world,bandage);
+                                GameActions.DoubleClick(_world, bandage);
                                 result = 1;
                             }
                         }
@@ -1475,32 +1441,17 @@ namespace ClassicUO.Game.Managers
                     break;
 
                 case MacroType.ToggleBuffIconGump:
-                    if (ProfileManager.CurrentProfile.UseImprovedBuffBar)
+                    BuffGump buff = UIManager.GetGump<BuffGump>();
+
+                    if (buff != null)
                     {
-                        ImprovedBuffGump buff = UIManager.GetGump<ImprovedBuffGump>();
-                        if (buff != null)
-                        {
-                            buff.Dispose();
-                        }
-                        else
-                        {
-                            UIManager.Add(new ImprovedBuffGump());
-                        }
+                        buff.Dispose();
                     }
                     else
                     {
                         UIManager.Add(new BuffGump(_world, 100, 100));
                     }
 
-                        if (buff != null)
-                        {
-                            buff.Dispose();
-                        }
-                        else
-                        {
-                            UIManager.Add(new BuffGump(100, 100));
-                        }
-                    }
                     break;
 
                 case MacroType.InvokeVirtue:
@@ -1514,21 +1465,10 @@ namespace ClassicUO.Game.Managers
 
                     break;
 
-                case MacroType.SecondaryAbility:
-                    GameActions.UseSecondaryAbility(_world);
+                //case MacroType.SecondaryAbility:
+                   // GameActions.UseSecondaryAbility(_world);
 
-                    break;
-
-                case MacroType.DisarmAbility:
-                    NetClient.Socket.Send_DisarmRequest();
-
-                    break;
-
-                case MacroType.StunAbility:
-                    NetClient.Socket.Send_StunRequest();
-
-                    break;
-            
+                    //break;
 
                 case MacroType.ToggleGargoyleFly:
 
@@ -1628,7 +1568,7 @@ namespace ClassicUO.Game.Managers
 
                             if (obj != null)
                             {
-                                GameActions.DoubleClick(_world,obj);
+                                GameActions.DoubleClick(_world, obj);
                             }
 
                             break;
@@ -1640,7 +1580,7 @@ namespace ClassicUO.Game.Managers
 
                             if (obj != null)
                             {
-                                GameActions.DoubleClick(_world,obj);
+                                GameActions.DoubleClick(_world, obj);
                             }
 
                             break;
@@ -1664,7 +1604,7 @@ namespace ClassicUO.Game.Managers
 
                             if (obj != null)
                             {
-                                GameActions.DoubleClick(_world,obj);
+                                GameActions.DoubleClick(_world, obj);
                             }
 
                             break;
@@ -1676,7 +1616,7 @@ namespace ClassicUO.Game.Managers
 
                             if (obj != null)
                             {
-                                GameActions.DoubleClick(_world,obj);
+                                GameActions.DoubleClick(_world, obj);
                             }
 
                             break;
@@ -1858,24 +1798,6 @@ namespace ClassicUO.Game.Managers
                 case MacroType.LookAtMouse:
                     // handle in gamesceneinput
                     break;
-
-                case MacroType.UseCounterBar:
-                    string counterIndex = ((MacroObjectString)macro).Text;
-
-                    if (!string.IsNullOrEmpty(counterIndex) && int.TryParse(counterIndex, out int cIndex))
-                    {
-                        CounterBarGump.CurrentCounterBarGump?.GetCounterItem(cIndex)?.Use();
-                    }
-                    break;
-                case MacroType.ClientCommand:
-                    string command = ((MacroObjectString)macro).Text;
-
-                    if (!string.IsNullOrEmpty(command))
-                    {
-                        string[] parts = command.Split(' ');
-                        CommandManager.Execute(parts[0], parts);
-                    }
-                    break;
             }
 
 
@@ -1892,7 +1814,7 @@ namespace ClassicUO.Game.Managers
                 {
                     if (ent != null)
                     {
-                        GameActions.MessageOverhead(_world, string.Format(ResGeneral.Target0, ent.Name), Notoriety.GetHue(((Mobile) ent).NotorietyFlag), _world.Player);
+                        GameActions.MessageOverhead(_world, string.Format(ResGeneral.Target0, ent.Name), Notoriety.GetHue(((Mobile)ent).NotorietyFlag), _world.Player);
 
                         _world.TargetManager.SelectedTarget = serial;
                         _world.TargetManager.LastTargetInfo.SetEntity(serial);
@@ -1915,11 +1837,10 @@ namespace ClassicUO.Game.Managers
 
             GameActions.Print(_world, ResGeneral.EntityNotFound);
         }
-
     }
 
 
-    public class Macro : LinkedObject, IEquatable<Macro>
+    internal class Macro : LinkedObject, IEquatable<Macro>
     {
         public Macro(string name, SDL.SDL_Keycode key, bool alt, bool ctrl, bool shift) : this(name)
         {
@@ -1953,7 +1874,6 @@ namespace ClassicUO.Game.Managers
 
         public string Name { get; }
 
-        public SDL.SDL_GameControllerButton[] ControllerButtons { get; set; }
         public SDL.SDL_Keycode Key { get; set; }
         public MouseButtonType MouseButton { get; set; }
         public bool WheelScroll { get; set; }
@@ -1961,19 +1881,6 @@ namespace ClassicUO.Game.Managers
         public bool Alt { get; set; }
         public bool Ctrl { get; set; }
         public bool Shift { get; set; }
-        public bool HideLabel = false;
-        public ushort Hue = 0x00;
-        public ushort? Graphic = null;
-        private byte _scale = 100;
-        public byte Scale
-        {
-            get { return _scale; }
-            set
-            {
-                if (value <= 10) _scale = 10;
-                else _scale = value;
-            }
-        }
 
         public bool Equals(Macro other)
         {
@@ -2020,10 +1927,6 @@ namespace ClassicUO.Game.Managers
             writer.WriteAttributeString("alt", Alt.ToString());
             writer.WriteAttributeString("ctrl", Ctrl.ToString());
             writer.WriteAttributeString("shift", Shift.ToString());
-            writer.WriteAttributeString("hidelabel", HideLabel.ToString());
-            writer.WriteAttributeString("hue", Hue.ToString());
-            writer.WriteAttributeString("graphic", Graphic.HasValue ? Graphic.ToString() : string.Empty);
-            writer.WriteAttributeString("scale", Scale.ToString());
 
             writer.WriteStartElement("actions");
 
@@ -2044,18 +1947,6 @@ namespace ClassicUO.Game.Managers
 
             writer.WriteEndElement();
 
-            if (ControllerButtons != null)
-            {
-                writer.WriteStartElement("controllerbuttons");
-                foreach (var b in ControllerButtons)
-                {
-                    writer.WriteElementString("button", ((int)b).ToString());
-                }
-                writer.WriteEndElement();
-            }
-
-
-
             writer.WriteEndElement();
         }
 
@@ -2070,16 +1961,6 @@ namespace ClassicUO.Game.Managers
             Alt = bool.Parse(xml.GetAttribute("alt"));
             Ctrl = bool.Parse(xml.GetAttribute("ctrl"));
             Shift = bool.Parse(xml.GetAttribute("shift"));
-            bool.TryParse(xml.GetAttribute("hidelabel"), out HideLabel);
-            ushort.TryParse(xml.GetAttribute("hue"), out Hue);
-            if (byte.TryParse(xml.GetAttribute("scale"), out byte savedScale))
-            {
-                Scale = savedScale;
-            }
-            if (ushort.TryParse(xml.GetAttribute("graphic"), out var graphic))
-            {
-                Graphic = graphic;
-            }
 
             if (xml.HasAttribute("mousebutton"))
             {
@@ -2154,24 +2035,6 @@ namespace ClassicUO.Game.Managers
                     PushToBack(m);
                 }
             }
-
-            XmlElement buttons = xml["controllerbuttons"];
-
-            if (buttons != null)
-            {
-                List<SDL.SDL_GameControllerButton> savedButtons = new List<SDL_GameControllerButton>();
-                foreach (XmlElement buttonNum in buttons.GetElementsByTagName("button"))
-                {
-                    if (int.TryParse(buttonNum.InnerText, out int b))
-                    {
-                        if (Enum.IsDefined(typeof(SDL_GameControllerButton), b))
-                        {
-                            savedButtons.Add((SDL_GameControllerButton)b);
-                        }
-                    }
-                }
-                ControllerButtons = savedButtons.ToArray();
-            }
         }
 
 
@@ -2189,8 +2052,6 @@ namespace ClassicUO.Game.Managers
                 case MacroType.SetUpdateRange:
                 case MacroType.ModifyUpdateRange:
                 case MacroType.RazorMacro:
-                case MacroType.UseCounterBar:
-                case MacroType.ClientCommand:
                     obj = new MacroObjectString(code, MacroSubType.MSC_NONE);
 
                     break;
@@ -2319,7 +2180,7 @@ namespace ClassicUO.Game.Managers
     }
 
 
-    public class MacroObject : LinkedObject
+    internal class MacroObject : LinkedObject
     {
         public MacroObject(MacroType code, MacroSubType sub)
         {
@@ -2365,8 +2226,6 @@ namespace ClassicUO.Game.Managers
                 case MacroType.SetUpdateRange:
                 case MacroType.ModifyUpdateRange:
                 case MacroType.RazorMacro:
-                case MacroType.UseCounterBar:
-                case MacroType.ClientCommand:
                     SubMenuType = 2;
 
                     break;
@@ -2388,7 +2247,7 @@ namespace ClassicUO.Game.Managers
         }
     }
 
-    public class MacroObjectString : MacroObject
+    internal class MacroObjectString : MacroObject
     {
         public MacroObjectString(MacroType code, MacroSubType sub, string str = "") : base(code, sub)
         {
@@ -2403,7 +2262,7 @@ namespace ClassicUO.Game.Managers
         }
     }
 
-    public enum MacroType
+    internal enum MacroType
     {
         None = 0,
         Say,
@@ -2441,8 +2300,6 @@ namespace ClassicUO.Game.Managers
         KillGumpOpen,
         PrimaryAbility,
         SecondaryAbility,
-        StunAbility,
-        DisarmAbility,
         EquipLastWeapon,
         SetUpdateRange,
         ModifyUpdateRange,
@@ -2469,7 +2326,7 @@ namespace ClassicUO.Game.Managers
         Zoom,
         ToggleChatVisibility,
         INVALID,
-        Aura,
+        Aura = 62,
         AuraOnOff,
         Grab,
         SetGrabBag,
@@ -2485,12 +2342,10 @@ namespace ClassicUO.Game.Managers
         CloseInactiveHealthBars,
         CloseCorpses,
         UseObject,
-        LookAtMouse,
-        UseCounterBar,
-        ClientCommand
+        LookAtMouse
     }
 
-    public enum MacroSubType
+    internal enum MacroSubType
     {
         MSC_NONE = 0,
         NW, //Walk group

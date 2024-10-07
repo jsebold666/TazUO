@@ -30,13 +30,12 @@
 
 #endregion
 
-using ClassicUO.Configuration;
+using System;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
+using ClassicUO.Resources;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace ClassicUO.Game.UI.Gumps
 {
@@ -46,9 +45,6 @@ namespace ClassicUO.Game.UI.Gumps
 
         public override GumpType GumpType => GumpType.NameOverHeadHandler;
 
-        private readonly List<RadioButton> _overheadButtons = new List<RadioButton>();
-        private Control _alpha;
-        private StbTextBox searchBox;
 
         public NameOverHeadHandlerGump(World world) : base(world, 0, 0)
         {
@@ -71,57 +67,57 @@ namespace ClassicUO.Game.UI.Gumps
 
             LayerOrder = UILayer.Over;
 
-            Checkbox stayActive;
+            RadioButton all, mobiles, items, mobilesCorpses;
+            AlphaBlendControl alpha;
+
             Add
             (
-                _alpha = new AlphaBlendControl(0.7f)
+                alpha = new AlphaBlendControl(0.7f)
                 {
                     Hue = 34
                 }
             );
 
+
             Add
             (
-                stayActive = new Checkbox
+                all = new RadioButton
                 (
-                    0x00D2,
-                    0x00D3,
-                    "Stay active",
+                    0,
+                    0x00D0,
+                    0x00D1,
+                    ResGumps.All,
                     color: 0xFFFF
                 )
                 {
                     IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.All
                 }
             );
-            stayActive.ValueChanged += (sender, e) => { NameOverHeadManager.SetOverheadToggled(stayActive.IsChecked); CanCloseWithRightClick = stayActive.IsChecked; };
 
-
-            Checkbox hideFullHp;
             Add
             (
-                hideFullHp = new Checkbox
+                mobiles = new RadioButton
                 (
-                    0x00D2,
-                    0x00D3,
+                    0,
+                    0x00D0,
+                    0x00D1,
+                    ResGumps.MobilesOnly,
                     color: 0xFFFF
                 )
                 {
                     Y = all.Y + all.Height,
-                    IsChecked = ProfileManager.CurrentProfile.NamePlateHideAtFullHealth
-                    X = stayActive.Width + stayActive.X + 5
+                    IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Mobiles
                 }
             );
-            hideFullHp.SetTooltip("Hide nameplates above 100% health.");
-            hideFullHp.ValueChanged += (sender, e) => { ProfileManager.CurrentProfile.NamePlateHideAtFullHealth = hideFullHp.IsChecked; };
 
-
-            Checkbox hideInWarmode;
             Add
             (
-                hideInWarmode = new Checkbox
+                items = new RadioButton
                 (
-                    0x00D2,
-                    0x00D3,
+                    0,
+                    0x00D0,
+                    0x00D1,
+                    ResGumps.ItemsOnly,
                     color: 0xFFFF
                 )
                 {
@@ -129,8 +125,6 @@ namespace ClassicUO.Game.UI.Gumps
                     IsChecked = World.NameOverHeadManager.TypeAllowed == NameOverheadTypeAllowed.Items
                 }
             );
-            hideInWarmode.SetTooltip("Only hide 100% hp nameplates in warmode.");
-            hideInWarmode.ValueChanged += (sender, e) => { ProfileManager.CurrentProfile.NamePlateHideAtFullHealthInWarmode = hideInWarmode.IsChecked; };
 
             Add
             (
@@ -148,13 +142,12 @@ namespace ClassicUO.Game.UI.Gumps
                 }
             );
 
+            alpha.Width = Math.Max(mobilesCorpses.Width, Math.Max(items.Width, Math.Max(all.Width, mobiles.Width)));
+            alpha.Height = all.Height + mobiles.Height + items.Height + mobilesCorpses.Height;
 
-            Add(new AlphaBlendControl() { Y = stayActive.Height + stayActive.Y, Width = 150, Height = 20, Hue = 0x0481 });
-            Add(searchBox = new StbTextBox(0, -1, 150, hue: 0xFFFF) { Y = stayActive.Height + stayActive.Y, Width = 150, Height = 20 });
-            searchBox.Text = NameOverHeadManager.Search;
-            searchBox.TextChanged += (s, e) => { NameOverHeadManager.Search = searchBox.Text; };
+            Width = alpha.Width;
+            Height = alpha.Height;
 
-            DrawChoiceButtons();
             all.ValueChanged += (sender, e) =>
             {
                 if (all.IsChecked)
@@ -188,79 +181,6 @@ namespace ClassicUO.Game.UI.Gumps
             };
         }
 
-        public void UpdateCheckboxes()
-        {
-            foreach (var button in _overheadButtons)
-            {
-                button.IsChecked = NameOverHeadManager.LastActiveNameOverheadOption == button.Text;
-            }
-        }
-
-        public void RedrawOverheadOptions()
-        {
-            foreach (var button in _overheadButtons)
-                Remove(button);
-
-            DrawChoiceButtons();
-        }
-
-        private void DrawChoiceButtons()
-        {
-            int biggestWidth = 100;
-            var options = NameOverHeadManager.GetAllOptions();
-
-            for (int i = 0; i < options.Count; i++)
-            {
-                biggestWidth = Math.Max(biggestWidth, AddOverheadOptionButton(options[i], i).Width);
-            }
-
-            _alpha.Width = biggestWidth;
-            _alpha.Height = Math.Max(30, options.Count * 20) + 44;
-
-            Width = _alpha.Width;
-            Height = _alpha.Height;
-        }
-
-        private RadioButton AddOverheadOptionButton(NameOverheadOption option, int index)
-        {
-            RadioButton button;
-
-            Add
-            (
-                button = new RadioButton
-                (
-                    0, 0x00D0, 0x00D1, option.Name,
-                    color: 0xFFFF
-                )
-                {
-                    Y = 20 * index + 44,
-                    IsChecked = NameOverHeadManager.LastActiveNameOverheadOption == option.Name,
-                }
-            );
-
-            if (button.IsChecked)
-            {
-                NameOverHeadManager.SetActiveOption(option);
-            }
-
-            button.ValueChanged += (sender, e) =>
-            {
-                if (button.IsChecked)
-                {
-                    NameOverHeadManager.SetActiveOption(option);
-                }
-            };
-
-            _overheadButtons.Add(button);
-
-            return button;
-        }
-
-        public override void Dispose()
-        {
-            NameOverHeadManager.Search = "";
-            base.Dispose();
-        }
 
         protected override void OnDragEnd(int x, int y)
         {

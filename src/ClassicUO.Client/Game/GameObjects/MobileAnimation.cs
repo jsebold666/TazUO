@@ -30,9 +30,7 @@
 
 #endregion
 
-using ClassicUO.Assets;
-using ClassicUO.Game.Data;
-using ClassicUO.Utility;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using ClassicUO.Game.Data;
@@ -42,7 +40,7 @@ using ClassicUO.Renderer.Animations;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public partial class Mobile
+    internal partial class Mobile
     {
         private static readonly ushort[] HANDS_BASE_ANIMID =
         {
@@ -362,7 +360,7 @@ namespace ClassicUO.Game.GameObjects
                 }
             }
 
-            LABEL_243:
+        LABEL_243:
             v13 = (ushort)(v13 & 0x7F);
 
             //if (v13 > 34)
@@ -573,7 +571,7 @@ namespace ClassicUO.Game.GameObjects
             AnimationGroupsType originalType = animations.GetAnimType(graphic);
             animations.ConvertBodyIfNeeded(ref graphic, isParent);
             AnimationGroupsType type = animations.GetAnimType(graphic);
-            AnimationFlags  flags = animations.GetAnimFlags(graphic);
+            AnimationFlags flags = animations.GetAnimFlags(graphic);
 
             bool uop = (flags & AnimationFlags.UseUopAnimation) != 0;
 
@@ -1049,19 +1047,12 @@ namespace ClassicUO.Game.GameObjects
                         return (byte)v13;
 
                     default:
-                        LABEL_189:
+                    LABEL_189:
 
                         LABEL_190(flags, ref v13);
 
                         return (byte)v13;
                 }
-
-                //// LABEL_188
-                //v13 = 2;
-
-                //LABEL_190(flags, ref v13);
-
-                //return (byte)v13;
             }
 
             byte result = mobile._animationGroup;
@@ -1181,38 +1172,7 @@ namespace ClassicUO.Game.GameObjects
 
                                 if (mobile.IsMounted)
                                 {
-                                    result = 28;
-                                }
-                                else
-                                {
-                                    result = 25;
-                                }
-                            }
-                            else if (mobile.IsGargoyle && mobile.IsFlying) // TODO: what's up when it is dead?
-                            {
-                                if (mobile.InWarMode)
-                                {
-                                    result = 65;
-                                }
-                                else
-                                {
-                                    result = 64;
-                                }
-                            }
-                            else if (!mobile.InWarMode || mobile.IsDead)
-                            {
-                                if (haveLightAtHand2)
-                                {
-                                    // TODO: UOP EQUIPMENT ?
-                                    result = 0;
-                                }
-                                else
-                                {
-                                    if (
-                                        uop
-                                        && type == AnimationGroupsType.Equipment
-                                        && animations.AnimationExists(graphic, 37)
-                                    )
+                                    if (haveLightAtHand2)
                                     {
                                         result = 28;
                                     }
@@ -1244,7 +1204,7 @@ namespace ClassicUO.Game.GameObjects
                                         if (
                                             uop
                                             && type == AnimationGroupsType.Equipment
-                                            && Client.Game.Animations.AnimationExists(graphic, 37)
+                                            && animations.AnimationExists(graphic, 37)
                                         )
                                         {
                                             result = 37;
@@ -1275,19 +1235,17 @@ namespace ClassicUO.Game.GameObjects
 
                                         if (hand2 != null)
                                         {
-                                            if (
-                                                uop
-                                                && type == AnimationGroupsType.Equipment
-                                                && !animations.AnimationExists(
-                                                    graphic,
-                                                    7
-                                                )
-                                            )
+                                            handAnimIDs[1] = hand2.ItemData.AnimID;
+                                        }
+
+                                        if (hand1 == null)
+                                        {
+                                            if (hand2 != null)
                                             {
                                                 if (
                                                     uop
                                                     && type == AnimationGroupsType.Equipment
-                                                    && !Client.Game.Animations.AnimationExists(
+                                                    && !animations.AnimationExists(
                                                         graphic,
                                                         7
                                                     )
@@ -1341,85 +1299,7 @@ namespace ClassicUO.Game.GameObjects
                                 }
                             }
                         }
-                    }
-                    else if (mobile.IsMounted)
-                    {
-                        if (isRun)
-                        {
-                            result = 24;
-                        }
-                        else
-                        {
-                            result = 23;
-                        }
-                    }
-                    //else if (EquippedGraphic0x3E96)
-                    //{
-
-                    //}
-                    else if (isRun || !mobile.InWarMode || mobile.IsDead)
-                    {
-                        if ((flags & AnimationFlags.UseUopAnimation) != 0)
-                        {
-                            // i'm not sure here if it's necessary the isgargoyle
-                            if (mobile.IsGargoyle && mobile.IsFlying)
-                            {
-                                if (isRun)
-                                {
-                                    result = 63;
-                                }
-                                else
-                                {
-                                    result = 62;
-                                }
-                            }
-                            else
-                            {
-                                if (isRun && animations.AnimationExists(graphic, 24))
-                                {
-                                    result = 24;
-                                }
-                                else
-                                {
-                                    if (isRun)
-                                    {
-                                        if (
-                                            uop
-                                            && type == AnimationGroupsType.Equipment
-                                            && !animations.AnimationExists(graphic, 2)
-                                        )
-                                        {
-                                            result = 3;
-                                        }
-                                        else
-                                        {
-                                            result = 2;
-
-                                            if (mobile.IsGargoyle)
-                                            {
-                                                hand2 = mobile.FindItemByLayer(Layer.OneHanded);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (
-                                            uop
-                                            && type == AnimationGroupsType.Equipment
-                                            && !animations.AnimationExists(graphic, 0)
-                                        )
-                                        {
-                                            result = 1;
-                                        }
-                                        else
-                                        {
-                                            result = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
+                        else if (mobile.IsMounted)
                         {
                             if (isRun)
                             {
@@ -1452,7 +1332,7 @@ namespace ClassicUO.Game.GameObjects
                                 }
                                 else
                                 {
-                                    if (isRun && Client.Game.Animations.AnimationExists(graphic, 24))
+                                    if (isRun && animations.AnimationExists(graphic, 24))
                                     {
                                         result = 24;
                                     }
@@ -1463,7 +1343,7 @@ namespace ClassicUO.Game.GameObjects
                                             if (
                                                 uop
                                                 && type == AnimationGroupsType.Equipment
-                                                && !Client.Game.Animations.AnimationExists(graphic, 2)
+                                                && !animations.AnimationExists(graphic, 2)
                                             )
                                             {
                                                 result = 3;
@@ -1483,7 +1363,7 @@ namespace ClassicUO.Game.GameObjects
                                             if (
                                                 uop
                                                 && type == AnimationGroupsType.Equipment
-                                                && !Client.Game.Animations.AnimationExists(graphic, 0)
+                                                && !animations.AnimationExists(graphic, 0)
                                             )
                                             {
                                                 result = 1;
@@ -1876,7 +1756,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_1_2(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -1905,7 +1785,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_3(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -1949,7 +1829,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_4(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -1987,7 +1867,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_5(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -2035,7 +1915,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_6_14(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -2092,7 +1972,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_8(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -2121,7 +2001,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_9(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -2148,7 +2028,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_10(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
@@ -2175,7 +2055,7 @@ namespace ClassicUO.Game.GameObjects
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte GetObjectNewAnimationType_11(Animations animations, Mobile mobile, ushort action, byte mode)
         {
-            AnimationFlags  flags = animations.GetAnimFlags(mobile.Graphic);
+            AnimationFlags flags = animations.GetAnimFlags(mobile.Graphic);
             AnimationGroupsType type = AnimationGroupsType.Monster;
 
             if ((flags & AnimationFlags.Found) != 0)
