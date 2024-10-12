@@ -43,7 +43,7 @@ namespace ClassicUO.Game.Managers
 {
     internal sealed class ContainerManager
     {
-        private readonly Dictionary<ushort, ContainerData> _data =
+        private static Dictionary<ushort, ContainerData> _data =
             new Dictionary<ushort, ContainerData>();
 
         private readonly World _world;
@@ -243,7 +243,7 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        public void BuildContainerFile(bool force)
+        public static void BuildContainerFile(bool force)
         {
             string path = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Client");
 
@@ -344,7 +344,7 @@ namespace ClassicUO.Game.Managers
             }
         }
 
-        private void MakeDefault()
+        private static void MakeDefault()
         {
             _data.Clear();
             _data[0x0007] = new ContainerData(0x0007, 0x0000, 0x0000, 30, 30, 270, 170);

@@ -36,7 +36,7 @@ using System;
 
 namespace ClassicUO.Game.Managers
 {
-    public class MessageEventArgs : EventArgs
+    internal class MessageEventArgs : EventArgs
     {
         public MessageEventArgs
         (
@@ -64,7 +64,7 @@ namespace ClassicUO.Game.Managers
         }
 
 
-        public Entity Parent { get; }
+        internal Entity Parent { get; }
 
         public string Text { get; }
 
@@ -80,7 +80,7 @@ namespace ClassicUO.Game.Managers
 
         public uint Cliloc { get; set; }
 
-        public AffixType AffixType { get; }
+        internal AffixType AffixType { get; }
 
         public string Affix { get; }
 

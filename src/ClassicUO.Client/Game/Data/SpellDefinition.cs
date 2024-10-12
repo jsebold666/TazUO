@@ -41,7 +41,7 @@ using System.Text.Json.Serialization;
 
 namespace ClassicUO.Game.Data
 {
-    public class SpellDefinition : IEquatable<SpellDefinition>
+    internal class SpellDefinition : IEquatable<SpellDefinition>
     {
         public static SpellDefinition EmptySpell = new SpellDefinition
         (
@@ -733,7 +733,7 @@ namespace ClassicUO.Game.Data
         public int ManaCost { get; set; } = 0;
         public int MinSkill { get; set; } = 0;
         public int TithingCost { get; set; } = 0;
-        public TargetType TargetType { get; set; } = TargetType.Neutral;
+        private TargetType TargetType { get; set; } = TargetType.Neutral;
         public Reagents[] AllReagents { get; set; } = { };
 
         [JsonIgnore]

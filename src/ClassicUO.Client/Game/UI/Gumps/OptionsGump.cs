@@ -3526,7 +3526,7 @@ namespace ClassicUO.Game.UI.Gumps
                 IsSelected = true
             };
 
-            button.MouseUp += (sender, e) => { World.ContainerManager.BuildContainerFile(true); };
+            button.MouseUp += (sender, e) => { ContainerManager.BuildContainerFile(true); };
             rightArea.Add(button);
 
             startX = 5;
@@ -3613,6 +3613,7 @@ namespace ClassicUO.Game.UI.Gumps
             {
                 EntryDialog dialog = new
                 (
+                    World,
                     250,
                     150,
                     "Name overhead entry name",
@@ -3678,6 +3679,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     QuestionGump dialog = new QuestionGump
                     (
+                        World,
                         ResGumps.MacroDeleteConfirmation,
                         b =>
                         {
@@ -4360,7 +4362,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 {
                                     if (Uri.TryCreate(s, UriKind.Absolute, out var uri))
                                     {
-                                        GameActions.Print("Attempting to download spell config..");
+                                        GameActions.Print(World, "Attempting to download spell config..");
                                         Task.Factory.StartNew(() =>
                                         {
                                             try
@@ -4370,12 +4372,12 @@ namespace ClassicUO.Game.UI.Gumps
 
                                                 if (SpellVisualRangeManager.Instance.LoadFromString(result))
                                                 {
-                                                    GameActions.Print("Succesfully downloaded new spell config.");
+                                                    GameActions.Print(World, "Succesfully downloaded new spell config.");
                                                 }
                                             } 
                                             catch(Exception ex)
                                             {
-                                                GameActions.Print($"Failed to download the spell config. ({ex.Message})");
+                                                GameActions.Print(World, $"Failed to download the spell config. ({ex.Message})");
                                             }
                                         });
                                     }
@@ -4680,7 +4682,7 @@ namespace ClassicUO.Game.UI.Gumps
         {
             foreach (var profile in allProfiles)
             {
-                ProfileManager.CurrentProfile.Save(profile.ToString(), false);
+                ProfileManager.CurrentProfile.Save(World, profile.ToString());
             }
         }
 
@@ -4727,7 +4729,7 @@ namespace ClassicUO.Game.UI.Gumps
             _hueLabel.Y = 1;
             main.Add(_hueLabel);
 
-            ClickableColorBox _hueSelector = new ClickableColorBox(_hueLabel.X + _hueLabel.Width + 2, 1, 13, 14, data.hue);
+            ClickableColorBox _hueSelector = new ClickableColorBox(World, _hueLabel.X + _hueLabel.Width + 2, 1, 13, 14, data.hue);
             main.Add(_hueSelector);
 
 
@@ -5217,7 +5219,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     foreach (Gump g in UIManager.Gumps.OfType<ImprovedBuffGump>())
                         g.Dispose();
-                    UIManager.Add(new BuffGump(100, 100));
+                    UIManager.Add(new BuffGump(World, 100, 100));
                 }
             }
 

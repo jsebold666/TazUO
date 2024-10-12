@@ -43,13 +43,12 @@ using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Utility.Platforms;
 using Microsoft.Xna.Framework;
-using MathHelper = ClassicUO.Utility.MathHelper;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public partial class Item : Entity
+    internal partial class Item : Entity
     {
         //private static readonly QueuedPool<Item> _pool = new QueuedPool<Item>(
         //    Constants.PREDICTABLE_CHUNKS * 3,
@@ -105,9 +104,21 @@ namespace ClassicUO.Game.GameObjects
         private ushort? _displayedGraphic;
         private bool _isMulti;
 
-        public Item(World world) : base(world, 0) { }
+        internal Item(World world) : base(world, 0) { }
 
         public bool IsCoin => Graphic == 0x0EEA || Graphic == 0x0EED || Graphic == 0x0EF0;
+
+        public bool IsHumanCorpse => IsCorpse &&
+            Utility.MathHelper.InRange(Amount, 0x0190, 0x0193) ||
+            Utility.MathHelper.InRange(Amount, 0x00B7, 0x00BA) ||
+            Utility.MathHelper.InRange(Amount, 0x025D, 0x0260) ||
+            Utility.MathHelper.InRange(Amount, 0x029A, 0x029B) ||
+            Utility.MathHelper.InRange(Amount, 0x02B6, 0x02B7) ||
+            Amount == 0x03DB ||
+            Amount == 0x03DF ||
+            Amount == 0x03E2 ||
+            Amount == 0x02E8 ||
+            Amount == 0x02E9;
 
         public ushort DisplayedGraphic
         {
@@ -164,18 +175,6 @@ namespace ClassicUO.Game.GameObjects
         public bool IsCorpse => /*MathHelper.InRange(Graphic, 0x0ECA, 0x0ED2) ||*/
             Graphic == 0x2006;
 
-        public bool IsHumanCorpse => IsCorpse && 
-            MathHelper.InRange(Amount, 0x0190, 0x0193) || 
-            MathHelper.InRange(Amount, 0x00B7, 0x00BA) || 
-            MathHelper.InRange(Amount, 0x025D, 0x0260) || 
-            MathHelper.InRange(Amount, 0x029A, 0x029B) || 
-            MathHelper.InRange(Amount, 0x02B6, 0x02B7) || 
-            Amount == 0x03DB || 
-            Amount == 0x03DF || 
-            Amount == 0x03E2 || 
-            Amount == 0x02E8 || 
-            Amount == 0x02E9;
-
         public bool OnGround => !SerialHelper.IsValid(Container);
 
         public uint RootContainer
@@ -221,7 +220,7 @@ namespace ClassicUO.Game.GameObjects
         public bool UsedLayer;
         public bool WantUpdateMulti = true;
 
-        public static Item Create(World world, uint serial)
+        internal static Item Create(World world, uint serial)
         {
             Item i = new Item(world); // _pool.GetOne();
             i.Serial = serial;
@@ -239,9 +238,6 @@ namespace ClassicUO.Game.GameObjects
             if (Opened)
             {
                 UIManager.GetGump<ContainerGump>(Serial)?.Dispose();
-                #region GridContainer
-                UIManager.GetGump<GridContainer>(Serial)?.Dispose();
-                #endregion
                 UIManager.GetGump<SpellbookGump>(Serial)?.Dispose();
                 UIManager.GetGump<MapGump>(Serial)?.Dispose();
 
@@ -569,7 +565,7 @@ namespace ClassicUO.Game.GameObjects
 
                 for (; last != null; last = (TextObject)last.Previous)
                 {
-                    if (last.TextBox != null && !last.TextBox.IsDisposed)
+                    if (last.RenderedText != null && !last.RenderedText.IsDestroyed)
                     {
                         if (offY == 0 && last.Time < Time.Ticks)
                         {
@@ -577,9 +573,9 @@ namespace ClassicUO.Game.GameObjects
                         }
 
                         last.OffsetY = offY;
-                        offY += last.TextBox.Height;
+                        offY += last.RenderedText.Height;
 
-                        last.RealScreenPosition.X = p.X - (last.TextBox.Width >> 1);
+                        last.RealScreenPosition.X = p.X - (last.RenderedText.Width >> 1);
                         last.RealScreenPosition.Y = p.Y - offY;
                     }
                 }
@@ -590,7 +586,7 @@ namespace ClassicUO.Game.GameObjects
             {
                 for (; last != null; last = (TextObject)last.Previous)
                 {
-                    if (last.TextBox != null && !last.TextBox.IsDisposed)
+                    if (last.RenderedText != null && !last.RenderedText.IsDestroyed)
                     {
                         if (offY == 0 && last.Time < Time.Ticks)
                         {
@@ -598,9 +594,9 @@ namespace ClassicUO.Game.GameObjects
                         }
 
                         last.OffsetY = offY;
-                        offY += last.TextBox.Height;
+                        offY += last.RenderedText.Height;
 
-                        last.RealScreenPosition.X = last.X - (last.TextBox.Width >> 1);
+                        last.RealScreenPosition.X = last.X - (last.RenderedText.Width >> 1);
                         last.RealScreenPosition.Y = last.Y - offY;
                     }
                 }

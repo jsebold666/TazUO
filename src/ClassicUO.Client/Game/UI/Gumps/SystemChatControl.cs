@@ -63,7 +63,7 @@ namespace ClassicUO.Game.UI.Gumps
         UOChat
     }
 
-    public class SystemChatControl : Control
+    internal class SystemChatControl : Control
     {
         private const int MAX_MESSAGE_LENGHT = 100;
         private const int CHAT_X_OFFSET = 3;
@@ -138,7 +138,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             WantUpdateSize = false;
 
-            _gump.World.MessageManager.MessageReceived += ChatOnMessageReceived;
+            MessageManager.MessageReceived += ChatOnMessageReceived;
             Mode = ChatMode.Default;
 
             IsActive = !ProfileManager.CurrentProfile.ActivateChatAfterEnter;
@@ -234,7 +234,7 @@ namespace ClassicUO.Game.UI.Gumps
             }
         }
 
-        public readonly StbTextBox TextBoxControl;
+        internal readonly StbTextBox TextBoxControl;
 
         public void SetFocus()
         {
@@ -312,7 +312,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         public override void Dispose()
         {
-            _gump.World.MessageManager.MessageReceived -= ChatOnMessageReceived;
+            MessageManager.MessageReceived -= ChatOnMessageReceived;
             base.Dispose();
         }
 
@@ -675,7 +675,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 else
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                    MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.YouAreNotPartyLeader,
@@ -697,7 +697,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 else
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                   MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.YouAreNotInAParty,
@@ -716,7 +716,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                                 if (_gump.World.Party.Leader == 0)
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                    MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.YouAreNotInAParty,
@@ -750,7 +750,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 else
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                    MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.NoOneHasInvitedYouToBeInAParty,
@@ -774,7 +774,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 else
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                    MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.NoOneHasInvitedYouToBeInAParty,
@@ -797,7 +797,7 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                                 else
                                 {
-                                    _gump.World.MessageManager.HandleMessage
+                                    MessageManager.HandleMessage
                                     (
                                         null,
                                         ResGumps.YouAreNotPartyLeader,

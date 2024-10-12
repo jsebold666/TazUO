@@ -44,7 +44,7 @@ using System;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public partial class Mobile : Entity
+    internal partial class Mobile : Entity
     {
         //private static readonly QueuedPool<Mobile> _pool = new QueuedPool<Mobile>(
         //    Constants.PREDICTABLE_CHUNKS,
@@ -136,13 +136,13 @@ namespace ClassicUO.Game.GameObjects
         private ushort _animationRepeateMode = 1;
         private ushort _animationRepeatModeCount = 1;
 
-        public Mobile(World world, uint serial) : base(world, serial)
+        internal Mobile(World world, uint serial) : base(world, serial)
         {
             LastAnimationChangeTime = Time.Ticks;
             CalculateRandomIdleTime();
         }
 
-        public Mobile(World world) : base(world, 0) { }
+        internal Mobile(World world) : base(world, 0) { }
 
         public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
         public bool IsParalyzed => (Flags & Flags.Frozen) != 0;
@@ -235,7 +235,7 @@ namespace ClassicUO.Game.GameObjects
         public int StepSoundOffset;
         public string Title = string.Empty;
 
-        public static Mobile Create(World world, uint serial)
+        internal static Mobile Create(World world, uint serial)
         {
             Mobile mobile = new Mobile(world); // _pool.GetOne();
             mobile.Serial = serial;
@@ -1007,7 +1007,7 @@ namespace ClassicUO.Game.GameObjects
 
             for (; last != null; last = (TextObject)last.Previous)
             {
-                if (last.TextBox != null && !last.TextBox.IsDisposed)
+                if (last.RenderedText != null && !last.RenderedText.IsDestroyed)
                 {
                     if (offY == 0 && last.Time < Time.Ticks)
                     {
@@ -1015,9 +1015,9 @@ namespace ClassicUO.Game.GameObjects
                     }
 
                     last.OffsetY = offY;
-                    offY += last.TextBox.Height;
+                    offY += last.RenderedText.Height;
 
-                    last.RealScreenPosition.X = p.X - (last.TextBox.Width >> 1);
+                    last.RealScreenPosition.X = p.X - (last.RenderedText.Width >> 1);
                     last.RealScreenPosition.Y = p.Y - offY;
                 }
             }

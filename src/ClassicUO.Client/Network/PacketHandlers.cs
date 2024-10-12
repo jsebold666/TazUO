@@ -1039,7 +1039,7 @@ namespace ClassicUO.Network
                 }
             }
 
-            world.MessageManager.HandleMessage(entity, text, name, hue, type, (byte)font, text_type);
+            MessageManager.HandleMessage(entity, text, name, hue, type, (byte)font, text_type);
         }
 
         private static void DeleteObject(World world, ref StackDataReader p)
@@ -1388,11 +1388,8 @@ namespace ClassicUO.Network
                 if (ProfileManager.CurrentProfile.UseModernShopGump)
                     UIManager.Add(modernShopGump = new ModernShopGump(vendor, true));
                 else
-                    UIManager.Add(gump = new ShopGump(serial, true, 150, 5));
+                    UIManager.Add(gump = new ShopGump(world, serial, true, 150, 5));
 
-
-                ShopGump gump = new ShopGump(world, serial, true, 150, 5);
-                UIManager.Add(gump);
 
                 for (Layer layer = Layer.ShopBuyRestock; layer < Layer.ShopBuy + 1; layer++)
                 {
@@ -1468,7 +1465,7 @@ namespace ClassicUO.Network
                     )
                     {
                         UIManager.GetGump<GridLootGump>(serial)?.Dispose();
-                        UIManager.Add(new GridLootGump(serial));
+                        UIManager.Add(new GridLootGump(world, serial));
                         _requestedGridLoot = serial;
 
                         if (ProfileManager.CurrentProfile.GridLootType == 1)
@@ -1783,7 +1780,7 @@ namespace ClassicUO.Network
 
             if (code < 5)
             {
-                world.MessageManager.HandleMessage(
+                MessageManager.HandleMessage(
                     null,
                     ServerErrorMessages.GetError(p[0], code),
                     string.Empty,
@@ -1836,12 +1833,12 @@ namespace ClassicUO.Network
                 }
 
                 GameActions.RequestWarMode(world.Player, false);
-                World.WMapManager._corpse = new WMapEntity(World.Player.Serial)
+                world.WMapManager._corpse = new WMapEntity(world.Player.Serial)
                 {
-                    X = World.Player.X,
-                    Y = World.Player.Y,
+                    X = world.Player.X,
+                    Y = world.Player.Y,
                     HP = 0,
-                    Map = World.Map.Index,
+                    Map = world.Map.Index,
                     LastUpdate = Time.Ticks + (1000 * 60 * 5),
                     IsGuild = false,
                     Name = $"Your Corpse"
@@ -3169,7 +3166,7 @@ namespace ClassicUO.Network
             byte flags = p.ReadUInt8();
 
             mobile.Title = text;
-            if (ProfileManager.CurrentProfile.UseModernPaperdoll && mobile.Serial == World.Player.Serial)
+            if (ProfileManager.CurrentProfile.UseModernPaperdoll && mobile.Serial == world.Player.Serial)
             {
                 ModernPaperdoll modernPaperdoll = UIManager.GetGump<ModernPaperdoll>(mobile.Serial);
                 if (modernPaperdoll != null)
@@ -3198,7 +3195,7 @@ namespace ClassicUO.Network
                         location = new Point(100, 100);
                     }
 
-                    UIManager.Add(new PaperDollGump(mobile, (flags & 0x02) != 0) { Location = location });
+                    UIManager.Add(new PaperDollGump(world, mobile, (flags & 0x02) != 0) { Location = location });
                 }
                 else
                 {
@@ -3833,7 +3830,7 @@ namespace ClassicUO.Network
                 }
             }
 
-            world.MessageManager.HandleMessage(
+            MessageManager.HandleMessage(
                 entity,
                 text,
                 name,
@@ -4387,7 +4384,7 @@ namespace ClassicUO.Network
                             item.Name = str;
                         }
 
-                        world.MessageManager.HandleMessage(
+                        MessageManager.HandleMessage(
                             item,
                             str,
                             item.Name,
@@ -4474,7 +4471,7 @@ namespace ClassicUO.Network
 
                     if (strBuffer.Length != 0)
                     {
-                        world.MessageManager.HandleMessage(
+                        MessageManager.HandleMessage(
                             item,
                             strBuffer.ToString(),
                             item.Name,
@@ -4996,8 +4993,7 @@ namespace ClassicUO.Network
             }
 
             EventSink.InvokeClilocMessageReceived(entity, new MessageEventArgs(entity, text, name, hue, type, (byte)font, text_type, true) { Cliloc = cliloc });
-
-            world.MessageManager.HandleMessage(
+            MessageManager.HandleMessage(
                 entity,
                 text,
                 name,
@@ -5783,7 +5779,7 @@ namespace ClassicUO.Network
             switch (type)
             {
                 case WaypointsType.Corpse:
-                    World.WMapManager.AddOrUpdate(serial, x, y, 0, map, true, "Corpse");
+                    world.WMapManager.AddOrUpdate(serial, x, y, 0, map, true, "Corpse");
                     break;
                 case WaypointsType.PartyMember:
                     break;
@@ -5794,7 +5790,7 @@ namespace ClassicUO.Network
                 case WaypointsType.QuestDestination:
                     break;
                 case WaypointsType.Resurrection:
-                    World.WMapManager.AddOrUpdate(serial, x, y, 0, map, true, "Resurrection");
+                    world.WMapManager.AddOrUpdate(serial, x, y, 0, map, true, "Resurrection");
                     break;
                 case WaypointsType.PointOfInterest:
                     break;
@@ -5817,7 +5813,7 @@ namespace ClassicUO.Network
         {
             uint serial = p.ReadUInt32BE();
 
-            World.WMapManager.Remove(serial);
+            world.WMapManager.Remove(serial);
         }
 
         private static void KrriosClientSpecial(World world, ref StackDataReader p)
@@ -7290,7 +7286,7 @@ namespace ClassicUO.Network
 
             if (CUOEnviroment.Debug)
             {
-                GameActions.Print($"GumpID: {gumpID}");
+                GameActions.Print(world, $"GumpID: {gumpID}");
             }
 
             if (ProfileManager.CurrentProfile != null)
@@ -7331,7 +7327,7 @@ namespace ClassicUO.Network
                             xmins = int.Parse(loc[3].Substring(0, loc[3].Length - 1)); ;
                             ymins = int.Parse(loc[1].Substring(0, loc[1].Length - 1));
                             Vector3 location = ReverseLookup(xlong, ylat, xmins, ymins, xeast, ysouth);
-                            GameActions.Print($"If I am on the correct facet I think these coords should be somewhere near.. {location.X} and {location.Y}..");
+                            GameActions.Print(world, $"If I am on the correct facet I think these coords should be somewhere near.. {location.X} and {location.Y}..");
 
                             MenuButton menu = new MenuButton(25, Color.Black.PackedValue, 0.75f, "Menu") { X = gump.Width - 46, Y = 6 };
                             menu.MouseUp += (s, e) =>
@@ -7339,13 +7335,13 @@ namespace ClassicUO.Network
                                 menu.ContextMenu?.Show();
                             };
 
-                            menu.ContextMenu = new ContextMenuControl();
+                            //menu.ContextMenu = new ContextMenuControl();
                             menu.ContextMenu.Add(new ContextMenuItemEntry("Locate on world map", () =>
                             {
                                 WorldMapGump gump = UIManager.GetGump<WorldMapGump>();
                                 if (gump == null)
                                 {
-                                    gump = new WorldMapGump();
+                                    gump = new WorldMapGump(world);
                                     UIManager.Add(gump);
                                 }
                                 gump.GoToMarker((int)location.X, (int)location.Y, true);
@@ -7356,10 +7352,10 @@ namespace ClassicUO.Network
                                 WorldMapGump gump = UIManager.GetGump<WorldMapGump>();
                                 if (gump == null)
                                 {
-                                    gump = new WorldMapGump();
+                                    gump = new WorldMapGump(world);
                                     UIManager.Add(gump);
                                 }
-                                gump.AddUserMarker("SOS", (int)location.X, (int)location.Y, World.Map.Index);
+                                //gump.AddUserMarker("SOS", (int)location.X, (int)location.Y, world.Map.Index);
                             }));
 
                             menu.ContextMenu.Add(new ContextMenuItemEntry("Close", () =>

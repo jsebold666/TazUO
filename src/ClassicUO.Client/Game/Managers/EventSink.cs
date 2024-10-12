@@ -4,7 +4,7 @@ using System;
 
 namespace ClassicUO.Game.Managers
 {
-    public class EventSink
+    internal class EventSink
     {
         /// <summary>
         /// Invoked when the player is connected to a server

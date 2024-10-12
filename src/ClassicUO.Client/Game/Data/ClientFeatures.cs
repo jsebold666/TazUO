@@ -56,7 +56,7 @@ namespace ClassicUO.Game.Data
         CLF_UNLOCK_FELUCCA_AREAS = 0x8000
     }
 
-    public class ClientFeatures
+    internal class ClientFeatures
     {
         public CharacterListFlags Flags { get; private set; }
 

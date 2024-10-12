@@ -30,34 +30,33 @@
 
 #endregion
 
-using ClassicUO.Assets;
+using System;
+using System.Runtime.CompilerServices;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Map;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
-using System;
-using System.Runtime.CompilerServices;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public abstract class BaseGameObject : LinkedObject
+    internal class BaseGameObject : LinkedObject
     {
         protected BaseGameObject(World world) => World = world;
 
         public Point RealScreenPosition;
 
-        public World World { get; }
+        public World World { get; set; }
     }
 
-    public abstract partial class GameObject : BaseGameObject
+    partial class GameObject : BaseGameObject
     {
-        protected GameObject(World world) : base(world) { }
+        internal GameObject(World world) : base(world) { }
 
         public bool IsDestroyed { get; protected set; }
         public bool IsPositionChanged { get; protected set; }
-        public TextContainer TextContainer { get; private set; }
+        internal TextContainer TextContainer { get; set; }
 
         public int Distance
         {
@@ -118,13 +117,6 @@ namespace ClassicUO.Game.GameObjects
             );
         }
 
-        public int DistanceFrom(Vector2 pos)
-        {
-            if (pos == null) { return int.MaxValue; }
-
-            return Math.Max(Math.Abs(X - (int)pos.X), Math.Abs(Y - (int)pos.Y));
-        }
-
         public void AddToTile()
         {
             AddToTile(X, Y);
@@ -135,7 +127,7 @@ namespace ClassicUO.Game.GameObjects
             AddToTile(World.Map?.GetChunk(x, y), x % 8, y % 8);
         }
 
-        public void AddToTile(Chunk chunk, int chunkX, int chunkY)
+        internal void AddToTile(Chunk chunk, int chunkX, int chunkY)
         {
             RemoveFromTile();
 
@@ -233,7 +225,7 @@ namespace ClassicUO.Game.GameObjects
 
             for (; last != null; last = (TextObject)last.Previous)
             {
-                if (last.TextBox != null && !last.TextBox.IsDisposed)
+                if (last.RenderedText != null && !last.RenderedText.IsDestroyed)
                 {
                     if (offY == 0 && last.Time < Time.Ticks)
                     {
@@ -241,9 +233,9 @@ namespace ClassicUO.Game.GameObjects
                     }
 
                     last.OffsetY = offY;
-                    offY += last.TextBox.Height;
+                    offY += last.RenderedText.Height;
 
-                    last.RealScreenPosition.X = p.X - (last.TextBox.Width >> 1);
+                    last.RealScreenPosition.X = p.X - (last.RenderedText.Width >> 1);
                     last.RealScreenPosition.Y = p.Y - offY;
                 }
             }
@@ -271,13 +263,18 @@ namespace ClassicUO.Game.GameObjects
                 item = (TextObject)item.Next
             )
             {
-                if (item.TextBox == null || item.TextBox.IsDisposed || item.Time < Time.Ticks)
+                if (
+                    item.RenderedText == null
+                    || item.RenderedText.IsDestroyed
+                    || item.RenderedText.Texture == null
+                    || item.Time < Time.Ticks
+                )
                 {
                     continue;
                 }
 
                 int startX = item.RealScreenPosition.X;
-                int endX = startX + item.TextBox.Width;
+                int endX = startX + item.RenderedText.Width;
 
                 if (startX < minX)
                 {
@@ -323,7 +320,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            TextObject msg = World.MessageManager.CreateMessage(
+            TextObject msg = MessageManager.CreateMessage(
                 text,
                 hue,
                 font,
@@ -335,7 +332,7 @@ namespace ClassicUO.Game.GameObjects
             AddMessage(msg);
         }
 
-        public void AddMessage(TextObject msg)
+        internal void AddMessage(TextObject msg)
         {
             if (TextContainer == null)
             {
@@ -387,7 +384,7 @@ namespace ClassicUO.Game.GameObjects
             FrameInfo = Rectangle.Empty;
         }
 
-        public static bool CanBeDrawn(World world, ushort g)
+        internal static bool CanBeDrawn(World world, ushort g)
         {
             if (Client.Game == null)
                 return true;

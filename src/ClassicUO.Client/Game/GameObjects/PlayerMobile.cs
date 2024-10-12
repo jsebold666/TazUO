@@ -45,7 +45,7 @@ using System.Linq;
 
 namespace ClassicUO.Game.GameObjects
 {
-    public class PlayerMobile : Mobile
+    internal class PlayerMobile : Mobile
     {
         private readonly Dictionary<BuffIconType, BuffIcon> _buffIcons = new Dictionary<BuffIconType, BuffIcon>();
 
@@ -84,7 +84,7 @@ namespace ClassicUO.Game.GameObjects
         protected override bool IsWalking => LastStepTime > Time.Ticks - Constants.PLAYER_WALKING_DELAY;
 
         internal WalkerManager Walker { get; }
-        public Pathfinder Pathfinder { get; }
+        internal Pathfinder Pathfinder { get; }
 
 
         public Ability[] Abilities = new Ability[2]

@@ -170,7 +170,7 @@ namespace ClassicUO.Game.UI.Controls
 
         public int ScreenCoordinateY => ParentY + Y;
 
-        public ContextMenuControl ContextMenu { get; set; }
+        internal ContextMenuControl ContextMenu { get; set; }
 
         public Control Parent
         {

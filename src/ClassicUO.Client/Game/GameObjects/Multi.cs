@@ -71,9 +71,9 @@ namespace ClassicUO.Game.GameObjects
         public CUSTOM_HOUSE_MULTI_OBJECT_FLAGS State = 0;
 
 
-        public Multi(World world) : base(world) { }
+        internal Multi(World world) : base(world) { }
 
-        public static Multi Create(World world, ushort graphic)
+        internal static Multi Create(World world, ushort graphic)
         {
             Multi m = new Multi(world); // _pool.GetOne();
             m.Graphic = m._originalGraphic = graphic;

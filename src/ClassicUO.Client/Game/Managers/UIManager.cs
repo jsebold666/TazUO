@@ -41,7 +41,7 @@ using System.Collections.Generic;
 
 namespace ClassicUO.Game.Managers
 {
-    public static class UIManager
+    internal static class UIManager
     {
         private static readonly Dictionary<uint, Point> _gumpPositionCache = new Dictionary<uint, Point>();
         private static readonly Control[] _mouseDownControls = new Control[0xFF];
@@ -287,7 +287,7 @@ namespace ClassicUO.Game.Managers
             return _gumpPositionCache.TryGetValue(id, out pos);
         }
 
-        public static void ShowContextMenu(ContextMenuShowMenu menu)
+        internal static void ShowContextMenu(ContextMenuShowMenu menu)
         {
             ContextMenu?.Dispose();
 
@@ -423,7 +423,7 @@ namespace ClassicUO.Game.Managers
             batcher.End();
         }
 
-        public static void Add(Gump gump, bool front = true)
+        internal static void Add(Gump gump, bool front = true)
         {
             if (!gump.IsDisposed)
             {

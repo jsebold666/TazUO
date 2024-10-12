@@ -44,7 +44,7 @@ using ClassicUO.Game.Scenes;
 
 namespace ClassicUO.Game.UI.Gumps
 {
-    public sealed class TradingGump : TextContainerGump
+    internal sealed class TradingGump : TextContainerGump
     {
         private uint _gold,
             _platinum,
@@ -357,14 +357,6 @@ namespace ClassicUO.Game.UI.Gumps
                         );
                     }
                 }
-                else if(TargetManager.IsTargeting)
-                {
-                    if(TargetManager.TargetingType == TargetType.Neutral && TargetManager.TargetingState == CursorTarget.MoveItemContainer)
-                    {
-                        MultiItemMoveGump.OnTradeWindowTarget(ID1);
-                        TargetManager.CancelTarget();
-                    }
-                }
             }
         }
 
@@ -495,7 +487,9 @@ namespace ClassicUO.Game.UI.Gumps
                     {
                         if (string.IsNullOrEmpty(entry.Text))
                         {
-                            if ((int) entry.Tag == 0)
+                            entry.SetText("0");
+
+                            if ((int)entry.Tag == 0)
                             {
                                 if (my_gold_entry != 0)
                                 {
@@ -516,8 +510,6 @@ namespace ClassicUO.Game.UI.Gumps
                                 if (value > Gold)
                                 {
                                     value = Gold;
-                                    entry.SetText(value.ToString());
-                                    entry.CaretIndex = entry.Text.Length + 1;
                                     send = true;
                                 }
 
@@ -533,8 +525,6 @@ namespace ClassicUO.Game.UI.Gumps
                                 if (value > Platinum)
                                 {
                                     value = Platinum;
-                                    entry.SetText(value.ToString());
-                                    entry.CaretIndex = entry.Text.Length + 1;
                                     send = true;
                                 }
 
@@ -546,11 +536,10 @@ namespace ClassicUO.Game.UI.Gumps
                                 my_plat_entry = value;
                             }
 
-                            //if (send)
-                            //{
-                            //    entry.SetText(value.ToString());
-                            //    //entry.CaretIndex = entry.Text.Length + 1;
-                            //}
+                            if (send)
+                            {
+                                entry.SetText(value.ToString());
+                            }
                         }
 
                         if (send)

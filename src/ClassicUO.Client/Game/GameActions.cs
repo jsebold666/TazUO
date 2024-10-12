@@ -46,7 +46,7 @@ using static ClassicUO.Network.NetClient;
 
 namespace ClassicUO.Game
 {
-    public static class GameActions
+    internal static class GameActions
     {
         public static int LastSpellIndex { get; set; } = 1;
         public static int LastSkillIndex { get; set; } = 1;
@@ -84,7 +84,7 @@ namespace ClassicUO.Game
 
         public static void OpenPaperdoll(World world, uint serial)
         {
-            if (ProfileManager.CurrentProfile.UseModernPaperdoll && serial == World.Player.Serial)
+            if (ProfileManager.CurrentProfile.UseModernPaperdoll && serial == world.Player.Serial)
             {
                 ModernPaperdoll modernPaperdoll = UIManager.GetGump<ModernPaperdoll>(serial);
                 if (modernPaperdoll == null)
@@ -103,7 +103,7 @@ namespace ClassicUO.Game
 
                 if (paperDollGump == null)
                 {
-                    DoubleClick(serial | 0x80000000);
+                    DoubleClick(world, serial | 0x80000000);
                 }
                 else
                 {
@@ -204,12 +204,12 @@ namespace ClassicUO.Game
             }
         }
 
-        public static void BandageSelf()
+        public static void BandageSelf(World world)
         {
-            Item bandage = World.Player.FindBandage();
+            Item bandage = world.Player.FindBandage();
             if (bandage != null)
             {
-                NetClient.Socket.Send_TargetSelectedObject(bandage.Serial, World.Player.Serial);
+                NetClient.Socket.Send_TargetSelectedObject(bandage.Serial, world.Player.Serial);
             }
         }
         public static void OpenWorldMap(World world)
@@ -452,7 +452,7 @@ namespace ClassicUO.Game
             bool unicode = true
         )
         {
-            world.MessageManager.HandleMessage
+            MessageManager.HandleMessage
             (
                 entity,
                 message,
@@ -842,7 +842,7 @@ namespace ClassicUO.Game
         public static void UsePrimaryAbility() => UsePrimaryAbility(ClassicUO.Client.Game.UO.World);
 
         [Obsolete("temporary workaround to not break assistants")]
-        public static void UseSecondaryAbility() => UseSecondaryAbility(ClassicUO.Client.Game.UO.World);
+        public static void UseSecondaryAbility() => UseSecondaryAbility();
         // ===================================================
 
         public static void QuestArrow(bool rightClick)

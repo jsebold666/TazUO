@@ -40,11 +40,12 @@ using SDL2;
 
 namespace ClassicUO.Game.UI.Controls
 {
-    internal class NameOverheadAssignControl : Control
+    internal sealed class NameOverheadAssignControl : Control
     {
         private readonly HotkeyBox _hotkeyBox;
         private readonly Dictionary<NameOverheadOptions, Checkbox> checkboxDict = new();
         private readonly ScrollArea checkBoxScroll;
+        private readonly World _world;
 
         private enum ButtonType
         {
@@ -252,7 +253,7 @@ namespace ClassicUO.Game.UI.Controls
                 return;
 
             UpdateValueInHotkeyBox();
-            UIManager.Add(new MessageBoxGump(250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, option.Name), null));
+            UIManager.Add(new MessageBoxGump(_world, 250, 150, string.Format(ResGumps.ThisKeyCombinationAlreadyExists, option.Name), null));
         }
 
         private void BoxOnHotkeyCancelled(object sender, EventArgs e)

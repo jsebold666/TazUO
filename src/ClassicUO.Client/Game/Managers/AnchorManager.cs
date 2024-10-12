@@ -40,7 +40,7 @@ using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.Managers
 {
-    public sealed class AnchorManager
+    internal sealed class AnchorManager
     {
         private static readonly Vector2[][] _anchorTriangles =
         {

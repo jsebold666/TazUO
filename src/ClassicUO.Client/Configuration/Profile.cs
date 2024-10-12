@@ -77,7 +77,7 @@ namespace ClassicUO.Configuration
 
 
 
-    public sealed class Profile
+    internal sealed class Profile
     {
         [JsonIgnore] public string Username { get; set; }
         [JsonIgnore] public string ServerName { get; set; }
@@ -246,6 +246,8 @@ namespace ClassicUO.Configuration
         public int DragSelectStartX { get; set; } = 100;
         public int DragSelectStartY { get; set; } = 100;
         public bool DragSelectAsAnchor { get; set; } = false;
+
+        public NameOverheadOptions NameOverheadTypeAllowed { get; set; } = NameOverheadOptions.AllMobiles;
         public string LastActiveNameOverheadOption { get; set; } = "All";
         public bool NameOverheadToggled { get; set; } = false;
         public bool ShowTargetRangeIndicator { get; set; }
@@ -849,7 +851,7 @@ namespace ClassicUO.Configuration
                                         break;
                                     }
 
-                                    if (ProfileManager.CurrentProfile.UseModernPaperdoll && serial == World.Player.Serial)
+                                    if (ProfileManager.CurrentProfile.UseModernPaperdoll && serial == world.Player.Serial)
                                     {
                                         gump = new ModernPaperdoll(serial);
                                         x = ProfileManager.CurrentProfile.ModernPaperdollPosition.X;
@@ -1033,13 +1035,13 @@ namespace ClassicUO.Configuration
                                         gump = new ResizableJournal();
                                         break;
                                     case GumpType.WorldMap:
-                                        gump = new WorldMapGump();
+                                        gump = new WorldMapGump(world);
                                         break;
                                     case GumpType.InfoBar:
-                                        gump = new InfoBarGump();
+                                        gump = new InfoBarGump(world);
                                         break;
                                     case GumpType.PaperDoll:
-                                        gump = new ModernPaperdoll(World.Player.Serial);
+                                        gump = new ModernPaperdoll(world.Player.Serial);
                                         break;
                                 }
 

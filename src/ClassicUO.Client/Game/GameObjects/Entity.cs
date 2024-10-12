@@ -49,7 +49,7 @@ namespace ClassicUO.Game.GameObjects
         Received
     }
 
-    public abstract class Entity : GameObject, IEquatable<Entity>
+    internal abstract class Entity : GameObject, IEquatable<Entity>
     {
         private static readonly RenderedText[] _hitsPercText = new RenderedText[101];
         private Direction _direction;

@@ -71,19 +71,19 @@ namespace ClassicUO.Game.Managers
 
     internal sealed class MessageManager
     {
-        private readonly World _world;
+        private static World _world;
 
         public MessageManager(World world) => _world = world;
 
 
         public PromptData PromptData { get; set; }
 
-        public event EventHandler<MessageEventArgs> MessageReceived;
+        public static event EventHandler<MessageEventArgs> MessageReceived;
 
-        public event EventHandler<MessageEventArgs> LocalizedMessageReceived;
+        public static event EventHandler<MessageEventArgs> LocalizedMessageReceived;
 
 
-        public void HandleMessage
+        internal static void HandleMessage
         (
             Entity parent,
             string text,
@@ -262,7 +262,7 @@ namespace ClassicUO.Game.Managers
             LocalizedMessageReceived.Raise(args, entity);
         }
 
-        public TextObject CreateMessage
+        public static TextObject CreateMessage
         (
             string msg,
             ushort hue,

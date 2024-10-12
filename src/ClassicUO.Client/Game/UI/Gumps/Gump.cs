@@ -43,7 +43,7 @@ using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.UI.Gumps
 {
-    public class Gump : Control
+    internal class Gump : Control
     {
         private bool isLocked = false;
         public Gump(World world, uint local, uint server)
@@ -57,8 +57,6 @@ namespace ClassicUO.Game.UI.Gumps
 
         public bool CanBeSaved => GumpType != Gumps.GumpType.None || ServerSerial != 0;
         public World World { get; }
-
-        public bool CanBeSaved => GumpType != Gumps.GumpType.None;
 
         public virtual GumpType GumpType { get; }
 

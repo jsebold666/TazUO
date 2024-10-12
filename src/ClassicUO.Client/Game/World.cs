@@ -120,7 +120,7 @@ namespace ClassicUO.Game
 
         public BoatMovingManager BoatMovingManager { get; }
 
-        public NameOverHeadManager NameOverHeadManager { get; }
+        internal NameOverHeadManager NameOverHeadManager { get; }
 
         public MacroManager Macros { get; }
 

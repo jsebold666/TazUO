@@ -190,7 +190,7 @@ namespace ClassicUO.Game.Managers
                     {
                         if (Members[i] != null && Members[i].Serial == ser)
                         {
-                            _world.MessageManager.HandleMessage
+                            MessageManager.HandleMessage
                             (
                                 null,
                                 name,
@@ -246,7 +246,7 @@ namespace ClassicUO.Game.Managers
         }
     }
 
-    public class PartyMember : IEquatable<PartyMember>
+    internal class PartyMember : IEquatable<PartyMember>
     {
         private readonly World _world;
         private string _name;

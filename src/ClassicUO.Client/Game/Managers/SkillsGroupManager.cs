@@ -201,9 +201,6 @@ namespace ClassicUO.Game.Managers
         public SkillsGroupManager(World world) => _world = world;
 
 
-        public readonly List<SkillsGroup> Groups = new List<SkillsGroup>();
-
-
         public void Add(SkillsGroup g)
         {
             Groups.Add(g);

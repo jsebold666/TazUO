@@ -1538,7 +1538,7 @@ namespace ClassicUO.Game.Managers
                     break;
 
                 case MacroType.NamesOnOff:
-                    _world.NameOverHeadManager.ToggleOverheads();
+                    NameOverHeadManager.ToggleOverheads();
 
                     break;
 
@@ -1873,7 +1873,7 @@ namespace ClassicUO.Game.Managers
         }
 
         public string Name { get; }
-
+        public SDL.SDL_GameControllerButton[] ControllerButtons { get; set; }
         public SDL.SDL_Keycode Key { get; set; }
         public MouseButtonType MouseButton { get; set; }
         public bool WheelScroll { get; set; }
