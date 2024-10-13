@@ -44,8 +44,8 @@ namespace ClassicUO.Game.Managers
             {
                 using (FileStream fs = new FileStream(savePath, FileMode.Create, FileAccess.Write))
                 {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(fs, markedTiles);
+                    //BinaryFormatter bf = new BinaryFormatter();
+                    //bf.Serialize(fs, markedTiles);
                 }
             }
             catch { Console.WriteLine("Failed to save marked tile data."); }
@@ -58,8 +58,8 @@ namespace ClassicUO.Game.Managers
                 {
                     using (FileStream fs = File.OpenRead(savePath))
                     {
-                        BinaryFormatter bf = new BinaryFormatter();
-                        markedTiles = (Dictionary<string, ushort>)bf.Deserialize(fs);
+                        //BinaryFormatter bf = new BinaryFormatter();
+                        //markedTiles = (Dictionary<string, ushort>)bf.Deserialize(fs);
                     }
                 }
                 catch { }
