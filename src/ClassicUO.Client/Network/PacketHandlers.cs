@@ -1386,7 +1386,7 @@ namespace ClassicUO.Network
                 ShopGump gump = null;
 
                 if (ProfileManager.CurrentProfile.UseModernShopGump)
-                    UIManager.Add(modernShopGump = new ModernShopGump(vendor, true));
+                    UIManager.Add(modernShopGump = new ModernShopGump(world, vendor, true));
                 else
                     UIManager.Add(gump = new ShopGump(world, serial, true, 150, 5));
 
@@ -1569,7 +1569,7 @@ namespace ClassicUO.Network
                         }
                         else
                         {
-                            UIManager.Add(new GridContainer(serial, graphic));
+                            UIManager.Add(new GridContainer(world, serial, graphic));
                         }
                     }
                     else
@@ -2787,7 +2787,7 @@ namespace ClassicUO.Network
             if (ProfileManager.CurrentProfile.UseModernShopGump)
             {
                 modernGump?.Dispose();
-                UIManager.Add(modernGump = new ModernShopGump(vendor, true));
+                UIManager.Add(modernGump = new ModernShopGump(world, vendor, true));
             }
             else
             {
@@ -3179,10 +3179,6 @@ namespace ClassicUO.Network
                 {
                     UIManager.Add(new ModernPaperdoll(mobile.Serial));
                 }
-
-                UIManager.Add(
-                    new PaperDollGump(world, mobile, (flags & 0x02) != 0) { Location = location }
-                );
             }
             else
             {
@@ -3490,7 +3486,7 @@ namespace ClassicUO.Network
             modernGump?.Dispose();
 
             if (ProfileManager.CurrentProfile.UseModernShopGump)
-                modernGump = new ModernShopGump(vendor, false);
+                modernGump = new ModernShopGump(world, vendor, false);
             else
                 gump = new ShopGump(world, vendor, false, 100, 0);
 

@@ -52,7 +52,9 @@ namespace ClassicUO.Game.Managers
         Grab,
         SetGrabBag,
         HueCommandTarget,
-        IgnorePlayerTarget
+        IgnorePlayerTarget,
+        MoveItemContainer,
+        Internal
     }
 
     internal class CursorType

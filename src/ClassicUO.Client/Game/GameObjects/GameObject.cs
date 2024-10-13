@@ -41,16 +41,16 @@ using Microsoft.Xna.Framework;
 
 namespace ClassicUO.Game.GameObjects
 {
-    internal class BaseGameObject : LinkedObject
+    public class BaseGameObject : LinkedObject
     {
-        protected BaseGameObject(World world) => World = world;
+        internal BaseGameObject(World world) => World = world;
 
         public Point RealScreenPosition;
 
-        public World World { get; set; }
+        internal World World { get; set; }
     }
 
-    partial class GameObject : BaseGameObject
+    public partial class GameObject : BaseGameObject
     {
         internal GameObject(World world) : base(world) { }
 

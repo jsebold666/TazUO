@@ -30,21 +30,22 @@
 
 #endregion
 
-using ClassicUO.Assets;
+using System;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Assets;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
 using ClassicUO.Game.Scenes;
-using System;
 
 namespace ClassicUO.Game.GameObjects
 {
-    internal partial class Mobile : Entity
+
+    public partial class Mobile : Entity
     {
         //private static readonly QueuedPool<Mobile> _pool = new QueuedPool<Mobile>(
         //    Constants.PREDICTABLE_CHUNKS,
@@ -144,7 +145,7 @@ namespace ClassicUO.Game.GameObjects
 
         internal Mobile(World world) : base(world, 0) { }
 
-        public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
+        internal Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
         public bool IsParalyzed => (Flags & Flags.Frozen) != 0;
         public bool IsYellowHits => (Flags & Flags.YellowBar) != 0;
         public bool IsPoisoned =>
@@ -429,7 +430,7 @@ namespace ClassicUO.Game.GameObjects
                 //);
 
                 AnimationGroupsType type = animations.GetAnimType(graphic);
-                AnimationFlags  flags = animations.GetAnimFlags(graphic);
+                AnimationFlags flags = animations.GetAnimFlags(graphic);
                 AnimationGroups animGroup = AnimationGroups.None;
 
                 bool isLowExtended = false;
@@ -785,7 +786,7 @@ namespace ClassicUO.Game.GameObjects
                                 absX = X;
                                 absY = Y;
 
-                               Pathfinder.GetNewXY((byte)(step.Direction & 7), ref absX, ref absY);
+                                Pathfinder.GetNewXY((byte)(step.Direction & 7), ref absX, ref absY);
 
                                 badStep = absX != step.X || absY != step.Y;
                             }
@@ -953,7 +954,7 @@ namespace ClassicUO.Game.GameObjects
                 return;
             }
 
-            int offY = NameOverheadGump.CurrentHeight;
+            int offY = 0;
 
             bool health = ProfileManager.CurrentProfile.ShowMobilesHP;
             int alwaysHP = ProfileManager.CurrentProfile.MobileHPShowWhen;
@@ -1092,13 +1093,12 @@ namespace ClassicUO.Game.GameObjects
             if (!(this is PlayerMobile))
             {
                 UIManager.GetGump<PaperDollGump>(serial)?.Dispose();
-                UIManager.GetGump<ModernPaperdoll>(serial)?.Dispose();
 
                 //_pool.ReturnOne(this);
             }
         }
 
-        public struct Step
+        internal struct Step
         {
             public int X,
                 Y;

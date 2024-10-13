@@ -11,7 +11,22 @@ using System.Threading;
 
 namespace ClassicUO.Game.Managers
 {
-    [JsonSerializable(typeof(ToolTipOverrideData))]
+    public static class FileDialog
+    {
+        public static string OpenFileDialog(string filter)
+        {
+
+            return Path.Combine(ProfileManager.ProfilePath, "tooltip.json"); // Retorne o caminho do arquivo selecionado.
+        }
+
+        public static string SaveFileDialog(string filter)
+        {
+            // Implemente sua lógica de diálogo de salvamento aqui
+            // Retorne o caminho do arquivo ou uma string vazia se o usuário cancelar.
+            return Path.Combine(ProfileManager.ProfilePath, "tooltip.json"); // Exemplo fictício
+        }
+    }
+
     internal class ToolTipOverrideData
     {
         public ToolTipOverrideData() { }
@@ -39,6 +54,7 @@ namespace ClassicUO.Game.Managers
         public TooltipLayers ItemLayer { get; set; }
 
         public bool IsNew { get; set; } = false;
+        private static World _world;
 
         public static ToolTipOverrideData Get(int index)
         {
@@ -154,28 +170,22 @@ namespace ClassicUO.Game.Managers
             {
                 Thread t = new Thread(() =>
                 {
-                    System.Windows.Forms.SaveFileDialog saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-                    saveFileDialog1.Filter = "Json|*.json";
-                    saveFileDialog1.Title = "Save tooltip override settings";
-                    saveFileDialog1.ShowDialog();
+                    string filePath = FileDialog.SaveFileDialog("Json|*.json");
 
-                    string result = JsonSerializer.Serialize(allData);
-
-                    // If the file name is not an empty string open it for saving.
-                    if (saveFileDialog1.FileName != "")
+                    if (!string.IsNullOrEmpty(filePath))
                     {
-                        System.IO.FileStream fs =
-                            (System.IO.FileStream)saveFileDialog1.OpenFile();
-                        // NOTE that the FilterIndex property is one-based.
-                        switch (saveFileDialog1.FilterIndex)
-                        {
-                            default:
-                                byte[] data = Encoding.UTF8.GetBytes(result);
-                                fs.Write(data, 0, data.Length);
-                                break;
-                        }
+                        string result = JsonSerializer.Serialize(allData);
 
-                        fs.Close();
+                        try
+                        {
+                            // Usando File.WriteAllText para simplificar a escrita do arquivo
+                            File.WriteAllText(filePath, result, Encoding.UTF8);
+                        }
+                        catch (Exception e)
+                        {
+                            GameActions.Print(_world, e.Message);
+                            GameActions.Print(_world, "Failed to save tooltip override settings.", 32);
+                        }
                     }
                 });
                 t.SetApartmentState(ApartmentState.STA);
@@ -189,38 +199,37 @@ namespace ClassicUO.Game.Managers
             {
                 Thread t = new Thread(() =>
                 {
-                    System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog();
-                    openFileDialog.Filter = "Json|*.json";
-                    openFileDialog.Title = "Import tooltip override settings";
-                    openFileDialog.ShowDialog();
-
-                    // If the file name is not an empty string open it for saving.
-                    if (openFileDialog.FileName != "")
+                    string filePath = FileDialog.OpenFileDialog("Json|*.json");
+                    if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
                     {
-                        // NOTE that the FilterIndex property is one-based.
-                        switch (openFileDialog.FilterIndex)
+                        try
                         {
-                            default:
-                                try
-                                {
-                                    string result = File.ReadAllText(openFileDialog.FileName);
+                            string result = File.ReadAllText(filePath);
+                            ToolTipOverrideData[] imported = JsonSerializer.Deserialize<ToolTipOverrideData[]>(result);
 
-                                    ToolTipOverrideData[] imported = JsonSerializer.Deserialize<ToolTipOverrideData[]>(result);
+                            foreach (ToolTipOverrideData importedData in imported)
+                            {
+                                new ToolTipOverrideData(ProfileManager.CurrentProfile.ToolTipOverride_SearchText.Count,
+                                importedData.searchText,
+                                importedData.FormattedText,
+                                importedData.Min1,
+                                importedData.Max1,
+                                importedData.Min2,
+                                importedData.Max2,
+                                (byte)importedData.ItemLayer).Save();
+                            }
 
-                                    foreach (ToolTipOverrideData importedData in imported)
-                                        //GameActions.Print(importedData.searchText);
-                                        new ToolTipOverrideData(ProfileManager.CurrentProfile.ToolTipOverride_SearchText.Count, importedData.searchText, importedData.FormattedText, importedData.Min1, importedData.Max1, importedData.Min2, importedData.Max2, (byte)importedData.ItemLayer).Save();
-
-                                    ToolTipOverideMenu.Reopen = true;
-
-                                }
-                                catch (System.Exception e)
-                                {
-                                    GameActions.Print(e.Message);
-                                    GameActions.Print("It looks like there was an error trying to import your override settings.", 32);
-                                }
-                                break;
+                            ToolTipOverideMenu.Reopen = true;
                         }
+                        catch (Exception e)
+                        {
+                            GameActions.Print(_world, e.Message);
+                            GameActions.Print(_world, "It looks like there was an error trying to import your override settings.", 32);
+                        }
+                    }
+                    else
+                    {
+                        GameActions.Print(_world, "File not found or selection was canceled.", 32);
                     }
                 });
                 t.SetApartmentState(ApartmentState.STA);
@@ -228,7 +237,7 @@ namespace ClassicUO.Game.Managers
             }
             else
             {
-                GameActions.Print("This feature is not currently supported on Unix.", 32);
+                GameActions.Print(_world, "This feature is not currently supported on Unix.", 32);
             }
         }
 
@@ -239,11 +248,11 @@ namespace ClassicUO.Game.Managers
 
             if (compareTo != uint.MinValue)
             {
-                itemPropertiesData = new ItemPropertiesData(World.Items.Get(serial), World.Items.Get(compareTo));
+                itemPropertiesData = new ItemPropertiesData(_world.Items.Get(serial), _world.Items.Get(compareTo));
             }
             else
             {
-                itemPropertiesData = new ItemPropertiesData(World.Items.Get(serial));
+                itemPropertiesData = new ItemPropertiesData(_world.Items.Get(serial));
             }
 
             ToolTipOverrideData[] result = GetAllToolTipOverrides();

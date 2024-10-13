@@ -934,7 +934,7 @@ namespace ClassicUO.Configuration
                                     break;
                                 case GumpType.GridContainer:
                                     ushort ogContainer = ushort.Parse(xml.GetAttribute("ogContainer"));
-                                    gump = new GridContainer(serial, ogContainer);
+                                    gump = new GridContainer(world, serial, ogContainer);
                                     if (((GridContainer)gump).IsPlayerBackpack)
                                     {
                                         x = ProfileManager.CurrentProfile.BackpackGridPosition.X;
@@ -1029,7 +1029,7 @@ namespace ClassicUO.Configuration
                                         break;
                                     case GumpType.GridContainer:
                                         ushort ogContainer = ushort.Parse(xml.GetAttribute("ogContainer"));
-                                        gump = new GridContainer(serial, ogContainer);
+                                        gump = new GridContainer(world, serial, ogContainer);
                                         break;
                                     case GumpType.Journal:
                                         gump = new ResizableJournal();

@@ -49,7 +49,7 @@ namespace ClassicUO.Game.UI.Gumps
         private Vector3 hueVector;
         private ushort? _graphic;
         private ushort _hue;
-        private float _scale;
+        public float _scale;
         private bool _hideLabel;
         private Macro _macr;
         private readonly int DEFAULT_WIDTH = 88;
@@ -63,7 +63,6 @@ namespace ClassicUO.Game.UI.Gumps
             Width = DEFAULT_WIDTH;
             Height = DEFAULT_HEIGHT;
             TheMacro = macro;
-
             BuildGump();
         }
 
@@ -138,9 +137,9 @@ namespace ClassicUO.Game.UI.Gumps
 
                 if (value.HasValue)
                 {
-                    ref readonly var texture = ref Client.Game.Gumps.GetGump(value.Value);
+                    ref readonly var texture = ref Client.Game.UO.Gumps.GetGump(value.Value);
                     _bounds = texture.UV;
-                    IsPartialHue = texture.Texture == null ? false : TileDataLoader.Instance.StaticData[value.Value].IsPartialHue;
+                    IsPartialHue = texture.Texture == null ? false : Client.Game.UO.FileManager.TileData.StaticData[value.Value].IsPartialHue;
                 }
 
                 Width = (int)(_bounds.Width * factor);
@@ -208,7 +207,7 @@ namespace ClassicUO.Game.UI.Gumps
         {
             if (TheMacro != null)
             {
-                World.Macros.SetMacroToExecute(_macro.Items as MacroObject);
+                World.Macros.SetMacroToExecute(TheMacro.Items as MacroObject);
                 World.Macros.WaitForTargetTimer = 0;
                 World.Macros.Update();
             }
@@ -233,7 +232,7 @@ namespace ClassicUO.Game.UI.Gumps
             if (Graphic.HasValue)
             {
                 //var texture = GumpsLoader.Instance.GetGumpTexture(, out Rectangle bounds);
-                ref readonly var texture = ref Client.Game.Gumps.GetGump(Graphic.Value);
+                ref readonly var texture = ref Client.Game.UO.Gumps.GetGump(Graphic.Value);
                 if (texture.Texture != null)
                 {
                     Rectangle rect = new Rectangle(x, y, Width, Height);
@@ -276,7 +275,7 @@ namespace ClassicUO.Game.UI.Gumps
             if (TheMacro != null)
             {
                 // hack to give macro buttons a unique id for use in anchor groups
-                int macroid = World.Macros.GetAllMacros().IndexOf(_macro);
+                int macroid = World.Macros.GetAllMacros().IndexOf(TheMacro);
 
                 LocalSerial = (uint)macroid + 1000;
 

@@ -128,7 +128,7 @@ namespace ClassicUO.Game.UI.Gumps
         public bool SkipSave { get { return skipSave; } set { skipSave = value; } }
         #endregion
 
-        public GridContainer(uint local, ushort originalContainerGraphic, bool? useGridStyle = null) : base(GetWidth(), GetHeight(), GetWidth(2), GetHeight(1), local, 0)
+        public GridContainer(World world, uint local, ushort originalContainerGraphic, bool? useGridStyle = null) : base(world, GetWidth(), GetHeight(), GetWidth(2), GetHeight(1), local, 0)
         {
             if (container == null)
             {
@@ -497,7 +497,7 @@ namespace ClassicUO.Game.UI.Gumps
             InvalidateContents = false;
         }
 
-        public static bool FindContainer(uint serial, out GridContainer? gridContainer) => (gridContainer = UIManager.GetGump<GridContainer>(serial)) != null;
+        public static bool FindContainer(uint serial, out GridContainer gridContainer) => (gridContainer = UIManager.GetGump<GridContainer>(serial)) != null;
 
         protected override void UpdateContents()
         {

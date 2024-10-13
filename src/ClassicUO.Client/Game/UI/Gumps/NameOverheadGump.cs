@@ -59,6 +59,7 @@ namespace ClassicUO.Game.UI.Gumps
         private Texture2D _borderColor = SolidColorTextureCache.GetTexture(Color.Black);
         private Vector2 _textDrawOffset = Vector2.Zero;
         private static int currentHeight = 22;
+        private static RenderedText _renderedText;
 
         public static int CurrentHeight
         {

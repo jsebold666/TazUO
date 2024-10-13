@@ -72,8 +72,8 @@ namespace ClassicUO.Game
         //       values in index 2 and 3 is for the wrap size of map (virtual size), x and y
         private ushort[,] MapSizeWrapSize;
         public static bool UltimaLiveActive => _UL != null && !string.IsNullOrEmpty(_UL.ShardName);
-        protected string RealShardName;
-        protected string ShardName;
+        public string RealShardName;
+        public string ShardName;
 
         public static void Enable()
         {

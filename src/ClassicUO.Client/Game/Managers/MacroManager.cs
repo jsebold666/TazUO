@@ -1881,6 +1881,20 @@ namespace ClassicUO.Game.Managers
         public bool Alt { get; set; }
         public bool Ctrl { get; set; }
         public bool Shift { get; set; }
+        public bool HideLabel { get; set; }
+
+        public ushort Hue = 0x00;
+        public ushort? Graphic = null;
+        private byte _scale = 100;
+        public byte Scale
+        {
+            get { return _scale; }
+            set
+            {
+                if (value <= 10) _scale = 10;
+                else _scale = value;
+            }
+        }
 
         public bool Equals(Macro other)
         {
@@ -1927,6 +1941,10 @@ namespace ClassicUO.Game.Managers
             writer.WriteAttributeString("alt", Alt.ToString());
             writer.WriteAttributeString("ctrl", Ctrl.ToString());
             writer.WriteAttributeString("shift", Shift.ToString());
+            writer.WriteAttributeString("hidelabel", HideLabel.ToString());
+            writer.WriteAttributeString("hue", Hue.ToString());
+            writer.WriteAttributeString("graphic", Graphic.HasValue ? Graphic.ToString() : string.Empty);
+            writer.WriteAttributeString("scale", Scale.ToString());
 
             writer.WriteStartElement("actions");
 

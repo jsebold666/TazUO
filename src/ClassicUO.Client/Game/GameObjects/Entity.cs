@@ -49,13 +49,13 @@ namespace ClassicUO.Game.GameObjects
         Received
     }
 
-    internal abstract class Entity : GameObject, IEquatable<Entity>
+    public abstract class Entity : GameObject, IEquatable<Entity>
     {
         private static readonly RenderedText[] _hitsPercText = new RenderedText[101];
         private Direction _direction;
 
 
-        protected Entity(World world, uint serial) : base(world)
+        internal Entity(World world, uint serial) : base(world)
         {
             Serial = serial;
         }
@@ -104,7 +104,7 @@ namespace ClassicUO.Game.GameObjects
 
         public bool Exists => World.Contains(Serial);
 
-        public RenderedText HitsTexture => _hitsPercText[HitsPercentage % _hitsPercText.Length];
+        internal RenderedText HitsTexture => _hitsPercText[HitsPercentage % _hitsPercText.Length];
 
 
         public bool Equals(Entity e)

@@ -35,7 +35,7 @@ using System.Diagnostics;
 
 namespace ClassicUO.Game
 {
-    internal abstract class LinkedObject
+    public partial class LinkedObject
     {
         public bool IsEmpty => Items == null;
         public LinkedObject Previous, Next, Items;
