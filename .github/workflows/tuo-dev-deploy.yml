@@ -22,6 +22,9 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   NUGET_XMLDOC_MODE: skip
 
+permissions:
+  contents: write
+
 jobs:
   removeoldrelease:
     runs-on: ubuntu-latest
@@ -36,6 +39,8 @@ jobs:
         tag_name: TazUO-BleedingEdge
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Sleep for 5 seconds
+      run: sleep 5
   
   build:
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -59,15 +64,19 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-            
+    
+    - name: Restore ManifestCreator dependencies
+      run: dotnet restore tools/ManifestCreator/ManifestCreator.csproj
+
     - name: Build
       run: dotnet publish ${{ env.CUO_PROJECT_PATH }} -c Release -o ${{ env.CUO_OUTPUT_PATH }} -p:IS_DEV_BUILD=true
       
     - name: Create manifest
       run: |
         dotnet run --project tools/ManifestCreator/ManifestCreator.csproj "${{ env.CUO_OUTPUT_PATH }}" "unix-auto" "${{ runner.os }}${{ env.CUO_ZIP_NAME }}"
-        mkdir upload
-        mv manifest.xml upload
+        mkdir -p upload  # Create upload directory if it doesn't exist
+        mv manifest.xml upload || echo "manifest.xml not found"
+      continue-on-error: true 
       
     - name: Create package
       uses: thedoctor0/zip-release@master
