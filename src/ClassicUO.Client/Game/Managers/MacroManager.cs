@@ -2416,7 +2416,6 @@ namespace ClassicUO.Game.Managers
         UseSkill,
         LastSkill,
         CastSpell,
-        CastSpellMastery,
         LastSpell,
         LastObject,
         Bow,

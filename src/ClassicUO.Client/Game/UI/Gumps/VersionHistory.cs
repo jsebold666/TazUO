@@ -8,6 +8,9 @@ namespace ClassicUO.Game.UI.Gumps
     internal class VersionHistory : Gump
     {
         private static string[] updateTexts = {
+            "/c[white][3.24.2]/cd\n" +
+                "- Fix Render Maps for Server Osi New Legacy\n" +
+                
              "/c[white][3.24.1]/cd\n" +
                 "- Fix for not load Modern Paperdoll\n" +
                 "- Fix Using Weapons Habilitys\n" +
