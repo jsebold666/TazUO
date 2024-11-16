@@ -84,7 +84,7 @@ namespace ClassicUO.Game
         public const int SPELLBOOK_7_SPELLS_COUNT = 30;
         public const int SPELLBOOK_8_SPELLS_COUNT = 45;
 
-        public const int WAIT_FOR_TARGET_DELAY = 5000;
+        public const int WAIT_FOR_TARGET_DELAY = 4000; //5000; // ## BEGIN - END ## // CONSTANTS
 
         public const int CONTAINER_RECT_STEP = 20;
         public const int CONTAINER_RECT_DEFAULT_POSITION = 40;
@@ -98,7 +98,7 @@ namespace ClassicUO.Game
         public const ushort TREE_REPLACE_GRAPHIC = 0x0E59;
 
         public const int MIN_CIRCLE_OF_TRANSPARENCY_RADIUS = 50;
-        public const int MAX_CIRCLE_OF_TRANSPARENCY_RADIUS = 1000;
+        public const int MAX_CIRCLE_OF_TRANSPARENCY_RADIUS = 1000; //200; // ## BEGIN - END ## // CONSTANTS
 
         public const int MAX_ABILITIES_COUNT = 32;
 
@@ -112,11 +112,11 @@ namespace ClassicUO.Game
 
         public const int OUT_RANGE_COLOR = 0x038B;
         public const int DEAD_RANGE_COLOR = 0x038E;
-        public const int DEATH_SCREEN_TIMER = 1500;
+        public const int DEATH_SCREEN_TIMER = 750; //1500; // ## BEGIN - END ## // CONSTANTS
 
         public const ushort HIGHLIGHT_CURRENT_OBJECT_HUE = 0x014;
 
-        public const int MAX_JOURNAL_HISTORY_COUNT = 1000;
+        public const int MAX_JOURNAL_HISTORY_COUNT = 250; //100; // ## BEGIN - END ## // CONSTANTS
 
         public const byte MIN_CONTAINER_SIZE_PERC = 50;
         public const byte MAX_CONTAINER_SIZE_PERC = 200;

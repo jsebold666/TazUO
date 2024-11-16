@@ -34,6 +34,9 @@ using System;
 using System.Collections.Generic;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // VISUAL HELPERS
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
@@ -50,7 +53,11 @@ namespace ClassicUO.Game
 {
     internal sealed class GameCursor
     {
-        private static readonly ushort[,] _cursorData = new ushort[3, 16]
+        // ## BEGIN - END ## // CURSOR
+        //private static readonly ushort[,] _cursorData = new ushort[3, 16]
+        // ## BEGIN - END ## // CURSOR
+        private static readonly ushort[,] _cursorData = new ushort[5, 16]
+        // ## BEGIN - END ## // CURSOR
         {
             {
                 0x206A,
@@ -105,34 +112,72 @@ namespace ClassicUO.Game
                 0x2077,
                 0x2078,
                 0x2079
+            },
+            // ## BEGIN - END ## // CURSOR
+            { // Cursor versions for FRIENDLY action context.
+                0x206A, 0x206B, 0x206C, 0x206D, 0x206E, 0x206F, 0x2070, 0x2071, 0x2072, 0x2073, 0x2074, 0x2075, 0x2076,
+                0x2077, 0x2078, 0x2079
+            },
+            { // Cursor versions for HOSTILE action context.
+                0x206A, 0x206B, 0x206C, 0x206D, 0x206E, 0x206F, 0x2070, 0x2071, 0x2072, 0x2073, 0x2074, 0x2075, 0x2076,
+                0x2077, 0x2078, 0x2079
             }
+            // ## BEGIN - END ## // CURSOR
         };
 
         private readonly Aura _aura = new Aura(30);
         private readonly CustomBuildObject[] _componentsList = new CustomBuildObject[10];
         private readonly int[,] _cursorOffset = new int[2, 16];
-        private readonly IntPtr[,] _cursors_ptr = new IntPtr[3, 16];
+        // ## BEGIN - END ## // CURSOR
+        //private readonly IntPtr[,] _cursors_ptr = new IntPtr[3, 16];
+        // ## BEGIN - END ## // CURSOR
+        private readonly IntPtr[,] _cursors_ptr = new IntPtr[5, 16];
+        // ## BEGIN - END ## // CURSOR
         private ushort _graphic = 0x2073;
         private bool _needGraphicUpdate = true;
         private readonly List<Multi> _temp = new List<Multi>();
         private readonly Tooltip _tooltip;
 
+        // ## BEGIN - END ## // VISUAL HELPERS
+        public static uint _spellTime { get; set; }
+        public static uint _startSpellTime { get; set; }
+        public static bool _fieldEastToWest { get; set; }
+        // ## BEGIN - END ## // VISUAL HELPERS
+        // ## BEGIN - END ## // CURSOR
+        private ushort _spellIconHue;
+        private Vector3 _spellIconVector = new Vector3(0, 13, 0);
+        public static RenderedText _spellTimeText { get; set; }
+        private readonly ushort HUE_PEACE_STANCE = 0x0033;
+        private readonly ushort HUE_HOSTILE = 0x0023;
+        private readonly ushort HUE_NEUTRAL = 0x03b2;
+        private readonly ushort HUE_FRIENDLY = 0x005A;
+        // ## BEGIN - END ## // CURSOR
+
         public GameCursor()
         {
             _tooltip = new Tooltip();
 
-            for (int i = 0; i < 3; i++)
+            // ## BEGIN - END ## // CURSOR
+            //for (int i = 0; i < 3; i++)
+            // ## BEGIN - END ## // CURSOR
+            for (int i = 0; i < 5; i++)
+            // ## BEGIN - END ## // CURSOR
             {
                 for (int j = 0; j < 16; j++)
                 {
                     ushort id = _cursorData[i, j];
+                    // ## BEGIN - END ## // CURSOR
+                    //var surface = Client.Game.Arts.CreateCursorSurfacePtr(
+                    //    id,
+                    //    (ushort)(i == 2 ? 0x0033 : 0),
+                    //    out int hotX,
+                    //    out int hotY
+                    //);
 
-                    var surface = Client.Game.Arts.CreateCursorSurfacePtr(
-                        id,
-                        (ushort)(i == 2 ? 0x0033 : 0),
-                        out int hotX,
-                        out int hotY
-                    );
+
+                    // ## BEGIN - END ## // CURSOR
+                    IntPtr surface = Client.Game.Arts.CreateCursorSurfacePtr(id, (ushort)(i == 2 ? HUE_PEACE_STANCE : (i == 3 ? HUE_FRIENDLY : (i == 4 ? HUE_HOSTILE : 0))), out int hotX, out int hotY);
+                    // ## BEGIN - END ## // CURSOR
 
                     if (surface != IntPtr.Zero)
                     {
@@ -230,14 +275,33 @@ namespace ClassicUO.Game
                         id -= 0x206A;
                     }
 
-                    int war =
-                        World.InGame && World.Player.InWarMode
-                            ? 1
-                            : World.InGame && World.MapIndex != 0
-                                ? 2
-                                : 0;
-
+                    // ## BEGIN - END ## // CURSOR
+                    /*
+                    int war = World.InGame && World.Player.InWarMode ? 1 : World.InGame && World.MapIndex != 0 ? 2 : 0;
                     ref IntPtr ptrCursor = ref _cursors_ptr[war, id];
+                    */
+                    // ## BEGIN - END ## // CURSOR
+                    int index = World.InGame && World.Player.InWarMode ? 1 : World.InGame && World.MapIndex != 0 ? 2 : 0;
+
+                    if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.ColorGameCursor)
+                    {
+                        if (World.InGame && TargetManager.IsTargeting)
+                        {
+                            switch (TargetManager.TargetingType)
+                            {
+                                case TargetType.Beneficial:
+                                    index = 3;
+                                    break;
+
+                                case TargetType.Harmful:
+                                    index = 4;
+                                    break;
+                            }
+                        }
+                    }
+
+                    ref IntPtr ptrCursor = ref _cursors_ptr[index, id];
+                    // ## BEGIN - END ## // CURSOR
 
                     if (ptrCursor != IntPtr.Zero)
                     {
@@ -394,26 +458,60 @@ namespace ClassicUO.Game
 
                     ushort hue = 0;
 
-                    switch (TargetManager.TargetingType)
+                     switch (TargetManager.TargetingType)
                     {
                         case TargetType.Neutral:
-                            hue = 0x03b2;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x03b2;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_NEUTRAL;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
 
                         case TargetType.Harmful:
-                            hue = 0x0023;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x0023;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_HOSTILE;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
 
                         case TargetType.Beneficial:
-                            hue = 0x005A;
+                            // ## BEGIN - END ## // CURSOR
+                            //hue = 0x005A;
+                            // ## BEGIN - END ## // CURSOR
+                            hue = HUE_FRIENDLY;
+                            // ## BEGIN - END ## // CURSOR
 
                             break;
                     }
 
                     _aura.Draw(sb, Mouse.Position.X, Mouse.Position.Y, hue, 0f);
                 }
+
+                // ## BEGIN - END ## // VISUAL HELPERS
+                if (GameActions.LastSpellIndexCursor >= 1 && GameActions.LastSpellIndexCursor <= 64)
+                {
+                    CombatCollection.UpdateSpelltime();
+
+                     // ## BEGIN - END ## // CURSOR
+                    if (_spellTime < 10 && ProfileManager.CurrentProfile.SpellOnCursor)
+                        _spellTimeText.Draw(sb, Mouse.Position.X + ProfileManager.CurrentProfile.SpellOnCursorOffset.X - 17, Mouse.Position.Y + ProfileManager.CurrentProfile.SpellOnCursorOffset.Y, 0);
+
+                    SpellDefinition def = SpellsMagery.GetSpell(GameActions.LastSpellIndexCursor);
+
+                    _spellIconHue = CombatCollection.SpellIconHue(_spellIconHue);
+
+                    Vector3 _spellIconVector;
+                    _spellIconVector = ShaderHueTranslator.GetHueVector(_spellIconHue);
+
+                   // if (ProfileManager.CurrentProfile.SpellOnCursor) { }
+                        //sb.Draw(GumpsLoader.Instance.GetGumpTexture((ushort) def.GumpIconSmallID, out var bounds), new Rectangle(Mouse.Position.X + ProfileManager.CurrentProfile.SpellOnCursorOffset.X, Mouse.Position.Y + ProfileManager.CurrentProfile.SpellOnCursorOffset.Y, 20, 20), bounds, _spellIconVector);
+                    // ## BEGIN - END ## // CURSOR
+                }
+                // ## BEGIN - END ## // VISUAL HELPERS
 
                 if (ProfileManager.CurrentProfile.ShowTargetRangeIndicator)
                 {

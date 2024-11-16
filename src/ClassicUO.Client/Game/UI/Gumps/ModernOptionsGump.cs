@@ -1,6 +1,9 @@
 ﻿using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // UI/GUMPS
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // UI/GUMPS
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
@@ -118,6 +121,7 @@ namespace ClassicUO.Game.UI.Gumps
             mainContent.AddToLeft(CategoryButton(lang.ButtonNameplates, (int)PAGE.NameplateOptions, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonCooldowns, (int)PAGE.TUOCooldowns, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonTazUO, (int)PAGE.TUOOptions, mainContent.LeftWidth));
+            mainContent.AddToLeft(CategoryButton("Dust765 Specific", (int)PAGE.Dust765, mainContent.LeftWidth));
 
             BuildGeneral();
             BuildSound();
@@ -133,6 +137,11 @@ namespace ClassicUO.Game.UI.Gumps
             BuildNameplates();
             BuildCooldowns();
             BuildTazUO();
+            // ## BEGIN - END ## // BASICSETUP
+            BuildDust765();
+           
+            // ## BEGIN - END ## // BASICSETUP
+            
 
             foreach (SettingsOption option in options)
             {
@@ -381,7 +390,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             content.BlankLine();
 
-            content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.TreesToStump, isChecked: profile.TreeToStumps, valueChanged: (b) => { profile.TreeToStumps = b; }), true, page);
+            //content.AddToRight(new CheckboxWithLabel(lang.GetGeneral.TreesToStump, isChecked: profile.TreeToStumps, valueChanged: (b) => { profile.TreeToStumps = b; }), true, page);
 
             content.BlankLine();
 
@@ -1950,6 +1959,1308 @@ namespace ClassicUO.Game.UI.Gumps
                 PAGE.TUOCooldowns
             ));
             PositionHelper.PositionControl(s.FullControl);
+        }
+
+        private void BuildDust765()
+        {
+            LeftSideMenuRightSideContent content = new LeftSideMenuRightSideContent(mainContent.RightWidth, mainContent.Height, (int)(mainContent.RightWidth * 0.3));
+            Control c;
+            int page;
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1000);
+            content.AddToLeft(SubCategoryButton("Art / Hue Changes", page, content.LeftWidth));
+            content.AddToRight(new CheckboxWithLabel("Color stealth ON / OFF", 0, profile.ColorStealth, (b) =>
+            {
+                profile.ColorStealth = b;
+            }), true, page);
+
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Stealth Color", profile.StealthHue, (h) =>
+            {
+                profile.StealthHue = h;
+            }), true, page);
+
+
+            content.AddToRight(new ComboBoxWithLabel("Or Neon", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.StealthNeonType, (i, s) =>
+            {
+                profile.StealthNeonType = i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            
+            content.AddToRight(new CheckboxWithLabel("Color Enery bolt ON / OFF", 0, profile.ColorEnergyBolt, (b) =>
+            {
+                profile.ColorEnergyBolt = b;
+            }), true, page);
+
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Color Energy Bolt", profile.EnergyBoltHue, (h) =>
+            {
+                profile.EnergyBoltHue = h;
+
+            }), true, page);
+            
+            content.AddToRight(new ComboBoxWithLabel("Or Neon: ", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire" }, profile.EnergyBoltNeonType, (i, s) =>
+            {
+                profile.EnergyBoltNeonType = i;
+            }), true, page);
+            content.AddToRight(new ComboBoxWithLabel("Change energy bolt art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Explo", "Bagball" }, profile.EnergyBoltArtType, (i, s) =>
+            {
+                profile.EnergyBoltArtType = i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            
+            content.AddToRight(new ComboBoxWithLabel("Change gold art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Cannonball", "Prev Coin" }, profile.GoldType, (i, s) =>
+            {
+                profile.GoldType = i;
+            }), true, page);
+
+
+            content.Indent();
+            content.AddToRight(new CheckboxWithLabel("Color cannonball or prev coin ON / OFF", 0, profile.ColorGold, (b) =>
+            {
+                profile.ColorGold = b;
+            }), true, page);
+           
+            
+            content.AddToRight(new ModernColorPickerWithLabel("Cannonball or prev coin color", profile.GoldHue, (h) =>
+            {
+                profile.GoldHue = h;
+            }), true, page);
+            
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Change tree art to:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Stump", "Tile" }, profile.TreeType, (i, s) =>
+            {
+                profile.TreeType = i;
+            }), true, page);
+            content.Indent();
+
+            content.AddToRight(new CheckboxWithLabel("Color stump or tile ON / OFF", 0, profile.ColorTreeTile, (b) =>
+            {
+                profile.ColorTreeTile = b;
+            }), true, page);
+           
+            content.Indent();
+
+
+            content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.TreeTileHue, (h) =>
+            {
+                profile.TreeTileHue = h;
+
+            }), true, page);
+            content.RemoveIndent();
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Blocker Type:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Normal", "Stump", "Tile" }, profile.BlockerType, (i, s) =>
+            {
+                profile.BlockerType = i;
+            }), true, page);
+            content.Indent();
+
+            content.AddToRight(new CheckboxWithLabel("Color stump or tile", 0, profile.ColorBlockerTile, (b) =>
+            {
+                profile.ColorBlockerTile = b;
+            }), true, page);
+            content.RemoveIndent();
+            content.Indent();
+
+            content.AddToRight(new ModernColorPickerWithLabel("Stump or tile color", profile.BlockerTileHue, (h) =>
+            {
+                profile.BlockerTileHue = h;
+
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1001);
+            content.ResetRightSide();
+
+            content.AddToLeft(SubCategoryButton("Visual Helpers", page, content.LeftWidth));
+            content.AddToRight(new CheckboxWithLabel("Highlight tiles on range", 0, profile.HighlightTileAtRange, (b) =>
+            {
+                profile.HighlightTileAtRange = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("@ range:", 0, Theme.SLIDER_WIDTH, 1, 20, profile.HighlightTileAtRangeRange, (i) =>
+            {
+                profile.HighlightTileAtRangeRange = (byte)i;
+            }), true, page);
+            content.AddToRight(new ModernColorPickerWithLabel("Tile color", profile.HighlightTileRangeHue, (h) =>
+            {
+                profile.HighlightTileRangeHue = h;
+            }), true, page);
+            
+            content.BlankLine();
+            content.RemoveIndent();
+
+            content.AddToRight(new CheckboxWithLabel("Highlight tiles on range for spells", 0, profile.HighlightTileAtRangeSpell    , (b) =>
+            {
+                profile.HighlightTileAtRangeSpell = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("@ range:", 0, Theme.SLIDER_WIDTH, 1, 20, profile.HighlightTileAtRangeRangeSpell, (i) =>
+            {
+                profile.HighlightTileAtRangeRangeSpell = (byte)i;
+            }), true, page);
+            content.AddToRight(new ModernColorPickerWithLabel("Tile color", profile.HighlightTileRangeHueSpell, (h) =>
+            {
+                profile.HighlightTileRangeHueSpell = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Preview Fields", 0, profile.PreviewFields, (b) =>
+            {
+                profile.PreviewFields = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Color own aura by HP (needs aura enabled)", 0, profile.OwnAuraByHP, (b) =>
+            {
+                profile.OwnAuraByHP = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Glowing Weapons:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.GlowingWeaponsType, (i, s) =>
+            {
+                profile.GlowingWeaponsType = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color Glowing Weapons", profile.HighlightGlowingWeaponsTypeHue, (h) =>
+            {
+                profile.HighlightGlowingWeaponsTypeHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetType, (i, s) =>
+            {
+                profile.HighlightLastTargetType = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color last target", profile.HighlightLastTargetTypeHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget poisoned:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetTypePoison, (i, s) =>
+            {
+                profile.HighlightLastTargetTypePoison = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color poisoned", profile.HighlightLastTargetTypePoisonHue, (h) =>
+            {
+                profile.HighlightLastTargetTypePoisonHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+
+            content.AddToRight(new ComboBoxWithLabel("Highlight lasttarget paralyzed:", 0, Theme.COMBO_BOX_WIDTH, new string[] { "Off", "White", "Pink", "Ice", "Fire", "Custom" }, profile.HighlightLastTargetTypePara, (i, s) =>
+            {
+                profile.HighlightLastTargetTypePara = i;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Custom color paralyzed", profile.HighlightLastTargetTypeParaHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeParaHue = h;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- FEATURES ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+
+            content.AddToRight(new TextBox("HighlightTileAtRange (toggle HighlightTileAtRange on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+            content.RemoveIndent();
+            content.BlankLine();
+
+            #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1002);
+            
+            content.AddToLeft(SubCategoryButton("HealthBars", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Highlight LT healthbar", 0, profile.HighlightLastTargetHealthBarOutline, (b) =>
+            {
+                profile.HighlightLastTargetHealthBarOutline = b;
+            }), true, page);
+  
+            content.AddToRight(new CheckboxWithLabel("Highlight healthbar border by state", 0, profile.HighlightHealthBarByState, (b) =>
+            {
+                profile.HighlightHealthBarByState = b;
+            }), true, page);
+        
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - self", 0, profile.FlashingHealthbarOutlineSelf, (b) =>
+            {
+                profile.FlashingHealthbarOutlineSelf = b;
+            }), true, page);
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - party", 0, profile.FlashingHealthbarOutlineParty, (b) =>
+            {
+                profile.FlashingHealthbarOutlineParty = b;
+            }), true, page);
+         
+
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - ally", 0, profile.FlashingHealthbarOutlineGreen, (b) =>
+            {
+                profile.FlashingHealthbarOutlineGreen = b;
+            }), true, page);
+            
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - enemy", 0, profile.FlashingHealthbarOutlineOrange, (b) =>
+            {
+                profile.FlashingHealthbarOutlineOrange = b;
+            }), true, page);
+            
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline - all", 0, profile.FlashingHealthbarOutlineAll, (b) =>
+            {
+                profile.FlashingHealthbarOutlineAll = b;
+            }), true, page);
+           
+            content.AddToRight(new CheckboxWithLabel("Flashing healthbar outline on negative changes only", 0, profile.FlashingHealthbarNegativeOnly, (b) =>
+            {
+                profile.FlashingHealthbarNegativeOnly = b;
+            }), true, page);
+           
+            content.AddToRight(new SliderWithLabel("Only flash on HP change >= : ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.FlashingHealthbarTreshold, (i) =>
+            {
+                profile.FlashingHealthbarTreshold = (byte)i;
+            }), true, page);
+            #endregion
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1003);
+
+            content.AddToLeft(SubCategoryButton("Cursor", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Show spells on cursor", 0, profile.SpellOnCursor, (b) =>
+            {
+                profile.SpellOnCursor = b;
+            }), true, page);
+
+            content.AddToRight(new TextBox("Spellicon offset:", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.SpellOnCursorOffset = new Point(xValue, profile.SpellOnCursorOffset.Y);
+                }
+            }), true, page);
+
+            content.AddToRight(new InputFieldWithLabel("Y", Theme.INPUT_WIDTH, profile.SpellOnCursorOffset.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int yValue))
+                {
+                    profile.SpellOnCursorOffset = new Point(profile.SpellOnCursorOffset.X, yValue);
+                }
+            }), true, page);
+            content.RemoveIndent();
+            content.AddToRight(new ModernColorPickerWithLabel("Color game cursor when targeting (hostile / friendly)", profile.HighlightLastTargetTypeParaHue, (h) =>
+            {
+                profile.HighlightLastTargetTypeParaHue = h;
+            }), true, page);
+            content.BlankLine();
+
+            #endregion
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1004);
+
+            content.AddToLeft(SubCategoryButton("Overhead / Underchar", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Display range in overhead (needs HP overhead enabled)", 0, profile.OverheadRange, (b) =>
+            {
+                profile.OverheadRange = b;
+            }), true, page);
+            content.BlankLine();
+            #endregion
+
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1005);
+
+            content.AddToLeft(SubCategoryButton("Old Healthlines", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Use old healthlines", 0, profile.UseOldHealthBars, (b) =>
+            {
+                profile.UseOldHealthBars = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Display Mana / Stam in underline for self and party (requires old healthbars)", 0, profile.MultipleUnderlinesSelfParty, (b) =>
+            {
+                profile.MultipleUnderlinesSelfParty = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use bigger underlines for self and party (requires old healthbars)", 0, profile.MultipleUnderlinesSelfPartyBigBars, (b) =>
+            {
+                profile.MultipleUnderlinesSelfPartyBigBars = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new SliderWithLabel("Transparency for self and party (close client completly), (requires old healthlines): ", 0, Theme.SLIDER_WIDTH, 0, 10, profile.MultipleUnderlinesSelfPartyTransparency, (i) =>
+            {
+                profile.MultipleUnderlinesSelfPartyTransparency = (byte)i;
+            }), true, page);
+            content.BlankLine();
+            #endregion
+            #region Dust
+            page = ((int)PAGE.Dust765 + 1006);
+
+            content.AddToLeft(SubCategoryButton("Misc", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Offscreen targeting (always on)", 0, profile.OffscreenTargeting, (b) =>
+            {
+                profile.OffscreenTargeting = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Set target with is out range", 0, profile.SetTargetOut, (b) =>
+            {
+                profile.SetTargetOut = b;
+            }), true, page);
+             content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Override container open range", 0, profile.OverrideContainerOpenRange , (b) =>
+            {
+                profile.OverrideContainerOpenRange = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Razor * Target * to lasttarget string", 0, profile.SpecialSetLastTargetCliloc, (b) =>
+            {
+                profile.SpecialSetLastTargetCliloc = b;
+            }), true, page);
+
+
+            content.AddToRight(new InputFieldWithLabel("Text for Target Msg Head: ", Theme.INPUT_WIDTH, profile.SpecialSetLastTargetClilocText, false, (s, e) =>
+            {
+                profile.SpecialSetLastTargetClilocText = ((InputField.StbTextBox)s).Text;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Outline statics black (CURRENTLY BROKEN): ", 0, profile.BlackOutlineStatics, (b) =>
+            {
+                profile.BlackOutlineStatics = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Ignore stamina check", 0, profile.IgnoreStaminaCheck, (b) =>
+            {
+                profile.IgnoreStaminaCheck = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Wall of Stone", 0, profile.BlockWoS, (b) =>
+            {
+                profile.BlockWoS = b;
+                if (b == true)
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].Flags = TileFlag.Impassable;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].Flags = TileFlag.Impassable;
+                }
+                else
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].Flags = TileFlag.Impassable;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].Flags = TileFlag.Impassable;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Wall of Stone Fel only", 0, profile.BlockWoSFelOnly, (b) =>
+            {
+                profile.BlockWoSFelOnly = b;
+                if (b == true)
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].Flags = TileFlag.Impassable;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].Flags = TileFlag.Impassable;
+                }
+                else
+                {
+                    TileDataLoader.Instance.StaticData[0x038A].Flags = TileFlag.Impassable;
+                    TileDataLoader.Instance.StaticData[profile.BlockWoSArt].Flags = TileFlag.Impassable;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Wall of Stone Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockWoSArt.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint result))
+                {
+    
+                    profile.BlockWoSArt = result;
+
+                }
+                else
+                {
+        
+                    Console.WriteLine("Error: This entrance not is type unit");
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Force WoS to Art above (AoS only?) and hue 945", 0, profile.BlockWoSArtForceAoS, (b) =>
+            {
+                profile.BlockWoSArtForceAoS = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Energy Field", 0, profile.BlockEnergyF, (b) =>
+            {
+                profile.BlockEnergyF = b;
+                if (b == true)
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        //0x3946 to 0x3964 / 14662 to 14692
+                        TileDataLoader.Instance.StaticData[0x3946 + i].Flags = TileFlag.Impassable;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].Flags = TileFlag.Impassable;
+                }
+                else
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        TileDataLoader.Instance.StaticData[0x3946 + i].Flags = TileFlag.Impassable;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].Flags = TileFlag.Impassable;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Block Energy Field Fell Only", 0, profile.BlockEnergyFFelOnly, (b) =>
+            {
+                profile.BlockEnergyFFelOnly = b;
+                if (b == true)
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        //0x3946 to 0x3964 / 14662 to 14692
+                        TileDataLoader.Instance.StaticData[0x3946 + i].Flags = TileFlag.Impassable;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].Flags = TileFlag.Impassable;
+                }
+                else
+                {
+                    for (int i = 0; i < 31; i++)
+                    {
+                        TileDataLoader.Instance.StaticData[0x3946 + i].Flags = TileFlag.Impassable;
+                    }
+                    TileDataLoader.Instance.StaticData[profile.BlockEnergyFArt].Flags = TileFlag.Impassable;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Energy Field Art (-info -> DisplayedGraphic): ", Theme.INPUT_WIDTH, profile.BlockEnergyFArt.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint result))
+                {
+
+                    profile.BlockEnergyFArt = result;
+                }
+                else
+                {
+
+                    Console.WriteLine("Error: This entrance not is type unit");
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Force EnergyF to Art above (AoS only?) and hue 293", 0, profile.BlockEnergyFArtForceAoS, (b) =>
+            {
+                profile.BlockEnergyFArtForceAoS = b;
+
+            }), true, page);
+            content.BlankLine();
+
+            #endregion
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1007);
+
+            content.AddToLeft(SubCategoryButton("Misc2", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable WireFrame view (restart needed) (CURRENTLY BROKEN)", 0, profile.WireFrameView, (b) =>
+            {
+                profile.OffscreenTargeting = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Hue impassable Tiles", 0, profile.WireFrameView, (b) =>
+            {
+                profile.WireFrameView = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new ModernColorPickerWithLabel("Hue ", profile.HueImpassableViewHue, (h) =>
+            {
+                profile.HueImpassableViewHue = h;
+
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Transparent Houses and Items (Z level):", 0, profile.TransparentHousesEnabled, (b) =>
+            {
+                profile.TransparentHousesEnabled = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("Transparency Z: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.TransparentHousesZ, (i) =>
+            {
+                profile.TransparentHousesZ = (byte)i;
+            }), true, page);
+
+            content.AddToRight(new SliderWithLabel("Transparency: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.TransparentHousesTransparency, (i) =>
+            {
+                profile.TransparentHousesTransparency = (byte)i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Invisible Houses and Items (Z level):", 0, profile.InvisibleHousesEnabled, (b) =>
+            {
+                profile.InvisibleHousesEnabled = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("Invisible Z: ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.InvisibleHousesZ, (i) =>
+            {
+                profile.InvisibleHousesZ = (byte)i;
+            }), true, page);
+            content.AddToRight(new TextBox("Dont make Invisible or Transparent below (Z level):", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new SliderWithLabel("Z level ", 0, Theme.SLIDER_WIDTH, 0, 100, profile.DontRemoveHouseBelowZ, (i) =>
+            {
+                profile.DontRemoveHouseBelowZ = (byte)i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Draw mobiles with surface overhead: ", 0, profile.DrawMobilesWithSurfaceOverhead, (b) =>
+            {
+                profile.DrawMobilesWithSurfaceOverhead = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable ignorelist for circle of transparency: ", 0, profile.IgnoreCoTEnabled, (b) =>
+            {
+                profile.IgnoreCoTEnabled = b;
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new CheckboxWithLabel("Show death location on world map for 5min: ", 0, profile.ShowDeathOnWorldmap, (b) =>
+            {
+                profile.ShowDeathOnWorldmap = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- FEATURES ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+
+            content.AddToRight(new TextBox("ToggleTransparentHouses (toggle ToggleTransparentHouses on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.AddToRight(new TextBox("ToggleInvisibleHouses (toggle ToggleInvisibleHouses on / off)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+
+            content.BlankLine();
+
+            #endregion
+
+            #region Dust
+
+            
+
+            #endregion
+
+            #region Dust
+
+           
+            #endregion
+
+            #region Dust
+            
+
+            #endregion
+
+            #region Dust
+           
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1008);
+
+            content.AddToLeft(SubCategoryButton("Auto Loot", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - AL", 0, profile.UOClassicCombatAL, (b) =>
+            {
+                UOClassicCombatAL UOClassicCombatAL = UIManager.GetGump<UOClassicCombatAL>();
+                profile.UOClassicCombatAL = b;
+
+                if (b)
+                {
+                    if (UOClassicCombatAL != null)
+                        UOClassicCombatAL.Dispose();
+
+                    UOClassicCombatAL = new UOClassicCombatAL
+                    {
+                        X = profile.UOClassicCombatALLocation.X,
+                        Y = profile.UOClassicCombatALLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatAL);
+                }
+                else
+                {
+                    if (UOClassicCombatAL != null)
+                        UOClassicCombatAL.Dispose();
+                }
+
+               
+                
+                // ## BEGIN - END ## // AUTOLOOT
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable GridLootColoring", 0, profile.UOClassicCombatAL_EnableGridLootColoring, (b) =>
+            {
+                profile.UOClassicCombatAL_EnableGridLootColoring = b;
+
+                
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable LootAboveID", 0, profile.UOClassicCombatAL_EnableLootAboveID, (b) =>
+            {
+                profile.UOClassicCombatAL_EnableLootAboveID = b;
+
+
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- SETTINGS (AL) ----- ", Theme.FONT, 18, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- DISABLE / ENABLE AL ON CHANGES BELOW ----- ", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new InputFieldWithLabel("Time between looting two items(ms) ", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_LootDelay.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_LootDelay = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Time to purge the queue of old items (ms) ", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_PurgeDelay.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_PurgeDelay = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Time between processing the queue (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_QueueSpeed.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_QueueSpeed = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Loot above ID", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_LootAboveID.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_LootAboveID = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Gray corpse color", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_SL_Gray.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_SL_Gray = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Blue corpse color", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_SL_Blue.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_SL_Blue = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new InputFieldWithLabel("Green corpse color", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_SL_Green.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_SL_Green = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new InputFieldWithLabel("Red corpse color", Theme.INPUT_WIDTH, profile.UOClassicCombatAL_SL_Red.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatAL_SL_Red = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1009);
+
+            content.AddToLeft(SubCategoryButton("Buffbar UCC", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - Buffbar", 0, profile.UOClassicCombatBuffbar, (b) =>
+            {
+                profile.UOClassicCombatBuffbar = b;
+
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+
+                if (b)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
+                else
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                }
+
+                    
+                
+            }), true, page);
+
+            content.BlankLine();
+            content.AddToRight(new TextBox("----- DISABLE / ENABLE BUFFBAR ON CHANGES BELOW ----- ", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Show Swing Line", 0, profile.UOClassicCombatBuffbar_SwingEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_SwingEnabled = b;
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Show Do Disarm Line", 0, profile.UOClassicCombatBuffbar_DoDEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_DoDEnabled = b;
+
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("how Got Disarmed Line", 0, profile.UOClassicCombatBuffbar_GotDEnabled, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_GotDEnabled = b;
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Lock in place", 0, profile.UOClassicCombatBuffbar_Locked, (b) =>
+            {
+                profile.UOClassicCombatBuffbar_Locked = b;
+                UOClassicCombatBuffbar UOClassicCombatBuffbar = UIManager.GetGump<UOClassicCombatBuffbar>();
+                if (profile.UOClassicCombatBuffbar == true)
+                {
+                    if (UOClassicCombatBuffbar != null)
+                        UOClassicCombatBuffbar.Dispose();
+                    UOClassicCombatBuffbar = new UOClassicCombatBuffbar
+                    {
+                        X = profile.UOClassicCombatBuffbarLocation.X,
+                        Y = profile.UOClassicCombatBuffbarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatBuffbar);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (BUFFBAR AND SELF)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("General cooldown when you get disarmed (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmedCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmedCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Cooldown after successfull disarm (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmStrikeCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmStrikeCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Cooldown after failed disarm (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DisarmAttemptCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DisarmAttemptCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1010);
+
+            content.AddToLeft(SubCategoryButton("Self Automations", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - Self", 0, profile.UOClassicCombatSelf, (b) =>
+            {
+
+                profile.UOClassicCombatSelf = b;
+                UOClassicCombatSelf UOClassicCombatSelf = UIManager.GetGump<UOClassicCombatSelf>();
+
+                if (b)
+                {
+
+                    if (UOClassicCombatSelf != null)
+                        UOClassicCombatSelf.Dispose();
+
+                    UOClassicCombatSelf = new UOClassicCombatSelf
+                    {
+                        X = profile.UOClassicCombatSelfLocation.X,
+                        Y = profile.UOClassicCombatSelfLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatSelf);
+                }
+                else
+                {
+                    if (UOClassicCombatSelf != null)
+                        UOClassicCombatSelf.Dispose();
+                }
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (SELF)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Are trapped pouches colored from server?", 0, profile.UOClassicCombatSelf_ColoredPouches, (b) =>
+            {
+                profile.UOClassicCombatSelf_ColoredPouches = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Color (decimal not hex): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_ColoredPouchesColor.ToString(), false, (s, e) =>
+            {
+                if (ushort.TryParse(((InputField.StbTextBox)s).Text, out ushort xValue))
+                {
+                    profile.UOClassicCombatSelf_ColoredPouchesColor = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (COOLDOWNS)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("ActionCooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_ActionCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_ActionCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Pouche Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_PoucheCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_PoucheCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Curepot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_CurepotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_CurepotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Healpot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_HealpotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_HealpotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Repeated Refreshpot Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("WaitForTarget (oldBandies) (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_WaitForTarget.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_WaitForTarget = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Enhanced Apple Cooldown (ms): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_EAppleCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_EAppleCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("-----SETTINGS (TRESHOLDS)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Bandies treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_BandiesHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_BandiesHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Curepot HP treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_CurepotHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_CurepotHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("HP treshold (diffhits >= ):", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_HealpotHPTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_HealpotHPTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Refreshpot Stam treshold (diffstam >= ): ", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotStamTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotStamTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("-----SETTINGS (MISC)-----", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+
+            content.AddToRight(new InputFieldWithLabel("Auto rearm weps held before got disarmeded (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_RefreshpotStamTreshold.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_RefreshpotStamTreshold = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use Cliloc Triggers (up time on cliloc and uoc hotkey)", 0, profile.UOClassicCombatSelf_ClilocTriggers, (b) =>
+            {
+                profile.UOClassicCombatSelf_ClilocTriggers = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Use Macro Triggers (change uoc hotkey to disarm / pot / rearm by ucc)", 0, profile.UOClassicCombatSelf_ClilocTriggers, (b) =>
+            {
+                profile.UOClassicCombatSelf_ClilocTriggers = b;
+
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Strength Pot Cooldown (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_StrengthPotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_StrengthPotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Agility Pot Cooldown (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_DexPotCooldown.ToString(), false, (s, e) =>
+            {
+                if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint xValue))
+                {
+                    profile.UOClassicCombatSelf_DexPotCooldown = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Min RNG (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_MinRNG.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.UOClassicCombatSelf_MinRNG = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new InputFieldWithLabel("Max RNG (ms)", Theme.INPUT_WIDTH, profile.UOClassicCombatSelf_MaxRNG.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.UOClassicCombatSelf_MaxRNG = xValue;
+                }
+            }), true, page);
+            content.BlankLine();
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1011);
+
+            content.AddToLeft(SubCategoryButton("Macros", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new TextBox("LastTargetRC (last target with custom range check)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.Indent();
+            content.AddToRight(new SliderWithLabel("LastTargetRC - Range:", 0, Theme.SLIDER_WIDTH, 1, 30, profile.LastTargetRange, (i) =>
+            {
+                profile.LastTargetRange = (byte)i;
+            }), true, page);
+            content.RemoveIndent();
+            content.BlankLine();
+            content.AddToRight(new TextBox("ObjectInfo (macro for -info command)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("HideX (remove landtile, entity, mobile or item)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("HealOnHPChange (keep pressed, casts heal on own hp change", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("HarmOnSwing (keep pressed, casts harm on next own swing animation)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("CureGH (if poisoned cure, else greater heal)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("SetTargetClientSide (set target client side only)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            content.AddToRight(new TextBox("OpenCorpses (opens 0x2006 corpses within 2 tiles)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1012);
+
+            content.AddToLeft(SubCategoryButton("Gumps", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - LastTarget Bar", 0, profile.UOClassicCombatLTBar, (b) =>
+            {
+                profile.UOClassicCombatLTBar = b;
+
+                UOClassicCombatLTBar UOClassicCombatLTBar = UIManager.GetGump<UOClassicCombatLTBar>();
+
+                if (b)
+                {
+                    if (UOClassicCombatLTBar != null)
+                        UOClassicCombatLTBar.Dispose();
+
+                    UOClassicCombatLTBar = new UOClassicCombatLTBar
+                    {
+                        X = profile.UOClassicCombatLTBarLocation.X,
+                        Y = profile.UOClassicCombatLTBarLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatLTBar);
+                }
+                else
+                {
+                    if (UOClassicCombatLTBar != null)
+                        UOClassicCombatLTBar.Dispose();
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new TextBox("(Doubleklick to lock in place)", Theme.FONT, 16, null, Color.White, strokeEffect: false) { Y = 7 }, true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Show gump when using bandages ", 0, profile.BandageGump, (b) =>
+            {
+                profile.BandageGump = b;
+            }), true, page);
+            content.Indent();
+            content.AddToRight(new InputFieldWithLabel("X ", Theme.INPUT_WIDTH, profile.BandageGumpOffset.X.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int xValue))
+                {
+                    profile.BandageGumpOffset = new Point(xValue, profile.BandageGumpOffset.Y);
+                }
+            }), true, page);
+            content.AddToRight(new InputFieldWithLabel("Y ", Theme.INPUT_WIDTH, profile.BandageGumpOffset.Y.ToString(), false, (s, e) =>
+            {
+                if (int.TryParse(((InputField.StbTextBox)s).Text, out int yValue))
+                {
+                    profile.BandageGumpOffset = new Point(profile.BandageGumpOffset.X, yValue);
+                }
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Count up or down gump bandage", 0, profile.BandageGumpUpDownToggle, (b) =>
+            {
+                profile.BandageGumpUpDownToggle = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("OnCasting gump (anti-rubberbanding) on mouse", 0, profile.OnCastingGump, (b) =>
+            {
+                profile.OnCastingGump = b;
+            }), true, page);
+
+            content.AddToRight(new CheckboxWithLabel("hide the gump OnCasting", 0, profile.OnCastingGump_hidden, (b) =>
+            {
+                profile.OnCastingGump_hidden = b;
+            }), true, page);
+             content.BlankLine();
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1013);
+
+            content.AddToLeft(SubCategoryButton("Texture Manager", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable TextureManager", 0, profile.TextureManagerEnabled, (b) =>
+            {
+                profile.TextureManagerEnabled = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable TextureManager Halos", 0, profile.TextureManagerHalos, (b) =>
+            {
+                profile.TextureManagerHalos = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Humans only", 0, profile.TextureManagerHumansOnly, (b) =>
+            {
+                profile.TextureManagerHumansOnly = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Purple (last attack / last target)", 0, profile.TextureManagerPurple, (b) =>
+            {
+                profile.TextureManagerPurple = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Green (allys / party)", 0, profile.TextureManagerGreen, (b) =>
+            {
+                profile.TextureManagerGreen = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Red (criminal / gray / murderer)", 0, profile.TextureManagerRed, (b) =>
+            {
+                profile.TextureManagerRed = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Orange (enemy)", 0, profile.TextureManagerOrange, (b) =>
+            {
+                profile.TextureManagerOrange = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Blue (innocent)", 0, profile.TextureManagerBlue, (b) =>
+            {
+                profile.TextureManagerBlue = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Enable TextureManager Arrows", 0, profile.TextureManagerArrows, (b) =>
+            {
+                profile.TextureManagerArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Humans only see arrows", 0, profile.TextureManagerHumansOnlyArrows, (b) =>
+            {
+                profile.TextureManagerHumansOnlyArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Purple (last attack / last target)", 0, profile.TextureManagerPurpleArrows, (b) =>
+            {
+                profile.TextureManagerPurpleArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Green (allys / party)", 0, profile.TextureManagerGreenArrows, (b) =>
+            {
+                profile.TextureManagerGreenArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Red (criminal / gray / murderer)", 0, profile.TextureManagerRedArrows, (b) =>
+            {
+                profile.TextureManagerRedArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Orange (enemy)", 0, profile.TextureManagerOrangeArrows, (b) =>
+            {
+                profile.TextureManagerOrangeArrows = b;
+            }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel("Blue (innocent)", 0, profile.TextureManagerBlueArrows, (b) =>
+            {
+                profile.TextureManagerBlueArrows = b;
+            }), true, page);
+            content.BlankLine();
+            #endregion
+
+            #region Dust
+
+            page = ((int)PAGE.Dust765 + 1014);
+
+            content.AddToLeft(SubCategoryButton("Lines (Lines UI)", page, content.LeftWidth));
+            content.ResetRightSide();
+            content.AddToRight(new CheckboxWithLabel("Enable UCC - Lines", 0, profile.UOClassicCombatLines, (b) =>
+            {
+                profile.UOClassicCombatLines = b;
+                UOClassicCombatLines UOClassicCombatLines = UIManager.GetGump<UOClassicCombatLines>();
+
+                if (b)
+                {
+                    if (UOClassicCombatLines != null)
+                        UOClassicCombatLines.Dispose();
+
+                    UOClassicCombatLines = new UOClassicCombatLines
+                    {
+                        X = profile.UOClassicCombatLinesLocation.X,
+                        Y = profile.UOClassicCombatLinesLocation.Y
+                    };
+                    UIManager.Add(UOClassicCombatLines);
+                }
+                else
+                {
+                    if (UOClassicCombatLines != null)
+                        UOClassicCombatLines.Dispose();
+                }
+
+                
+                // ## BEGIN - END ## // LINES
+            }), true, page);
+
+            content.BlankLine();
+            #endregion
+
+            options.Add(
+            new SettingsOption(
+                "",
+                content,
+                mainContent.RightWidth,
+                PAGE.Dust765
+                )
+            );
         }
 
         private void BuildTazUO()
@@ -6657,7 +7968,8 @@ namespace ClassicUO.Game.UI.Gumps
             IgnoreList,
             NameplateOptions,
             TUOCooldowns,
-            TUOOptions
+            TUOOptions,
+            Dust765
         }
 
         private interface SearchableOption
@@ -6668,3 +7980,4 @@ namespace ClassicUO.Game.UI.Gumps
         }
     }
 }
+#endregion

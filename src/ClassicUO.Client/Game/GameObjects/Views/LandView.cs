@@ -30,6 +30,12 @@
 
 #endregion
 
+using ClassicUO.Configuration;
+// ## BEGIN - END ## // VISUAL HELPERS
+// ## BEGIN - END ## // MISC2
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // MISC2
+// ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Managers;
@@ -102,6 +108,52 @@ namespace ClassicUO.Game.GameObjects
             }
             hueVec.Z = 1f;
 
+            // ## BEGIN - END ## // VISUAL HELPERS
+            if (ProfileManager.CurrentProfile.HighlightTileAtRange && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRange)
+            {
+                hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHue;
+                hueVec.Y = 1;
+            }
+            if (ProfileManager.CurrentProfile.HighlightTileAtRangeSpell)
+            {
+                if (TargetManager.IsTargeting && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRangeSpell)
+                {
+                    hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHueSpell;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // AUTOMATIONS
+            if (ProfileManager.CurrentProfile.AutoRangeDisplayActive && Distance == ProfileManager.CurrentProfile.AutoRangeDisplayActiveRange)
+            {
+                hueVec.X = ProfileManager.CurrentProfile.AutoRangeDisplayHue;
+                hueVec.Y = 1;
+            }
+            // ## BEGIN - END ## // AUTOMATIONS
+
+            if (ProfileManager.CurrentProfile.PreviewFields)
+            {
+                if (CombatCollection.LandFieldPreview(this))
+                {
+                    hueVec.X = 0x0040;
+                    hueVec.Y = 1;
+                }
+                if (SelectedObject.Object == this)
+                {
+                    hueVec.X = 0x0023;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // VISUAL HELPERS
+            // ## BEGIN - END ## // MISC2
+            if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.HueImpassableView)
+            {
+                if (this.TileData.IsImpassable)
+                {
+                    hueVec.X = ProfileManager.CurrentProfile.HueImpassableViewHue;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // MISC2
             if (IsStretched)
             {
                 posY += Z << 2;

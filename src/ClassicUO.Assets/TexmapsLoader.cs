@@ -32,6 +32,11 @@
 
 using ClassicUO.IO;
 using ClassicUO.Utility;
+// ## BEGIN - END ## // MISC2
+/* Temporarily broken. ProfileManager is not accessible here.
+using ClassicUO.Configuration;
+*/
+// ## BEGIN - END ## // MISC2
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -123,6 +128,37 @@ namespace ClassicUO.Assets
                 for (int j = 0; j < size; ++j)
                 {
                     data[pos + j] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+
+                    // ## BEGIN - END ## // MISC2
+                    /* Temporarily broken. ProfileManager is not accessible here.
+                    if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.WireFrameView)
+                    {
+                        if (pos <= 100)
+                        {
+                            if (IsImpassable)
+                            {
+                                data[pos + j] = 0xFF_00_00_00;
+                            }
+                            else
+                            {
+                                data[pos + j] = 0xAA_AA_AA_AA;
+                            }
+                        }
+
+                        if (j == 0 | j == 1 | j == 2)
+                        {
+                            if (IsImpassable)
+                            {
+                                data[pos + j] = 0xFF_00_00_00;
+                            }
+                            else
+                            {
+                                data[pos + j] = 0xAA_AA_AA_AA;
+                            }
+                        }
+                    }
+                    */
+                    // ## BEGIN - END ## // MISC2
                 }
             }
 
@@ -130,7 +166,8 @@ namespace ClassicUO.Assets
             {
                 Pixels = data,
                 Width = size,
-                Height = size
+                Height = size,
+                IsImpassable = false
             };
         }
     }
@@ -140,5 +177,6 @@ namespace ClassicUO.Assets
         public Span<uint> Pixels;
         public int Width;
         public int Height;
+        public bool IsImpassable;
     }
 }

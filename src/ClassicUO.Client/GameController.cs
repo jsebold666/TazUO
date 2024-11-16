@@ -86,7 +86,7 @@ namespace ClassicUO
 
             Window.ClientSizeChanged += WindowOnClientSizeChanged;
             Window.AllowUserResizing = true;
-            Window.Title = $"TazUO - {CUOEnviroment.Version}";
+            Window.Title = $"TazUO vs Dust - {CUOEnviroment.Version}";
             IsMouseVisible = Settings.GlobalSettings.RunMouseInASeparateThread;
 
             IsFixedTimeStep = false; // Settings.GlobalSettings.FixedTimeStep;
@@ -257,7 +257,7 @@ namespace ClassicUO
 #if DEV_BUILD
                 Window.Title = $"ClassicUO [dev] - {CUOEnviroment.Version}";
 #else
-                Window.Title = $"[TazUO {CUOEnviroment.Version}]";
+                Window.Title = $"[>Tazuo Vs Dust765 {CUOEnviroment.Version}]";
 #endif
             }
             else
@@ -265,7 +265,7 @@ namespace ClassicUO
 #if DEV_BUILD
                 Window.Title = $"{title} - ClassicUO [dev] - {CUOEnviroment.Version}";
 #else
-                Window.Title = $"{title} - [TazUO {CUOEnviroment.Version}]";
+                Window.Title = $"{title} - [>Tazuo Vs Dust765 {CUOEnviroment.Version}]";
 #endif
             }
         }

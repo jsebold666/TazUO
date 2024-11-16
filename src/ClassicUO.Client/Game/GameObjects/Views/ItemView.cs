@@ -33,6 +33,9 @@
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // ART / HUE CHANGES
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // ART / HUE CHANGES
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.IO;
@@ -102,6 +105,44 @@ namespace ClassicUO.Game.GameObjects
                         
                 }
             }
+
+            // ## BEGIN - END ## // ART / HUE CHANGES
+            if (CombatCollection.IsStealthArt(Graphic))
+            {
+                if (ProfileManager.CurrentProfile.ColorStealth || ProfileManager.CurrentProfile.StealthNeonType != 0)
+                    hue = CombatCollection.StealthtHue(hue);
+            }
+            // ## BEGIN - END ## // ART / HUE CHANGES
+            // ## BEGIN - END ## // MISC
+            if (ProfileManager.CurrentProfile.BlockWoS)
+            {
+                if (StaticFilters.IsWallOfStone(Graphic) || Graphic == ProfileManager.CurrentProfile.BlockWoSArt)
+                {
+                    if (ProfileManager.CurrentProfile.BlockWoSFelOnly && World.MapIndex != 0)
+                    {
+                        TileDataLoader.Instance.StaticData[Graphic].Flags = TileFlag.Impassable;
+                    }
+                    else
+                    {
+                        TileDataLoader.Instance.StaticData[Graphic].Flags = TileFlag.Impassable;
+                    }
+                }
+            }
+            if (ProfileManager.CurrentProfile.BlockEnergyF)
+            {
+                if (StaticFilters.IsEnergyField(Graphic) || Graphic == ProfileManager.CurrentProfile.BlockEnergyFArt)
+                {
+                    if (ProfileManager.CurrentProfile.BlockEnergyFFelOnly && World.MapIndex != 0)
+                    {
+                        TileDataLoader.Instance.StaticData[Graphic].Flags = TileFlag.Impassable;
+                    }
+                    else
+                    {
+                        TileDataLoader.Instance.StaticData[Graphic].Flags = TileFlag.Impassable;
+                    }
+                }
+            }
+            // ## BEGIN - END ## // MISC
 
             if (OnGround)
             {
@@ -192,6 +233,30 @@ namespace ClassicUO.Game.GameObjects
             {
                 hueVec.Z = 0.5f;
             }
+
+            // ## BEGIN - END ## // MISC2
+            if (ProfileManager.CurrentProfile.TransparentHousesEnabled)
+            {
+                GameObject tile = World.Map.GetTile(X, Y);
+
+                if (tile != null)
+                {
+                    if ((Z - World.Player.Z) > ProfileManager.CurrentProfile.TransparentHousesZ && (Z - tile.Z) > ProfileManager.CurrentProfile.DontRemoveHouseBelowZ)
+                        hueVec.Z = (float)ProfileManager.CurrentProfile.TransparentHousesTransparency / 10;
+                }
+            }
+            if (ProfileManager.CurrentProfile.InvisibleHousesEnabled)
+            {
+                GameObject tile = World.Map.GetTile(X, Y);
+
+                if (tile != null)
+                {
+                    if ((Z - World.Player.Z) > ProfileManager.CurrentProfile.InvisibleHousesZ && (Z - tile.Z) > ProfileManager.CurrentProfile.DontRemoveHouseBelowZ)
+                        //DO NOT DRAW IT
+                        return false;
+                }
+            }
+            // ## BEGIN - END ## // MISC2
 
             DrawStaticAnimated(batcher, graphic, posX, posY, hueVec, false, depth);
 

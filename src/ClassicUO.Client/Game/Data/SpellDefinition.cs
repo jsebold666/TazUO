@@ -511,17 +511,17 @@ namespace ClassicUO.Game.Data
 
         public static SpellDefinition[] GetAllSpells()
         {
-            return
-            [
-                .. SpellsMagery.GetAllSpells.Values,
-                .. SpellsNecromancy.GetAllSpells.Values,
-                .. SpellsChivalry.GetAllSpells.Values,
-                .. SpellsBushido.GetAllSpells.Values,
-                .. SpellsNinjitsu.GetAllSpells.Values,
-                .. SpellsSpellweaving.GetAllSpells.Values,
-                .. SpellsMysticism.GetAllSpells.Values,
-                .. SpellsMastery.GetAllSpells.Values,
-            ];
+            return new SpellDefinition[]
+                {
+                    (SpellDefinition)SpellsMagery.GetAllSpells.Values,
+                    (SpellDefinition)SpellsNecromancy.GetAllSpells.Values,
+                    (SpellDefinition)SpellsChivalry.GetAllSpells.Values,
+                    (SpellDefinition)SpellsBushido.GetAllSpells.Values,
+                    (SpellDefinition)SpellsNinjitsu.GetAllSpells.Values,
+                    (SpellDefinition)SpellsSpellweaving.GetAllSpells.Values,
+                    (SpellDefinition)SpellsMysticism.GetAllSpells.Values,
+                    (SpellDefinition)SpellsMastery.GetAllSpells.Values,
+                };
         }
 
         public static void SaveAllSpellsToJson()

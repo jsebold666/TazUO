@@ -31,6 +31,7 @@
 #endregion
 
 using ClassicUO.Configuration;
+using ClassicUO.Dust765.Managers;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
@@ -43,14 +44,23 @@ using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using System;
 using static ClassicUO.Network.NetClient;
+using ClassicUO.Dust765.Managers;
 
 namespace ClassicUO.Game
 {
     public static class GameActions
     {
+
         public static int LastSpellIndex { get; set; } = 1;
         public static int LastSkillIndex { get; set; } = 1;
+        // ## BEGIN - END ## // VISUAL HELPERS
+        public static int LastSpellIndexCursor { get; set; } = 0;
+        // ## BEGIN - END ## // VISUAL HELPERS
+        // ## BEGIN - END ## // ONCASTINGGUMP
+        public static bool iscasting { get; set; } = false;
+        // ## BEGIN - END ## // ONCASTINGGUMP
 
+        public static SpellAction spellCircle { get; set; } = 0;
 
         public static void ToggleWarMode()
         {
@@ -686,6 +696,17 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                LastSpellIndexCursor = index;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                if (ProfileManager.CurrentProfile.OnCastingGump)
+                {
+                    if (!iscasting)
+                        World.Player.OnCasting.Start((uint) index);
+                }
+                // ## BEGIN - END ## // ONCASTINGGUMP
                 SpellVisualRangeManager.Instance.ClearCasting();
                 Socket.Send_CastSpellFromBook(index, bookSerial);
             }
@@ -696,6 +717,17 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                LastSpellIndexCursor = index;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                 // ## BEGIN - END ## // ONCASTINGGUMP
+                if (ProfileManager.CurrentProfile.OnCastingGump)
+                {
+                    if (!iscasting)
+                        World.Player.OnCasting.Start((uint) index);
+                }
+                // ## BEGIN - END ## // ONCASTINGGUMP
                 SpellVisualRangeManager.Instance.ClearCasting();
                 Socket.Send_CastSpell(index);
             }

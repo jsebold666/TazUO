@@ -32,6 +32,12 @@
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+// ## BEGIN - END ## // OVERHEAD / UNDERCHAR
+// ## BEGIN - END ## // OLDHEALTHLINES
+using ClassicUO.Dust765.Dust765;
+using Microsoft.Xna.Framework.Graphics;
+// ## BEGIN - END ## // OLDHEALTHLINES
+// ## BEGIN - END ## // OVERHEAD / UNDERCHAR
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
@@ -47,6 +53,33 @@ namespace ClassicUO.Game.Managers
 
         const ushort BACKGROUND_GRAPHIC = 0x1068;
         const ushort HP_GRAPHIC = 0x1069;
+
+        // ## BEGIN - END ## // OLDHEALTHLINES
+        const int OLD_BAR_HEIGHT = 3;
+        private static readonly Texture2D _edge, _back;
+        private static readonly Texture2D _edgeHealth, _backHealth;
+        private static readonly Texture2D _edgeMana, _backMana;
+        private static readonly Texture2D _edgeStamina, _backStamina;
+
+        public static float _alphamodifier = (float)ProfileManager.CurrentProfile.MultipleUnderlinesSelfPartyTransparency / 10;
+
+        public static int BIGBAR_WIDTH = 28;
+        private static int BIGBAR_HEIGHT = 3;
+        private static int BIGBAR_WIDTH_HALF = 14;
+        private static int YSPACING = 1;
+
+        static HealthLinesManager()
+        {
+            _edge = SolidColorTextureCache.GetTexture(Color.Black);
+            _back = SolidColorTextureCache.GetTexture(Color.Red);
+            _edgeHealth = SolidColorTextureCache.GetTexture(Color.Black * _alphamodifier);
+            _backHealth = SolidColorTextureCache.GetTexture(Color.Red * _alphamodifier);
+            _edgeMana = SolidColorTextureCache.GetTexture(Color.Black * _alphamodifier);
+            _backMana = SolidColorTextureCache.GetTexture(Color.Red * _alphamodifier);
+            _edgeStamina = SolidColorTextureCache.GetTexture(Color.Black * _alphamodifier);
+            _backStamina = SolidColorTextureCache.GetTexture(Color.Red * _alphamodifier);
+        }
+        // ## BEGIN - END ## // OLDHEALTHLINES
 
         public bool IsEnabled =>
             ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.ShowMobilesHP;
@@ -180,6 +213,13 @@ namespace ClassicUO.Game.Managers
                             {
                                 mobile.HitsTexture.Draw(batcher, p1.X, p1.Y);
                             }
+
+                            // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
+                            CombatCollection.UpdateOverheads(mobile);
+
+                            if (ProfileManager.CurrentProfile.OverheadRange && mobile != World.Player)
+                                mobile.RangeTexture.Draw(batcher, p1.X - mobile.RangeTexture.Width, p1.Y);
+                            // ## BEGIN - END ## // OVERHEAD / UNDERCHAR
                         }
                     }
                 }
@@ -210,7 +250,27 @@ namespace ClassicUO.Game.Managers
 
                 if (mode >= 1)
                 {
-                    DrawHealthLine(batcher, mobile, p.X, p.Y, mobile.Serial != World.Player.Serial);
+                    // ## BEGIN - END ## // OLDHEALTHLINES
+                    /*
+                    DrawHealthLine
+                    (
+                        batcher,
+                        mobile,
+                        p.X,
+                        p.Y,
+                        mobile.Serial != World.Player.Serial
+                    );
+                    */
+                    // ## BEGIN - END ## // OLDHEALTHLINES
+                    if (ProfileManager.CurrentProfile.UseOldHealthBars)
+                    {
+                        DrawOldHealthLine(batcher, mobile, p.X, p.Y + 4, mobile != World.Player);
+                    }
+                    else
+                    {
+                        DrawHealthLine(batcher, mobile, p.X, p.Y, mobile.Serial != World.Player.Serial);
+                    }
+                    // ## BEGIN - END ## // OLDHEALTHLINES
                 }
             }
         }
@@ -275,12 +335,27 @@ namespace ClassicUO.Game.Managers
                 return;
             }
 
-            if (p.Y < 0 || p.Y > screenH - BAR_HEIGHT)
+            // ## BEGIN - END ## // OLDHEALTHLINES
+            /*
+            DrawHealthLine
+            (
+                batcher,
+                entity,
+                p.X,
+                p.Y,
+                false
+            );
+            */
+            // ## BEGIN - END ## // OLDHEALTHLINES
+            if (ProfileManager.CurrentProfile.UseOldHealthBars)
             {
-                return;
+                DrawOldHealthLine(batcher, entity, p.X, p.Y + 4, false);
             }
-
-            DrawHealthLine(batcher, entity, p.X, p.Y, false);
+            else
+            {
+                DrawHealthLine(batcher, entity, p.X, p.Y, false);
+            }
+            // ## BEGIN - END ## // OLDHEALTHLINES
         }
 
         private void DrawHealthLine(
@@ -363,5 +438,80 @@ namespace ClassicUO.Game.Managers
                 hueVec
                 );
         }
+        // ## BEGIN - END ## // OLDHEALTHLINES
+        // -- CODE BELOW IS 1:1 LIKE DrawHealthLine()
+        private void DrawOldHealthLine(UltimaBatcher2D batcher, Entity entity, int x, int y, bool passive)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+
+            Mobile mobile = entity as Mobile;
+
+            float alpha = passive ? 0.5f : 1.0f;
+            ushort hue = mobile != null ? Notoriety.GetHue(mobile.NotorietyFlag) : Notoriety.GetHue(NotorietyFlag.Gray);
+
+            // -- CODE ABOVE IS 1:1 LIKE DrawHealthLine()
+            Vector3 hueVec = ShaderHueTranslator.GetHueVector(0);
+            //Vector3 hueVec = ShaderHueTranslator.GetHueVector(0, false, Alpha);
+
+            Color color;
+
+            if (ProfileManager.CurrentProfile.MultipleUnderlinesSelfParty && mobile == World.Player || ProfileManager.CurrentProfile.MultipleUnderlinesSelfParty && World.Party.Contains(mobile))
+            {
+                if (ProfileManager.CurrentProfile.MultipleUnderlinesSelfPartyBigBars)
+                {
+                    //LAYOUT BIGBAR
+                    BIGBAR_WIDTH = 50;
+                    BIGBAR_HEIGHT = 4;
+                    BIGBAR_WIDTH_HALF = BIGBAR_WIDTH / 2 - 17;//14;
+                    YSPACING = 1;
+                }
+                else
+                {
+                    BIGBAR_WIDTH = 34;
+                    BIGBAR_HEIGHT = 3;
+                    BIGBAR_WIDTH_HALF = BIGBAR_WIDTH / 2 - 17; //14; // = BAR_WIDTH >> 1;
+                    YSPACING = 1;
+                }
+
+                (Color hpcolor, int maxhp, int maxmana, int maxstam) = CombatCollection.CalcUnderlines(mobile);
+
+                //HP BAR
+                batcher.Draw(_edgeHealth, new Rectangle(x - 1 - BIGBAR_WIDTH_HALF, y - 1, BIGBAR_WIDTH + 2, BIGBAR_HEIGHT + 1), hueVec);
+                batcher.Draw(_backHealth, new Rectangle(x - BIGBAR_WIDTH_HALF + maxhp, y, BIGBAR_WIDTH - maxhp, BIGBAR_HEIGHT), hueVec);
+                batcher.Draw(SolidColorTextureCache.GetTexture(hpcolor), new Rectangle(x - BIGBAR_WIDTH_HALF, y, maxhp, BIGBAR_HEIGHT), hueVec);
+
+                //MANA BAR
+                batcher.Draw(_edgeMana, new Rectangle(x - 1 - BIGBAR_WIDTH_HALF, y + BIGBAR_HEIGHT + YSPACING - 1, BIGBAR_WIDTH + 2, BIGBAR_HEIGHT + 1), hueVec);
+                batcher.Draw(_backMana, new Rectangle(x - BIGBAR_WIDTH_HALF + maxmana, y + BIGBAR_HEIGHT + YSPACING, BIGBAR_WIDTH - maxmana, BIGBAR_HEIGHT), hueVec);
+                batcher.Draw(SolidColorTextureCache.GetTexture(Color.CornflowerBlue * _alphamodifier), new Rectangle(x - BIGBAR_WIDTH_HALF, y + BIGBAR_HEIGHT + YSPACING, maxmana, BIGBAR_HEIGHT), hueVec);
+
+                //STAM BAR
+                batcher.Draw(_edgeStamina, new Rectangle(x - 1 - BIGBAR_WIDTH_HALF, y + BIGBAR_HEIGHT + BIGBAR_HEIGHT + YSPACING + YSPACING - 1, BIGBAR_WIDTH + 2, BIGBAR_HEIGHT + 2), hueVec);
+                batcher.Draw(_backStamina, new Rectangle(x - BIGBAR_WIDTH_HALF + maxstam, y + BIGBAR_HEIGHT + BIGBAR_HEIGHT + YSPACING + YSPACING, BIGBAR_WIDTH - maxstam, BIGBAR_HEIGHT), hueVec);
+                batcher.Draw(SolidColorTextureCache.GetTexture(Color.CornflowerBlue * _alphamodifier), new Rectangle(x - BIGBAR_WIDTH_HALF, y + BIGBAR_HEIGHT + BIGBAR_HEIGHT + YSPACING + YSPACING, maxstam, BIGBAR_HEIGHT), hueVec);
+            }
+            else
+            {
+                batcher.Draw(_edge, new Rectangle(x - 1, y - 1, BAR_WIDTH + 2, OLD_BAR_HEIGHT + 2), hueVec);
+                batcher.Draw(_back, new Rectangle(x, y, BAR_WIDTH, OLD_BAR_HEIGHT), hueVec);
+
+                if (mobile.IsParalyzed)
+                    color = Color.AliceBlue;
+                else if (mobile.IsYellowHits)
+                    color = Color.Orange;
+                else if (mobile.IsPoisoned)
+                    color = Color.LimeGreen;
+                else
+                    color = Color.CornflowerBlue;
+
+                int per = BAR_WIDTH * entity.HitsPercentage / 100;
+
+                batcher.Draw(SolidColorTextureCache.GetTexture(color), new Rectangle(x, y, per, OLD_BAR_HEIGHT), hueVec);
+            }
+        }
+        // ## BEGIN - END ## // OLDHEALTHLINES
     }
 }

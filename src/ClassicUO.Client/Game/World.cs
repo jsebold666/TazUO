@@ -34,6 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassicUO.IO.Audio;
 using ClassicUO.Game.Data;
+using ClassicUO.Dust765.Dust765;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Map;
@@ -45,6 +46,7 @@ using ClassicUO.Configuration;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Utility.Logging;
 using ClassicUO.Assets;
+
 
 namespace ClassicUO.Game
 {
@@ -94,8 +96,20 @@ namespace ClassicUO.Game
 
         public static JournalManager Journal { get; } = new JournalManager();
 
+
         public static CoolDownBarManager CoolDownBarManager { get; } = new CoolDownBarManager();
 
+        // ## BEGIN - END ## // MACROS
+        public static AnimationTriggers AnimationTriggers { get; } = new AnimationTriggers();
+        // ## BEGIN - END ## // MACROS
+
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+        public static ClilocTriggers GetClilocTriggers { get; } = new ClilocTriggers();
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
+       
+        // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
 
         public static int MapIndex
         {
@@ -365,6 +379,10 @@ namespace ClassicUO.Game
 
                     _toRemove.Clear();
                 }
+
+                // ## BEGIN - END ## // AUTOMATIONS
+                ModulesManager.OnWorldUpdate();
+                // ## BEGIN - END ## // AUTOMATIONS
 
                 _effectManager.Update();
                 WorldTextManager.Update();

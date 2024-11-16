@@ -39,6 +39,7 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Collections;
 using Microsoft.Xna.Framework;
+using ClassicUO.Utility.Logging;
 using System;
 
 namespace ClassicUO.Game.GameObjects
@@ -101,8 +102,8 @@ namespace ClassicUO.Game.GameObjects
                 mobile.Name = null;
                 mobile.ExecuteAnimation = true;
                 mobile.HitsRequest = HitsRequestStatus.None;
-
                 mobile.CalculateRandomIdleTime();
+                mobile.IsParalyzed = false;
             }
         );
 
@@ -141,10 +142,23 @@ namespace ClassicUO.Game.GameObjects
             CalculateRandomIdleTime();
         }
 
+
+        // ## BEGIN - END ## // HEALTHBAR
+        public uint FlashTimeTick { get; set; } = 0;
+        public ushort OldHits { get; set; } = 0;
+        // ## BEGIN - END ## // HEALTHBAR
+
         public Mobile() : base(0) { }
 
         public Deque<Step> Steps { get; } = new Deque<Step>(Constants.MAX_STEP_COUNT);
-        public bool IsParalyzed => (Flags & Flags.Frozen) != 0;
+        public bool IsParalyzed { get; set; }
+
+        public void SetParalyzed(bool value)
+        {
+           
+            IsParalyzed = value;
+        }
+
         public bool IsYellowHits => (Flags & Flags.YellowBar) != 0;
         public bool IsPoisoned =>
             Client.Version >= ClientVersion.CV_7000

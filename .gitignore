@@ -266,3 +266,5 @@ __pycache__/
 /.svn
 external/FNA
 external/MP3Sharp
+.gitconfig
+work/.gitconfig

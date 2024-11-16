@@ -1564,6 +1564,8 @@ namespace ClassicUO.Assets
             }
         }
 
+       
+
         public struct FrameInfo
         {
             public int Num;
