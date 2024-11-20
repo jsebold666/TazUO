@@ -150,7 +150,7 @@ namespace ClassicUO.Configuration
 
         public bool SetTargetOut { get; set; }  = false;
         // ## BEGIN - END ## // ART / HUE CHANGES
-        //public bool TreeToStumps { get; set; }
+        public bool TreeToStumps { get; set; }
         // ## BEGIN - END ## // ART / HUE CHANGES
         public bool EnableCaveBorder { get; set; }
         public bool HideVegetation { get; set; }

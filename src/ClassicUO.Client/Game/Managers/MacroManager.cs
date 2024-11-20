@@ -32,10 +32,6 @@
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
-// ## BEGIN - END ## // MACROS
-using ClassicUO.Dust765.External;
-using ClassicUO.Dust765.Dust765;
-// ## BEGIN - END ## // MACROS
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Gumps;
@@ -470,10 +466,6 @@ namespace ClassicUO.Game.Managers
             }
 
             int result = 0;
-
-            // ## BEGIN - END ## // SELF
-            UOClassicCombatSelf UOClassicCombatSelf = UIManager.GetGump<UOClassicCombatSelf>();
-            // ## BEGIN - END ## // SELF
 
             switch (macro.Code)
             {
@@ -1241,26 +1233,7 @@ namespace ClassicUO.Game.Managers
 
                 case MacroType.CloseGump:
 
-
-                    // ## BEGIN - END ## // UI/GUMPS
-                    // ## BEGIN - END ## // LINES
-                    // ## BEGIN - END ## // AUTOLOOT
-                    // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-                    // ## BEGIN - END ## // SELF
-                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
-                    //UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
-                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
-                    //UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is WorldViewportGump) && !(s is UOClassicCombatLTBar) && !(s is BandageGump) && !(s is UOClassicCombatLines) && !(s is UOClassicCombatAL) && !(s is UOClassicCombatBuffbar) && !(s is UOClassicCombatSelf) && !(s is ECBuffGump) && !(s is ECDebuffGump) && !(s is ECStateGump) && !(s is ModernCooldownBar)).ToList().ForEach(s => s.Dispose());
-                    // ## BEGIN - END ## // MODERNCOOLDOWNBAR
-                    // ## BEGIN - END ## // SELF
-                    // ## BEGIN - END ## // BUFFBAR/UCCSETTINGS
-                    // ## BEGIN - END ## // AUTOLOOT
-                    // ## BEGIN - END ## // LINES
-                    // ## BEGIN - END ## // UI/GUMPS
-                    // ## BEGIN - END ## // TAZUO
-                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is ImprovedBuffGump) && !(s is WorldViewportGump) && !(s is UOClassicCombatLTBar) && !(s is BandageGump) && !(s is UOClassicCombatLines) && !(s is UOClassicCombatAL) && !(s is UOClassicCombatBuffbar) && !(s is UOClassicCombatSelf) && !(s is ECBuffGump) && !(s is ECDebuffGump) && !(s is ECStateGump) && !(s is ModernCooldownBar)).ToList().ForEach(s => s.Dispose());
-                    // ## BEGIN - END ## // TAZUO
-
+                    UIManager.Gumps.Where(s => !(s is TopBarGump) && !(s is BuffGump) && !(s is ImprovedBuffGump) && !(s is WorldViewportGump)).ToList().ForEach(s => s.Dispose());
 
                     break;
 
@@ -1621,18 +1594,6 @@ namespace ClassicUO.Game.Managers
 
                     Item potion = World.Player.FindItemByGraphic(start);
 
-                    // ## BEGIN - END ## // SELF
-                    if (ProfileManager.CurrentProfile.UOClassicCombatSelf_MacroTriggers)
-                    {
-                        UOClassicCombatSelf?.MacroTriggerPotMacro(start);
-                        break;
-                    }
-                    else if (ProfileManager.CurrentProfile.UOClassicCombatSelf_ClilocTriggers)
-                    {
-                        UOClassicCombatSelf?.ClilocTriggerPotMacro(start);
-                    }
-                    // ## BEGIN - END ## // SELF
-
                     if (potion != null)
                     {
                         GameActions.DoubleClick(potion);
@@ -1665,17 +1626,6 @@ namespace ClassicUO.Game.Managers
                             if (obj != null)
                             {
                                 GameActions.DoubleClick(obj);
-                                // ## BEGIN - END ## // SELF
-                                if (ProfileManager.CurrentProfile.UOClassicCombatSelf_MacroTriggers)
-                                {
-                                    UOClassicCombatSelf?.MacroTriggerPotMacro(0x0F0C);
-                                    break;
-                                }
-                                else if (ProfileManager.CurrentProfile.UOClassicCombatSelf_ClilocTriggers)
-                                {
-                                    UOClassicCombatSelf?.ClilocTriggerPotMacro(0x0F0C);
-                                }
-                                // ## BEGIN - END ## // SELF
                             }
 
                             break;
@@ -1688,17 +1638,6 @@ namespace ClassicUO.Game.Managers
                             if (obj != null)
                             {
                                 GameActions.DoubleClick(obj);
-                                // ## BEGIN - END ## // SELF
-                                if (ProfileManager.CurrentProfile.UOClassicCombatSelf_MacroTriggers)
-                                {
-                                    UOClassicCombatSelf?.MacroTriggerPotMacro(0x0F07);
-                                    break;
-                                }
-                                else if (ProfileManager.CurrentProfile.UOClassicCombatSelf_ClilocTriggers)
-                                {
-                                    UOClassicCombatSelf?.ClilocTriggerPotMacro(0x0F07);
-                                }
-                                // ## BEGIN - END ## // SELF
                             }
 
                             break;
@@ -1711,17 +1650,6 @@ namespace ClassicUO.Game.Managers
                             if (obj != null)
                             {
                                 GameActions.DoubleClick(obj);
-                                // ## BEGIN - END ## // SELF
-                                if (ProfileManager.CurrentProfile.UOClassicCombatSelf_MacroTriggers)
-                                {
-                                    UOClassicCombatSelf?.MacroTriggerPotMacro(0xF09);
-                                    break;
-                                }
-                                else if (ProfileManager.CurrentProfile.UOClassicCombatSelf_ClilocTriggers)
-                                {
-                                    UOClassicCombatSelf?.ClilocTriggerPotMacro(0xF09);
-                                }
-                                // ## BEGIN - END ## // SELF
                             }
 
                             break;
@@ -1734,17 +1662,6 @@ namespace ClassicUO.Game.Managers
                             if (obj != null)
                             {
                                 GameActions.DoubleClick(obj);
-                                // ## BEGIN - END ## // SELF
-                                if (ProfileManager.CurrentProfile.UOClassicCombatSelf_MacroTriggers)
-                                {
-                                    UOClassicCombatSelf?.MacroTriggerPotMacro(0xF08);
-                                    break;
-                                }
-                                else if (ProfileManager.CurrentProfile.UOClassicCombatSelf_ClilocTriggers)
-                                {
-                                    UOClassicCombatSelf?.ClilocTriggerPotMacro(0xF08);
-                                }
-                                // ## BEGIN - END ## // SELF
                             }
 
                             break;
@@ -1908,18 +1825,7 @@ namespace ClassicUO.Game.Managers
 
                 case MacroType.ToggleTreeStumps:
                     StaticFilters.CleanTreeTextures();
-                    // ## BEGIN - END ## // ART / HUE CHANGES
-                    //ProfileManager.CurrentProfile.TreeToStumps = !ProfileManager.CurrentProfile.TreeToStumps;
-                    // ## BEGIN - END ## // ART / HUE CHANGES
-                    if (ProfileManager.CurrentProfile.TreeType == 0)
-                    {
-                        ProfileManager.CurrentProfile.TreeType = ProfileManager.CurrentProfile.TreeType = 2;
-                    }
-                    else
-                    {
-                        ProfileManager.CurrentProfile.TreeType = ProfileManager.CurrentProfile.TreeType = 0;
-                    }
-                    // ## BEGIN - END ## // ART / HUE CHANGES
+                    ProfileManager.CurrentProfile.TreeToStumps = !ProfileManager.CurrentProfile.TreeToStumps;
 
                     break;
 
@@ -1937,142 +1843,6 @@ namespace ClassicUO.Game.Managers
                 case MacroType.LookAtMouse:
                     // handle in gamesceneinput
                     break;
-
-                // ## BEGIN - END ## // VISUAL HELPERS
-                case MacroType.HighlightTileAtRange:
-                    ProfileManager.CurrentProfile.HighlightTileAtRange = !ProfileManager.CurrentProfile.HighlightTileAtRange;
-
-                    break;
-                // ## BEGIN - END ## // VISUAL HELPERS
-                // ## BEGIN - END ## // MISC2
-                case MacroType.ToggleTransparentHouses:
-                    ProfileManager.CurrentProfile.TransparentHousesEnabled = !ProfileManager.CurrentProfile.TransparentHousesEnabled;
-
-                    break;
-                case MacroType.ToggleInvisibleHouses:
-                    ProfileManager.CurrentProfile.InvisibleHousesEnabled = !ProfileManager.CurrentProfile.InvisibleHousesEnabled;
-
-                    break;
-                // ## BEGIN - END ## // MISC2
-
-                // ## BEGIN - END ## // MACROS
-                case MacroType.ObjectInfo:
-
-                    CommandManager.Execute("info");
-
-                    break;
-
-                case MacroType.OpenCorpses:
-                    World.Player.OpenCorpses(2);
-
-                    break;
-
-                case MacroType.SetTargetClientSide:
-                    TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
-
-                    break;
-
-                case MacroType.LastTargetRC:
-
-                    if (TargetManager.IsTargeting)
-                    {
-                        var entity = World.Get(TargetManager.LastTargetInfo.Serial);
-
-                        if (entity != null)
-                        {
-                            if (entity.Distance <= ProfileManager.CurrentProfile.LastTargetRange && (entity.Z - World.Player.Z) <= ProfileManager.CurrentProfile.LastTargetRange)
-                                TargetManager.Target(World.Get(TargetManager.LastTargetInfo.Serial));
-                            else
-                                MessageManager.HandleMessage(World.Player, "LastTarget out of range", null, 0x3B2, MessageType.Regular, 3, TextType.CLIENT, true);
-                        }
-
-                        WaitForTargetTimer = 0;
-                    }
-                    else if (WaitForTargetTimer < Time.Ticks)
-                        WaitForTargetTimer = 0;
-                    else
-                        result = 1;
-
-                    break;
-
-                case MacroType.HideX:
-
-                    if (SelectedObject.Object is Land l)
-                        l.AllowedToDraw = false;
-
-                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
-                    /*
-                    if (SelectedObject.Object is Item i)
-                        i.AllowedToDraw = false;
-                    */
-                    if (SelectedObject.Object is Item i)
-                    {
-                        i.AllowedToDraw = false;
-
-                        ContainerGump cont = UIManager.GetGump<ContainerGump>(i.Container);
-                        cont.ThiefUpdate();
-                    }
-                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
-                    if (SelectedObject.Object is Entity e)
-                        e.AllowedToDraw = false;
-
-                    if (SelectedObject.Object is Mobile m)
-                        m.AllowedToDraw = false;
-
-                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
-                    if (SelectedObject.Object is Static s)
-                        s.AllowedToDraw = false;
-                    // ## BEGIN - END ## // MISC3 THIEFSUPREME
-
-                    break;
-
-                    break;
-
-                case MacroType.HealOnHPChange:
-                    if (!CombatCollection._HealOnHPChangeON)
-                    {
-                        CombatCollection._HealOnHPChangeHP = World.Player.Hits;
-                        CombatCollection._HealOnHPChangeON = true;
-                    }
-
-                    CombatCollection.HealOnHPChange();
-
-                    break;
-
-                case MacroType.HarmOnSwing:
-                    if (!CombatCollection._HarmOnSwingON)
-                        CombatCollection._HarmOnSwingON = true;
-
-                    CombatCollection.HarmOnSwing();
-
-                    break;
-
-                case MacroType.CureGH:
-                    if (World.Player.IsPoisoned)
-                        GameActions.CastSpell(11); //cure
-                    else
-                        GameActions.CastSpell(29); //greater heal
-
-                    break;
-                // ## BEGIN - END ## // MACROS
-                // ## BEGIN - END ## // LINES
-                case MacroType.UCCLinesToggleLT:
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAll(); //ALL
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Innocent);
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Ally);
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Criminal);
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Gray);
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Enemy);
-                    //UOClassicCombatLines.ClilocTriggerAddListEntryAllByNotoriety(NotorietyFlag.Murderer);
-                    UOClassicCombatLines.ClilocTriggerToggleLT();
-
-                    break;
-
-                case MacroType.UCCLinesToggleHM:
-                    UOClassicCombatLines.ClilocTriggerToggleHM();
-
-                    break;
-                // ## BEGIN - END ## // LINES
 
                 case MacroType.UseCounterBar:
                     string counterIndex = ((MacroObjectString)macro).Text;
@@ -2646,6 +2416,7 @@ namespace ClassicUO.Game.Managers
         UseSkill,
         LastSkill,
         CastSpell,
+        CastSpellMastery,
         LastSpell,
         LastObject,
         Bow,
@@ -2701,72 +2472,14 @@ namespace ClassicUO.Game.Managers
         UsePotion,
         CloseAllHealthBars,
         RazorMacro,
-        // ## BEGIN - END ## // BASICSETUP
-        ObjectInfo, // ## BEGIN - END ## // MACROS
-        // ## BEGIN - END ## // ADVMACROS
-        GrabFriendlyBars,
-        GrabEnemyBars,
-        GrabPartyAllyBars,
-        AutoPot,
-        // ## BEGIN - END ## // ADVMACROS
-        OpenCorpses, // ## BEGIN - END ## // MACROS
-        // ## BEGIN - END ## // ADVMACROS
-        DefendSelfKey,
-        DefendPartyKey,
-        // ## BEGIN - END ## // ADVMACROS
-        // ## BEGIN - END ## // VISUAL HELPERS
-        HighlightTileAtRange,
-        // ## BEGIN - END ## // VISUAL HELPERS
-        // ## BEGIN - END ## // MACROS
-        LastTargetRC,
-        HideX,
-        HealOnHPChange,
-        HarmOnSwing,
-        // ## BEGIN - END ## // MACROS
-        EquipManager,
-        SetTargetClientSide, // ## BEGIN - END ## // MACROS
-        // ## BEGIN - END ## // LINES
-        UCCLinesToggleLT,
-        UCCLinesToggleHM,
-        // ## BEGIN - END ## // LINES
-        CureGH, // ## BEGIN - END ## // MACROS
-        // ## BEGIN - END ## // AUTOMATIONS
-        AutoMeditate,
-        // ## BEGIN - END ## // AUTOMATIONS
-        // ## BEGIN - END ## // ADVMACROS
-        CustomInterrupt,
-        SetMimic_PlayerSerial,
-        OpenCorpsesSafe,
-        // ## BEGIN - END ## // ADVMACROS
-        OpenJournal2, // ## BEGIN - END ## // MACROS        OpenJournal2, // ## BEGIN - END ## // MACROS
-        // ## BEGIN - END ## // BASICSETUP
         ToggleDrawRoofs,
         ToggleTreeStumps,
         ToggleVegetation,
         ToggleCaveTiles,
-        // ## BEGIN - END ## // BASICSETUP
-        // ## BEGIN - END ## // MISC2
-        ToggleTransparentHouses,
-        ToggleInvisibleHouses,
-        // ## BEGIN - END ## // MISC2
-        LobbyConnect,
-        LobbyDisconnect,
-        LobbyTarget,
-        LobbyCastLightning,
-        LobbyCastEB,
-        LobbyDrop,
-        // ## BEGIN - END ## // BASICSETUP
         CloseInactiveHealthBars,
         CloseCorpses,
         UseObject,
-        // ## BEGIN - END ## // BASICSETUP
-        ToggleECBuffGump,
-        ToggleECDebuffGump,
-        ToggleECStateGump,
-        ToggleModernCooldownBar,
-        // ## BEGIN - END ## // BASICSETUP
         LookAtMouse,
-        // ## BEGIN - END ## // BASICSETUP
         UseCounterBar,
         ClientCommand,
         StunAbility,

@@ -65,6 +65,8 @@ namespace ClassicUO.Configuration
             CurrentProfile.CharacterName = charactername;
 
             ValidateFields(CurrentProfile);
+
+            ClassicUO.Game.Managers.IgnoreManager.Initialize();
         }
 
 
