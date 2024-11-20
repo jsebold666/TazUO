@@ -8,9 +8,15 @@ namespace ClassicUO.Game.UI.Gumps
     internal class VersionHistory : Gump
     {
         private static string[] updateTexts = {
+            "/c[white][3.24.2]/cd\n" +
+                "- Fix Render Maps for Server Osi New Legacy\n" +
+                "- Fix Ignore List \n" +
+                "- Fix Big Tags in Weapons props \n" +
+                "- Fix Pathfinding algorithm using Z more efficiently from ghzatomic \n" +
+
              "/c[white][3.24.1]/cd\n" +
                 "- Fix for not load Modern Paperdoll\n" +
-                "- Fix Using Weapons Habilitys\n" +
+                "- Fix Using Weapons Abilitys\n" +
 
             "/c[white][3.24.0]/cd\n" +
                 "- Updated the algorithm for reading mul encryption\n" +

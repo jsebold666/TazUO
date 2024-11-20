@@ -1,4 +1,4 @@
-﻿#region license
+﻿﻿#region license
 
 // Copyright (c) 2021, andreakarasho
 // All rights reserved.
@@ -3082,18 +3082,26 @@ namespace ClassicUO.Assets
                                 }
                                 else if (StringHelper.UnsafeCompare(bufferCmd, "size", cmdLenght))
                                 {
-                                    byte font = byte.Parse(new string(bufferValue, 0, valueLength));
+                                    string fontString = new string(bufferValue, 0, valueLength);
 
-                                    if (font == 0 || font == 4)
+                                    if (byte.TryParse(fontString, out byte font))
                                     {
-                                        info.Font = 1;
-                                    }
-                                    else if (font < 4)
-                                    {
-                                        info.Font = 2;
+                                        if (font == 0 || font == 4)
+                                        {
+                                            info.Font = 1;
+                                        }
+                                        else if (font < 4)
+                                        {
+                                            info.Font = 2;
+                                        }
+                                        else
+                                        {
+                                            info.Font = 0;
+                                        }
                                     }
                                     else
                                     {
+                                        Console.WriteLine($"Value invalid'font': {fontString}");
                                         info.Font = 0;
                                     }
                                 }
