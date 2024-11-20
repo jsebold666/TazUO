@@ -121,7 +121,7 @@ namespace ClassicUO.Game.UI.Gumps
             mainContent.AddToLeft(CategoryButton(lang.ButtonNameplates, (int)PAGE.NameplateOptions, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonCooldowns, (int)PAGE.TUOCooldowns, mainContent.LeftWidth));
             mainContent.AddToLeft(CategoryButton(lang.ButtonTazUO, (int)PAGE.TUOOptions, mainContent.LeftWidth));
-            //mainContent.AddToLeft(CategoryButton("Dust765 Specific", (int)PAGE.Dust765, mainContent.LeftWidth));
+            mainContent.AddToLeft(CategoryButton("Dust765 Specific", (int)PAGE.Dust765, mainContent.LeftWidth));
 
             BuildGeneral();
             BuildSound();

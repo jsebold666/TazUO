@@ -40,13 +40,13 @@ namespace ClassicUO.Game
         public const int MAX_FPS = 250;
         public const int LOGIN_SCREEN_FPS = 60;
 
-        public const int CHARACTER_ANIMATION_DELAY = 80;
+        public const int CHARACTER_ANIMATION_DELAY = 50;
         public const int ITEM_EFFECT_ANIMATION_DELAY = 50;
         public const int ALLOWED_Z_DIFFERENCE = 10;
 
         public const int MAX_STEP_COUNT = 5;
-        public const int TURN_DELAY = 100; // original client 12.5 fps = 80ms delay. Edit --> it causes throttling
-        public const int TURN_DELAY_FAST = 45;
+        public const int TURN_DELAY = 10; // original client 12.5 fps = 80ms delay. Edit --> it causes throttling
+        public const int TURN_DELAY_FAST = 10;
         public const int WALKING_DELAY = 150; // 750
         public const int PLAYER_WALKING_DELAY = 150;
         public const int DEFAULT_CHARACTER_HEIGHT = 16;
