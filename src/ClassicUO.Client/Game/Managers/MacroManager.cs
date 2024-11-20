@@ -1,6 +1,6 @@
 #region license
 
-// Copyright (c) 2021, andreakarasho
+// Copyright (c) 2024, andreakarasho
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -1995,48 +1995,6 @@ namespace ClassicUO.Game.Managers
 
                     break;
 
-                case MacroType.OpenJournal2:
-                    // ## BEGIN - END ## // TAZUO
-                    //JournalGump2 journal2 = UIManager.GetGump<JournalGump2>();
-                    // ## BEGIN - END ## // TAZUO
-                    ResizableJournal journal2 = UIManager.GetGump<ResizableJournal>();
-                    // ## BEGIN - END ## // TAZUO
-
-                    if (journal2 != null)
-                    {
-                        if (macro.Code == MacroType.Close)
-                        {
-                            journal2.Dispose();
-                        }
-                        else if (macro.Code == MacroType.Minimize)
-                        {
-                            journal2.IsMinimized = true;
-                        }
-                        else if (macro.Code == MacroType.Maximize)
-                        {
-                            journal2.IsMinimized = false;
-                        }
-                    }
-                    else
-                    {
-                        if (journal2 == null)
-                        {
-                            UIManager.Add(new JournalGump2 { X = 64, Y = 64 });
-                        }
-                        else
-                        {
-                            journal2.SetInScreen();
-                            journal2.BringOnTop();
-
-                            if (journal2.IsMinimized)
-                            {
-                                journal2.IsMinimized = false;
-                            }
-                        }
-                    }
-
-                    break;
-
                 case MacroType.SetTargetClientSide:
                     TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
 
@@ -3013,7 +2971,6 @@ namespace ClassicUO.Game.Managers
         UseSkill,
         LastSkill,
         CastSpell,
-        CastSpellMastery,
         LastSpell,
         LastObject,
         Bow,
@@ -3120,24 +3077,18 @@ namespace ClassicUO.Game.Managers
         // ## BEGIN - END ## // ADVMACROS
         OpenJournal2, // ## BEGIN - END ## // MACROS        OpenJournal2, // ## BEGIN - END ## // MACROS
         // ## BEGIN - END ## // BASICSETUP
-        ToggleDrawRoofs,
-        ToggleTreeStumps,
-        ToggleVegetation,
-        ToggleCaveTiles,
         // ## BEGIN - END ## // BASICSETUP
         // ## BEGIN - END ## // MISC2
         ToggleTransparentHouses,
         ToggleInvisibleHouses,
         // ## BEGIN - END ## // MISC2
-         LobbyConnect,
+        LobbyConnect,
         LobbyDisconnect,
         LobbyTarget,
         LobbyCastLightning,
         LobbyCastEB,
         LobbyDrop,
         // ## BEGIN - END ## // BASICSETUP
-        CloseInactiveHealthBars,
-        CloseCorpses,
         // ## BEGIN - END ## // BASICSETUP
         ToggleECBuffGump,
         ToggleECDebuffGump,

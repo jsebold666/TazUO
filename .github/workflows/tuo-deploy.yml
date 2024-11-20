@@ -7,7 +7,7 @@ on:
     workflows: [Build-Test]
     types:
       - completed
-
+      
 concurrency:
   group: maindeploy
   cancel-in-progress: true
@@ -33,20 +33,22 @@ jobs:
       uses: dev-drprasad/delete-tag-and-release@v0.2.1
       with:
         delete_release: true
-        tag_name: AutoBuild
+        tag_name: TazUO-AutoBuild
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+  
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+       os: [windows-latest, ubuntu-latest, macos-latest ]
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        ref: 'dev'
       
     - name: Get submodules
       run: |
@@ -57,12 +59,17 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-            
-    - name: Restore NuGet Packages
-      run: dotnet restore ${{ env.CUO_PROJECT_PATH }}
 
+    - name: Restore NuGet Packages
+      run: dotnet restore ${{ env.CUO_PROJECT_PATH }}     
     - name: Build
       run: dotnet publish ${{ env.CUO_PROJECT_PATH }} -c Release -o ${{ env.CUO_OUTPUT_PATH }} -p:IS_DEV_BUILD=true
+      
+    - name: Create manifest
+      run: |
+        dotnet run --project tools/ManifestCreator/ManifestCreator.csproj "${{ env.CUO_OUTPUT_PATH }}" "unix-auto" "${{ runner.os }}${{ env.CUO_ZIP_NAME }}"
+        mkdir upload
+        mv manifest.xml upload
       
     - name: Create package
       uses: thedoctor0/zip-release@master
@@ -84,5 +91,7 @@ jobs:
         makeLatest: false
         allowUpdates: true
         prerelease: true
-        tag: AutoBuild
+        tag: TazUO-AutoBuild
         token: ${{ secrets.GITHUB_TOKEN }}
+        
+        

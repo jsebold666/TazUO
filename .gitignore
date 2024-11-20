@@ -264,7 +264,6 @@ paket.lock
 __pycache__/
 *.pyc
 /.svn
-external/FNA
-external/MP3Sharp
+
 .gitconfig
 work/.gitconfig
