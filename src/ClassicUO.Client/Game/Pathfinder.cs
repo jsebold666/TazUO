@@ -75,7 +75,7 @@ namespace ClassicUO.Game
 
         public static bool AutoWalking { get; set; }
 
-        public static bool PathindingCanBeCancelled { get; set; }
+        public static bool PathFindingCanBeCancelled { get; set; }
 
         public static bool BlockMoving { get; set; }
 
@@ -1033,7 +1033,7 @@ namespace ClassicUO.Game
             _activeCloseNodes = 0;
             _pathfindDistance = distance;
             _pathSize = 0;
-            PathindingCanBeCancelled = true;
+            PathFindingCanBeCancelled = true;
             StopAutoWalk();
             AutoWalking = true;
 
