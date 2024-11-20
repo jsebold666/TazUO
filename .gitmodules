@@ -1,6 +1,6 @@
 [submodule "external/FNA"]
 	path = external/FNA
-	url = https://github.com/FNA-XNA/FNA.git
+	url = https://github.com/FNA-XNA/FNA/tree/591b3a37cdeabf3ccbd6b66f6ce71e67a4407337
 [submodule "external/MP3Sharp"]
 	path = external/MP3Sharp
 	url = https://github.com/andreakarasho/MP3Sharp.git
