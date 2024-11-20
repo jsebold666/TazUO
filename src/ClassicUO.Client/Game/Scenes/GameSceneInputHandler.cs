@@ -1341,7 +1341,7 @@ namespace ClassicUO.Game.Scenes
             {
                 case SDL.SDL_Keycode.SDLK_ESCAPE:
 
-                    if (Pathfinder.AutoWalking && Pathfinder.PathindingCanBeCancelled)
+                    if (Pathfinder.AutoWalking && Pathfinder.PathFindingCanBeCancelled)
                     {
                         Pathfinder.StopAutoWalk();
                     }
