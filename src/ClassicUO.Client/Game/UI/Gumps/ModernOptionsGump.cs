@@ -9,7 +9,6 @@ using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Input;
 using ClassicUO.Renderer;
-using ClassicUO.Renderer.Lights;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
@@ -21,11 +20,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.Remoting.Contexts;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static ClassicUO.Renderer.UltimaBatcher2D;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Header;
 
 namespace ClassicUO.Game.UI.Gumps
 {

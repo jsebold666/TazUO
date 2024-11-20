@@ -137,6 +137,12 @@ namespace ClassicUO.Game.UI.Controls
 
             return base.Draw(batcher, x, y);
         }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _customTexture?.Dispose();
+        }
     }
 
     internal class GumpPic : GumpPicBase
