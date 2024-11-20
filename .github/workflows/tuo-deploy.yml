@@ -61,17 +61,8 @@ jobs:
     - name: Restore NuGet Packages
       run: dotnet restore ${{ env.CUO_PROJECT_PATH }}
 
-    - name: Build ManifestCreator
-      run: dotnet build tools/ManifestCreator/ManifestCreator.csproj -c Release
-
     - name: Build
       run: dotnet publish ${{ env.CUO_PROJECT_PATH }} -c Release -o ${{ env.CUO_OUTPUT_PATH }} -p:IS_DEV_BUILD=true
-      
-    - name: Create manifest
-      run: |
-        dotnet run --project tools/ManifestCreator/ManifestCreator.csproj "${{ env.CUO_OUTPUT_PATH }}" "unix-auto" "${{ runner.os }}${{ env.CUO_ZIP_NAME }}"
-        mkdir upload
-        mv manifest.xml upload
       
     - name: Create package
       uses: thedoctor0/zip-release@master

@@ -302,6 +302,8 @@ namespace ClassicUO.Game.UI.Controls
             finalString = finalString.Replace("<BODY>", "").Replace("<body>", "");
             finalString = finalString.Replace("</BODY>", "").Replace("</body>", "");
             finalString = finalString.Replace("</p>", "").Replace("<p>", "");
+            finalString = finalString.Replace("</BIG>", "").Replace("<BIG>", "");
+            finalString = finalString.Replace("</big>", "").Replace("<big>", "");
             return finalString;
         }
 
