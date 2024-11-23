@@ -49,15 +49,16 @@ namespace ClassicUO.Assets
 
         public const int MAX_LAND_DATA_INDEX_COUNT = 0x4000;
         public const int MAX_STATIC_DATA_INDEX_COUNT = 0x14000;
+        public const bool IsImpassable = false;
 
-        private ArtLoader(int staticCount, int landCount)
+        private ArtLoader(int staticCount, int landCount, bool IsImpassable)
         {
             _graphicMask = UOFileManager.IsUOPInstallation ? (ushort)0xFFFF : (ushort)0x3FFF;
         }
 
         public static ArtLoader Instance =>
             _instance
-            ?? (_instance = new ArtLoader(MAX_STATIC_DATA_INDEX_COUNT, MAX_LAND_DATA_INDEX_COUNT));
+            ?? (_instance = new ArtLoader(MAX_STATIC_DATA_INDEX_COUNT, MAX_LAND_DATA_INDEX_COUNT, IsImpassable));
 
         public override Task Load()
         {
@@ -92,7 +93,7 @@ namespace ClassicUO.Assets
         //         ? Rectangle.Empty
         //         : _spriteInfos[index + 0x4000].ArtBounds;
 
-        private bool LoadData(Span<uint> data, int g, out short width, out short height)
+        private bool LoadData(Span<uint> data, int g, out short width, out short height, bool IsImpassable)
         {
             ref var entry = ref GetValidRefEntry(g);
 
@@ -135,6 +136,25 @@ namespace ClassicUO.Assets
                     for (int j = start; j < end; ++j)
                     {
                         data[pos++] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+
+                        // ## BEGIN - END ## // MISC2
+                        /* Temporarily broken. ProfileManager is not accessible here.
+                        if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.WireFrameView)
+                        {
+                            if (j == end - 1)//| j == end - 3)// | j == end - 2 | j == end - 3)
+                            {
+                                if (IsImpassable)
+                                {
+                                    data[pos++] = 0xFF_00_00_00;
+                                }
+                                else
+                                {
+                                    data[pos++] = 0xAA_AA_AA_AA;
+                                }
+                            }
+                        }
+                        */
+                        // ## BEGIN - END ## // MISC2
                     }
                 }
 
@@ -146,6 +166,25 @@ namespace ClassicUO.Assets
                     for (int j = i; j < end; ++j)
                     {
                         data[pos++] = HuesHelper.Color16To32(_file.ReadUShort()) | 0xFF_00_00_00;
+
+                        // ## BEGIN - END ## // MISC2
+                        /* Temporarily broken. ProfileManager is not accessible here.
+                        if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.WireFrameView)
+                        {
+                            if (j == end - 1 | j == end - 3)// | j == end - 2 | j == end - 3)
+                            {
+                                if (IsImpassable)
+                                {
+                                    data[pos++] = 0xFF_00_00_00;
+                                }
+                                else
+                                {
+                                    data[pos++] = 0xAA_AA_AA_AA;
+                                }
+                            }
+                        }
+                        */
+                        // ## BEGIN - END ## // MISC2
                     }
                 }
             }
@@ -194,7 +233,7 @@ namespace ClassicUO.Assets
 
         public Span<uint> GetRawImage(uint g, out short width, out short height)
         {
-            if (!LoadData(_data, (int)g, out width, out height))
+            if (!LoadData(_data, (int)g, out width, out height, false))
             {
                 if (_data != null && width * height < _data.Length)
                 {
@@ -203,7 +242,7 @@ namespace ClassicUO.Assets
 
                 _data = new uint[width * height];
 
-                if (!LoadData(_data, (int)g, out width, out height))
+                if (!LoadData(_data, (int)g, out width, out height, false))
                 {
                     return Span<uint>.Empty;
                 }
@@ -303,7 +342,16 @@ namespace ClassicUO.Assets
         //     {
         //         AddBlackBorder(pixels, width, height);
         //     }
-        //     */
+        //
+        //
+        // ## BEGIN - END ## // MISC
+        /* Temporarily broken. ProfileManager is not accessible here.
+        if (ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.BlackOutlineStatics || StaticFilters.IsCave(graphic) && ProfileManager.CurrentProfile != null && ProfileManager.CurrentProfile.EnableCaveBorder)
+        {
+            AddBlackBorder(pixels, width, height);
+        }
+        */
+        // ## BEGIN - END ## // MISC
 
         //     for (int y = 0; y < height; ++y)
         //     {
@@ -385,5 +433,6 @@ namespace ClassicUO.Assets
         public Span<uint> Pixels;
         public int Width;
         public int Height;
+        public bool IsImpassable;
     }
 }

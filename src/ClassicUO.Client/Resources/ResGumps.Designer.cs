@@ -1383,7 +1383,15 @@ namespace ClassicUO.Resources {
                 return ResourceManager.GetString("EnablePathfinding", resourceCulture);
             }
         }
-        
+
+        public static string enableTabGridGump
+        {
+            get
+            {
+                return ResourceManager.GetString("enableTabGridGump", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Enemy Color.
         /// </summary>

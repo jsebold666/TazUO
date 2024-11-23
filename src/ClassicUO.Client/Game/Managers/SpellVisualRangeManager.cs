@@ -1,4 +1,5 @@
 ﻿using ClassicUO.Configuration;
+using ClassicUO.Dust765.Managers;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.UI.Gumps;
@@ -9,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ClassicUO.Game.Managers
@@ -53,16 +56,47 @@ namespace ClassicUO.Game.Managers
             Load();
         }
 
+        public static string RemoveContentInBrackets(string input)
+        {
+            // Expressão regular para encontrar o conteúdo entre colchetes
+            string pattern = @"\[.*?\]";
+
+            // Substituir o conteúdo encontrado por uma string vazia
+            string result = Regex.Replace(input, pattern, "").Trim();
+
+            return result;
+        }
+
         private void OnRawMessageReceived(object sender, MessageEventArgs e)
         {
             Task.Factory.StartNew(() =>
             {
                 if (loaded && e.Parent != null && ReferenceEquals(e.Parent, World.Player))
                 {
-                    if (spellRangePowerWordCache.TryGetValue(e.Text.Trim(), out SpellRangeInfo spell))
+                    // ## BEGIN - END ## // ONCASTINGGUMP
+                    if (ProfileManager.CurrentProfile.OnCastingGump && !ProfileManager.CurrentProfile.EnableSpellIndicators)
                     {
-                        SetCasting(spell);
+                        if (spellRangePowerWordCache.TryGetValue(RemoveContentInBrackets(e.Text.Trim()), out SpellRangeInfo spell))
+                        {
+                            GameActions.LastSpellIndex = spell.ID;
+                            // ## BEGIN - END ## // VISUAL HELPERS
+                            GameActions.LastSpellIndexCursor = spell.ID;
+                            GameCursor._spellTime = 0;
+                            // ## BEGIN - END ## // VISUAL HELPERS
+                            // ## BEGIN - END ## // ONCASTINGGUMP
+                            if (!GameActions.iscasting)
+                                World.Player.OnCasting.Start((uint)spell.ID);
+                        }
+                            
+                    } else
+                    {
+                        if (spellRangePowerWordCache.TryGetValue(RemoveContentInBrackets(e.Text.Trim()), out SpellRangeInfo spell))
+                        {
+                            SetCasting(spell);
+
+                        }
                     }
+                   
                 }
             });
         }
@@ -83,10 +117,9 @@ namespace ClassicUO.Game.Managers
             LastSpellTime = DateTime.Now;
             currentSpell = spell;
             isCasting = true;
-            if (currentSpell != null && currentSpell.FreezeCharacterWhileCasting)
-            {
-                World.Player.Flags |= Flags.Frozen;
-            }
+            
+
+
         }
 
         public void ClearCasting()

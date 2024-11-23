@@ -70,6 +70,19 @@ namespace ClassicUO.Game.UI.Gumps
         private Point _center, _lastScroll, _mouseCenter, _scroll;
         private Point? _lastMousePosition = null;
 
+        // ## BEGIN - END ## // AUTOMATIONS
+        public int _tempX = 0;
+        public int _tempY = 0;
+        public int _tempTmapStartX = 0;
+        public int _tempTmapStartY = 0;
+        public int _tempTmapEndX = 0;
+        public int _tempTmapEndY = 0;
+        public int _tempTmapWidth = 0;
+        public int _tempTmapHeight = 0;
+        public int _tempTmapX = 0;
+        public int _tempTmapY = 0;
+        // ## BEGIN - END ## // AUTOMATIONS
+
         private bool _flipMap = true;
         private bool _freeView;
         private List<string> _hiddenMarkerFiles;
@@ -1879,6 +1892,7 @@ namespace ClassicUO.Game.UI.Gumps
 
                     foreach (string icon in Directory.GetFiles(_mapIconsPath, "*.png").Union(Directory.GetFiles(_mapIconsPath, "*.jpg")))
                     {
+
                         FileStream fs = new FileStream(icon, FileMode.Open, FileAccess.Read);
                         MemoryStream ms = new MemoryStream();
                         fs.CopyTo(ms);
@@ -2082,6 +2096,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             //);
         }
+
 
         private void AddMarkerOnPlayer()
         {
@@ -2330,6 +2345,7 @@ namespace ClassicUO.Game.UI.Gumps
                         SpriteEffects.None,
                         0
                     );
+                    
 
                     DrawAll
                     (
@@ -2359,6 +2375,7 @@ namespace ClassicUO.Game.UI.Gumps
 
         private void DrawAll(UltimaBatcher2D batcher, Rectangle srcRect, int gX, int gY, int halfWidth, int halfHeight)
         {
+          
             foreach (Zone zone in _zoneSets.GetZonesForMapIndex(World.MapIndex))
             {
                 if (zone.BoundingRectangle.Intersects(srcRect))
@@ -2394,7 +2411,7 @@ namespace ClassicUO.Game.UI.Gumps
             if (_showMarkers && _mapMarkersLoaded)
             {
                 WMapMarker lastMarker = null;
-
+             
                 foreach (WMapMarkerFile file in _markerFiles)
                 {
                     if (file.Hidden)
@@ -2570,7 +2587,7 @@ namespace ClassicUO.Game.UI.Gumps
                             {
                                 if (string.IsNullOrEmpty(wme.Name) && !string.IsNullOrEmpty(partyMember.Name))
                                 {
-                                    wme.Name = partyMember.Name;
+                                    wme.Name = wme.GetName(partyMember.Serial);
                                 }
                             }
 
@@ -2662,6 +2679,61 @@ namespace ClassicUO.Game.UI.Gumps
                     1
                     );
             }
+
+            // ## BEGIN - END ## // MISC2
+            //DEATH
+            //RESET INCASE LONGER THAN 5MIN //FAILSAFE
+            if ((Time.Ticks - World.Player.DeathTick) > 300000 && World.Player.DeathX != 0 && World.Player.DeathY != 0 && World.Player.DeathTick != 0)
+            {
+                World.Player.DeathTick = 0;
+                World.Player.DeathX = 0;
+                World.Player.DeathY = 0;
+            }
+            if (ProfileManager.CurrentProfile.ShowDeathOnWorldmap)
+            {
+                if (World.Player.DeathX != 0 && World.Player.DeathY != 0 && World.Player.DeathTick != 0)
+                {
+                    //DESTINATION
+                    int sx = World.Player.DeathX - _center.X;
+                    int sy = World.Player.DeathY - _center.Y;
+
+                    Point pdrot = RotatePoint(sx, sy, Zoom, 1, _flipMap ? 45f : 0f);
+
+                    pdrot.X += gX + halfWidth;
+                    pdrot.Y += gY + halfHeight;
+
+                    const int DOT_SIZE = 4;
+                    const int DOT_SIZE_HALF = DOT_SIZE >> 1;
+
+                    Vector3 hueVec = ShaderHueTranslator.GetHueVector(0);
+
+                    //DRAW DOT AT DEATH LOCATION
+                    batcher.Draw(SolidColorTextureCache.GetTexture(Color.YellowGreen), new Rectangle(pdrot.X - DOT_SIZE_HALF, pdrot.Y - DOT_SIZE_HALF, DOT_SIZE, DOT_SIZE), hueVec);
+
+                    //PLAYER
+                    int psx = World.Player.X - _center.X;
+                    int psy = World.Player.Y - _center.Y;
+
+                    Point prot = RotatePoint(psx, psy, Zoom, 1, _flipMap ? 45f : 0f);
+
+                    prot.X += gX + halfWidth;
+                    prot.Y += gY + halfHeight;
+
+                    Vector2 start = new Vector2(pdrot.X - DOT_SIZE_HALF, pdrot.Y - DOT_SIZE_HALF);
+                    Vector2 end = new Vector2(prot.X, prot.Y);
+
+                    //DRAW LINE FROM PLAYER TO DEATH LOCATION
+                    batcher.DrawLine
+                    (
+                       SolidColorTextureCache.GetTexture(Color.YellowGreen),
+                       start,
+                       end,
+                       hueVec,
+                       1
+                    );
+                }
+            }
+            // ## BEGIN - END ## // MISC2s
 
             DrawMobile
             (
@@ -2971,7 +3043,16 @@ namespace ClassicUO.Game.UI.Gumps
             }
             else
             {
-                batcher.Draw(marker.MarkerIcon, new Vector2(rot.X - (marker.MarkerIcon.Width >> 1), rot.Y - (marker.MarkerIcon.Height >> 1)), hueVector);
+                batcher.Draw(
+                 marker.MarkerIcon,
+                 new Rectangle(
+                     (int)(rot.X - (marker.MarkerIcon.Width >> 1)),
+                     (int)(rot.Y - (marker.MarkerIcon.Height >> 1)),
+                     marker.MarkerIcon.Width,
+                     marker.MarkerIcon.Height
+                 ),
+                 hueVector
+             );
 
                 if (!showMarkerName)
                 {
@@ -3336,7 +3417,7 @@ namespace ClassicUO.Game.UI.Gumps
 
             if (_showGroupName)
             {
-                string name = entity.Name ?? ResGumps.OutOfRange;
+                string name = entity.Name ?? entity.GetName(entity.Serial);
                 Vector2 size = Fonts.Regular.MeasureString(entity.Name ?? name);
 
                 if (rot.X + size.X / 2 > x + Width - 8)

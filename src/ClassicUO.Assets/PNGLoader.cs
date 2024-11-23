@@ -82,6 +82,40 @@ namespace ClassicUO.Assets
             };
         }
 
+        public Texture2D LoadGumpTexture2d(uint graphic)
+        {
+            Texture2D texture;
+
+            if (gump_availableIDs == null)
+                return null;
+
+            int index = Array.IndexOf(gump_availableIDs, graphic);
+            if (index == -1) return null;
+
+            gump_textureCache.TryGetValue(graphic, out texture);
+
+            if (exePath != null && texture == null && GraphicsDevice != null)
+            {
+                string fullImagePath = Path.Combine(exePath, IMAGES_FOLDER, GUMP_EXTERNAL_FOLDER, ((int)graphic).ToString() + ".png");
+
+                if (File.Exists(fullImagePath))
+                {
+                    FileStream titleStream = File.OpenRead(fullImagePath);
+                    texture = Texture2D.FromStream(GraphicsDevice, titleStream);
+                    titleStream.Close();
+                    Color[] buffer = new Color[texture.Width * texture.Height];
+                    texture.GetData(buffer);
+                    for (int i = 0; i < buffer.Length; i++)
+                        buffer[i] = Color.FromNonPremultiplied(buffer[i].R, buffer[i].G, buffer[i].B, buffer[i].A);
+                    texture.SetData(buffer);
+
+                    gump_textureCache.Add(graphic, texture);
+                }
+            }
+
+            return texture;
+        }
+
         public ArtInfo LoadArtTexture(uint graphic)
         {
             Texture2D texture;

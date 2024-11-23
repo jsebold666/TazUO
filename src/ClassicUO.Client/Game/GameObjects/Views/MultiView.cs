@@ -31,6 +31,9 @@
 #endregion
 
 using ClassicUO.Configuration;
+// ## BEGIN - END ## // VISUAL HELPERS
+using ClassicUO.Dust765.Dust765;
+// ## BEGIN - END ## // VISUAL HELPERS
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.IO;
@@ -111,6 +114,44 @@ namespace ClassicUO.Game.GameObjects
 
             Vector3 hueVec = ShaderHueTranslator.GetHueVector(hue, partial, AlphaHue / 255f);
 
+            // ## BEGIN - END ## // VISUAL HELPERS
+            if (ProfileManager.CurrentProfile.HighlightTileAtRange && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRange)
+            {
+                hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHue;
+                hueVec.Y = 1;
+            }
+            if (ProfileManager.CurrentProfile.HighlightTileAtRangeSpell)
+            {
+                if (TargetManager.IsTargeting && Distance == ProfileManager.CurrentProfile.HighlightTileAtRangeRangeSpell)
+                {
+                    hueVec.X = ProfileManager.CurrentProfile.HighlightTileRangeHueSpell;
+                    hueVec.Y = 1;
+                }
+            }
+
+            // ## BEGIN - END ## // AUTOMATIONS
+            if (ProfileManager.CurrentProfile.AutoRangeDisplayActive && Distance == ProfileManager.CurrentProfile.AutoRangeDisplayActiveRange)
+            {
+                hueVec.X = ProfileManager.CurrentProfile.AutoRangeDisplayHue;
+                hueVec.Y = 1;
+            }
+            // ## BEGIN - END ## // AUTOMATIONS
+
+            if (ProfileManager.CurrentProfile.PreviewFields)
+            {
+                if (CombatCollection.MultiFieldPreview(this))
+                {
+                    hueVec.X = 0x0040;
+                    hueVec.Y = 1;
+                }
+                if (SelectedObject.Object == this)
+                {
+                    hueVec.X = 0x0023;
+                    hueVec.Y = 1;
+                }
+            }
+            // ## BEGIN - END ## // VISUAL HELPERS
+
             if (IsHousePreview)
             {
                 hueVec.Z *= 0.5f;
@@ -118,6 +159,21 @@ namespace ClassicUO.Game.GameObjects
 
             posX += (int)Offset.X;
             posY += (int)(Offset.Y + Offset.Z);
+
+            // ## BEGIN - END ## // MISC2
+            if (ProfileManager.CurrentProfile.TransparentHousesEnabled)
+            {
+                GameObject tile = World.Map.GetTile(X, Y);
+
+                if (tile != null)
+                {
+                    if ((Z - World.Player.Z) > ProfileManager.CurrentProfile.TransparentHousesZ && (Z - tile.Z) > ProfileManager.CurrentProfile.DontRemoveHouseBelowZ)
+                        hueVec.Z = (float)ProfileManager.CurrentProfile.TransparentHousesTransparency / 10;
+                }
+            }
+
+            // ## BEGIN - END ## // MISC2
+
 
             DrawStaticAnimated(batcher, graphic, posX, posY, hueVec, false, depth);
 

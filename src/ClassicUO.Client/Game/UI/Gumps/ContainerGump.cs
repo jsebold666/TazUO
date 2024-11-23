@@ -555,6 +555,16 @@ namespace ClassicUO.Game.UI.Gumps
             }
         }
 
+        // ## BEGIN - END ## // MISC3 THIEFSUPREME
+        public virtual void ThiefUpdate()
+        {
+            Clear();
+            BuildGump();
+            IsMinimized = IsMinimized;
+            ItemsOnAdded();
+        }
+        // ## BEGIN - END ## // MISC3 THIEFSUPREME
+
         protected override void UpdateContents()
         {
             Clear();

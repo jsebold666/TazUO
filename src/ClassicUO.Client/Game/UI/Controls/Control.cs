@@ -40,6 +40,9 @@ using SDL2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+// ## BEGIN - END ## // MISC
+using ClassicUO.Game.GameObjects;
+// ## BEGIN - END ## // MISC
 using Keyboard = ClassicUO.Input.Keyboard;
 
 namespace ClassicUO.Game.UI.Controls
@@ -74,6 +77,10 @@ namespace ClassicUO.Game.UI.Controls
         public uint ServerSerial { get; set; }
 
         public uint LocalSerial { get; set; }
+
+        // ## BEGIN - END ## // MISC
+        public Entity LocalEntity { get; set; }
+        // ## BEGIN - END ## // MISC
 
         public bool IsFromServer { get; set; }
 

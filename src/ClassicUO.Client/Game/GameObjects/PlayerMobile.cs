@@ -1,4 +1,4 @@
-#region license
+  #region license
 
 // Copyright (c) 2021, andreakarasho
 // All rights reserved.
@@ -32,6 +32,7 @@
 
 using ClassicUO.Assets;
 using ClassicUO.Configuration;
+using ClassicUO.Dust765.External;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
@@ -50,9 +51,28 @@ namespace ClassicUO.Game.GameObjects
 
         private static SpellVisualRangeManager.CastTimerProgressBar castTimer;
 
+        // ## BEGIN - END ## // MISC2
+        public int DeathX = 0;
+        public int DeathY = 0;
+        public uint DeathTick = 0;
+        // ## BEGIN - END ## // MISC2s
+        // ## BEGIN - END ## // UI/GUMPS
+        public BandageGump BandageTimer;
+        // ## BEGIN - END ## // UI/GUMPS
+    // ## BEGIN - END ## // ONCASTINGGUMP
+        public OnCastingGump OnCasting;
+        // ## BEGIN - END ## // ONCASTINGGUMP
+
         public PlayerMobile(uint serial) : base(serial)
         {
             Skills = new Skill[SkillsLoader.Instance.SkillsCount];
+
+            // ## BEGIN - END ## // UI/GUMPS
+            UIManager.Add(BandageTimer = new BandageGump());
+            // ## BEGIN - END ## // UI/GUMPS
+            // ## BEGIN - END ## // ONCASTINGGUMP
+            UIManager.Add(OnCasting = new OnCastingGump());
+            // ## BEGIN - END ## // ONCASTINGGUMP
 
             for (int i = 0; i < Skills.Length; i++)
             {
@@ -67,7 +87,7 @@ namespace ClassicUO.Game.GameObjects
                     SkillProgressBar.QueManager.AddSkill(e.Index);
                 }
             };
-
+        
             UIManager.Add(castTimer = new SpellVisualRangeManager.CastTimerProgressBar());
         }
 
@@ -1394,6 +1414,41 @@ namespace ClassicUO.Game.GameObjects
             }
         }
 
+        // ## BEGIN - END ## // MACROS
+        public void OpenCorpses(byte range)
+        {
+            foreach (Item item in World.Items.Values)
+            {
+                if (!item.IsDestroyed && item.IsCorpse && item.Distance <= range && item.Graphic == 0x2006)
+                {
+                    ManualOpenedCorpses.Add(item.Serial);
+                    GameActions.DoubleClickQueued(item.Serial);
+                }
+            }
+        }
+        // ## BEGIN - END ## // MACROS
+        // ## BEGIN - END ## // ADVMACROS
+        public void OpenCorpsesSafe(byte range)
+        {
+            foreach (Item item in World.Items.Values)
+            {
+                if (!item.IsDestroyed && item.IsCorpse && item.Distance <= range && item.Graphic == 0x2006)
+                {
+                    if (item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Gray || item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Green || item.LootFlag == ProfileManager.CurrentProfile.UOClassicCombatAL_SL_Red)
+                    {
+                        ManualOpenedCorpses.Add(item.Serial);
+                        GameActions.DoubleClickQueued(item.Serial);
+                    }
+                    else
+                    {
+                        item.AddMessage(MessageType.Regular, "This is not safe lootable!", 3, 33, true, TextType.OBJECT);
+                        continue;
+                    }
+                }
+            }
+        }
+        // ## BEGIN - END ## // ADVMACROS
+
         protected override void OnDirectionChanged()
         {
             base.OnDirectionChanged();
@@ -1537,7 +1592,14 @@ namespace ClassicUO.Game.GameObjects
 
                         if (distance > Constants.MAX_CONTAINER_OPENED_ON_GROUND_RANGE)
                         {
-                            gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            //gump.Dispose();
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
+                            if (!ProfileManager.CurrentProfile.OverrideContainerOpenRange)
+                            {
+                                gump.Dispose();
+                            }
+                            // ## BEGIN - END ## // MISC3 THIEFSUPREME
                         }
 
                         break;
@@ -1829,7 +1891,7 @@ namespace ClassicUO.Game.GameObjects
 
         public bool WalkNotAvoid(Direction direction, bool run)
         {
-            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT || Client.Version >= ClientVersion.CV_60142 && IsParalyzed)
+            if (Walker.WalkingFailed || Walker.LastStepRequestTime > Time.Ticks || Walker.StepsCount >= Constants.MAX_STEP_COUNT)
             {
                 return false;
             }
@@ -1841,11 +1903,13 @@ namespace ClassicUO.Game.GameObjects
                 run = false;
             }
 
+            
+
             int x = X;
             int y = Y;
             sbyte z = Z;
             Direction oldDirection = Direction;
-
+            bool isFrozeSet = World.Player.IsParalyzed;
             bool emptyStack = Steps.Count == 0;
 
             if (!emptyStack)
@@ -1860,8 +1924,16 @@ namespace ClassicUO.Game.GameObjects
             sbyte oldZ = z;
             ushort walkTime = Constants.TURN_DELAY;
 
+  
+
             if ((oldDirection & Direction.Mask) == (direction & Direction.Mask))
             {
+                if (isFrozeSet || Client.Version >= ClientVersion.CV_60142 && IsParalyzed) return false;
+
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                if (GameActions.iscasting) return false;
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                
                 Direction newDir = direction;
                 int newX = x;
                 int newY = y;

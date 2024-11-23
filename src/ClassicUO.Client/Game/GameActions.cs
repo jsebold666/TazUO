@@ -31,6 +31,7 @@
 #endregion
 
 using ClassicUO.Configuration;
+using ClassicUO.Dust765.Managers;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
@@ -43,14 +44,23 @@ using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using System;
 using static ClassicUO.Network.NetClient;
+using ClassicUO.Dust765.Managers;
 
 namespace ClassicUO.Game
 {
     public static class GameActions
     {
+
         public static int LastSpellIndex { get; set; } = 1;
         public static int LastSkillIndex { get; set; } = 1;
+        // ## BEGIN - END ## // VISUAL HELPERS
+        public static int LastSpellIndexCursor { get; set; } = 0;
+        // ## BEGIN - END ## // VISUAL HELPERS
+        // ## BEGIN - END ## // ONCASTINGGUMP
+        public static bool iscasting { get; set; } = false;
+        // ## BEGIN - END ## // ONCASTINGGUMP
 
+        public static SpellAction spellCircle { get; set; } = 0;
 
         public static void ToggleWarMode()
         {
@@ -80,6 +90,28 @@ namespace ClassicUO.Game
 
             macroGump?.Dispose();
             UIManager.Add(new MacroGump(name));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="serial"></param>
+        /// <returns>False if no paperdoll is open</returns>
+        public static bool ClosePaperdoll(uint? serial = null)
+        {
+            serial ??= World.Player.Serial;
+            Gump g;
+            if (ProfileManager.CurrentProfile.UseModernPaperdoll)
+                g = UIManager.GetGump<ModernPaperdoll>(serial);
+            else
+                g = UIManager.GetGump<PaperDollGump>(serial);
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+            return false;
         }
 
         public static void OpenPaperdoll(uint serial)
@@ -116,6 +148,23 @@ namespace ClassicUO.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no settings are open</returns>
+        public static bool CloseSettings()
+        {
+            Gump g = UIManager.GetGump<ModernOptionsGump>();
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenSettings(int page = 0)
         {
             ModernOptionsGump opt = UIManager.GetGump<ModernOptionsGump>();
@@ -145,24 +194,132 @@ namespace ClassicUO.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no status gump open</returns>
+        public static bool CloseStatusBar()
+        {
+            Gump g =             StatusGumpBase.GetStatusGump();
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenJournal()
         {
             UIManager.Add(new ResizableJournal());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no journals were open</returns>
+        public static bool CloseAllJournals()
+        {
+            Gump g = UIManager.GetGump<ResizableJournal>();
+
+            bool status = g != null;
+
+            while (g != null)
+            {
+                g.Dispose();
+                g = UIManager.GetGump<ResizableJournal>();
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns>False if no spell books of that type were open</returns>
+        public static bool CloseSpellBook(SpellBookType type)
+        {
+            SpellbookGump g = UIManager.GetGump<SpellbookGump>();
+
+            while (g != null)
+            {
+                if (g.SpellBookType == type)
+                {
+                    g.Dispose();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no skill gumps were open</returns>
+        public static bool CloseSkills()
+        {
+            Gump g;
+            if (ProfileManager.CurrentProfile.StandardSkillsGump)
+
+                g = UIManager.GetGump<StandardSkillsGump>();
+            else
+                g = UIManager.GetGump<SkillGumpAdvanced>();
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenSkills()
         {
-            StandardSkillsGump skillsGump = UIManager.GetGump<StandardSkillsGump>();
-
-            if (skillsGump != null && skillsGump.IsMinimized)
+            if (ProfileManager.CurrentProfile.StandardSkillsGump)
             {
-                skillsGump.IsMinimized = false;
+                StandardSkillsGump skillsGump = UIManager.GetGump<StandardSkillsGump>();
+
+                if (skillsGump != null && skillsGump.IsMinimized)
+                {
+                    skillsGump.IsMinimized = false;
+                }
+                else
+                {
+                    World.SkillsRequested = true;
+                    Socket.Send_SkillsRequest(World.Player.Serial);
+                }
             }
             else
             {
-                World.SkillsRequested = true;
-                Socket.Send_SkillsRequest(World.Player.Serial);
+                SkillGumpAdvanced skillsGump = UIManager.GetGump<SkillGumpAdvanced>();
+
+                if (skillsGump == null)
+                {
+                    World.SkillsRequested = true;
+                    Socket.Send_SkillsRequest(World.Player.Serial);
+                }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no mini map open</returns>
+        public static bool CloseMiniMap()
+        {
+            Gump g = UIManager.GetGump<MiniMapGump>();
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
         }
 
         public static void OpenMiniMap()
@@ -190,6 +347,23 @@ namespace ClassicUO.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no world map is open</returns>
+        public static bool CloseWorldMap()
+        {
+            Gump g = UIManager.GetGump<WorldMapGump>();
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenWorldMap()
         {
             WorldMapGump worldMap = UIManager.GetGump<WorldMapGump>();
@@ -204,6 +378,21 @@ namespace ClassicUO.Game
                 worldMap.BringOnTop();
                 worldMap.SetInScreen();
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no chat was open</returns>
+        public static bool CloseChat()
+        {
+            Gump g = UIManager.GetGump<ChatGump>();
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+            return false;
         }
 
         public static void OpenChat()
@@ -256,6 +445,33 @@ namespace ClassicUO.Game
             DoubleClick(serial);
 
             return true;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>False if no backpack was opened</returns>
+        public static bool CloseBackpack()
+        {
+            Gump g;
+
+            Item backpack = World.Player.FindItemByLayer(Layer.Backpack);
+
+            if (backpack == null)
+            {
+                return false;
+            }
+
+            g = UIManager.GetGump<ContainerGump>(backpack);
+            g ??= UIManager.GetGump<GridContainer>(backpack);
+
+            if (g != null)
+            {
+                g.Dispose();
+                return true;
+            }
+
+            return false;
         }
 
         public static bool OpenBackpack()
@@ -686,6 +902,17 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                LastSpellIndexCursor = index;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                // ## BEGIN - END ## // ONCASTINGGUMP
+                if (ProfileManager.CurrentProfile.OnCastingGump)
+                {
+                    if (!iscasting)
+                        World.Player.OnCasting.Start((uint) index);
+                }
+                // ## BEGIN - END ## // ONCASTINGGUMP
                 SpellVisualRangeManager.Instance.ClearCasting();
                 Socket.Send_CastSpellFromBook(index, bookSerial);
             }
@@ -696,6 +923,17 @@ namespace ClassicUO.Game
             if (index >= 0)
             {
                 LastSpellIndex = index;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                LastSpellIndexCursor = index;
+                GameCursor._spellTime = 0;
+                // ## BEGIN - END ## // VISUAL HELPERS
+                 // ## BEGIN - END ## // ONCASTINGGUMP
+                if (ProfileManager.CurrentProfile.OnCastingGump)
+                {
+                    if (!iscasting)
+                        World.Player.OnCasting.Start((uint) index);
+                }
+                // ## BEGIN - END ## // ONCASTINGGUMP
                 SpellVisualRangeManager.Instance.ClearCasting();
                 Socket.Send_CastSpell(index);
             }
@@ -829,7 +1067,7 @@ namespace ClassicUO.Game
             }
             else
             {
-                SendAbility( 0, true);
+                SendAbility(0, true);
             }
 
 
