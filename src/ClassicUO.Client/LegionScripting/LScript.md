@@ -13,10 +13,10 @@ Example:
 
 ## Values
 
--`name` <- Char name  
+- `name` <- Char name  
 - `hits`, `maxhits`  
--`mana`, `maxmana`  
--`x`, `y`, `z`  
+- `mana`, `maxmana`  
+- `x`, `y`, `z`  
 
 ## Objects
 
