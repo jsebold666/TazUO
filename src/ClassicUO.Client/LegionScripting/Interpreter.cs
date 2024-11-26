@@ -238,6 +238,9 @@ namespace UOScript
 
         private Scope _scope;
 
+        public ExecutionState _executionState = ExecutionState.RUNNING;
+
+        public long _pauseTimeout = long.MaxValue;
         public Argument Lookup(string name)
         {
             var scope = _scope;
@@ -1043,6 +1046,13 @@ namespace UOScript
         }
     }
 
+    public enum ExecutionState
+    {
+        RUNNING,
+        PAUSED,
+        TIMING_OUT
+    };
+
     public static class Interpreter
     {
         // Aliases only hold serial numbers
@@ -1070,17 +1080,8 @@ namespace UOScript
 
         private static Script _activeScript = null;
 
-        private enum ExecutionState
-        {
-            RUNNING,
-            PAUSED,
-            TIMING_OUT
-        };
-
         public delegate bool TimeoutCallback();
 
-        private static ExecutionState _executionState = ExecutionState.RUNNING;
-        private static long _pauseTimeout = long.MaxValue;
         private static  TimeoutCallback _timeoutCallback = null;
 
         public static CultureInfo Culture;
@@ -1271,7 +1272,7 @@ namespace UOScript
                 return false;
 
             _activeScript = script;
-            _executionState = ExecutionState.RUNNING;
+            _activeScript._executionState = ExecutionState.RUNNING;
 
             ExecuteScript();
 
@@ -1280,8 +1281,9 @@ namespace UOScript
 
         public static void StopScript()
         {
+            if (_activeScript != null)
+                _activeScript._executionState = ExecutionState.RUNNING;
             _activeScript = null;
-            _executionState = ExecutionState.RUNNING;
         }
 
         public static bool ExecuteScript()
@@ -1289,16 +1291,16 @@ namespace UOScript
             if (_activeScript == null)
                 return false;
 
-            if (_executionState == ExecutionState.PAUSED)
+            if (_activeScript._executionState == ExecutionState.PAUSED)
             {
-                if (_pauseTimeout < DateTime.UtcNow.Ticks)
-                    _executionState = ExecutionState.RUNNING;
+                if (_activeScript._pauseTimeout < DateTime.UtcNow.Ticks)
+                    _activeScript._executionState = ExecutionState.RUNNING;
                 else
                     return true;
             }
-            else if (_executionState == ExecutionState.TIMING_OUT)
+            else if (_activeScript._executionState == ExecutionState.TIMING_OUT)
             {
-                if (_pauseTimeout < DateTime.UtcNow.Ticks)
+                if (_activeScript._pauseTimeout < DateTime.UtcNow.Ticks)
                 {
                     if (_timeoutCallback != null)
                     {
@@ -1314,7 +1316,7 @@ namespace UOScript
                     /* If the callback changed the state to running, continue
                      * on. Otherwise, exit.
                      */
-                    if (_executionState != ExecutionState.RUNNING)
+                    if (_activeScript._executionState != ExecutionState.RUNNING)
                     {
                         _activeScript = null;
                         return false;
@@ -1335,21 +1337,21 @@ namespace UOScript
         public static void Pause(long duration)
         {
             // Already paused or timing out
-            if (_executionState != ExecutionState.RUNNING)
+            if (_activeScript._executionState != ExecutionState.RUNNING)
                 return;
 
-            _pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
-            _executionState = ExecutionState.PAUSED;
+            _activeScript._pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
+            _activeScript._executionState = ExecutionState.PAUSED;
         }
 
         // Unpause execution
         public static void Unpause()
         {
-            if (_executionState != ExecutionState.PAUSED)
+            if (_activeScript._executionState != ExecutionState.PAUSED)
                 return;
 
-            _pauseTimeout = 0;
-            _executionState = ExecutionState.RUNNING;
+            _activeScript._pauseTimeout = 0;
+            _activeScript._executionState = ExecutionState.RUNNING;
         }
 
         // If forward progress on the script isn't made within this
@@ -1357,11 +1359,11 @@ namespace UOScript
         public static void Timeout(long duration, TimeoutCallback callback)
         {
             // Don't change an existing timeout
-            if (_executionState != ExecutionState.RUNNING)
+            if (_activeScript._executionState != ExecutionState.RUNNING)
                 return;
 
-            _pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
-            _executionState = ExecutionState.TIMING_OUT;
+            _activeScript._pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
+            _activeScript._executionState = ExecutionState.TIMING_OUT;
             _timeoutCallback = callback;
         }
 
@@ -1369,11 +1371,20 @@ namespace UOScript
         // called any time the script advances a statement.
         public static void ClearTimeout()
         {
-            if (_executionState != ExecutionState.TIMING_OUT)
+            if (_activeScript._executionState != ExecutionState.TIMING_OUT)
                 return;
 
-            _pauseTimeout = 0;
-            _executionState = ExecutionState.RUNNING;
+            _activeScript._pauseTimeout = 0;
+            _activeScript._executionState = ExecutionState.RUNNING;
+        }
+
+        public static void Reset()
+        {
+            if (_activeScript != null)
+                _activeScript = null;
+
+            ClearTimeout();
+
         }
     }
 }

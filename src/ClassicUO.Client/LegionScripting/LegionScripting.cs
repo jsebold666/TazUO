@@ -3,8 +3,19 @@ using UOScript;
 
 namespace ClassicUO.LegionScripting
 {
-    internal class LegionScripting
+    internal static class LegionScripting
     {
+        private static bool _enabled;
+        public static void Init()
+        {
+            
+            if (!_enabled)
+            {
+                RegisterDummyCommands();
+                _enabled = true;
+            }
+        }
+
         private static IComparable DummyExpression(string expression, Argument[] args, bool quiet)
         {
             Console.WriteLine("Executing expression {0} {1}", expression, args);
@@ -75,7 +86,7 @@ namespace ClassicUO.LegionScripting
             return 0;
         }
 
-        public static void RegisterDummyCommands()
+        private static void RegisterDummyCommands()
         {
             #region Commands
             Interpreter.RegisterCommandHandler("fly", DummyCommand);
