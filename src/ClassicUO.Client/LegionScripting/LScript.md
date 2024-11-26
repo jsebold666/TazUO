@@ -7,3 +7,17 @@
 Make your player say something in game  
 Example:  
 `msg I banish thee!`  
+
+
+# Aliases
+
+## Default
+
+- `backpack`
+- `bank`
+- `lastobject`
+- `lasttarget`
+- `lefthand`
+- `righthand`
+- `mount`
+- `self`
