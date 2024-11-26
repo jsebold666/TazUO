@@ -15,12 +15,13 @@ namespace ClassicUO.LegionScripting
         private static List<Script> runningScripts = new List<Script>();
         private static List<Script> removeScripts = new List<Script>();
         public static void Init()
-        {            
+        {
             if (!_enabled)
             {
                 RegisterDummyCommands();
 
-                CommandManager.Register("lscript", (args) => {
+                CommandManager.Register("lscript", (args) =>
+                {
                     string code = string.Join(" ", args.Skip(1));
 
                     Script s = new Script(Lexer.Lex([code]));
@@ -64,7 +65,7 @@ namespace ClassicUO.LegionScripting
 
         public static void StopScript(Script script)
         {
-            if(runningScripts.Contains(script))
+            if (runningScripts.Contains(script))
                 runningScripts.Remove(script);
         }
 
@@ -130,17 +131,18 @@ namespace ClassicUO.LegionScripting
 
         private static uint DefaultAlias(string alias)
         {
-            switch (alias)
-            {
-                case "backpack": break;
-                case "bank": break;
-                case "lastobject": break;
-                case "lasttarget": break;
-                case "lefthand": break;
-                case "righthand": break;
-                case "self": break;
-                case "mount": break;
-            }
+            if (World.InGame)
+                switch (alias)
+                {
+                    case "backpack": return World.Player.FindItemByLayer(Game.Data.Layer.Backpack);
+                    case "bank": return World.Player.FindItemByLayer(Game.Data.Layer.Bank);
+                    case "lastobject": return World.LastObject;
+                    case "lasttarget": return TargetManager.LastTargetInfo.Serial;
+                    case "lefthand": return World.Player.FindItemByLayer(Game.Data.Layer.OneHanded);
+                    case "righthand": return World.Player.FindItemByLayer(Game.Data.Layer.TwoHanded);
+                    case "self": return World.Player;
+                    case "mount": return World.Player.FindItemByLayer(Game.Data.Layer.Mount);
+                }
 
             return 0;
         }
