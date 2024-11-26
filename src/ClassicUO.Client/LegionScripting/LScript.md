@@ -11,7 +11,14 @@ Example:
 
 # Aliases
 
-## Default
+## Values
+
+-`name` <- Char name  
+- `hits`, `maxhits`  
+-`mana`, `maxmana`  
+-`x`, `y`, `z`  
+
+## Objects
 
 - `backpack`
 - `bank`
