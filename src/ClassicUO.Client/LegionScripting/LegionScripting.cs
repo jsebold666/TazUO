@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ClassicUO.Configuration;
+using ClassicUO.Game;
+using ClassicUO.Game.Managers;
 using LScript;
 
 namespace ClassicUO.LegionScripting
@@ -9,11 +13,21 @@ namespace ClassicUO.LegionScripting
         private static bool _enabled;
 
         private static List<Script> runningScripts = new List<Script>();
+        private static List<Script> removeScripts = new List<Script>();
         public static void Init()
         {            
             if (!_enabled)
             {
                 RegisterDummyCommands();
+
+                CommandManager.Register("lscript", (args) => {
+                    string code = string.Join(" ", args.Skip(1));
+
+                    Script s = new Script(Lexer.Lex([code]));
+
+                    PlayScript(s);
+                });
+
                 _enabled = true;
             }
         }
@@ -26,10 +40,32 @@ namespace ClassicUO.LegionScripting
 
         public static void OnUpdate()
         {
+            removeScripts.Clear();
+
             foreach (Script script in runningScripts)
             {
-                Interpreter.ExecuteScript(script);
+                if (!Interpreter.ExecuteScript(script))
+                {
+                    removeScripts.Add(script);
+                }
             }
+
+            foreach (Script script in removeScripts)
+                StopScript(script);
+        }
+
+        public static void PlayScript(Script script)
+        {
+            if (script != null)
+            {
+                runningScripts.Add(script);
+            }
+        }
+
+        public static void StopScript(Script script)
+        {
+            if(runningScripts.Contains(script))
+                runningScripts.Remove(script);
         }
 
         private static IComparable DummyExpression(string expression, Argument[] args, bool quiet)
@@ -62,7 +98,14 @@ namespace ClassicUO.LegionScripting
 
         private static bool MsgCommand(string command, Argument[] args, bool quiet, bool force)
         {
-            Console.WriteLine("Msg {0}", args[0].AsString());
+            string msg = "";
+
+            foreach (Argument arg in args)
+            {
+                msg += " " + arg.AsString();
+            }
+
+            GameActions.Say(msg, ProfileManager.CurrentProfile.SpeechHue);
 
             return true;
         }
