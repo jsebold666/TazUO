@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace UOScript
+namespace LScript
 {
     public class RunTimeError : Exception
     {
@@ -1158,6 +1158,11 @@ namespace UOScript
             _lists.Remove(name);
         }
 
+        public static void ClearAllLists()
+        {
+            _lists.Clear();
+        }
+
         public static void ClearList(string name)
         {
             if (!_lists.ContainsKey(name))
@@ -1266,19 +1271,6 @@ namespace UOScript
             return _timers.ContainsKey(name);
         }
 
-        public static bool StartScript(Script script)
-        {
-            if (_activeScript != null)
-                return false;
-
-            _activeScript = script;
-            _activeScript._executionState = ExecutionState.RUNNING;
-
-            ExecuteScript();
-
-            return true;
-        }
-
         public static void StopScript()
         {
             if (_activeScript != null)
@@ -1286,10 +1278,13 @@ namespace UOScript
             _activeScript = null;
         }
 
-        public static bool ExecuteScript()
+        public static bool ExecuteScript(Script script)
         {
-            if (_activeScript == null)
+            if (script == null)
                 return false;
+
+            _activeScript = script;
+
 
             if (_activeScript._executionState == ExecutionState.PAUSED)
             {

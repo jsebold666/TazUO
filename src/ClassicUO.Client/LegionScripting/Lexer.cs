@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace UOScript
+namespace LScript
 {
     public class SyntaxError : Exception
     {

@@ -22,7 +22,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UOScript
+namespace LScript
 {
     internal class TextParser
     {

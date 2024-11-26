@@ -1,18 +1,34 @@
 ﻿using System;
-using UOScript;
+using System.Collections.Generic;
+using LScript;
 
 namespace ClassicUO.LegionScripting
 {
     internal static class LegionScripting
     {
         private static bool _enabled;
+
+        private static List<Script> runningScripts = new List<Script>();
         public static void Init()
-        {
-            
+        {            
             if (!_enabled)
             {
                 RegisterDummyCommands();
                 _enabled = true;
+            }
+        }
+
+        public static void Unload()
+        {
+            runningScripts.Clear();
+            Interpreter.ClearAllLists();
+        }
+
+        public static void OnUpdate()
+        {
+            foreach (Script script in runningScripts)
+            {
+                Interpreter.ExecuteScript(script);
             }
         }
 
