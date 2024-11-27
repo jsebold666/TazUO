@@ -53,7 +53,7 @@ namespace ClassicUO.LegionScripting
 
                     foreach (ScriptFile script in LoadedScripts)
                     {
-                        if(script.FileName == file && script.FileAsScript != null)
+                        if (script.FileName == file && script.FileAsScript != null)
                         {
                             PlayScript(script.FileAsScript);
                             break;
@@ -204,6 +204,7 @@ namespace ClassicUO.LegionScripting
                     case "self": return World.Player;
                     case "mount": return World.Player.FindItemByLayer(Layer.Mount);
                     case "bandage": return World.Player.FindBandage();
+                    case "any": return uint.MaxValue;
                 }
 
             return 0;
@@ -220,12 +221,11 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("clickobject", ClickObject);
             Interpreter.RegisterCommandHandler("bandageself", BandageSelf);
             Interpreter.RegisterCommandHandler("useobject", UseObject);
-
+            Interpreter.RegisterCommandHandler("target", TargetSerial);
+            Interpreter.RegisterCommandHandler("waitfortarget", WaitForTarget);
+            Interpreter.RegisterCommandHandler("usetype", UseType);
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("usetype", DummyCommand);
-            Interpreter.RegisterCommandHandler("useonce", DummyCommand);
-            Interpreter.RegisterCommandHandler("cleanusequeue", DummyCommand);
             Interpreter.RegisterCommandHandler("moveitem", DummyCommand);
             Interpreter.RegisterCommandHandler("moveitemoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("movetype", DummyCommand);
@@ -312,9 +312,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("bigheal", DummyCommand);
             Interpreter.RegisterCommandHandler("cast", DummyCommand);
             Interpreter.RegisterCommandHandler("chivalryheal", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitfortarget", DummyCommand);
             Interpreter.RegisterCommandHandler("canceltarget", DummyCommand);
-            Interpreter.RegisterCommandHandler("target", DummyCommand);
             Interpreter.RegisterCommandHandler("targettype", DummyCommand);
             Interpreter.RegisterCommandHandler("targetground", DummyCommand);
             Interpreter.RegisterCommandHandler("targettile", DummyCommand);
@@ -378,7 +376,88 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("self", DefaultAlias);
             Interpreter.RegisterAliasHandler("mount", DefaultAlias);
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
+            Interpreter.RegisterAliasHandler("any", DefaultAlias);
             #endregion
+        }
+
+        private static bool UseType(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length == 0) return true;
+
+            if (args.Length < 2) return true;
+
+            Item container = World.Items.Get(args[0].AsSerial());
+
+            if (container == null && args[0].AsSerial() != uint.MaxValue) return true;
+
+            uint objType = args[1].AsUInt();
+
+            uint hue = uint.MaxValue;
+
+            if (args.Length >= 3)
+                hue = args[2].AsUInt();
+
+            if (container == null)
+                foreach (Item it in World.Items.Values)
+                {
+                    if (it == null) continue;
+
+                    if (it.Graphic == objType || it.DisplayedGraphic == objType)
+                    {
+                        if (hue != uint.MaxValue)
+                            if (it.Hue == hue)
+                                GameActions.DoubleClickQueued(it);
+                            else
+                                GameActions.DoubleClickQueued(it);
+                    }
+                }
+            else
+                for (LinkedObject i = container.Items; i != null; i = i.Next)
+                {
+                    Item it = (Item)i;
+                    if (it == null) continue;
+
+                    if (it.Graphic == objType || it.DisplayedGraphic == objType)
+                    {
+                        if (hue != uint.MaxValue)
+                            if (it.Hue == hue)
+                                GameActions.DoubleClickQueued(it);
+                            else
+                                GameActions.DoubleClickQueued(it);
+                    }
+                }
+
+            return true;
+        }
+
+        private static bool WaitForTarget(string command, Argument[] args, bool quiet, bool force)
+        {
+            TargetType type = TargetType.Neutral;
+
+            if (args.Length >= 1)
+            {
+                type = (TargetType)args[0].AsInt();
+            }
+
+            if (TargetManager.IsTargeting)
+            {
+                if (type == TargetType.Neutral)
+                    return true;
+
+                if (TargetManager.TargetingType == type)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool TargetSerial(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length == 0) return true;
+
+            TargetManager.Target(args[0].AsSerial());
+
+            return true;
         }
 
         private static bool UseObject(string command, Argument[] args, bool quiet, bool force)

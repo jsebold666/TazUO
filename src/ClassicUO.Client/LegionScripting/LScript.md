@@ -54,6 +54,36 @@ Example:
 `useobject '0x1234567'` or `useobject '0x1234567' false`
 
 
+## `target`
+
+Target an object or mobile  
+`target` 'serial'  
+
+Example:  
+`target 'self'`
+
+
+
+## `waitfortarget`
+
+| `waitfortarget` | '0/1/2' |
+| - | - |
+| | 0 = Any target type, 1 = harmful, 2 = beneficial |  
+
+Example:  
+`waitfortarget '0'`
+
+
+## `usetype`
+
+| `usetype` | 'container' | 'objtype(graphic)' | 'hue(optional)' |
+| - | - | - | - |
+| | Container serial | Object type | Hue(If not included, any hue will match) |
+
+Example:  
+`usetype 'backpack' '0x456'` or `usetype 'backpack' '0x456' '32'`
+
+
 # Aliases
 
 ## Values
@@ -75,3 +105,4 @@ Example:
 - `mount`
 - `self`
 - `bandage`
+- `any` <- Can be used in place of containers
