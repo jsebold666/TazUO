@@ -291,16 +291,20 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("timerexists", DummyExpression);
             #endregion
 
+            #region Player Values
             Interpreter.RegisterExpressionHandler("mana", GetPlayerMana);
             Interpreter.RegisterExpressionHandler("maxmana", GetPlayerMaxMana);
             Interpreter.RegisterExpressionHandler("hits", GetPlayerHits);
             Interpreter.RegisterExpressionHandler("maxhits", GetPlayerMaxHits);
+            Interpreter.RegisterExpressionHandler("stam", GetPlayerStam);
+            Interpreter.RegisterExpressionHandler("maxstam", GetPlayerMaxStam);
             Interpreter.RegisterExpressionHandler("x", GetPosX);
             Interpreter.RegisterExpressionHandler("y", GetPosY);
             Interpreter.RegisterExpressionHandler("z", GetPosZ);
             Interpreter.RegisterExpressionHandler("name", GetPlayerName);
+            #endregion
 
-
+            #region Default aliases
             Interpreter.RegisterAliasHandler("backpack", DefaultAlias);
             Interpreter.RegisterAliasHandler("bank", DefaultAlias);
             Interpreter.RegisterAliasHandler("lastobject", DefaultAlias);
@@ -309,10 +313,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("righthand", DefaultAlias);
             Interpreter.RegisterAliasHandler("self", DefaultAlias);
             Interpreter.RegisterAliasHandler("mount", DefaultAlias);
+            #endregion
         }
 
-        private static IComparable GetPlayerMaxHits(string expression, Argument[] args, bool quiet) => World.Player.HitsMax;
-        private static IComparable GetPlayerHits(string expression, Argument[] args, bool quiet) => World.Player.Hits;
+        private static int GetPlayerMaxStam(string expression, Argument[] args, bool quiet) => World.Player.StaminaMax;
+        private static int GetPlayerStam(string expression, Argument[] args, bool quiet) => World.Player.Stamina;
+        private static int GetPlayerMaxHits(string expression, Argument[] args, bool quiet) => World.Player.HitsMax;
+        private static int GetPlayerHits(string expression, Argument[] args, bool quiet) => World.Player.Hits;
         private static int GetPlayerMaxMana(string expression, Argument[] args, bool quiet) => World.Player.ManaMax;
         private static int GetPlayerMana(string expression, Argument[] args, bool quiet) => World.Player.Mana;
         private static int GetPosX(string expression, Argument[] args, bool quiet) => World.Player.X;
