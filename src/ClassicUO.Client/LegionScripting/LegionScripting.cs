@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
@@ -13,12 +14,17 @@ namespace ClassicUO.LegionScripting
     internal static class LegionScripting
     {
         private static bool _enabled;
+        private static string scriptPath;
 
         private static List<Script> runningScripts = new List<Script>();
-        private static List<Script> removeScripts = new List<Script>();
+        private static List<Script> removeRunningScripts = new List<Script>();
+
+        public static List<ScriptFile> LoadedScripts = new List<ScriptFile>();
 
         public static void Init()
         {
+            scriptPath = Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts");
+
             if (!_enabled)
             {
                 RegisterDummyCommands();
@@ -32,7 +38,48 @@ namespace ClassicUO.LegionScripting
                     PlayScript(s);
                 });
 
+
+                CommandManager.Register("lscriptfile", (args) =>
+                {
+                    if (args.Length < 2)
+                        return;
+
+                    string file = args[1];
+
+                    if (!file.EndsWith(".lscript"))
+                        file += ".lscript";
+
+                    foreach (ScriptFile script in LoadedScripts)
+                    {
+                        if(script.FileName == file && script.FileAsScript != null)
+                        {
+                            PlayScript(script.FileAsScript);
+                            break;
+                        }
+                    }
+                });
+
                 _enabled = true;
+            }
+
+            LoadScriptsFromFile();
+        }
+
+        private static void LoadScriptsFromFile()
+        {
+            if (!Directory.Exists(scriptPath))
+                Directory.CreateDirectory(scriptPath);
+
+            LoadedScripts.Clear();
+
+            foreach (string file in Directory.EnumerateFiles(scriptPath))
+            {
+                if (file.EndsWith(".lscript"))
+                {
+                    string p = Path.GetDirectoryName(file);
+                    string fname = Path.GetFileName(file);
+                    LoadedScripts.Add(new ScriptFile(p, fname));
+                }
             }
         }
 
@@ -44,7 +91,7 @@ namespace ClassicUO.LegionScripting
 
         public static void OnUpdate()
         {
-            removeScripts.Clear();
+            removeRunningScripts.Clear();
 
 
             foreach (Script script in runningScripts)
@@ -53,16 +100,17 @@ namespace ClassicUO.LegionScripting
                 {
                     if (!Interpreter.ExecuteScript(script))
                     {
-                        removeScripts.Add(script);
+                        removeRunningScripts.Add(script);
                     }
                 }
-                catch (Exception e) {
-                    removeScripts.Add(script);
+                catch (Exception e)
+                {
+                    removeRunningScripts.Add(script);
                     LScriptError($"Execution of script failed. -> [{e.Message}]");
                 }
             }
 
-            foreach (Script script in removeScripts)
+            foreach (Script script in removeRunningScripts)
                 StopScript(script);
         }
 
@@ -412,5 +460,41 @@ namespace ClassicUO.LegionScripting
         private static int GetPosY(string expression, Argument[] args, bool quiet) => World.Player.Y;
         private static int GetPosZ(string expression, Argument[] args, bool quiet) => World.Player.Z;
         private static string GetPlayerName(string expression, Argument[] args, bool quiet) => World.Player.Name;
+    }
+
+    internal class ScriptFile
+    {
+        public string Path;
+        public string FileName;
+        public string FullPath;
+        public Script FileAsScript;
+
+        public ScriptFile(string path, string fileName)
+        {
+            Path = path;
+            FileName = fileName;
+            FullPath = System.IO.Path.Combine(Path, FileName);
+            ConvertToScript();
+        }
+
+        public string ReadFile()
+        {
+            try
+            {
+                return File.ReadAllText(FullPath);
+            }
+            catch { }
+
+            return string.Empty;
+        }
+
+        public void ConvertToScript()
+        {
+            try
+            {
+                FileAsScript = new Script(Lexer.Lex(FullPath));
+            }
+            catch { }
+        }
     }
 }
