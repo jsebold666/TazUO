@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
+using ClassicUO.Game.Data;
 using ClassicUO.Game.Managers;
+using ClassicUO.Network;
 using LScript;
 
 namespace ClassicUO.LegionScripting
@@ -44,11 +46,19 @@ namespace ClassicUO.LegionScripting
         {
             removeScripts.Clear();
 
+
             foreach (Script script in runningScripts)
             {
-                if (!Interpreter.ExecuteScript(script))
+                try
                 {
+                    if (!Interpreter.ExecuteScript(script))
+                    {
+                        removeScripts.Add(script);
+                    }
+                }
+                catch (Exception e) {
                     removeScripts.Add(script);
+                    LScriptError($"Execution of script failed. -> [{e.Message}]");
                 }
             }
 
@@ -151,15 +161,18 @@ namespace ClassicUO.LegionScripting
         private static void RegisterDummyCommands()
         {
             #region Commands
-            Interpreter.RegisterCommandHandler("fly", DummyCommand);
-            Interpreter.RegisterCommandHandler("land", DummyCommand);
-            Interpreter.RegisterCommandHandler("setability", DummyCommand);
-            Interpreter.RegisterCommandHandler("attack", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearhands", DummyCommand);
-            Interpreter.RegisterCommandHandler("clickobject", DummyCommand);
-            Interpreter.RegisterCommandHandler("bandageself", DummyCommand);
+            //Finished
+            Interpreter.RegisterCommandHandler("togglefly", CommandFly);
+            Interpreter.RegisterCommandHandler("useprimaryability", UsePrimaryAbility);
+            Interpreter.RegisterCommandHandler("usesecondaryability", UseSecondaryAbility);
+            Interpreter.RegisterCommandHandler("attack", CommandAttack);
+            Interpreter.RegisterCommandHandler("clickobject", ClickObject);
+            Interpreter.RegisterCommandHandler("bandageself", BandageSelf);
+            Interpreter.RegisterCommandHandler("useobject", UseObject);
+
+
+            //Unfinished below
             Interpreter.RegisterCommandHandler("usetype", DummyCommand);
-            Interpreter.RegisterCommandHandler("useobject", DummyCommand);
             Interpreter.RegisterCommandHandler("useonce", DummyCommand);
             Interpreter.RegisterCommandHandler("cleanusequeue", DummyCommand);
             Interpreter.RegisterCommandHandler("moveitem", DummyCommand);
@@ -314,6 +327,79 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("self", DefaultAlias);
             Interpreter.RegisterAliasHandler("mount", DefaultAlias);
             #endregion
+        }
+
+        private static bool UseObject(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length == 0) return true;
+
+            bool useQueue = true;
+
+            if (args.Length >= 2)
+                if (args[1].AsBool())
+                    useQueue = true;
+                else
+                    useQueue = false;
+
+            if (useQueue)
+                GameActions.DoubleClickQueued(args[0].AsSerial());
+            else
+                GameActions.DoubleClick(args[0].AsSerial());
+
+            return true;
+        }
+
+        private static bool BandageSelf(string command, Argument[] args, bool quiet, bool force)
+        {
+            GameActions.BandageSelf();
+            return true;
+        }
+
+        private static bool ClickObject(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length == 0) return true;
+
+            GameActions.SingleClick(args[0].AsSerial());
+            return true;
+        }
+
+        private static bool CommandAttack(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length == 0) return true;
+
+            GameActions.Attack(args[0].AsSerial());
+            return true;
+        }
+
+        private static bool UseSecondaryAbility(string command, Argument[] args, bool quiet, bool force)
+        {
+            GameActions.UsePrimaryAbility();
+            return true;
+        }
+
+        private static bool UsePrimaryAbility(string command, Argument[] args, bool quiet, bool force)
+        {
+            GameActions.UseSecondaryAbility();
+            return true;
+        }
+
+        private static void LScriptError(string msg)
+        {
+            GameActions.Print("[LScript Error]" + msg);
+        }
+
+        private static bool CommandFly(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (World.Player.Race == RaceType.GARGOYLE)
+            {
+                NetClient.Socket.Send_ToggleGargoyleFlying();
+                return true;
+            }
+
+            if (!quiet)
+                LScriptError("Player is not a gargoyle, cannot fly.");
+
+            return true;
         }
 
         private static int GetPlayerMaxStam(string expression, Argument[] args, bool quiet) => World.Player.StaminaMax;
