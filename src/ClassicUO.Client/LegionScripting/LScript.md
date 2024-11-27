@@ -74,3 +74,4 @@ Example:
 - `righthand`
 - `mount`
 - `self`
+- `bandage`

@@ -5,8 +5,10 @@ using System.Linq;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
+using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Network;
+using ClassicUO.Utility;
 using LScript;
 
 namespace ClassicUO.LegionScripting
@@ -193,14 +195,15 @@ namespace ClassicUO.LegionScripting
             if (World.InGame)
                 switch (alias)
                 {
-                    case "backpack": return World.Player.FindItemByLayer(Game.Data.Layer.Backpack);
-                    case "bank": return World.Player.FindItemByLayer(Game.Data.Layer.Bank);
+                    case "backpack": return World.Player.FindItemByLayer(Layer.Backpack);
+                    case "bank": return World.Player.FindItemByLayer(Layer.Bank);
                     case "lastobject": return World.LastObject;
                     case "lasttarget": return TargetManager.LastTargetInfo.Serial;
-                    case "lefthand": return World.Player.FindItemByLayer(Game.Data.Layer.OneHanded);
-                    case "righthand": return World.Player.FindItemByLayer(Game.Data.Layer.TwoHanded);
+                    case "lefthand": return World.Player.FindItemByLayer(Layer.OneHanded);
+                    case "righthand": return World.Player.FindItemByLayer(Layer.TwoHanded);
                     case "self": return World.Player;
-                    case "mount": return World.Player.FindItemByLayer(Game.Data.Layer.Mount);
+                    case "mount": return World.Player.FindItemByLayer(Layer.Mount);
+                    case "bandage": return World.Player.FindBandage();
                 }
 
             return 0;
@@ -374,6 +377,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("righthand", DefaultAlias);
             Interpreter.RegisterAliasHandler("self", DefaultAlias);
             Interpreter.RegisterAliasHandler("mount", DefaultAlias);
+            Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             #endregion
         }
 
@@ -399,7 +403,20 @@ namespace ClassicUO.LegionScripting
 
         private static bool BandageSelf(string command, Argument[] args, bool quiet, bool force)
         {
-            GameActions.BandageSelf();
+            if (Client.Version < ClientVersion.CV_5020 || ProfileManager.CurrentProfile.BandageSelfOld)
+            {
+                Item band = World.Player.FindBandage();
+
+                if (band != null)
+                {
+                    GameActions.DoubleClickQueued(band);
+                }
+            }
+            else
+            {
+                GameActions.BandageSelf();
+            }
+
             return true;
         }
 
