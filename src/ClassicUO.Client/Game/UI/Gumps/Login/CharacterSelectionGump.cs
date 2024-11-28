@@ -379,7 +379,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 } else
                 {
                     Add(new GumpPic(1, 1, 0xC4E9, 0));
-                    Add(new GumpPic(1, 1, 0xC525, 0));
+                    Add(new GumpPic(1, 1, 0xC502, 0));
+                    Add(new GumpPic(1, 1, 0xC4FE, 0));
                     Add(new GumpPic(1, 1, 0xC530, 0));
                 }
 
