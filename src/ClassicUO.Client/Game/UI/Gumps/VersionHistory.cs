@@ -25,7 +25,7 @@ namespace ClassicUO.Game.UI.Gumps
                 "- Fix Pathfinding algorithm using Z more efficiently from ghzatomic \n" +
 
              "/c[white][3.24.1]/cd\n" +
-                "- Fix for not load Modern Paperdoll\n" +
+                "- Fix for not load Modern  Paperdoll\n" +
                 "- Fix Using Weapons Abilitys\n" +
 
             "/c[white][3.24.0]/cd\n" +
