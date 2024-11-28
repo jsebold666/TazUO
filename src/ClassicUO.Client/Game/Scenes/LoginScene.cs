@@ -90,6 +90,17 @@ namespace ClassicUO.Game.Scenes
         public bool CanAutologin => _autoLogin || Reconnect;
 
 
+        public uint GetCharacterBodyID(int index)
+        {
+            // Obtenha o ID do corpo para o personagem indexado.
+            return index switch
+            {
+                0 => 0x190, // Exemplo: Humano masculino
+                1 => 0x191, // Exemplo: Humano feminino
+                _ => 0x190  // Default
+            };
+        }
+
         public override void Load()
         {
             base.Load();
@@ -156,7 +167,7 @@ namespace ClassicUO.Game.Scenes
                 Client.Game.RestoreWindow();
             }
 
-            Client.Game.SetWindowSize(640, 480);
+            Client.Game.SetWindowSize(1024, 768);
         }
 
 

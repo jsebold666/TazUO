@@ -4934,8 +4934,8 @@ namespace ClassicUO.Game.UI.Gumps
                     _windowBorderless.IsChecked = false;
                     _zoomCheckbox.IsChecked = false;
                     _restorezoomCheckbox.IsChecked = false;
-                    _gameWindowWidth.SetText("600");
-                    _gameWindowHeight.SetText("480");
+                    _gameWindowWidth.SetText("768");
+                    _gameWindowHeight.SetText("1024");
                     _gameWindowPositionX.SetText("20");
                     _gameWindowPositionY.SetText("20");
                     _gameWindowLock.IsChecked = false;
@@ -5534,7 +5534,7 @@ namespace ClassicUO.Game.UI.Gumps
                 {
                     if (vp != null)
                     {
-                        n = vp.ResizeGameWindow(new Point(600, 480));
+                        n = vp.ResizeGameWindow(new Point(1024, 768));
                         vp.SetGameWindowPosition(new Point(20, 20));
                         _currentProfile.GameWindowPosition = vp.Location;
                     }

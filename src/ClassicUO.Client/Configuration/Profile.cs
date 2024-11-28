@@ -187,13 +187,13 @@ namespace ClassicUO.Configuration
         public bool HoldShiftToSplitStack { get; set; } = false;
 
         // general
-        [JsonConverter(typeof(Point2Converter))] public Point WindowClientBounds { get; set; } = new Point(600, 480);
+        [JsonConverter(typeof(Point2Converter))] public Point WindowClientBounds { get; set; } = new Point(1024, 768);
         [JsonConverter(typeof(Point2Converter))] public Point ContainerDefaultPosition { get; set; } = new Point(24, 24);
         [JsonConverter(typeof(Point2Converter))] public Point GameWindowPosition { get; set; } = new Point(10, 10);
         public bool GameWindowLock { get; set; }
         public bool GameWindowFullSize { get; set; }
         public bool WindowBorderless { get; set; } = false;
-        [JsonConverter(typeof(Point2Converter))] public Point GameWindowSize { get; set; } = new Point(600, 480);
+        [JsonConverter(typeof(Point2Converter))] public Point GameWindowSize { get; set; } = new Point(1024, 768);
         [JsonConverter(typeof(Point2Converter))] public Point TopbarGumpPosition { get; set; } = new Point(0, 0);
         public bool TopbarGumpIsMinimized { get; set; }
         public bool TopbarGumpIsDisabled { get; set; }

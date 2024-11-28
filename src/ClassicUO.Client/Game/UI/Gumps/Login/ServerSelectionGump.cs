@@ -47,8 +47,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
 {
     internal class ServerSelectionGump : Gump
     {
-        private const ushort SELECTED_COLOR = 0x0021;
-        private const ushort NORMAL_COLOR = 0x034F;
+        private const ushort SELECTED_COLOR = 0x0481;
+        private const ushort NORMAL_COLOR = 0x0481;
 
         public ServerSelectionGump() : base(0, 0)
         {
@@ -58,7 +58,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Button((int) Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
                 {
-                    X = 586, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 30, Y = 680, ButtonAction = ButtonAction.Activate
                 }
             );
 
@@ -66,7 +66,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Button((int) Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
                 {
-                    X = 610, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 780, Y = 680, ButtonAction = ButtonAction.Activate
                 }
             );
 
@@ -101,13 +101,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     ); // "Packet Loss:"
                 }
 
-                Add
-                (
-                    new Label(ClilocLoader.Instance.GetString(1044580), true, textColor, font: 1)
-                    {
-                        X = 153, Y = 368
-                    }
-                ); // "Sort by:"
+     
             }
             else
             {
@@ -146,58 +140,13 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 );
             }
 
-            Add
-            (
-                new Button((int) Buttons.SortTimeZone, 0x093B, 0x093C, 0x093D)
-                {
-                    X = 230, Y = 366
-                }
-            );
-
-            Add
-            (
-                new Button((int) Buttons.SortFull, 0x093E, 0x093F, 0x0940)
-                {
-                    X = 338, Y = 366
-                }
-            );
-
-            Add
-            (
-                new Button((int) Buttons.SortConnection, 0x0941, 0x0942, 0x0943)
-                {
-                    X = 446, Y = 366
-                }
-            );
-
-            // World Pic Bg
-            Add(new GumpPic(150, 390, 0x0589, 0));
-
-            // Earth
-            Add
-            (
-                new Button((int) Buttons.Earth, 0x15E8, 0x15EA, 0x15E9)
-                {
-                    X = 160, Y = 400, ButtonAction = ButtonAction.Activate
-                }
-            );
-
-            // Sever Scroll Area Bg
-            Add
-            (
-                new ResizePic(0x0DAC)
-                {
-                    X = 150, Y = 90, Width = 393 - 14, Height = 271
-                }
-            );
-
             // Sever Scroll Area
             ScrollArea scrollArea = new ScrollArea
             (
                 150,
                 90,
-                393,
-                271,
+                600,
+                500,
                 true
             );
 
@@ -226,8 +175,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     new Label(loginScene.Servers[index].Name, false, 0x0481, font: 9)
                     {
-                        X = 243,
-                        Y = 420
+                        X = 233,
+                        Y = 620
                     }
                 );
             }
@@ -310,6 +259,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             Earth,
             Server = 99
         }
+
 
         private class ServerEntryGump : Control
         {

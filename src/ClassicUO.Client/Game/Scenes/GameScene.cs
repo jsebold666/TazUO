@@ -152,6 +152,7 @@ namespace ClassicUO.Game.Scenes
             Macros.Load();
 
             NameOverHeadManager.Load();
+            PaperdollSelectCharManager.Instance.Load();
 
             _animatedStaticsManager = new AnimatedStaticsManager();
             _animatedStaticsManager.Initialize();
@@ -173,7 +174,7 @@ namespace ClassicUO.Game.Scenes
             EventSink.MessageReceived += ChatOnMessageReceived;
             UIManager.ContainerScale = ProfileManager.CurrentProfile.ContainersScale / 100f;
 
-            SDL.SDL_SetWindowMinimumSize(Client.Game.Window.Handle, 640, 480);
+            SDL.SDL_SetWindowMinimumSize(Client.Game.Window.Handle, 1024, 768);
 
             if (ProfileManager.CurrentProfile.WindowBorderless)
             {
@@ -188,8 +189,8 @@ namespace ClassicUO.Game.Scenes
                 int w = Settings.GlobalSettings.WindowSize.Value.X;
                 int h = Settings.GlobalSettings.WindowSize.Value.Y;
 
-                w = Math.Max(640, w);
-                h = Math.Max(480, h);
+                w = Math.Max(1024, w);
+                h = Math.Max(768, h);
 
                 Client.Game.SetWindowSize(w, h);
             }

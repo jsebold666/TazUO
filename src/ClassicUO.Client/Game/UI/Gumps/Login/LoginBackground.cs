@@ -30,50 +30,34 @@
 
 #endregion
 
+using ClassicUO.Assets;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Utility;
+using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
     internal class LoginBackground : Gump
     {
+        private Texture2D LoginBackgroundImg = PNGLoader.Instance.GetImageTexture(Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "loginbg.png"));
         public LoginBackground() : base(0, 0)
         {
-            if (Client.Version >= ClientVersion.CV_706400)
-            {
+           
+           
                 // Background
                 Add
                 (
-                    new GumpPicTiled
+                    new CustomGumpPic
                     (
                         0,
                         0,
-                        640,
-                        480,
-                        0x0150
-                    ) { AcceptKeyboardInput = false }
+                        LoginBackgroundImg,
+                        0
+                    )
                 );
 
-                // UO Flag
-                Add(new GumpPic(0, 4, 0x0151, 0) { AcceptKeyboardInput = false });
-            }
-            else
-            {
-                // Background
-                Add
-                (
-                    new GumpPicTiled
-                    (
-                        0,
-                        0,
-                        640,
-                        480,
-                        0x0E14
-                    ) { AcceptKeyboardInput = false }
-                );
-
-                // Border
-                Add(new GumpPic(0, 0, 0x157C, 0) { AcceptKeyboardInput = false });
                 // UO Flag
                 Add(new GumpPic(0, 4, 0x15A0, 0) { AcceptKeyboardInput = false });
 
@@ -88,7 +72,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         AcceptKeyboardInput = false
                     }
                 );
-            }
+            
 
 
             CanCloseWithEsc = false;

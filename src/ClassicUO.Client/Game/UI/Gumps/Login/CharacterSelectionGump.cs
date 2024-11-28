@@ -42,6 +42,18 @@ using ClassicUO.Assets;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using SDL2;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using System.Security.Cryptography;
+using ClassicUO.Renderer.Arts;
+using ClassicUO.Renderer;
+using ClassicUO.Game.GameObjects;
+using Cyotek.Drawing.BitmapFont;
+using System.IO;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Drawing;
+using ClassicUO.Game.UI.Controls;
+using static ClassicUO.Game.UI.Controls.PaperDollInteractable;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
@@ -50,6 +62,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
         private const ushort SELECTED_COLOR = 0x0021;
         private const ushort NORMAL_COLOR = 0x034F;
         private uint _selectedCharacter;
+        private static Art art { get; set; } 
 
         public CharacterSelectionGump() : base(0, 0)
         {
@@ -84,14 +97,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 _selectedCharacter = 0;
             }
 
-            Add
-            (
-                new ResizePic(0x0A28)
-                {
-                    X = 160, Y = 70, Width = 408, Height = 343 + yBonus
-                },
-                1
-            );
             
             bool isAsianLang = string.Compare(Settings.GlobalSettings.Language, "CHT", StringComparison.InvariantCultureIgnoreCase) == 0 || 
                 string.Compare(Settings.GlobalSettings.Language, "KOR", StringComparison.InvariantCultureIgnoreCase) == 0 ||
@@ -113,6 +118,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             for (int i = 0, valid = 0; i < loginScene.Characters.Length; i++)
             {
                 string character = loginScene.Characters[i];
+                uint bodyId = loginScene.GetCharacterBodyID(i);
 
                 if (!string.IsNullOrEmpty(character))
                 {
@@ -133,10 +139,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     
                     Add
                     (
-                        new CharacterEntryGump((uint) i, character, SelectCharacter, LoginCharacter)
+                        new CharacterEntryGump((uint) i, character, bodyId, SelectCharacter, LoginCharacter)
                         {
-                            X = 224,
-                            Y = yOffset + posInList * 40,
+                            X = 30 + posInList * 100,
+                            Y = yOffset + posInList * i + 3,
                             Hue = i == _selectedCharacter ? SELECTED_COLOR : NORMAL_COLOR
                         },
                         1
@@ -325,21 +331,57 @@ namespace ClassicUO.Game.UI.Gumps.Login
             private readonly Label _label;
             private readonly Action<uint> _loginFn;
             private readonly Action<uint> _selectedFn;
+            private readonly uint _bodyID;
+            private static Art art { get; set; }
+            private static PlayerMobile _character;
+            private PaperDollInteractable _paperDoll;
+            private readonly string savePath;
 
-            public CharacterEntryGump(uint index, string character, Action<uint> selectedFn, Action<uint> loginFn)
+            public Dictionary<string, PaperdollItem> Load()
+            {
+                if (File.Exists(savePath))
+                {
+                    try
+                    {
+                        string json = File.ReadAllText(savePath);
+                        return JsonSerializer.Deserialize<Dictionary<string, PaperdollItem>>(json) ?? new Dictionary<string, PaperdollItem>();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to load marked tile data: {ex.Message}");
+                        return null;
+                    }
+                }
+                return null;
+            }
+
+
+            public CharacterEntryGump(uint index, string character, uint bodyID, Action<uint> selectedFn, Action<uint> loginFn)
             {
                 CharacterIndex = index;
+                _bodyID = bodyID;
                 _selectedFn = selectedFn;
                 _loginFn = loginFn;
-
+                savePath = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Profiles", Settings.GlobalSettings.Username, World.ServerName, character, "paperdollSelectCharManager.json");
+                var items = Load();
                 // Bg
-                Add
-                (
-                    new ResizePic(0x0BB8)
+                Add(new GumpPic(0, 0, 0x000C, 0) { IsPartialHue = true }.ScaleWidthAndHeight(Scale).SetInternalScale(Scale));
+                
+                if (items != null && savePath != null) {
+                    foreach (var item in items.Values)
                     {
-                        X = 0, Y = 0, Width = 280, Height = 30
+                        if (item.Graphic > 0) // Certifique-se de que o graphic está presente
+                        {
+                            Add(new GumpPic(1, 1 , item.Serial, item.Hue)
+                            );
+                        }
                     }
-                );
+                } else
+                {
+                    Add(new GumpPic(1, 1, 0xC4E9, 0));
+                    Add(new GumpPic(1, 1, 0xC525, 0));
+                    Add(new GumpPic(1, 1, 0xC530, 0));
+                }
 
                 // Char Name
                 Add
@@ -349,7 +391,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         character,
                         false,
                         NORMAL_COLOR,
-                        270,
+                        135,
                         5,
                         align: TEXT_ALIGN_TYPE.TS_CENTER
                     )

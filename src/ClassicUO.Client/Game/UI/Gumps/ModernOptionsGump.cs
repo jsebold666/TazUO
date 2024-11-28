@@ -521,7 +521,7 @@ namespace ClassicUO.Game.UI.Gumps
                 }
                 else
                 {
-                    UIManager.GetGump<WorldViewportGump>()?.ResizeGameWindow(new Point(600, 480));
+                    UIManager.GetGump<WorldViewportGump>()?.ResizeGameWindow(new Point(1024, 768));
                     UIManager.GetGump<WorldViewportGump>()?.SetGameWindowPosition(new Point(25, 25));
                     profile.GameWindowPosition = new Point(25, 25);
                 }

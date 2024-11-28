@@ -468,7 +468,7 @@ namespace ClassicUO.Game.UI.Controls
             return (ushort)(animID + offset);
         }
 
-        protected class GumpPicEquipment : GumpPic
+        public class GumpPicEquipment : GumpPic
         {
             private readonly Layer _layer;
 

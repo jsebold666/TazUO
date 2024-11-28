@@ -701,6 +701,8 @@ namespace ClassicUO.Game.UI.Gumps
                     int idx = (int)_slots[i].Layer;
 
                     _slots[i].LocalSerial = mobile.FindItemByLayer((Layer)idx)?.Serial ?? 0;
+                   
+                   
                 }
 
                 for (int i = 0; i < _slots_right.Length; i++)
@@ -708,6 +710,7 @@ namespace ClassicUO.Game.UI.Gumps
                     int idx = (int)_slots_right[i].Layer;
 
                     _slots_right[i].LocalSerial = mobile.FindItemByLayer((Layer)idx)?.Serial ?? 0;
+                    
                 }
             }
         }
@@ -737,6 +740,7 @@ namespace ClassicUO.Game.UI.Gumps
                     break;
 
                 case Buttons.LogOut:
+                    PaperdollSelectCharManager.Instance.Save();
                     Client.Game.GetScene<GameScene>()?.RequestQuitGame();
 
                     break;
@@ -936,6 +940,18 @@ namespace ClassicUO.Game.UI.Gumps
                                 }
                             );
                             _itemGump.ScaleWidthAndHeight(forcedScale).ScaleXAndY(forcedScale);
+
+
+                            if ( mobile.Serial == World.Player.Serial)
+                            {
+
+
+                                StaticPic pic = new StaticPic(_itemGump.Graphic, _itemGump.Hue);
+
+                                PaperdollSelectCharManager.Instance.AddItem(pic.LocalSerial.ToString(), item.Layer, pic.Graphic, item.Hue, item.Serial);
+
+
+                            }
                         }
                     }
                 }
@@ -1018,6 +1034,7 @@ namespace ClassicUO.Game.UI.Gumps
                     );
 
                     ref readonly var artInfo = ref Client.Game.Arts.GetArt(item.DisplayedGraphic);
+                    
 
                     if (artInfo.Texture != null)
                     {
