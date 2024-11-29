@@ -33,6 +33,12 @@ namespace ClassicUO.LegionScripting
 
                 CommandManager.Register("lscript", (args) =>
                 {
+                    if(args.Length == 1)
+                    {
+                        UIManager.Add(new ScriptManagerGump());
+                        return;
+                    }
+
                     string code = string.Join(" ", args.Skip(1));
 
                     Script s = new Script(Lexer.Lex([code]));
@@ -120,7 +126,9 @@ namespace ClassicUO.LegionScripting
         {
             if (script != null)
             {
+                script.Reset();
                 runningScripts.Add(script);
+                script.IsPlaying = true;
             }
         }
 
@@ -128,6 +136,8 @@ namespace ClassicUO.LegionScripting
         {
             if (runningScripts.Contains(script))
                 runningScripts.Remove(script);
+
+            script.IsPlaying = false;
         }
 
         private static IComparable DummyExpression(string expression, Argument[] args, bool quiet)
@@ -224,6 +234,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("target", TargetSerial);
             Interpreter.RegisterCommandHandler("waitfortarget", WaitForTarget);
             Interpreter.RegisterCommandHandler("usetype", UseType);
+            Interpreter.RegisterCommandHandler("pause", PauseCommand);
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("moveitem", DummyCommand);
@@ -267,7 +278,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("createlist", CreateList);
             Interpreter.RegisterCommandHandler("clearlist", DummyCommand);
             Interpreter.RegisterCommandHandler("info", DummyCommand);
-            Interpreter.RegisterCommandHandler("pause", DummyCommand);
             Interpreter.RegisterCommandHandler("ping", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
             Interpreter.RegisterCommandHandler("playsound", DummyCommand);
@@ -378,6 +388,16 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             #endregion
+        }
+
+        private static bool PauseCommand(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            int ms = args[0].AsInt();
+
+            Interpreter.Pause(ms);
+            return true;
         }
 
         private static bool UseType(string command, Argument[] args, bool quiet, bool force)

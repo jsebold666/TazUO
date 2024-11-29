@@ -234,6 +234,8 @@ namespace LScript
 
     public class Script
     {
+        public bool IsPlaying = false;
+
         private ASTNode _statement;
 
         private Scope _scope;
@@ -241,6 +243,18 @@ namespace LScript
         public ExecutionState _executionState = ExecutionState.RUNNING;
 
         public long _pauseTimeout = long.MaxValue;
+
+        public bool IsPaused
+        {
+            get
+            {
+                if (_executionState != ExecutionState.PAUSED) return false;
+                return true;
+            }
+        }
+
+        public ASTNode Root { get; }
+
         public Argument Lookup(string name)
         {
             var scope = _scope;
@@ -310,6 +324,12 @@ namespace LScript
 
             // Create a default scope
             _scope = new Scope(null, _statement);
+            Root = root;
+        }
+
+        public void Reset()
+        {
+            _statement = Root.FirstChild();
         }
 
         public bool ExecuteNext()
@@ -1082,7 +1102,7 @@ namespace LScript
 
         public delegate bool TimeoutCallback();
 
-        private static  TimeoutCallback _timeoutCallback = null;
+        private static TimeoutCallback _timeoutCallback = null;
 
         public static CultureInfo Culture;
 

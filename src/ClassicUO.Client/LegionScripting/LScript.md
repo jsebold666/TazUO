@@ -84,6 +84,15 @@ Example:
 `usetype 'backpack' '0x456'` or `usetype 'backpack' '0x456' '32'`
 
 
+## `pause`
+
+Pause the script for a duration of time in milliseconds  
+`pause` 'duration in ms'  
+Example: `pause 1000`
+
+
+
+
 # Aliases
 
 ## Values
