@@ -944,11 +944,11 @@ namespace ClassicUO.Game.UI.Gumps
 
                             if ( mobile.Serial == World.Player.Serial)
                             {
-
-
-                                StaticPic pic = new StaticPic(_itemGump.Graphic, _itemGump.Hue);
-
-                                PaperdollSelectCharManager.Instance.AddItem(pic.LocalSerial.ToString(), item.Layer, pic.Graphic, item.Hue, item.Serial);
+                                if (item.Layer != Layer.Bracelet || item.Layer != Layer.Earrings || item.Layer != Layer.Ring)
+                                {
+                                    PaperdollSelectCharManager.Instance.AddItem(item.Serial.ToString(), item.Layer, item.Graphic, item.Hue, item.Serial, item.ItemData.AnimID, item.ItemData.IsPartialHue);
+                                }
+                                
 
 
                             }

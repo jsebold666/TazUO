@@ -1,5 +1,6 @@
 ﻿using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
+using Cyotek.Drawing.BitmapFont;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +11,12 @@ namespace ClassicUO.Game.Managers
 {
     public class PaperdollItem
     {
-        public ushort Serial { get; set; }
+        public uint Serial { get; set; }
         public Layer Layer { get; set; }
         public ushort Graphic { get; set; }
         public ushort Hue { get; set; }
+        public ushort AnimID { get; set; }
+        public bool IsPartialHue { get; set; }
     }
 
     internal class PaperdollSelectCharManager
@@ -22,7 +25,7 @@ namespace ClassicUO.Game.Managers
 
         private Dictionary<string, PaperdollItem> items = new Dictionary<string, PaperdollItem>();
 
-        private readonly string savePath = Path.Combine(ProfileManager.ProfilePath, "paperdollSelectCharManager.json");
+        private string savePath;
 
         private static PaperdollSelectCharManager instance;
 
@@ -31,7 +34,7 @@ namespace ClassicUO.Game.Managers
             Load();
         }
 
-        public void AddItem(string key, Layer layer, ushort graphic, ushort hue, uint serial)
+        public void AddItem(string key, Layer layer, ushort graphic, ushort hue, uint serial, ushort animID, bool isPartialHue)
         {
             if (items.ContainsKey(key))
             {
@@ -40,8 +43,9 @@ namespace ClassicUO.Game.Managers
                     Layer = layer,
                     Graphic = graphic,
                     Hue = hue,
-                    Serial = graphic 
-
+                    Serial = serial, 
+                    AnimID = animID,
+                    IsPartialHue = isPartialHue
                 };
             }
             else
@@ -51,7 +55,9 @@ namespace ClassicUO.Game.Managers
                     Layer = layer,
                     Graphic = graphic,
                     Hue = hue,
-                    Serial = graphic
+                    Serial = serial,
+                    AnimID = animID,
+                    IsPartialHue = isPartialHue
                 });
             }
         }
@@ -64,6 +70,7 @@ namespace ClassicUO.Game.Managers
                 {
                     WriteIndented = true
                 });
+                savePath = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Profiles", Settings.GlobalSettings.Username, World.ServerName, World.Player.Name, "paperdollSelectCharManager.json");
                 File.WriteAllText(savePath, json);
             }
             catch (Exception ex)
@@ -74,6 +81,7 @@ namespace ClassicUO.Game.Managers
 
         public void Load()
         {
+            savePath = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Profiles", Settings.GlobalSettings.Username, World.ServerName, World.Player.Name, "paperdollSelectCharManager.json");
             if (File.Exists(savePath))
             {
                 try

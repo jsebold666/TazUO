@@ -141,7 +141,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     (
                         new CharacterEntryGump((uint) i, character, bodyId, SelectCharacter, LoginCharacter)
                         {
-                            X = 30 + posInList * 100,
+                            X = 30 + posInList * 200,
                             Y = yOffset + posInList * i + 3,
                             Hue = i == _selectedCharacter ? SELECTED_COLOR : NORMAL_COLOR
                         },
@@ -247,6 +247,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     break;
 
                 case Buttons.Next:
+                    UIManager.GetGump<LoginBackground>()?.Dispose();
                     LoginCharacter(_selectedCharacter);
 
                     break;
@@ -366,17 +367,40 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 var items = Load();
                 // Bg
                 Add(new GumpPic(0, 0, 0x000C, 0) { IsPartialHue = true }.ScaleWidthAndHeight(Scale).SetInternalScale(Scale));
-                
-                if (items != null && savePath != null) {
+
+                Mobile mobiles = World.Mobiles.Get(LocalSerial);
+
+                if (items != null && savePath != null)
+                {
                     foreach (var item in items.Values)
                     {
-                        if (item.Graphic > 0) // Certifique-se de que o graphic está presente
+                        if (item.Graphic > 0 && item.Layer != Layer.Bracelet || item.Graphic > 0 && item.Layer != Layer.Ring) // Certifique-se de que o graphic está presente
                         {
-                            Add(new GumpPic(1, 1 , item.Serial, item.Hue)
+                            ushort id = GetAnimID(
+                                0x000C,
+                                item.AnimID,
+                                false
                             );
+
+                            Add(new GumpPicEquipment(
+                               item.Serial,
+                               0,
+                               0,
+                               id,
+                               (ushort)(item.Hue & 0x3FFF),
+                                item.Layer
+                            )
+                            {
+                                AcceptMouseInput = true,
+                                IsPartialHue = item.IsPartialHue,
+                                CanLift = World.InGame
+                                   && !World.Player.IsDead
+                                   && LocalSerial == World.Player,
+                            }.ScaleWidthAndHeight(Scale).SetInternalScale(InternalScale));
                         }
                     }
-                } else
+                }
+                else
                 {
                     Add(new GumpPic(1, 1, 0xC4E9, 0));
                     Add(new GumpPic(1, 1, 0xC502, 0));

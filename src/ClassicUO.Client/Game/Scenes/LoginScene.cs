@@ -273,13 +273,19 @@ namespace ClassicUO.Game.Scenes
                 case LoginSteps.VerifyingAccount:
                 case LoginSteps.LoginInToServer:
                 case LoginSteps.EnteringBritania:
-                case LoginSteps.PopUpMessage:
-                case LoginSteps.CharacterCreationDone:
+                    UIManager.GetGump<LoginBackground>()?.Dispose();
                     Client.Game.GameCursor.IsLoading = CurrentLoginStep != LoginSteps.PopUpMessage;
 
                     return GetLoadingScreen();
+                case LoginSteps.PopUpMessage:
+                case LoginSteps.CharacterCreationDone:
+                    Client.Game.GameCursor.IsLoading = CurrentLoginStep != LoginSteps.PopUpMessage;
+                    UIManager.GetGump<LoginBackground>()?.Dispose();
+                    return GetLoadingScreen();
 
-                case LoginSteps.CharacterSelection: return new CharacterSelectionGump();
+                case LoginSteps.CharacterSelection:
+                    UIManager.GetGump<LoginBackground>()?.Dispose();
+                    return new CharacterSelectionGump();
 
                 case LoginSteps.ServerSelection:
                     _pingTime = Time.Ticks + 60000; // reset ping timer
