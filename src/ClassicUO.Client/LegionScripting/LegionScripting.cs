@@ -8,6 +8,7 @@ using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Network;
+using ClassicUO.Renderer.Lights;
 using ClassicUO.Utility;
 using LScript;
 
@@ -235,16 +236,19 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("waitfortarget", WaitForTarget);
             Interpreter.RegisterCommandHandler("usetype", UseType);
             Interpreter.RegisterCommandHandler("pause", PauseCommand);
+            Interpreter.RegisterCommandHandler("useskill", UseSkill);
+            Interpreter.RegisterCommandHandler("walk", CommandWalk);
+            Interpreter.RegisterCommandHandler("run", CommandRun);
+            Interpreter.RegisterCommandHandler("canceltarget", CancelTarget);
+            Interpreter.RegisterCommandHandler("sysmsg", SystemMessage);
+
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("moveitem", DummyCommand);
             Interpreter.RegisterCommandHandler("moveitemoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("movetype", DummyCommand);
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("walk", DummyCommand);
             Interpreter.RegisterCommandHandler("turn", DummyCommand);
-            Interpreter.RegisterCommandHandler("run", DummyCommand);
-            Interpreter.RegisterCommandHandler("useskill", DummyCommand);
             Interpreter.RegisterCommandHandler("feed", DummyCommand);
             Interpreter.RegisterCommandHandler("rename", DummyCommand);
             Interpreter.RegisterCommandHandler("shownames", DummyCommand);
@@ -285,8 +289,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("snapshot", DummyCommand);
             Interpreter.RegisterCommandHandler("hotkeys", DummyCommand);
             Interpreter.RegisterCommandHandler("where", DummyCommand);
-            Interpreter.RegisterCommandHandler("messagebox", DummyCommand);
-            Interpreter.RegisterCommandHandler("mapuo", DummyCommand);
             Interpreter.RegisterCommandHandler("clickscreen", DummyCommand);
             Interpreter.RegisterCommandHandler("paperdoll", DummyCommand);
             Interpreter.RegisterCommandHandler("helpbutton", DummyCommand);
@@ -301,7 +303,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("allymsg", DummyCommand);
             Interpreter.RegisterCommandHandler("whispermsg", DummyCommand);
             Interpreter.RegisterCommandHandler("yellmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("sysmsg", DummyCommand);
             Interpreter.RegisterCommandHandler("chatmsg", DummyCommand);
             Interpreter.RegisterCommandHandler("emotemsg", DummyCommand);
             Interpreter.RegisterCommandHandler("promptmsg", DummyCommand);
@@ -318,11 +319,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("waitforproperties", DummyCommand);
             Interpreter.RegisterCommandHandler("autocolorpick", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
-            Interpreter.RegisterCommandHandler("miniheal", DummyCommand);
-            Interpreter.RegisterCommandHandler("bigheal", DummyCommand);
             Interpreter.RegisterCommandHandler("cast", DummyCommand);
-            Interpreter.RegisterCommandHandler("chivalryheal", DummyCommand);
-            Interpreter.RegisterCommandHandler("canceltarget", DummyCommand);
             Interpreter.RegisterCommandHandler("targettype", DummyCommand);
             Interpreter.RegisterCommandHandler("targetground", DummyCommand);
             Interpreter.RegisterCommandHandler("targettile", DummyCommand);
@@ -388,6 +385,99 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             #endregion
+        }
+
+        private static bool SystemMessage(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            string msg = args[0].ToString();
+
+            ushort hue = 946;
+
+            if(args.Length > 1)            
+                hue = args[1].AsUShort();
+            
+
+            GameActions.Print(msg, hue);
+            return true;
+        }
+
+        private static bool CancelTarget(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (TargetManager.IsTargeting)
+                TargetManager.CancelTarget();
+
+            return true;
+        }
+
+        private static bool CommandRun(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            string dir = args[0].ToString().ToLower();
+            Direction d = Direction.North;
+
+            switch (dir)
+            {
+                case "north": d = Direction.North; break;
+                case "right": d = Direction.Right; break;
+                case "east": d = Direction.East; break;
+                case "down": d = Direction.Down; break;
+                case "south": d = Direction.South; break;
+                case "left": d = Direction.Left; break;
+                case "west": d = Direction.West; break;
+                case "up": d = Direction.Up; break;
+            }
+
+            World.Player.Walk(d, true);
+
+            return true;
+        }
+
+        private static bool CommandWalk(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            string dir = args[0].ToString().ToLower();
+            Direction d = Direction.North;
+
+            switch (dir)
+            {
+                case "north": d = Direction.North; break;
+                case "right": d = Direction.Right; break;
+                case "east": d = Direction.East; break;
+                case "down": d = Direction.Down; break;
+                case "south": d = Direction.South; break;
+                case "left": d = Direction.Left; break;
+                case "west": d = Direction.West; break;
+                case "up": d = Direction.Up; break;
+            }
+
+            World.Player.Walk(d, false);
+
+            return true;
+        }
+
+        private static bool UseSkill(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            string skill = args[0].ToString().Trim().ToLower();
+
+            if (skill.Length > 0)
+            {
+                for (int i = 0; i < World.Player.Skills.Length; i++)
+                {
+                    if (World.Player.Skills[i].Name.ToLower().Contains(skill))
+                    {
+                        GameActions.UseSkill(World.Player.Skills[i].Index);
+                        break;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private static bool PauseCommand(string command, Argument[] args, bool quiet, bool force)

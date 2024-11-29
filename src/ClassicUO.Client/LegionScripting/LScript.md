@@ -91,6 +91,48 @@ Pause the script for a duration of time in milliseconds
 Example: `pause 1000`
 
 
+## `useskill`
+
+Use a skill from skill name  
+`useskill` 'skillname(Can be a partial name)'  
+Example: `useskill 'evaluate'`
+
+
+## `walk` or `run`
+
+Send a walk or run request to the server  
+`walk`/`run` 'direction'  
+ 
+| Directions |
+| - |
+| north |
+| right |
+| east |
+| down |
+| south |
+| left |
+| west |
+| up |  
+
+Example: `run 'north'`
+
+
+## `canceltarget`
+
+Clear a target cursor if there is one
+
+
+## `sysmsg`
+
+Display a message in your system messages(Not sent to the server)  
+
+| `sysmsg` | msg | hue |
+| - |
+| | required | optional |
+
+Example: `sysmsg 'No more tools!' '33'`
+
+
 
 
 # Aliases
