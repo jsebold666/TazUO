@@ -133,6 +133,41 @@ Display a message in your system messages(Not sent to the server)
 Example: `sysmsg 'No more tools!' '33'`
 
 
+## `moveitem`
+
+Move an item to a container  
+`moveitem` 'item' 'container' 'amount(optional)'  
+If amount is 0 or not used it will attempt to move the entire stack  
+
+Example: `moveitem '0x23553221' 'backpack'`
+
+
+## `moveitemoffset`
+
+Move an item to the ground near you  
+
+| `moveitemoffset` | 'item' | 'amt' | 'x offset' | 'y offset' | 'z offset' |
+| - |
+| | | Use 0 to grab the full stack | | | |
+
+Example: `moveitemoffset '0x32323535' '0' '1' '0' '0'`
+
+
+## `cast`
+
+Cast a spell by name  
+`cast` 'spell name'  
+Spell name can be a partial match  
+
+Example: `cast 'greater he'`
+
+
+## `waitforjournal`
+
+Wait for text to appear in journal  
+`waitforjournal` 'the text' 'duration in ms'  
+Example: `waitforjournal 'you begin' '15000'` <- this waits for up to 15 seconds
+
 
 
 # Aliases

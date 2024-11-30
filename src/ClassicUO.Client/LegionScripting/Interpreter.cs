@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using ClassicUO.Game.Managers;
+using static LScript.Interpreter;
 
 namespace LScript
 {
@@ -240,18 +242,22 @@ namespace LScript
 
         private Scope _scope;
 
-        public ExecutionState _executionState = ExecutionState.RUNNING;
+        public ExecutionState ExecutionState = ExecutionState.RUNNING;
 
-        public long _pauseTimeout = long.MaxValue;
+        public long PauseTimeout = long.MaxValue;
+
+        public TimeoutCallback TimeoutCallback = null;
 
         public bool IsPaused
         {
             get
             {
-                if (_executionState != ExecutionState.PAUSED) return false;
+                if (ExecutionState != ExecutionState.PAUSED) return false;
                 return true;
             }
         }
+
+        private List<JournalEntry> _journalEntries = new List<JournalEntry>();
 
         public ASTNode Root { get; }
 
@@ -270,6 +276,26 @@ namespace LScript
             }
 
             return result;
+        }
+
+        public void JournalEntryAdded(JournalEntry e)
+        {
+            if(_journalEntries.Count >= 50)
+            {
+                _journalEntries.RemoveAt(0);
+            }
+
+            _journalEntries.Add(e);
+        }
+        
+        public bool SearchJournalEntries(string text)
+        {
+            foreach (var entry in _journalEntries)
+            {
+                if (entry.Text.Contains(text)) return true;
+            }
+
+            return false;
         }
 
         private void PushScope(ASTNode node)
@@ -330,6 +356,7 @@ namespace LScript
         public void Reset()
         {
             _statement = Root.FirstChild();
+            _journalEntries.Clear();
         }
 
         public bool ExecuteNext()
@@ -1100,9 +1127,9 @@ namespace LScript
 
         private static Script _activeScript = null;
 
-        public delegate bool TimeoutCallback();
+        public static Script ActiveScript { get { return _activeScript; } }
 
-        private static TimeoutCallback _timeoutCallback = null;
+        public delegate bool TimeoutCallback();
 
         public static CultureInfo Culture;
 
@@ -1294,7 +1321,7 @@ namespace LScript
         public static void StopScript()
         {
             if (_activeScript != null)
-                _activeScript._executionState = ExecutionState.RUNNING;
+                _activeScript.ExecutionState = ExecutionState.RUNNING;
             _activeScript = null;
         }
 
@@ -1306,32 +1333,32 @@ namespace LScript
             _activeScript = script;
 
 
-            if (_activeScript._executionState == ExecutionState.PAUSED)
+            if (_activeScript.ExecutionState == ExecutionState.PAUSED)
             {
-                if (_activeScript._pauseTimeout < DateTime.UtcNow.Ticks)
-                    _activeScript._executionState = ExecutionState.RUNNING;
+                if (_activeScript.PauseTimeout < DateTime.UtcNow.Ticks)
+                    _activeScript.ExecutionState = ExecutionState.RUNNING;
                 else
                     return true;
             }
-            else if (_activeScript._executionState == ExecutionState.TIMING_OUT)
+            else if (_activeScript.ExecutionState == ExecutionState.TIMING_OUT)
             {
-                if (_activeScript._pauseTimeout < DateTime.UtcNow.Ticks)
+                if (_activeScript.PauseTimeout < DateTime.UtcNow.Ticks)
                 {
-                    if (_timeoutCallback != null)
+                    if (_activeScript.TimeoutCallback != null)
                     {
-                        if (_timeoutCallback())
+                        if (_activeScript.TimeoutCallback())
                         {
                             _activeScript.Advance();
                             ClearTimeout();
                         }
 
-                        _timeoutCallback = null;
+                        _activeScript.TimeoutCallback = null;
                     }
 
                     /* If the callback changed the state to running, continue
                      * on. Otherwise, exit.
                      */
-                    if (_activeScript._executionState != ExecutionState.RUNNING)
+                    if (_activeScript.ExecutionState != ExecutionState.RUNNING)
                     {
                         _activeScript = null;
                         return false;
@@ -1352,21 +1379,21 @@ namespace LScript
         public static void Pause(long duration)
         {
             // Already paused or timing out
-            if (_activeScript._executionState != ExecutionState.RUNNING)
+            if (_activeScript.ExecutionState != ExecutionState.RUNNING)
                 return;
 
-            _activeScript._pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
-            _activeScript._executionState = ExecutionState.PAUSED;
+            _activeScript.PauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
+            _activeScript.ExecutionState = ExecutionState.PAUSED;
         }
 
         // Unpause execution
         public static void Unpause()
         {
-            if (_activeScript._executionState != ExecutionState.PAUSED)
+            if (_activeScript.ExecutionState != ExecutionState.PAUSED)
                 return;
 
-            _activeScript._pauseTimeout = 0;
-            _activeScript._executionState = ExecutionState.RUNNING;
+            _activeScript.PauseTimeout = 0;
+            _activeScript.ExecutionState = ExecutionState.RUNNING;
         }
 
         // If forward progress on the script isn't made within this
@@ -1374,23 +1401,23 @@ namespace LScript
         public static void Timeout(long duration, TimeoutCallback callback)
         {
             // Don't change an existing timeout
-            if (_activeScript._executionState != ExecutionState.RUNNING)
+            if (_activeScript.ExecutionState != ExecutionState.RUNNING)
                 return;
 
-            _activeScript._pauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
-            _activeScript._executionState = ExecutionState.TIMING_OUT;
-            _timeoutCallback = callback;
+            _activeScript.PauseTimeout = DateTime.UtcNow.Ticks + (duration * 10000);
+            _activeScript.ExecutionState = ExecutionState.TIMING_OUT;
+            _activeScript.TimeoutCallback = callback;
         }
 
         // Clears any previously set timeout. Automatically
         // called any time the script advances a statement.
         public static void ClearTimeout()
         {
-            if (_activeScript._executionState != ExecutionState.TIMING_OUT)
+            if (_activeScript.ExecutionState != ExecutionState.TIMING_OUT)
                 return;
 
-            _activeScript._pauseTimeout = 0;
-            _activeScript._executionState = ExecutionState.RUNNING;
+            _activeScript.ExecutionState = ExecutionState.RUNNING;
+            _activeScript.PauseTimeout = 0;
         }
 
         public static void Reset()

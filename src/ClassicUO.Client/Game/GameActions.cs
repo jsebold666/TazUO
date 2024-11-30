@@ -929,6 +929,23 @@ namespace ClassicUO.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Can be a partial match</param>
+        public static bool CastSpellByName(string name)
+        {
+            name = name.Trim();
+
+            if (!string.IsNullOrEmpty(name) && SpellDefinition.TryGetSpellFromName(name, out var spellDef))
+            {
+                CastSpell(spellDef.ID);
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenGuildGump()
         {
             Socket.Send_GuildMenuRequest();

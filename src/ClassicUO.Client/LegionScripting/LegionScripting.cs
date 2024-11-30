@@ -8,7 +8,6 @@ using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Network;
-using ClassicUO.Renderer.Lights;
 using ClassicUO.Utility;
 using LScript;
 
@@ -28,50 +27,62 @@ namespace ClassicUO.LegionScripting
         {
             scriptPath = Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts");
 
+            CommandManager.Register("lscript", (args) =>
+            {
+                if (args.Length == 1)
+                {
+                    UIManager.Add(new ScriptManagerGump());
+                    return;
+                }
+
+                string code = string.Join(" ", args.Skip(1));
+
+                Script s = new Script(Lexer.Lex([code]));
+
+                PlayScript(s);
+            });
+
+
+            CommandManager.Register("lscriptfile", (args) =>
+            {
+                if (args.Length < 2)
+                    return;
+
+                string file = args[1];
+
+                if (!file.EndsWith(".lscript"))
+                    file += ".lscript";
+
+                foreach (ScriptFile script in LoadedScripts)
+                {
+                    if (script.FileName == file && script.FileAsScript != null)
+                    {
+                        PlayScript(script.FileAsScript);
+                        break;
+                    }
+                }
+            });
+
+
             if (!_enabled)
             {
                 RegisterDummyCommands();
 
-                CommandManager.Register("lscript", (args) =>
-                {
-                    if(args.Length == 1)
-                    {
-                        UIManager.Add(new ScriptManagerGump());
-                        return;
-                    }
-
-                    string code = string.Join(" ", args.Skip(1));
-
-                    Script s = new Script(Lexer.Lex([code]));
-
-                    PlayScript(s);
-                });
-
-
-                CommandManager.Register("lscriptfile", (args) =>
-                {
-                    if (args.Length < 2)
-                        return;
-
-                    string file = args[1];
-
-                    if (!file.EndsWith(".lscript"))
-                        file += ".lscript";
-
-                    foreach (ScriptFile script in LoadedScripts)
-                    {
-                        if (script.FileName == file && script.FileAsScript != null)
-                        {
-                            PlayScript(script.FileAsScript);
-                            break;
-                        }
-                    }
-                });
+                EventSink.JournalEntryAdded += EventSink_JournalEntryAdded;
 
                 _enabled = true;
             }
 
+
             LoadScriptsFromFile();
+        }
+
+        private static void EventSink_JournalEntryAdded(object sender, JournalEntry e)
+        {
+            foreach (Script script in runningScripts)
+            {
+                script.JournalEntryAdded(e);
+            }
         }
 
         private static void LoadScriptsFromFile()
@@ -241,11 +252,14 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("run", CommandRun);
             Interpreter.RegisterCommandHandler("canceltarget", CancelTarget);
             Interpreter.RegisterCommandHandler("sysmsg", SystemMessage);
+            Interpreter.RegisterCommandHandler("moveitem", MoveItem);
+            Interpreter.RegisterCommandHandler("moveitemoffset", MoveItemOffset);
+            Interpreter.RegisterCommandHandler("cast", CastSpell);
+            Interpreter.RegisterCommandHandler("waitforjournal", WaitForJournal);
+
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("moveitem", DummyCommand);
-            Interpreter.RegisterCommandHandler("moveitemoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("movetype", DummyCommand);
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("turn", DummyCommand);
@@ -275,7 +289,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("replygump", DummyCommand);
             Interpreter.RegisterCommandHandler("closegump", DummyCommand);
             Interpreter.RegisterCommandHandler("clearjournal", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitforjournal", DummyCommand);
             Interpreter.RegisterCommandHandler("poplist", DummyCommand);
             Interpreter.RegisterCommandHandler("pushlist", PushList);
             Interpreter.RegisterCommandHandler("removelist", DummyCommand);
@@ -319,7 +332,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("waitforproperties", DummyCommand);
             Interpreter.RegisterCommandHandler("autocolorpick", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
-            Interpreter.RegisterCommandHandler("cast", DummyCommand);
             Interpreter.RegisterCommandHandler("targettype", DummyCommand);
             Interpreter.RegisterCommandHandler("targetground", DummyCommand);
             Interpreter.RegisterCommandHandler("targettile", DummyCommand);
@@ -387,17 +399,84 @@ namespace ClassicUO.LegionScripting
             #endregion
         }
 
+        public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
+        {
+            return true;
+        }
+
+        private static bool WaitForJournal(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            if (Interpreter.ActiveScript.SearchJournalEntries(args[0].AsString()))
+                return true;
+
+            Interpreter.Timeout(args.Length >= 2 ? args[1].AsInt() : 10000, ReturnTrue);
+
+            return false;
+        }
+
+        private static bool CastSpell(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1) return true;
+
+            GameActions.CastSpellByName(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool MoveItemOffset(string command, Argument[] args, bool quiet, bool force)
+        {
+            //serial, amt, x, y, z
+            if (args.Length < 5) return true;
+
+            uint item = args[0].AsSerial();
+            int amt = args[1].AsInt();
+            int x = args[2].AsInt();
+            int y = args[3].AsInt();
+            int z = args[4].AsInt();
+
+
+            GameActions.PickUp(item, 0, 0, amt);
+            GameActions.DropItem
+            (
+                item,
+                World.Player.X + x,
+                World.Player.Y + y,
+                World.Player.Z + z,
+                0
+            );
+
+            return true;
+        }
+
+        private static bool MoveItem(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2) return true;
+
+            uint item = args[0].AsSerial();
+
+            uint bag = args[1].AsSerial();
+
+            ushort amt = 0;
+            if (args.Length > 2)
+                amt = args[2].AsUShort();
+
+            GameActions.GrabItem(item, amt, bag);
+            return true;
+        }
+
         private static bool SystemMessage(string command, Argument[] args, bool quiet, bool force)
         {
             if (args.Length < 1) return true;
 
-            string msg = args[0].ToString();
+            string msg = args[0].AsString();
 
             ushort hue = 946;
 
-            if(args.Length > 1)            
+            if (args.Length > 1)
                 hue = args[1].AsUShort();
-            
+
 
             GameActions.Print(msg, hue);
             return true;
@@ -415,7 +494,7 @@ namespace ClassicUO.LegionScripting
         {
             if (args.Length < 1) return true;
 
-            string dir = args[0].ToString().ToLower();
+            string dir = args[0].AsString().ToLower();
             Direction d = Direction.North;
 
             switch (dir)
@@ -439,7 +518,7 @@ namespace ClassicUO.LegionScripting
         {
             if (args.Length < 1) return true;
 
-            string dir = args[0].ToString().ToLower();
+            string dir = args[0].AsString().ToLower();
             Direction d = Direction.North;
 
             switch (dir)
@@ -463,7 +542,7 @@ namespace ClassicUO.LegionScripting
         {
             if (args.Length < 1) return true;
 
-            string skill = args[0].ToString().Trim().ToLower();
+            string skill = args[0].AsString().Trim().ToLower();
 
             if (skill.Length > 0)
             {
