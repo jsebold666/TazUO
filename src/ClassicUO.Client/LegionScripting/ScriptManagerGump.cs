@@ -45,6 +45,7 @@ namespace ClassicUO.LegionScripting
 
                 scrollArea.Width = Width - (BorderControl.BorderSize * 2);
                 scrollArea.Height = Height - (BorderControl.BorderSize * 2);
+                scrollArea.UpdateScrollbarPosition();
 
                 foreach (Control c in scrollArea.Children)
                 {
