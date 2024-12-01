@@ -85,7 +85,7 @@ namespace ClassicUO.LegionScripting
             }
         }
 
-        private static void LoadScriptsFromFile()
+        public static void LoadScriptsFromFile()
         {
             if (!Directory.Exists(scriptPath))
                 Directory.CreateDirectory(scriptPath);

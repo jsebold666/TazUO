@@ -16,6 +16,8 @@ namespace ClassicUO.LegionScripting
             AcceptMouseInput = true;
             CanMove = true;
 
+            LegionScripting.LoadScriptsFromFile();
+
             Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize});
 
             Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2), true));
