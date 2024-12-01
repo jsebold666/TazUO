@@ -438,7 +438,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool WaitForJournal(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: waitforjournal 'search text' 'duration'");
 
             if (Interpreter.ActiveScript.SearchJournalEntries(args[0].AsString()))
                 return true;
@@ -450,7 +451,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool CastSpell(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: cast 'spell name'");
 
             GameActions.CastSpellByName(args[0].AsString());
 
@@ -459,8 +461,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool MoveItemOffset(string command, Argument[] args, bool quiet, bool force)
         {
-            //serial, amt, x, y, z
-            if (args.Length < 5) return true;
+            if (args.Length < 5)
+                throw new RunTimeError(null, "Usage: moveitemoffset 'item' 'amt' 'x' 'y' 'z'");
 
             uint item = args[0].AsSerial();
             int amt = args[1].AsInt();
@@ -484,7 +486,9 @@ namespace ClassicUO.LegionScripting
 
         private static bool MoveItem(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 2) return true;
+
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: moveitem 'item' 'container'");
 
             uint item = args[0].AsSerial();
 
@@ -500,7 +504,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool SystemMessage(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: sysmsg 'message text' 'hue'");
 
             string msg = args[0].AsString();
 
@@ -524,7 +529,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool CommandRun(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: run 'direction'");
 
             string dir = args[0].AsString().ToLower();
             Direction d = Direction.North;
@@ -548,7 +554,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool CommandWalk(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: walk 'direction'");
 
             string dir = args[0].AsString().ToLower();
             Direction d = Direction.North;
@@ -572,7 +579,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool UseSkill(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: useskill 'skill name'");
 
             string skill = args[0].AsString().Trim().ToLower();
 
@@ -593,7 +601,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool PauseCommand(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length < 1) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: pause 'durtion'");
 
             int ms = args[0].AsInt();
 
@@ -603,9 +612,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool UseType(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length == 0) return true;
-
-            if (args.Length < 2) return true;
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: usetype 'container' 'graphic' 'hue'");
 
             Item container = World.Items.Get(args[0].AsSerial());
 
@@ -676,7 +684,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool TargetSerial(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length == 0) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: target 'serial'");
 
             TargetManager.Target(args[0].AsSerial());
 
@@ -685,7 +694,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool UseObject(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length == 0) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: useobject 'serial' 'true/false'");
 
             bool useQueue = true;
 
@@ -724,7 +734,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool ClickObject(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length == 0) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: clickobject 'serial'");
 
             GameActions.SingleClick(args[0].AsSerial());
             return true;
@@ -732,7 +743,8 @@ namespace ClassicUO.LegionScripting
 
         private static bool CommandAttack(string command, Argument[] args, bool quiet, bool force)
         {
-            if (args.Length == 0) return true;
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: attack 'serial'");
 
             GameActions.Attack(args[0].AsSerial());
             return true;
