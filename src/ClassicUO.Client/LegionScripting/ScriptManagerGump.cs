@@ -1,6 +1,8 @@
 ﻿using ClassicUO.Assets;
+using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Input;
 using Microsoft.Xna.Framework;
 
 namespace ClassicUO.LegionScripting
@@ -61,7 +63,7 @@ namespace ClassicUO.LegionScripting
         {
             private AlphaBlendControl background;
             private TextBox label;
-            private NiceButton play, stop;
+            private NiceButton play, stop, edit;
 
             public ScriptFile Script { get; }
 
@@ -72,9 +74,12 @@ namespace ClassicUO.LegionScripting
 
                 Add(background = new AlphaBlendControl(0.35f) {  Height = Height, Width = Width });
 
-                Add(label = new TextBox(script.FileName, TrueTypeLoader.EMBEDDED_FONT, 18, w - 105, Color.White, strokeEffect: false));
+                Add(label = new TextBox(script.FileName, TrueTypeLoader.EMBEDDED_FONT, 18, w - 155, Color.White, strokeEffect: false));
                 label.Y = (Height - label.MeasuredSize.Y) / 2;
                 label.X = 5;
+
+                Add(edit = new NiceButton(w - 150, 0, 50, Height, ButtonAction.Default, "Edit"));
+                edit.MouseUp += Edit_MouseUp;
 
                 Add(play = new NiceButton(w - 100, 0, 50, Height, ButtonAction.Default, "Play"));
                 play.MouseUp += Play_MouseUp;
@@ -84,6 +89,11 @@ namespace ClassicUO.LegionScripting
 
                 UpdateSize(w);
                 Script = script;
+            }
+
+            private void Edit_MouseUp(object sender, MouseEventArgs e)
+            {
+                UIManager.Add(new ScriptEditor(Script));
             }
 
             private void Stop_MouseUp(object sender, Input.MouseEventArgs e)
@@ -121,7 +131,7 @@ namespace ClassicUO.LegionScripting
             {
                 Width = w;
                 background.Width = w;
-                label.Width = w - 105;
+                label.Width = w - 155;
                 play.X = w - 100;
                 stop.X = w - 50;
             }

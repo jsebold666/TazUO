@@ -3750,9 +3750,11 @@ namespace ClassicUO.Game.UI.Gumps
             }
         }
 
-        private class InputField : Control
+        public class InputField : Control
         {
             private readonly StbTextBox _textbox;
+
+            private AlphaBlendControl _background;
 
             public event EventHandler TextChanged { add { _textbox.TextChanged += value; } remove { _textbox.TextChanged -= value; } }
 
@@ -3785,7 +3787,7 @@ namespace ClassicUO.Game.UI.Gumps
                 _textbox.Text = text;
                 _textbox.NumbersOnly = numbersOnly;
 
-                Add(new AlphaBlendControl() { Width = Width, Height = Height });
+                Add(_background = new AlphaBlendControl() { Width = Width, Height = Height });
                 Add(_textbox);
                 if (onTextChanges != null)
                 {
@@ -3805,6 +3807,12 @@ namespace ClassicUO.Game.UI.Gumps
                 return true;
             }
 
+
+            public void UpdateBackground()
+            {
+                _background.Width = Width;
+                _background.Height = Height;
+            }
 
             public string Text => _textbox.Text;
 
