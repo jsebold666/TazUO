@@ -66,9 +66,9 @@ Example:
 
 ## `waitfortarget`
 
-| `waitfortarget` | '0/1/2' |
-| - | - |
-| | 0 = Any target type, 1 = harmful, 2 = beneficial |  
+| `waitfortarget` | '0/1/2' | '10000' |
+| - | - | - |
+| | 0 = Any target type, 1 = harmful, 2 = beneficial | Timeout, 10000 is default(10 seconds) |
 
 Example:  
 `waitfortarget '0'`
@@ -169,6 +169,41 @@ Wait for text to appear in journal
 Example: `waitforjournal 'you begin' '15000'` <- this waits for up to 15 seconds
 
 
+## `settimer`
+
+Create a timer. If the timer already exists, this is ignored until the timer expires.  
+`settimer` 'name' 'duration'  
+Note: Timers are shared between scripts so make sure to name them uniquely.  
+Example: `createtimer '123bandage' '10000'`   //Create a timer named 123bandage with a duration of 10 seconds
+
+
+
+
+
+
+
+
+# Expressions
+
+## `timerexists`
+
+Check if a timer exists  
+`timerexists` '123bandage'  
+returns `true`/`false`
+
+
+## `timerexpired`
+
+Check if a timer has expired  
+`timerexpired` '123bandage'  
+Example: `if timerexpired '123bandage'`
+
+
+
+
+
+
+
 
 # Aliases
 
@@ -179,6 +214,7 @@ Example: `waitforjournal 'you begin' '15000'` <- this waits for up to 15 seconds
 - `stam`, `maxstam`  
 - `mana`, `maxmana`  
 - `x`, `y`, `z`  
+- `true`, `false`
 
 ## Objects
 

@@ -256,6 +256,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("moveitemoffset", MoveItemOffset);
             Interpreter.RegisterCommandHandler("cast", CastSpell);
             Interpreter.RegisterCommandHandler("waitforjournal", WaitForJournal);
+            Interpreter.RegisterCommandHandler("settimer", SetTimer);
 
 
 
@@ -338,12 +339,15 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("targettileoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("targettilerelative", DummyCommand);
             Interpreter.RegisterCommandHandler("cleartargetqueue", DummyCommand);
-            Interpreter.RegisterCommandHandler("settimer", DummyCommand);
             Interpreter.RegisterCommandHandler("removetimer", DummyCommand);
-            Interpreter.RegisterCommandHandler("createtimer", DummyCommand);
             #endregion
 
             #region Expressions
+            //Finished
+            Interpreter.RegisterExpressionHandler("timerexists", TimerExists);
+            Interpreter.RegisterExpressionHandler("timerexpired", TimerExpired);
+
+            //Unfinished
             Interpreter.RegisterExpressionHandler("findalias", DummyExpression);
             Interpreter.RegisterExpressionHandler("contents", DummyExpression);
             Interpreter.RegisterExpressionHandler("inregion", DummyExpression);
@@ -368,11 +372,10 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("listexists", DummyExpression);
             Interpreter.RegisterExpressionHandler("list", DummyExpression);
             Interpreter.RegisterExpressionHandler("inlist", DummyExpression);
-            Interpreter.RegisterExpressionHandler("timer", DummyExpression);
-            Interpreter.RegisterExpressionHandler("timerexists", DummyExpression);
             #endregion
 
             #region Player Values
+            //Finished
             Interpreter.RegisterExpressionHandler("mana", GetPlayerMana);
             Interpreter.RegisterExpressionHandler("maxmana", GetPlayerMaxMana);
             Interpreter.RegisterExpressionHandler("hits", GetPlayerHits);
@@ -383,9 +386,12 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("y", GetPosY);
             Interpreter.RegisterExpressionHandler("z", GetPosZ);
             Interpreter.RegisterExpressionHandler("name", GetPlayerName);
+            Interpreter.RegisterExpressionHandler("true", GetTrue);
+            Interpreter.RegisterExpressionHandler("false", GetFalse);
             #endregion
 
             #region Default aliases
+            //Finished
             Interpreter.RegisterAliasHandler("backpack", DefaultAlias);
             Interpreter.RegisterAliasHandler("bank", DefaultAlias);
             Interpreter.RegisterAliasHandler("lastobject", DefaultAlias);
@@ -397,6 +403,32 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             #endregion
+        }
+
+        private static bool TimerExpired(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: timerexpired 'timer name'");
+
+            return Interpreter.TimerExpired(args[0].AsString());
+        }
+
+        private static bool TimerExists(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: timerexists 'timer name'");
+
+            return Interpreter.TimerExists(args[0].AsString());
+        }
+
+        private static bool SetTimer(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: settimer 'timer name' 'duration'");
+
+            Interpreter.SetTimer(args[0].AsString(), args[1].AsInt());
+
+            return true;
         }
 
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
@@ -628,6 +660,8 @@ namespace ClassicUO.LegionScripting
                 type = (TargetType)args[0].AsInt();
             }
 
+            Interpreter.Timeout(args.Length >= 2 ? args[1].AsInt() : 10000, ReturnTrue);
+
             if (TargetManager.IsTargeting)
             {
                 if (type == TargetType.Neutral)
@@ -745,6 +779,8 @@ namespace ClassicUO.LegionScripting
         private static int GetPosY(string expression, Argument[] args, bool quiet) => World.Player.Y;
         private static int GetPosZ(string expression, Argument[] args, bool quiet) => World.Player.Z;
         private static string GetPlayerName(string expression, Argument[] args, bool quiet) => World.Player.Name;
+        private static bool GetFalse(string expression, Argument[] args, bool quiet) => false;
+        private static bool GetTrue(string expression, Argument[] args, bool quiet) => true;
     }
 
     internal class ScriptFile

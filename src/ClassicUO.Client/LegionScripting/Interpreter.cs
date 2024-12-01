@@ -1286,30 +1286,36 @@ namespace LScript
             return null;
         }
 
-        public static void CreateTimer(string name)
+        public static void SetTimer(string name, int msDuration)
         {
-            _timers[name] = DateTime.UtcNow;
+            if (_timers.ContainsKey(name) && !TimerExpired(name)) //Don't update if timer exists
+            {
+                return;
+            }
+
+            _timers[name] = DateTime.UtcNow + TimeSpan.FromMilliseconds(msDuration);
         }
 
-        public static TimeSpan GetTimer(string name)
+        public static bool TimerExpired(string name)
         {
-            if (!_timers.TryGetValue(name, out DateTime timestamp))
-                throw new RunTimeError(null, "Timer does not exist");
+            if (!_timers.ContainsKey(name))
+                return true; //Timer doesn't exist
 
-            TimeSpan elapsed = DateTime.UtcNow - timestamp;
+            if( _timers[name] <= DateTime.UtcNow)
+            {
+                //Timer expired
+                _timers.Remove(name);
+                return true;
+            }
 
-            return elapsed;
-        }
-
-        public static void SetTimer(string name, int elapsed)
-        {
-            // Setting a timer to start at a given value is equivalent to
-            // starting the timer that number of milliseconds in the past.
-            _timers[name] = DateTime.UtcNow.AddMilliseconds(-elapsed);
+            return false;
         }
 
         public static void RemoveTimer(string name)
         {
+            if (!_timers.ContainsKey(name))
+                return;
+
             _timers.Remove(name);
         }
 
