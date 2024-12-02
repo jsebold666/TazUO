@@ -115,8 +115,11 @@ namespace ClassicUO.Game.UI.Controls
             Y = y;
             _customTexture = texture;
             Hue = hue;
-            Width = _customTexture.Width;
-            Height = _customTexture.Height;
+            
+            if(_customTexture != null){
+                Width = _customTexture.Width;
+                Height = _customTexture.Height;
+            }
         }
 
         public override bool Draw(UltimaBatcher2D batcher, int x, int y)
