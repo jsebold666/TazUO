@@ -258,6 +258,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("removetimer", RemoveTimer);
             Interpreter.RegisterCommandHandler("msg", MsgCommand);
             Interpreter.RegisterCommandHandler("toggleautoloot", ToggleAutoLoot);
+            Interpreter.RegisterCommandHandler("info", InfoGump);
+            Interpreter.RegisterCommandHandler("setskill", SetSkillLock);
 
 
 
@@ -292,7 +294,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("removelist", DummyCommand);
             Interpreter.RegisterCommandHandler("createlist", CreateList);
             Interpreter.RegisterCommandHandler("clearlist", DummyCommand);
-            Interpreter.RegisterCommandHandler("info", DummyCommand);
             Interpreter.RegisterCommandHandler("ping", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
             Interpreter.RegisterCommandHandler("playsound", DummyCommand);
@@ -325,7 +326,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
             Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
             Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("setskill", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforproperties", DummyCommand);
             Interpreter.RegisterCommandHandler("autocolorpick", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
@@ -346,13 +346,12 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("skill", SkillValue);
             Interpreter.RegisterExpressionHandler("poisoned", PoisonedStatus);
             Interpreter.RegisterExpressionHandler("war", CheckWar);
+            Interpreter.RegisterExpressionHandler("contents", CountContents);
+            Interpreter.RegisterExpressionHandler("findobject", FindObject);
+            Interpreter.RegisterExpressionHandler("distance", DistanceCheck);
 
 
             //Unfinished
-            Interpreter.RegisterExpressionHandler("contents", DummyExpression);
-            Interpreter.RegisterExpressionHandler("findobject", DummyExpression);
-            Interpreter.RegisterExpressionHandler("distance", DummyExpression);
-            Interpreter.RegisterExpressionHandler("inrange", DummyExpression);
             Interpreter.RegisterExpressionHandler("buffexists", DummyExpression);
             Interpreter.RegisterExpressionHandler("property", DummyExpression);
             Interpreter.RegisterExpressionHandler("findlayer", DummyExpression);
@@ -400,6 +399,102 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool SetSkillLock(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: setskill 'skill' 'up/down/locked'");
+
+            Lock status = Lock.Up;
+
+            switch (args[1].AsString())
+            {
+                case "up":
+                default:
+                    status = Lock.Up;
+                    break;
+                case "down":
+                    status = Lock.Down;
+                    break;
+                case "locked":
+                    status = Lock.Locked;
+                    break;
+            }
+
+            for (int i = 0; i < World.Player.Skills.Length; i++)
+            {
+                if (World.Player.Skills[i].Name.ToLower().Contains(args[0].AsString()))
+                {
+                    World.Player.Skills[i].Lock = status;
+                        break;
+                }
+            }
+
+            return true;
+        }
+
+        private static uint DistanceCheck(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: distance 'serial'");
+
+            uint serial = args[0].AsSerial();
+
+            if (SerialHelper.IsValid(serial))
+            {
+                if (SerialHelper.IsItem(serial))
+                {
+                    if(World.Items.TryGetValue(serial, out var item))
+                        return (uint)item.Distance;
+                } else if (SerialHelper.IsMobile(serial))
+                {
+                    if(World.Mobiles.TryGetValue(serial, out var mobile))
+                        return (uint)mobile.Distance;
+                }
+            }
+
+            return uint.MaxValue;
+        }
+
+        private static bool InfoGump(string command, Argument[] args, bool quiet, bool force)
+        {
+            TargetManager.SetTargeting(CursorTarget.SetTargetClientSide, CursorType.Target, TargetType.Neutral);
+            return true;
+        }
+
+        private static bool FindObject(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: findobject 'serial' [container]");
+
+            if (World.Items.TryGetValue(args[0].AsSerial(), out var obj))
+            {
+                if (args.Length > 1)
+                {
+                    uint source = args[1].AsSerial();
+
+                    if (obj.Container == source || obj.RootContainer == source)
+                        return true;
+                }
+                else
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static uint CountContents(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: contents 'container'");
+
+            if (World.Items.TryGetValue(args[0].AsSerial(), out var item))
+            {
+                return Utility.ContentsCount(item);
+            }
+
+            return 0;
         }
 
         private static bool ToggleAutoLoot(string command, Argument[] args, bool quiet, bool force)
@@ -498,8 +593,8 @@ namespace ClassicUO.LegionScripting
 
             List<Item> items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
 
-            if (items.Count > 0)            
-                Interpreter.SetAlias("found", items[0]);                         
+            if (items.Count > 0)
+                Interpreter.SetAlias("found", items[0]);
 
             return (uint)items.Count;
         }

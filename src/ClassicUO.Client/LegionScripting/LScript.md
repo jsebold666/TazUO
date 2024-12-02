@@ -213,6 +213,18 @@ Toggle the built in simple auto loot system
 
 
 
+## `info`
+
+Create a target cursor to show info about an object  
+`info`
+
+
+## `setskill`
+
+Set skill locked/up/down  
+`setskill 'name' 'up/down/locked`  
+Example: `setskill 'hiding' 'locked'`
+
 
 
 # Expressions
@@ -268,6 +280,28 @@ Example: `if poisoned` or `if poisoned 'pet'`
 Check if you are in warmode  
 `war`  
 Example: `if war`
+
+
+## `contents`
+
+Count the contents of a container(Top level only)  
+`contents 'container'`  
+Example: `if contents 'backpack' > 10`  
+Note: This counts a stack as a single item, so 10 stacks of 30 would only return 10 items.  
+
+
+## `findobject`
+
+Try to find an object by serial  
+`findobject 'serial' [container]`  
+Example: `if findobject 'bank'` or `if findobject '0x4245364' 'backpack'`
+
+
+## `distance`
+
+Get the distance of an item or mobile  
+`distance 'enemy'`  
+Example: `if distance 'enemy' < 7`
 
 
 
