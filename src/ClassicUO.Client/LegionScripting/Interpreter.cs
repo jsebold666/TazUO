@@ -1192,6 +1192,12 @@ namespace LScript
             _aliases[alias] = serial;
         }
 
+        public static void RemoveAlias(string alias)
+        {
+            if( _aliases.ContainsKey(alias))
+                _aliases.Remove(alias);
+        }
+
         public static void CreateList(string name)
         {
             if (_lists.ContainsKey(name))

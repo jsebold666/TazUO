@@ -177,6 +177,25 @@ Note: Timers are shared between scripts so make sure to name them uniquely.
 Example: `createtimer '123bandage' '10000'`   //Create a timer named 123bandage with a duration of 10 seconds
 
 
+## `setalias`
+
+Set an alias to a serial  
+`setalias` 'name' 'serial'  
+Example: `setalias 'pet' '0x1234567'`  
+
+
+## `unsetalias`
+
+Unset an alias  
+`unsetalias 'pet'`  
+
+
+## `movetype`
+
+Move any object matching the type  
+`movetype 'graphic' 'source' 'destination'  [amount] [color]`  
+Amount and color are optional  
+Example: `movetype 0x55 'backpack' 'bank'`  
 
 
 

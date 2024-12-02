@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using ClassicUO.Configuration;
@@ -257,11 +258,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("cast", CastSpell);
             Interpreter.RegisterCommandHandler("waitforjournal", WaitForJournal);
             Interpreter.RegisterCommandHandler("settimer", SetTimer);
+            Interpreter.RegisterCommandHandler("setalias", SetAlias);
+            Interpreter.RegisterCommandHandler("unsetalias", UnsetAlias);
+            Interpreter.RegisterCommandHandler("movetype", MoveType);
 
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("movetype", DummyCommand);
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("turn", DummyCommand);
             Interpreter.RegisterCommandHandler("feed", DummyCommand);
@@ -283,8 +286,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("toggleautoloot", DummyCommand);
             Interpreter.RegisterCommandHandler("togglescavenger", DummyCommand);
             Interpreter.RegisterCommandHandler("counter", DummyCommand);
-            Interpreter.RegisterCommandHandler("unsetalias", DummyCommand);
-            Interpreter.RegisterCommandHandler("setalias", DummyCommand);
             Interpreter.RegisterCommandHandler("promptalias", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforgump", DummyCommand);
             Interpreter.RegisterCommandHandler("replygump", DummyCommand);
@@ -403,6 +404,68 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             #endregion
+        }
+
+        private static bool MoveType(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 3)
+                throw new RunTimeError(null, "Usage: movetype 'graphic' 'source' 'destination'  [amount] [color]");
+
+            uint gfx = args[0].AsUInt();
+            uint source = args[1].AsSerial();
+            uint target = args[2].AsSerial();
+
+            int amount = args.Length >= 4 ? args[3].AsInt() : -1;
+            ushort hue = args.Length >= 5 ? args[4].AsUShort() : ushort.MaxValue;
+
+            if (World.Items.TryGetValue(source, out Item sourceContainer))
+            {
+                foreach(Item item in World.Items.Values)
+                {
+                    if(item.Container == sourceContainer || item.RootContainer == sourceContainer)
+                    {
+                        if(hue != ushort.MaxValue)
+                        {
+                            if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount))
+                            {
+                                GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
+                                return true;
+                            }
+                        } 
+                        else
+                        {
+                            if (GameActions.PickUp(item, 0, 0, amount))
+                                GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private static bool UnsetAlias(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: unsetalias 'name'");
+
+            Interpreter.RemoveAlias(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool SetAlias(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: setalias 'name' 'serial'");
+
+            string name = args[0].AsString();
+            uint val = args[1].AsSerial();
+
+            Interpreter.SetAlias(name, val);
+
+            return true;
         }
 
         private static bool TimerExpired(string expression, Argument[] args, bool quiet)
