@@ -10,6 +10,7 @@ using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Network;
+using ClassicUO.Resources;
 using ClassicUO.Utility;
 using LScript;
 
@@ -21,8 +22,8 @@ namespace ClassicUO.LegionScripting
         private static bool _enabled;
         private static string scriptPath;
 
-        private static List<Script> runningScripts = new List<Script>();
-        private static List<Script> removeRunningScripts = new List<Script>();
+        private static List<ScriptFile> runningScripts = new List<ScriptFile>();
+        private static List<ScriptFile> removeRunningScripts = new List<ScriptFile>();
 
         public static List<ScriptFile> LoadedScripts = new List<ScriptFile>();
 
@@ -35,14 +36,7 @@ namespace ClassicUO.LegionScripting
                 if (args.Length == 1)
                 {
                     UIManager.Add(new ScriptManagerGump());
-                    return;
                 }
-
-                string code = string.Join(" ", args.Skip(1));
-
-                Script s = new Script(Lexer.Lex([code]));
-
-                PlayScript(s);
             });
 
 
@@ -58,9 +52,9 @@ namespace ClassicUO.LegionScripting
 
                 foreach (ScriptFile script in LoadedScripts)
                 {
-                    if (script.FileName == file && script.FileAsScript != null)
+                    if (script.FileName == file && script.GetScript != null)
                     {
-                        PlayScript(script.FileAsScript);
+                        PlayScript(script);
                         break;
                     }
                 }
@@ -82,9 +76,9 @@ namespace ClassicUO.LegionScripting
 
         private static void EventSink_JournalEntryAdded(object sender, JournalEntry e)
         {
-            foreach (Script script in runningScripts)
+            foreach (ScriptFile script in runningScripts)
             {
-                script.JournalEntryAdded(e);
+                script.GetScript.JournalEntryAdded(e);
             }
         }
 
@@ -93,7 +87,14 @@ namespace ClassicUO.LegionScripting
             if (!Directory.Exists(scriptPath))
                 Directory.CreateDirectory(scriptPath);
 
-            LoadedScripts.Clear();
+            string[] loadedScripts = new string[LoadedScripts.Count];
+            int i = 0;
+
+            foreach (ScriptFile script in LoadedScripts)
+            {
+                loadedScripts[i] = script.FullPath;
+                i++;
+            }
 
             foreach (string file in Directory.EnumerateFiles(scriptPath))
             {
@@ -101,7 +102,9 @@ namespace ClassicUO.LegionScripting
                 {
                     string p = Path.GetDirectoryName(file);
                     string fname = Path.GetFileName(file);
-                    LoadedScripts.Add(new ScriptFile(p, fname));
+
+                    if (!loadedScripts.Contains(file)) //Only add files not already loaded
+                        LoadedScripts.Add(new ScriptFile(p, fname));
                 }
             }
         }
@@ -117,11 +120,11 @@ namespace ClassicUO.LegionScripting
             removeRunningScripts.Clear();
 
 
-            foreach (Script script in runningScripts)
+            foreach (ScriptFile script in runningScripts)
             {
                 try
                 {
-                    if (!Interpreter.ExecuteScript(script))
+                    if (!Interpreter.ExecuteScript(script.GetScript))
                     {
                         removeRunningScripts.Add(script);
                     }
@@ -133,26 +136,26 @@ namespace ClassicUO.LegionScripting
                 }
             }
 
-            foreach (Script script in removeRunningScripts)
+            foreach (ScriptFile script in removeRunningScripts)
                 StopScript(script);
         }
 
-        public static void PlayScript(Script script)
+        public static void PlayScript(ScriptFile script)
         {
             if (script != null)
             {
-                script.Reset();
+                script.GenerateScript();
                 runningScripts.Add(script);
-                script.IsPlaying = true;
+                script.GetScript.IsPlaying = true;
             }
         }
 
-        public static void StopScript(Script script)
+        public static void StopScript(ScriptFile script)
         {
             if (runningScripts.Contains(script))
                 runningScripts.Remove(script);
 
-            script.IsPlaying = false;
+            script.GetScript.IsPlaying = false;
         }
 
         private static IComparable DummyExpression(string expression, Argument[] args, bool quiet)
@@ -963,34 +966,29 @@ namespace ClassicUO.LegionScripting
         public string Path;
         public string FileName;
         public string FullPath;
-        public Script FileAsScript;
+        public Script GetScript;
 
         public ScriptFile(string path, string fileName)
         {
             Path = path;
             FileName = fileName;
             FullPath = System.IO.Path.Combine(Path, FileName);
-            ConvertToScript();
+            GenerateScript();
         }
 
-        public string ReadFile()
+        public void GenerateScript()
         {
             try
             {
-                return File.ReadAllText(FullPath);
+                if (GetScript == null)
+                    GetScript = new Script(Lexer.Lex(FullPath));
+                else
+                    GetScript.UpdateScript(Lexer.Lex(FullPath));
             }
-            catch { }
-
-            return string.Empty;
-        }
-
-        public void ConvertToScript()
-        {
-            try
+            catch (Exception e)
             {
-                FileAsScript = new Script(Lexer.Lex(FullPath));
+                Console.WriteLine(e.ToString());
             }
-            catch { }
         }
     }
 }

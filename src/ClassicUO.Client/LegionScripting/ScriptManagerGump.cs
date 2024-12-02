@@ -98,14 +98,14 @@ namespace ClassicUO.LegionScripting
 
             private void Stop_MouseUp(object sender, Input.MouseEventArgs e)
             {
-                LegionScripting.StopScript(Script.FileAsScript);
+                LegionScripting.StopScript(Script);
                 stop.IsSelected = true;
                 play.IsSelected = false;
             }
 
             private void Play_MouseUp(object sender, Input.MouseEventArgs e)
             {
-                LegionScripting.PlayScript(Script.FileAsScript);
+                LegionScripting.PlayScript(Script);
                 play.IsSelected = true;
                 stop.IsSelected = false;
             }
@@ -113,7 +113,7 @@ namespace ClassicUO.LegionScripting
             public override void SlowUpdate()
             {
                 base.SlowUpdate();
-                if (Script.FileAsScript.IsPlaying)
+                if (Script.GetScript.IsPlaying)
                 {
                     background.BaseColor = Color.DarkGreen;
                     play.IsSelected = true;

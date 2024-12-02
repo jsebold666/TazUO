@@ -259,7 +259,7 @@ namespace LScript
 
         private List<JournalEntry> _journalEntries = new List<JournalEntry>();
 
-        public ASTNode Root { get; }
+        public ASTNode Root { get; private set; }
 
         public Argument Lookup(string name)
         {
@@ -351,6 +351,14 @@ namespace LScript
             // Create a default scope
             _scope = new Scope(null, _statement);
             Root = root;
+        }
+
+        public void UpdateScript(ASTNode root)
+        {
+            _statement = root.FirstChild();
+            _scope = new Scope(null, _statement);
+            Root = root;
+
         }
 
         public void Reset()
