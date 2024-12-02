@@ -177,6 +177,13 @@ Note: Timers are shared between scripts so make sure to name them uniquely.
 Example: `createtimer '123bandage' '10000'`   //Create a timer named 123bandage with a duration of 10 seconds
 
 
+## `removetimer`
+
+Remove a timer  
+`removetimer 'name'`  
+Example: `removetimer '123bandage'`
+
+
 ## `setalias`
 
 Set an alias to a serial  
@@ -197,6 +204,11 @@ Move any object matching the type
 Amount and color are optional  
 Example: `movetype 0x55 'backpack' 'bank'`  
 
+
+## `toggleautoloot`
+
+Toggle the built in simple auto loot system  
+`toggleautoloot`
 
 
 
@@ -240,6 +252,21 @@ Get the value or a skill
 `skill 'name' [true/false]`  
 false is default, returns value, true returns base  
 Example: `if skill 'mining' >= 75`
+
+
+## `poisoned`
+
+Get poisoned status of mobile  
+`posioned [serial]`  
+If serial is not included, it will check your personal poisoned status  
+Example: `if poisoned` or `if poisoned 'pet'`
+
+
+## `war`
+
+Check if you are in warmode  
+`war`  
+Example: `if war`
 
 
 

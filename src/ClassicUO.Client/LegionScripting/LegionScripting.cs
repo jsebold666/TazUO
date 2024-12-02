@@ -162,20 +162,6 @@ namespace ClassicUO.LegionScripting
             return 0;
         }
 
-        private static int DummyIntExpression(string expression, Argument[] args, bool quiet)
-        {
-            Console.WriteLine("Executing expression {0} {1}", expression, args);
-
-            return 3;
-        }
-
-        private static string DummyStringExpression(string expression, Argument[] args, bool quiet)
-        {
-            Console.WriteLine("Executing expression {0} {1}", expression, args);
-
-            return "test";
-        }
-
         private static bool DummyCommand(string command, Argument[] args, bool quiet, bool force)
         {
             Console.WriteLine("Executing command {0} {1}", command, args);
@@ -264,6 +250,9 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("setalias", SetAlias);
             Interpreter.RegisterCommandHandler("unsetalias", UnsetAlias);
             Interpreter.RegisterCommandHandler("movetype", MoveType);
+            Interpreter.RegisterCommandHandler("removetimer", RemoveTimer);
+            Interpreter.RegisterCommandHandler("msg", MsgCommand);
+            Interpreter.RegisterCommandHandler("toggleautoloot", ToggleAutoLoot);
 
 
 
@@ -282,7 +271,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("clearbuy", DummyCommand);
             Interpreter.RegisterCommandHandler("clearsell", DummyCommand);
             Interpreter.RegisterCommandHandler("organizer", DummyCommand);
-            Interpreter.RegisterCommandHandler("autoloot", DummyCommand);
             Interpreter.RegisterCommandHandler("dress", DummyCommand);
             Interpreter.RegisterCommandHandler("undress", DummyCommand);
             Interpreter.RegisterCommandHandler("dressconfig", DummyCommand);
@@ -314,7 +302,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("questsbutton", DummyCommand);
             Interpreter.RegisterCommandHandler("logoutbutton", DummyCommand);
             Interpreter.RegisterCommandHandler("virtue", DummyCommand);
-            Interpreter.RegisterCommandHandler("msg", MsgCommand);
             Interpreter.RegisterCommandHandler("headmsg", DummyCommand);
             Interpreter.RegisterCommandHandler("partymsg", DummyCommand);
             Interpreter.RegisterCommandHandler("guildmsg", DummyCommand);
@@ -343,7 +330,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("targettileoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("targettilerelative", DummyCommand);
             Interpreter.RegisterCommandHandler("cleartargetqueue", DummyCommand);
-            Interpreter.RegisterCommandHandler("removetimer", DummyCommand);
             #endregion
 
             #region Expressions
@@ -353,6 +339,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("findtype", FindType);
             Interpreter.RegisterExpressionHandler("findalias", FindAlias);
             Interpreter.RegisterExpressionHandler("skill", SkillValue);
+            Interpreter.RegisterExpressionHandler("poisoned", PoisonedStatus);
+            Interpreter.RegisterExpressionHandler("war", CheckWar);
 
 
             //Unfinished
@@ -369,7 +357,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("findwand", DummyExpression);
             Interpreter.RegisterExpressionHandler("inparty", DummyExpression);
             Interpreter.RegisterExpressionHandler("infriendslist", DummyExpression);
-            Interpreter.RegisterExpressionHandler("war", DummyExpression);
             Interpreter.RegisterExpressionHandler("ingump", DummyExpression);
             Interpreter.RegisterExpressionHandler("gumpexists", DummyExpression);
             Interpreter.RegisterExpressionHandler("injournal", DummyExpression);
@@ -408,6 +395,39 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool ToggleAutoLoot(string command, Argument[] args, bool quiet, bool force)
+        {
+            ProfileManager.CurrentProfile.EnableAutoLoot = !ProfileManager.CurrentProfile.EnableAutoLoot;
+            return true;
+        }
+
+        private static bool CheckWar(string expression, Argument[] args, bool quiet)
+        {
+            return World.Player.InWarMode;
+        }
+
+        private static bool RemoveTimer(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: removetimer 'timer name'");
+
+            Interpreter.RemoveTimer(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool PoisonedStatus(string expression, Argument[] args, bool quiet)
+        {
+            uint serial = args.Length > 0 ? args[0].AsSerial() : World.Player;
+
+            if (World.Mobiles.TryGetValue(serial, out var m))
+            {
+                return m.IsPoisoned;
+            }
+
+            return false;
         }
 
         private static double SkillValue(string expression, Argument[] args, bool quiet)
