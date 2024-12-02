@@ -193,10 +193,16 @@ Unset an alias
 ## `movetype`
 
 Move any object matching the type  
-`movetype 'graphic' 'source' 'destination'  [amount] [color]`  
+`movetype 'graphic' 'source' 'destination'  [amount] [color] [range]`  
 Amount and color are optional  
 Example: `movetype 0x55 'backpack' 'bank'`  
 
+
+## `findtype`
+
+Find an object by type  
+`findtype 'graphic' 'source' [color] [range]`  
+Example: `findtype '0x1bf1' 'any' 'any' '2'` <- Find items in containers or ground within 2 tiles
 
 
 
@@ -247,6 +253,7 @@ Example: `if timerexpired '123bandage'`
 - `self`
 - `bandage`
 - `any` <- Can be used in place of containers
+- `anycolor` <- Match any hue
 
 
 

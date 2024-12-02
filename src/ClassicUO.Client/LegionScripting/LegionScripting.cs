@@ -16,6 +16,7 @@ namespace ClassicUO.LegionScripting
 {
     internal static class LegionScripting
     {
+        private const uint MAX_SERIAL = 2147483647;
         private static bool _enabled;
         private static string scriptPath;
 
@@ -227,7 +228,8 @@ namespace ClassicUO.LegionScripting
                     case "self": return World.Player;
                     case "mount": return World.Player.FindItemByLayer(Layer.Mount);
                     case "bandage": return World.Player.FindBandage();
-                    case "any": return uint.MaxValue;
+                    case "any": return MAX_SERIAL;
+                    case "anycolor": return ushort.MaxValue;
                 }
 
             return 0;
@@ -347,6 +349,8 @@ namespace ClassicUO.LegionScripting
             //Finished
             Interpreter.RegisterExpressionHandler("timerexists", TimerExists);
             Interpreter.RegisterExpressionHandler("timerexpired", TimerExpired);
+            Interpreter.RegisterExpressionHandler("findtype", FindType);
+
 
             //Unfinished
             Interpreter.RegisterExpressionHandler("findalias", DummyExpression);
@@ -358,7 +362,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("inrange", DummyExpression);
             Interpreter.RegisterExpressionHandler("buffexists", DummyExpression);
             Interpreter.RegisterExpressionHandler("property", DummyExpression);
-            Interpreter.RegisterExpressionHandler("findtype", DummyExpression);
             Interpreter.RegisterExpressionHandler("findlayer", DummyExpression);
             Interpreter.RegisterExpressionHandler("skillstate", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttype", DummyExpression);
@@ -403,13 +406,39 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("mount", DefaultAlias);
             Interpreter.RegisterAliasHandler("bandage", DefaultAlias);
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
+            Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool FindType(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: findtype 'graphic' 'source' [color] [range]");
+
+            uint gfx = args[0].AsUInt();
+            uint source = args[1].AsSerial();
+
+            if(source == MAX_SERIAL) source = uint.MaxValue;
+
+            ushort hue = args.Length >= 3 ? args[2].AsUShort() : ushort.MaxValue;
+            int range = args.Length >= 4 ? args[3].AsInt() : int.MaxValue;
+
+
+            List<Item> items= Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
+
+            if (items.Count > 0)
+            {
+                Interpreter.SetAlias("found", items[0]);
+                return true;
+            }
+
+            return false;
         }
 
         private static bool MoveType(string command, Argument[] args, bool quiet, bool force)
         {
             if (args.Length < 3)
-                throw new RunTimeError(null, "Usage: movetype 'graphic' 'source' 'destination'  [amount] [color]");
+                throw new RunTimeError(null, "Usage: movetype 'graphic' 'source' 'destination'  [amount] [color] [range]");
 
             uint gfx = args[0].AsUInt();
             uint source = args[1].AsSerial();
@@ -417,30 +446,34 @@ namespace ClassicUO.LegionScripting
 
             int amount = args.Length >= 4 ? args[3].AsInt() : -1;
             ushort hue = args.Length >= 5 ? args[4].AsUShort() : ushort.MaxValue;
+            int range = args.Length >= 6 ? args[5].AsInt() : 2;
 
-            if (World.Items.TryGetValue(source, out Item sourceContainer))
-            {
-                foreach(Item item in World.Items.Values)
+                foreach (Item item in World.Items.Values)
                 {
-                    if(item.Container == sourceContainer || item.RootContainer == sourceContainer)
+                    if (source == MAX_SERIAL || item.Container == source || item.RootContainer == source)
                     {
-                        if(hue != ushort.MaxValue)
+                        if (item.Graphic != gfx || item.Container == target || item.RootContainer == target)
+                            continue;
+
+                        if (source == MAX_SERIAL && item.Distance > range)                        
+                            continue;                        
+
+                        if (hue != ushort.MaxValue)
                         {
-                            if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount))
+                            if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
                             {
                                 GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
                                 return true;
                             }
-                        } 
+                        }
                         else
                         {
-                            if (GameActions.PickUp(item, 0, 0, amount))
+                            if (GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
                                 GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
                             return true;
                         }
                     }
-                }
-            }
+                }            
 
             return true;
         }
@@ -680,7 +713,7 @@ namespace ClassicUO.LegionScripting
 
             Item container = World.Items.Get(args[0].AsSerial());
 
-            if (container == null && args[0].AsSerial() != uint.MaxValue) return true;
+            if (container == null && args[0].AsSerial() != MAX_SERIAL) return true;
 
             uint objType = args[1].AsUInt();
 
