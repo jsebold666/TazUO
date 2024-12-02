@@ -228,3 +228,33 @@ Example: `if timerexpired '123bandage'`
 - `self`
 - `bandage`
 - `any` <- Can be used in place of containers
+
+
+
+
+
+# Syntax
+
+`if 'condition'`  
+	`elseif 'condition'`  
+	`else`  
+`endif`
+
+
+`while 'condition'`  
+`endwhile`  
+
+
+`for 'count'`  
+`endfor`  
+
+
+`foreach 'item' in 'list'`  
+`endfor`  
+
+
+`break`, `continue`  
+
+
+`stop` <- Stop the script  
+`replay` <- Start the script over  
