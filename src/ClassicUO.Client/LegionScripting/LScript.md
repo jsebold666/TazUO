@@ -138,6 +138,7 @@ Example: `sysmsg 'No more tools!' '33'`
 Move an item to a container  
 `moveitem` 'item' 'container' 'amount(optional)'  
 If amount is 0 or not used it will attempt to move the entire stack  
+Add ! to move items without stacking them: `moveitem!`  
 
 Example: `moveitem '0x23553221' 'backpack'`
 
@@ -234,7 +235,7 @@ Example: `if timerexpired '123bandage'`
 
 Find an object by type  
 `findtype 'graphic' 'source' [color] [range]`  
-Example: `if findtype '0x1bf1' 'any' 'anycolor' '2'` <- Find items in containers or ground within 2 tiles  
+Example: `if findtype '0x1bf1' 'any' 'anycolor' '2' > 0` <- Find items in containers or ground within 2 tiles  
 If an object is found, you can use `found` alias to reference it.
 
 

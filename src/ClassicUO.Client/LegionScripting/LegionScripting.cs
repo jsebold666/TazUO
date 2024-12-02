@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Network;
-using ClassicUO.Resources;
 using ClassicUO.Utility;
 using LScript;
 
@@ -63,7 +60,7 @@ namespace ClassicUO.LegionScripting
 
             if (!_loaded)
             {
-                RegisterDummyCommands();
+                RegisterCommands();
 
                 EventSink.JournalEntryAdded += EventSink_JournalEntryAdded;
                 _loaded = true;
@@ -230,7 +227,7 @@ namespace ClassicUO.LegionScripting
             return 0;
         }
 
-        private static void RegisterDummyCommands()
+        private static void RegisterCommands()
         {
             #region Commands
             //Finished
@@ -485,7 +482,7 @@ namespace ClassicUO.LegionScripting
             return false;
         }
 
-        private static bool FindType(string expression, Argument[] args, bool quiet)
+        private static uint FindType(string expression, Argument[] args, bool quiet)
         {
             if (args.Length < 2)
                 throw new RunTimeError(null, "Usage: findtype 'graphic' 'source' [color] [range]");
@@ -501,13 +498,10 @@ namespace ClassicUO.LegionScripting
 
             List<Item> items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
 
-            if (items.Count > 0)
-            {
-                Interpreter.SetAlias("found", items[0]);
-                return true;
-            }
+            if (items.Count > 0)            
+                Interpreter.SetAlias("found", items[0]);                         
 
-            return false;
+            return (uint)items.Count;
         }
 
         private static bool MoveType(string command, Argument[] args, bool quiet, bool force)
@@ -669,7 +663,7 @@ namespace ClassicUO.LegionScripting
             if (args.Length > 2)
                 amt = args[2].AsUShort();
 
-            GameActions.GrabItem(item, amt, bag);
+            GameActions.GrabItem(item, amt, bag, !force);
             return true;
         }
 

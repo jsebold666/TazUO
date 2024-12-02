@@ -1107,7 +1107,7 @@ namespace ClassicUO.Game
             Socket.Send_ClickQuestArrow(rightClick);
         }
 
-        public static void GrabItem(uint serial, ushort amount, uint bag = 0)
+        public static void GrabItem(uint serial, ushort amount, uint bag = 0, bool stack = true)
         {
             //Socket.Send(new PPickUpRequest(serial, amount));
 
@@ -1132,14 +1132,24 @@ namespace ClassicUO.Game
 
             PickUp(serial, 0, 0, amount);
 
-            DropItem
-            (
-                serial,
-                0xFFFF,
-                0xFFFF,
-                0,
-                bag
-            );
+            if(stack)
+                DropItem
+                (
+                    serial,
+                    0xFFFF,
+                    0xFFFF,
+                    0,
+                    bag
+                );
+            else
+                DropItem
+                (
+                    serial,
+                    0,
+                    0,
+                    0,
+                    bag
+                );
         }
     }
 }
