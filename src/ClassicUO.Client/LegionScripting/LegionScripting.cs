@@ -19,7 +19,7 @@ namespace ClassicUO.LegionScripting
     internal static class LegionScripting
     {
         private const uint MAX_SERIAL = 2147483647;
-        private static bool _enabled;
+        private static bool _enabled, _loaded;
         private static string scriptPath;
 
         private static List<ScriptFile> runningScripts = new List<ScriptFile>();
@@ -61,17 +61,16 @@ namespace ClassicUO.LegionScripting
             });
 
 
-            if (!_enabled)
+            if (!_loaded)
             {
                 RegisterDummyCommands();
 
                 EventSink.JournalEntryAdded += EventSink_JournalEntryAdded;
-
-                _enabled = true;
+                _loaded = true;
             }
 
-
             LoadScriptsFromFile();
+            _enabled = true;
         }
 
         private static void EventSink_JournalEntryAdded(object sender, JournalEntry e)
@@ -113,12 +112,13 @@ namespace ClassicUO.LegionScripting
         {
             runningScripts.Clear();
             Interpreter.ClearAllLists();
+            _enabled = false;
         }
 
         public static void OnUpdate()
         {
-            removeRunningScripts.Clear();
-
+            if (!_enabled)
+                return;
 
             foreach (ScriptFile script in runningScripts)
             {
@@ -136,8 +136,13 @@ namespace ClassicUO.LegionScripting
                 }
             }
 
-            foreach (ScriptFile script in removeRunningScripts)
-                StopScript(script);
+            if (removeRunningScripts.Count > 0)
+            {
+                foreach (ScriptFile script in removeRunningScripts)
+                    StopScript(script);
+
+                removeRunningScripts.Clear();
+            }
         }
 
         public static void PlayScript(ScriptFile script)
