@@ -202,7 +202,8 @@ Example: `movetype 0x55 'backpack' 'bank'`
 
 Find an object by type  
 `findtype 'graphic' 'source' [color] [range]`  
-Example: `findtype '0x1bf1' 'any' 'any' '2'` <- Find items in containers or ground within 2 tiles
+Example: `findtype '0x1bf1' 'any' 'any' '2'` <- Find items in containers or ground within 2 tiles  
+If an object is found, you can use `found` alias to reference it.
 
 
 
