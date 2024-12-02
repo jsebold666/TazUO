@@ -102,6 +102,8 @@ namespace ClassicUO.Game.UI.Gumps
             BuildGump();
 
             CurrentCounterBarGump = this;
+
+            SetInScreen();
         }
 
         public override GumpType GumpType => GumpType.CounterBar;
