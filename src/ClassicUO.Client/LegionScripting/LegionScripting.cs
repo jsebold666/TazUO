@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
@@ -350,13 +351,12 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("timerexists", TimerExists);
             Interpreter.RegisterExpressionHandler("timerexpired", TimerExpired);
             Interpreter.RegisterExpressionHandler("findtype", FindType);
+            Interpreter.RegisterExpressionHandler("findalias", FindAlias);
+            Interpreter.RegisterExpressionHandler("skill", SkillValue);
 
 
             //Unfinished
-            Interpreter.RegisterExpressionHandler("findalias", DummyExpression);
             Interpreter.RegisterExpressionHandler("contents", DummyExpression);
-            Interpreter.RegisterExpressionHandler("inregion", DummyExpression);
-            Interpreter.RegisterExpressionHandler("skill", DummyExpression);
             Interpreter.RegisterExpressionHandler("findobject", DummyExpression);
             Interpreter.RegisterExpressionHandler("distance", DummyExpression);
             Interpreter.RegisterExpressionHandler("inrange", DummyExpression);
@@ -410,6 +410,53 @@ namespace ClassicUO.LegionScripting
             #endregion
         }
 
+        private static double SkillValue(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: skill 'name' [true/false]");
+
+            bool force = args.Length > 1 ? args[1].AsBool() : false;
+
+            for (int i = 0; i < World.Player.Skills.Length; i++)
+            {
+                if (World.Player.Skills[i].Name.ToLower().Contains(args[0].AsString()))
+                {
+                    return force ? World.Player.Skills[World.Player.Skills[i].Index].Base : World.Player.Skills[World.Player.Skills[i].Index].Value;
+                }
+            }
+
+            if (!quiet) LScriptError($"Skill {args[0].AsString()} not found!");
+            return 0;
+        }
+
+        private static bool FindAlias(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: findalias 'name'");
+
+            uint foundVal = Interpreter.GetAlias(args[0].AsString());
+
+            if (foundVal != uint.MaxValue)
+            {
+                Interpreter.SetAlias("found", foundVal);
+                return true;
+            }
+            try
+            {
+                if (World.Items.TryGetValue(args[0].AsSerial(), out Item i))
+                {
+                    Interpreter.SetAlias("found", i);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return false;
+        }
+
         private static bool FindType(string expression, Argument[] args, bool quiet)
         {
             if (args.Length < 2)
@@ -418,13 +465,13 @@ namespace ClassicUO.LegionScripting
             uint gfx = args[0].AsUInt();
             uint source = args[1].AsSerial();
 
-            if(source == MAX_SERIAL) source = uint.MaxValue;
+            if (source == MAX_SERIAL) source = uint.MaxValue;
 
             ushort hue = args.Length >= 3 ? args[2].AsUShort() : ushort.MaxValue;
             int range = args.Length >= 4 ? args[3].AsInt() : int.MaxValue;
 
 
-            List<Item> items= Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
+            List<Item> items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
 
             if (items.Count > 0)
             {
@@ -448,32 +495,32 @@ namespace ClassicUO.LegionScripting
             ushort hue = args.Length >= 5 ? args[4].AsUShort() : ushort.MaxValue;
             int range = args.Length >= 6 ? args[5].AsInt() : 2;
 
-                foreach (Item item in World.Items.Values)
+            foreach (Item item in World.Items.Values)
+            {
+                if (source == MAX_SERIAL || item.Container == source || item.RootContainer == source)
                 {
-                    if (source == MAX_SERIAL || item.Container == source || item.RootContainer == source)
+                    if (item.Graphic != gfx || item.Container == target || item.RootContainer == target)
+                        continue;
+
+                    if (source == MAX_SERIAL && item.Distance > range)
+                        continue;
+
+                    if (hue != ushort.MaxValue)
                     {
-                        if (item.Graphic != gfx || item.Container == target || item.RootContainer == target)
-                            continue;
-
-                        if (source == MAX_SERIAL && item.Distance > range)                        
-                            continue;                        
-
-                        if (hue != ushort.MaxValue)
+                        if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
                         {
-                            if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
-                            {
-                                GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            if (GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
-                                GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
+                            GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
                             return true;
                         }
                     }
-                }            
+                    else
+                    {
+                        if (GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
+                            GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
+                        return true;
+                    }
+                }
+            }
 
             return true;
         }

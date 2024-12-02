@@ -198,13 +198,6 @@ Amount and color are optional
 Example: `movetype 0x55 'backpack' 'bank'`  
 
 
-## `findtype`
-
-Find an object by type  
-`findtype 'graphic' 'source' [color] [range]`  
-Example: `findtype '0x1bf1' 'any' 'any' '2'` <- Find items in containers or ground within 2 tiles  
-If an object is found, you can use `found` alias to reference it.
-
 
 
 
@@ -225,8 +218,28 @@ Check if a timer has expired
 Example: `if timerexpired '123bandage'`
 
 
+## `findtype`
+
+Find an object by type  
+`findtype 'graphic' 'source' [color] [range]`  
+Example: `if findtype '0x1bf1' 'any' 'anycolor' '2'` <- Find items in containers or ground within 2 tiles  
+If an object is found, you can use `found` alias to reference it.
 
 
+## `findalias`
+
+Find an object you set as an alias  
+`findalias 'backpack'`  
+Example: `if findalias 'myalias'`  
+If found, you can use `found` to reference it.
+
+
+## `skill`
+
+Get the value or a skill  
+`skill 'name' [true/false]`  
+false is default, returns value, true returns base  
+Example: `if skill 'mining' >= 75`
 
 
 
