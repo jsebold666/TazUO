@@ -260,6 +260,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("toggleautoloot", ToggleAutoLoot);
             Interpreter.RegisterCommandHandler("info", InfoGump);
             Interpreter.RegisterCommandHandler("setskill", SetSkillLock);
+            Interpreter.RegisterCommandHandler("getproperties", GetProperties);
 
 
 
@@ -349,21 +350,19 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("contents", CountContents);
             Interpreter.RegisterExpressionHandler("findobject", FindObject);
             Interpreter.RegisterExpressionHandler("distance", DistanceCheck);
+            Interpreter.RegisterExpressionHandler("injournal", InJournal);
+            Interpreter.RegisterExpressionHandler("inparty", InParty);
+            Interpreter.RegisterExpressionHandler("property", PropertySearch);
 
 
             //Unfinished
             Interpreter.RegisterExpressionHandler("buffexists", DummyExpression);
-            Interpreter.RegisterExpressionHandler("property", DummyExpression);
             Interpreter.RegisterExpressionHandler("findlayer", DummyExpression);
-            Interpreter.RegisterExpressionHandler("skillstate", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttype", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttypeground", DummyExpression);
-            Interpreter.RegisterExpressionHandler("findwand", DummyExpression);
-            Interpreter.RegisterExpressionHandler("inparty", DummyExpression);
             Interpreter.RegisterExpressionHandler("infriendslist", DummyExpression);
             Interpreter.RegisterExpressionHandler("ingump", DummyExpression);
             Interpreter.RegisterExpressionHandler("gumpexists", DummyExpression);
-            Interpreter.RegisterExpressionHandler("injournal", DummyExpression);
             Interpreter.RegisterExpressionHandler("listexists", DummyExpression);
             Interpreter.RegisterExpressionHandler("list", DummyExpression);
             Interpreter.RegisterExpressionHandler("inlist", DummyExpression);
@@ -399,6 +398,56 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool GetProperties(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: getproperties 'serial'");
+
+            bool hasProps = World.OPL.Contains(args[0].AsSerial()); //This will request properties if we don't already have them
+
+            if(force)
+                return true;
+
+            return hasProps;
+        }
+
+        private static bool PropertySearch(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: property 'serial' 'text'");
+
+            if (World.Items.TryGetValue(args[0].AsSerial(), out var item))
+            {
+                return Utility.SearchItemNameAndProps(args[1].AsString(), item);
+            }
+
+            return false;
+        }
+
+        private static bool InParty(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: inparty 'serial'");
+
+            uint serial = args[0].AsSerial();
+
+            foreach (var mem in World.Party.Members)
+            {
+                if(mem.Serial == serial)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool InJournal(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: injournal 'search text'");
+
+            return Interpreter.ActiveScript.SearchJournalEntries(args[0].AsString());
         }
 
         private static bool SetSkillLock(string command, Argument[] args, bool quiet, bool force)

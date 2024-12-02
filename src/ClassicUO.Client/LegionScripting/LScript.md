@@ -226,6 +226,22 @@ Set skill locked/up/down
 Example: `setskill 'hiding' 'locked'`
 
 
+## `getproperties`
+
+Request item props from the server  
+`getproperties 'serial'`  
+Example: `getproperties 'found'`  
+Note: This will pause the script until we have received the properties unless you add ! modifier  
+```
+getproperties 'found' #Script will pause here until we have the properties
+if properties 'found' 'some text'
+  sysmsg 'we found the holy grail'
+endif
+```
+
+
+
+
 
 # Expressions
 
@@ -304,6 +320,25 @@ Get the distance of an item or mobile
 Example: `if distance 'enemy' < 7`
 
 
+## `injournal`
+
+Check if text exists in journal  
+`injournal 'search text, case sensitive`  
+Example: `if injournal 'You see'`
+
+
+## `inparty`
+
+Check if a mobile is in your party  
+`inparty 'serial'`  
+Example: `if inparty 'self'`
+
+
+## `property`
+
+Search properties of an item for text  
+`property 'serial' 'text'`  
+Example: `if property 'found' 'Fencing +3'`
 
 
 # Aliases
