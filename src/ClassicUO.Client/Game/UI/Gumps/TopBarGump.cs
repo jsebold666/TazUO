@@ -254,6 +254,8 @@ namespace ClassicUO.Game.UI.Gumps
             moreMenu.ContextMenu.Add(new ContextMenuItemEntry("Open boat control", () => { UIManager.Add(new BoatControl() { X = 200, Y = 200 }); }));
 
             moreMenu.ContextMenu.Add(new ContextMenuItemEntry("Toggle nameplates", () => { NameOverHeadManager.ToggleOverheads(); }));
+            
+            moreMenu.ContextMenu.Add(new ContextMenuItemEntry("Legion Scripting", () => { UIManager.Add(new LegionScripting.ScriptManagerGump()); }));
 
             startX += largeWidth + 1;
 
