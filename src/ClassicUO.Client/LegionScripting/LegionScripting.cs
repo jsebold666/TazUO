@@ -353,11 +353,11 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("injournal", InJournal);
             Interpreter.RegisterExpressionHandler("inparty", InParty);
             Interpreter.RegisterExpressionHandler("property", PropertySearch);
+            Interpreter.RegisterExpressionHandler("buffexists", BuffExists);
+            Interpreter.RegisterExpressionHandler("findlayer", FindLayer);
 
 
             //Unfinished
-            Interpreter.RegisterExpressionHandler("buffexists", DummyExpression);
-            Interpreter.RegisterExpressionHandler("findlayer", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttype", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttypeground", DummyExpression);
             Interpreter.RegisterExpressionHandler("infriendslist", DummyExpression);
@@ -398,6 +398,44 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool FindLayer(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: findlayer 'layer'");
+
+            string layer = args[0].AsString();
+
+            Layer finalLayer = Utility.GetItemLayer(layer);
+
+            if (finalLayer != Layer.Invalid)
+            {
+                Item item = World.Player.FindItemByLayer(finalLayer);
+                if (item != null)
+                {
+                    Interpreter.SetAlias("found", item);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool BuffExists(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: buffexists 'name'");
+
+            string bufftext = args[0].AsString().ToLower();
+
+            foreach (BuffIcon buff in World.Player.BuffIcons.Values)
+            {
+                if (buff.Title.ToLower().Contains(bufftext))
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool GetProperties(string command, Argument[] args, bool quiet, bool force)

@@ -341,6 +341,35 @@ Search properties of an item for text
 Example: `if property 'found' 'Fencing +3'`
 
 
+## `buffexists`
+
+Check if a buff is active  
+`buffexists 'name'`  
+Example: `if buffexists 'weak'`  
+Note: name can be a partial match  
+
+
+## `findlayer`
+
+Check if there is an item in a layer  
+`findlayer 'layername`  
+Example: `if findlayer 'onehanded'`  
+Note: If an item is found, you can use 'found' to access it.  
+
+| onehanded    | twohanded | shoes     |
+| ------------ | ----------| ----------|
+| pants        | shirt     | helmet    |
+| gloves       | ring      | talisman  |
+| necklace     | hair      | waist     |
+| torso        | bracelet  | face      |
+| beard        | tunic     | earrings  |
+| arms         | cloak     | backpack  |
+| robe         | skirt     | legs      |
+| mount        | bank |  |
+
+
+
+
 # Aliases
 
 ## Values

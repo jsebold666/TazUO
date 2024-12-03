@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using ClassicUO.Game;
+using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 
 namespace ClassicUO.LegionScripting
@@ -63,8 +64,8 @@ namespace ClassicUO.LegionScripting
                 c++;
 
             return c;
-        } 
-        
+        }
+
         public static bool SearchItemNameAndProps(string search, Item item)
         {
             if (item == null)
@@ -89,5 +90,101 @@ namespace ClassicUO.LegionScripting
 
             return false;
         }
+
+        /// <summary>
+        /// Only includes layers that are items, not things like shop layers
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Layer GetItemLayer(string name)
+        {
+            Layer finalLayer = Layer.Invalid;
+
+            switch (name)
+            {
+                case "onehanded":
+                    finalLayer = Layer.OneHanded;
+                    break;
+                case "twohanded":
+                    finalLayer = Layer.TwoHanded;
+                    break;
+                case "shoes":
+                    finalLayer = Layer.Shoes;
+                    break;
+                case "pants":
+                    finalLayer = Layer.Pants;
+                    break;
+                case "shirt":
+                    finalLayer = Layer.Shirt;
+                    break;
+                case "helmet":
+                    finalLayer = Layer.Helmet;
+                    break;
+                case "gloves":
+                    finalLayer = Layer.Gloves;
+                    break;
+                case "ring":
+                    finalLayer = Layer.Ring;
+                    break;
+                case "talisman":
+                    finalLayer = Layer.Talisman;
+                    break;
+                case "necklace":
+                    finalLayer = Layer.Necklace;
+                    break;
+                case "hair":
+                    finalLayer = Layer.Hair;
+                    break;
+                case "waist":
+                    finalLayer = Layer.Waist;
+                    break;
+                case "torso":
+                    finalLayer = Layer.Torso;
+                    break;
+                case "bracelet":
+                    finalLayer = Layer.Bracelet;
+                    break;
+                case "face":
+                    finalLayer = Layer.Face;
+                    break;
+                case "beard":
+                    finalLayer = Layer.Beard;
+                    break;
+                case "tunic":
+                    finalLayer = Layer.Tunic;
+                    break;
+                case "earrings":
+                    finalLayer = Layer.Earrings;
+                    break;
+                case "arms":
+                    finalLayer = Layer.Arms;
+                    break;
+                case "cloak":
+                    finalLayer = Layer.Cloak;
+                    break;
+                case "backpack":
+                    finalLayer = Layer.Backpack;
+                    break;
+                case "robe":
+                    finalLayer = Layer.Robe;
+                    break;
+                case "skirt":
+                    finalLayer = Layer.Skirt;
+                    break;
+                case "legs":
+                    finalLayer = Layer.Legs;
+                    break;
+                case "mount":
+                    finalLayer = Layer.Mount;
+                    break;
+                case "bank":
+                    finalLayer = Layer.Bank;
+                    break;
+                default:
+                    break;
+            }
+
+            return finalLayer;
+        }
     }
-    }
+}
