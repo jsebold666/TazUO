@@ -368,6 +368,33 @@ Note: If an item is found, you can use 'found' to access it.
 | mount        | bank |  |
 
 
+## `gumpexists`
+
+Check if a gump is open  
+`gumpexists 'gumpid'`  
+Example: `if gumpexists '1915258020'`  
+
+
+## `listcount`
+
+Count the number of items in a list. Will return 0 if the list does not exist  
+`listcount 'name'`  
+Example: `if listcount 'pets'`
+
+
+## `listexists`
+
+Check if a list exists  
+`listexists 'name'`  
+Example: `if not listexists 'pets'`  
+
+
+## `inlist`
+
+Check if a list contains a value  
+`inlist 'name' 'value'`  
+Example: `if inlist 'pets' '0x4532345'`
+
 
 
 # Aliases

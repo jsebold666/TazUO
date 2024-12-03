@@ -7,6 +7,8 @@ using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
+using ClassicUO.Game.UI.Controls;
+using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Network;
 using ClassicUO.Utility;
 using LScript;
@@ -355,17 +357,15 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("property", PropertySearch);
             Interpreter.RegisterExpressionHandler("buffexists", BuffExists);
             Interpreter.RegisterExpressionHandler("findlayer", FindLayer);
+            Interpreter.RegisterExpressionHandler("gumpexists", GumpExists);
+            Interpreter.RegisterExpressionHandler("listcount", ListCount);
+            Interpreter.RegisterExpressionHandler("listexists", ListExists);
+            Interpreter.RegisterExpressionHandler("inlist", InList);
 
 
             //Unfinished
             Interpreter.RegisterExpressionHandler("counttype", DummyExpression);
             Interpreter.RegisterExpressionHandler("counttypeground", DummyExpression);
-            Interpreter.RegisterExpressionHandler("infriendslist", DummyExpression);
-            Interpreter.RegisterExpressionHandler("ingump", DummyExpression);
-            Interpreter.RegisterExpressionHandler("gumpexists", DummyExpression);
-            Interpreter.RegisterExpressionHandler("listexists", DummyExpression);
-            Interpreter.RegisterExpressionHandler("list", DummyExpression);
-            Interpreter.RegisterExpressionHandler("inlist", DummyExpression);
             #endregion
 
             #region Player Values
@@ -398,6 +398,47 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool InList(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: inlist 'name' 'value'");
+
+            return Interpreter.ListContains(args[0].AsString(), args[1]);
+        }
+
+        private static bool ListExists(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: listexists 'name'");
+
+            return Interpreter.ListExists(args[0].AsString());
+        }
+
+        private static int ListCount(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: listcount 'name'");
+
+            return Interpreter.ListLength(args[0].AsString());
+        }
+
+        private static bool GumpExists(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: gumpexists 'gumpid'");
+
+            uint gumpid = args[0].AsUInt();
+
+            for (LinkedListNode<Gump> last = UIManager.Gumps.Last; last != null; last = last.Previous)
+            {
+                Control c = last.Value;
+                if (last.Value != null && (last.Value.ServerSerial == gumpid || last.Value.LocalSerial == gumpid))
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool FindLayer(string expression, Argument[] args, bool quiet)
@@ -445,7 +486,7 @@ namespace ClassicUO.LegionScripting
 
             bool hasProps = World.OPL.Contains(args[0].AsSerial()); //This will request properties if we don't already have them
 
-            if(force)
+            if (force)
                 return true;
 
             return hasProps;
@@ -473,7 +514,7 @@ namespace ClassicUO.LegionScripting
 
             foreach (var mem in World.Party.Members)
             {
-                if(mem.Serial == serial)
+                if (mem.Serial == serial)
                     return true;
             }
 
@@ -514,7 +555,7 @@ namespace ClassicUO.LegionScripting
                 if (World.Player.Skills[i].Name.ToLower().Contains(args[0].AsString()))
                 {
                     World.Player.Skills[i].Lock = status;
-                        break;
+                    break;
                 }
             }
 
@@ -532,11 +573,12 @@ namespace ClassicUO.LegionScripting
             {
                 if (SerialHelper.IsItem(serial))
                 {
-                    if(World.Items.TryGetValue(serial, out var item))
+                    if (World.Items.TryGetValue(serial, out var item))
                         return (uint)item.Distance;
-                } else if (SerialHelper.IsMobile(serial))
+                }
+                else if (SerialHelper.IsMobile(serial))
                 {
-                    if(World.Mobiles.TryGetValue(serial, out var mobile))
+                    if (World.Mobiles.TryGetValue(serial, out var mobile))
                         return (uint)mobile.Distance;
                 }
             }

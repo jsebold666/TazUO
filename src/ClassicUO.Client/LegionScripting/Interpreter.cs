@@ -1240,7 +1240,7 @@ namespace LScript
         public static bool ListContains(string name, Argument arg)
         {
             if (!_lists.ContainsKey(name))
-                throw new RunTimeError(null, "List does not exist");
+                return false;
 
             return _lists[name].Contains(arg);
         }
@@ -1248,7 +1248,7 @@ namespace LScript
         public static int ListLength(string name)
         {
             if (!_lists.ContainsKey(name))
-                throw new RunTimeError(null, "List does not exist");
+                return 0;
 
             return _lists[name].Count;
         }
