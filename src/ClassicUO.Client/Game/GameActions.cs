@@ -212,7 +212,7 @@ namespace ClassicUO.Game
         /// <returns>False if no status gump open</returns>
         public static bool CloseStatusBar()
         {
-            Gump g =             StatusGumpBase.GetStatusGump();
+            Gump g = StatusGumpBase.GetStatusGump();
             if (g != null)
             {
                 g.Dispose();
@@ -961,6 +961,20 @@ namespace ClassicUO.Game
             Socket.Send_RenameRequest(serial, name);
         }
 
+        public static void Logout()
+        {
+            if ((World.ClientFeatures.Flags & CharacterListFlags.CLF_OWERWRITE_CONFIGURATION_BUTTON) != 0)
+            {
+                Client.Game.GetScene<GameScene>().DisconnectionRequested = true;
+                NetClient.Socket.Send_LogoutNotification();
+            }
+            else
+            {
+                NetClient.Socket.Disconnect();
+                Client.Game.SetScene(new LoginScene());
+            }
+        }
+
         public static void UseSkill(int index)
         {
             if (index >= 0)
@@ -1132,7 +1146,7 @@ namespace ClassicUO.Game
 
             PickUp(serial, 0, 0, amount);
 
-            if(stack)
+            if (stack)
                 DropItem
                 (
                     serial,

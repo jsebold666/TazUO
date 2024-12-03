@@ -256,6 +256,28 @@ Example: `createlist 'pets'`
 
 
 
+## `pushlist`
+
+Add a value to a list  
+`pushlist 'name' 'value' ['front']`  
+Example: `pushlist 'pets' '0x8768766' 'front'`  
+Note: `front` is optional, it will be added to the back of the list by default  
+Add `!` modifier(`pushlist!`) to only add the item if it is not already in the list  
+
+
+## `rename`
+
+Rename a pet  
+`rename 'serial' 'name'`  
+Example: `rename '0x3435345' 'KillMe'`
+
+
+
+## `logout`
+
+Logout of the game  
+`logout`
+
 
 
 

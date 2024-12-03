@@ -109,7 +109,9 @@ namespace ClassicUO.LegionScripting
 
         public static void Unload()
         {
-            runningScripts.Clear();
+            foreach (ScriptFile script in runningScripts)
+                StopScript(script);
+
             Interpreter.ClearAllLists();
             _enabled = false;
         }
@@ -190,15 +192,6 @@ namespace ClassicUO.LegionScripting
             return true;
         }
 
-        private static bool PushList(string command, Argument[] args, bool quiet, bool force)
-        {
-            Console.WriteLine("Pushing {0} to list {1}", args[1].AsString(), args[0].AsString());
-
-            Interpreter.PushList(args[0].AsString(), args[1], true, false);
-
-            return true;
-        }
-
         private static uint DefaultAlias(string alias)
         {
             if (World.InGame)
@@ -256,13 +249,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("getproperties", GetProperties);
             Interpreter.RegisterCommandHandler("turn", TurnCommand);
             Interpreter.RegisterCommandHandler("createlist", CreateList);
-
+            Interpreter.RegisterCommandHandler("pushlist", PushList);
+            Interpreter.RegisterCommandHandler("rename", RenamePet);
+            Interpreter.RegisterCommandHandler("logout", Logout);
 
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("feed", DummyCommand);
-            Interpreter.RegisterCommandHandler("rename", DummyCommand);
             Interpreter.RegisterCommandHandler("shownames", DummyCommand);
             Interpreter.RegisterCommandHandler("togglehands", DummyCommand);
             Interpreter.RegisterCommandHandler("equipitem", DummyCommand);
@@ -285,7 +278,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("closegump", DummyCommand);
             Interpreter.RegisterCommandHandler("clearjournal", DummyCommand);
             Interpreter.RegisterCommandHandler("poplist", DummyCommand);
-            Interpreter.RegisterCommandHandler("pushlist", PushList);
             Interpreter.RegisterCommandHandler("removelist", DummyCommand);
             Interpreter.RegisterCommandHandler("clearlist", DummyCommand);
             Interpreter.RegisterCommandHandler("ping", DummyCommand);
@@ -300,7 +292,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("helpbutton", DummyCommand);
             Interpreter.RegisterCommandHandler("guildbutton", DummyCommand);
             Interpreter.RegisterCommandHandler("questsbutton", DummyCommand);
-            Interpreter.RegisterCommandHandler("logoutbutton", DummyCommand);
             Interpreter.RegisterCommandHandler("virtue", DummyCommand);
             Interpreter.RegisterCommandHandler("headmsg", DummyCommand);
             Interpreter.RegisterCommandHandler("partymsg", DummyCommand);
@@ -391,6 +382,36 @@ namespace ClassicUO.LegionScripting
             #endregion
         }
 
+        private static bool Logout(string command, Argument[] args, bool quiet, bool force)
+        {
+            GameActions.Logout();
+            return true;
+        }
+
+        private static bool RenamePet(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: rename 'serial' 'name'");
+
+            GameActions.Rename(args[0].AsSerial(), args[1].AsString());
+
+            return true;
+        }
+
+        private static bool PushList(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: pushlist 'name' 'value' [front]");
+
+            bool front = false;
+
+            if (args.Length > 2 && args[2].AsString().ToLower() == "front")
+                front = true;
+
+            Interpreter.PushList(args[0].AsString(), args[1], front, force);
+
+            return true;
+        }
 
         private static bool CreateList(string command, Argument[] args, bool quiet, bool force)
         {
