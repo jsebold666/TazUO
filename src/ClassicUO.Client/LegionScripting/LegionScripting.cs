@@ -190,15 +190,6 @@ namespace ClassicUO.LegionScripting
             return true;
         }
 
-        private static bool CreateList(string command, Argument[] args, bool quiet, bool force)
-        {
-            Console.WriteLine("Creating list {0}", args[0].AsString());
-
-            Interpreter.CreateList(args[0].AsString());
-
-            return true;
-        }
-
         private static bool PushList(string command, Argument[] args, bool quiet, bool force)
         {
             Console.WriteLine("Pushing {0} to list {1}", args[1].AsString(), args[0].AsString());
@@ -263,12 +254,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("info", InfoGump);
             Interpreter.RegisterCommandHandler("setskill", SetSkillLock);
             Interpreter.RegisterCommandHandler("getproperties", GetProperties);
+            Interpreter.RegisterCommandHandler("turn", TurnCommand);
+            Interpreter.RegisterCommandHandler("createlist", CreateList);
 
 
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("turn", DummyCommand);
             Interpreter.RegisterCommandHandler("feed", DummyCommand);
             Interpreter.RegisterCommandHandler("rename", DummyCommand);
             Interpreter.RegisterCommandHandler("shownames", DummyCommand);
@@ -295,7 +287,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("poplist", DummyCommand);
             Interpreter.RegisterCommandHandler("pushlist", PushList);
             Interpreter.RegisterCommandHandler("removelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("createlist", CreateList);
             Interpreter.RegisterCommandHandler("clearlist", DummyCommand);
             Interpreter.RegisterCommandHandler("ping", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
@@ -398,6 +389,30 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+
+        private static bool CreateList(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: createlist 'name'");
+
+            Interpreter.CreateList(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool TurnCommand(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: turn 'direction'");
+
+            Direction d = Utility.GetDirection(args[0].AsString());
+
+            if (d != Direction.NONE && World.Player.Direction != d)
+                World.Player.Walk(d, false);
+
+            return true;
         }
 
         private static bool InList(string expression, Argument[] args, bool quiet)
@@ -922,21 +937,8 @@ namespace ClassicUO.LegionScripting
                 throw new RunTimeError(null, "Usage: run 'direction'");
 
             string dir = args[0].AsString().ToLower();
-            Direction d = Direction.North;
 
-            switch (dir)
-            {
-                case "north": d = Direction.North; break;
-                case "right": d = Direction.Right; break;
-                case "east": d = Direction.East; break;
-                case "down": d = Direction.Down; break;
-                case "south": d = Direction.South; break;
-                case "left": d = Direction.Left; break;
-                case "west": d = Direction.West; break;
-                case "up": d = Direction.Up; break;
-            }
-
-            World.Player.Walk(d, true);
+            World.Player.Walk(Utility.GetDirection(dir), true);
 
             return true;
         }
@@ -947,21 +949,8 @@ namespace ClassicUO.LegionScripting
                 throw new RunTimeError(null, "Usage: walk 'direction'");
 
             string dir = args[0].AsString().ToLower();
-            Direction d = Direction.North;
 
-            switch (dir)
-            {
-                case "north": d = Direction.North; break;
-                case "right": d = Direction.Right; break;
-                case "east": d = Direction.East; break;
-                case "down": d = Direction.Down; break;
-                case "south": d = Direction.South; break;
-                case "left": d = Direction.Left; break;
-                case "west": d = Direction.West; break;
-                case "up": d = Direction.Up; break;
-            }
-
-            World.Player.Walk(d, false);
+            World.Player.Walk(Utility.GetDirection(dir), false);
 
             return true;
         }

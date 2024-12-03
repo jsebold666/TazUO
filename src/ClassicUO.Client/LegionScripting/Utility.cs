@@ -186,5 +186,38 @@ namespace ClassicUO.LegionScripting
 
             return finalLayer;
         }
+
+        /// <summary>
+        /// Get Direction from a string
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        public static Direction GetDirection(string direction)
+        {
+            switch (direction.ToLower())
+            {
+                case "north": return Direction.North;
+
+                case "northeast":
+                case "right": return Direction.Right;
+
+                case "east": return Direction.East;
+
+                case "southeast":
+                case "down": return Direction.Down;
+
+                case "south": return Direction.South;
+
+                case "southwest":
+                case "left": return Direction.Left;
+
+                case "west": return Direction.West;
+
+                case "northwest":
+                case "up": return Direction.Up;
+                default: return Direction.NONE;
+            }
+        }
+
     }
 }

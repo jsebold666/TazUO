@@ -240,6 +240,22 @@ endif
 ```
 
 
+## `turn`
+
+Turn your character in a direction  
+`turn 'direction'`  
+Example: `turn 'north'`  
+
+
+
+## `createlist`
+
+Create a list  
+`createlist 'name'`  
+Example: `createlist 'pets'`  
+
+
+
 
 
 
@@ -407,6 +423,8 @@ Example: `if inlist 'pets' '0x4532345'`
 - `mana`, `maxmana`  
 - `x`, `y`, `z`  
 - `true`, `false`
+- `found` <- Available when using commands like findtype  
+
 
 ## Objects
 
