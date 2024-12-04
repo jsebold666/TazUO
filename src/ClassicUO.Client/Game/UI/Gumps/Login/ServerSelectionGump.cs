@@ -56,7 +56,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             Add
             (
-                new Button((int) Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
+                new Button((int)Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
                 {
                     X = 30, Y = 680, ButtonAction = ButtonAction.Activate
                 }
@@ -64,9 +64,9 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             Add
             (
-                new Button((int) Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
+                new Button((int)Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
                 {
-                    X = 780, Y = 680, ButtonAction = ButtonAction.Activate
+                    X = 980, Y = 680, ButtonAction = ButtonAction.Activate
                 }
             );
 
@@ -88,20 +88,14 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     (
                         new Label(ClilocLoader.Instance.GetString(1044577), true, textColor, font: 1)
                         {
-                            X = 400, Y = 70
+                            X = 640, Y = 70
                         }
                     ); // "Latency:"
 
-                    Add
-                    (
-                        new Label(ClilocLoader.Instance.GetString(1044578), true, textColor, font: 1)
-                        {
-                            X = 470, Y = 70
-                        }
-                    ); // "Packet Loss:"
+
                 }
 
-     
+
             }
             else
             {
@@ -119,25 +113,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     new Label(ResGumps.Latency, false, textColor, font: 9)
                     {
-                        X = 400, Y = 70
+                        X = 600, Y = 70
                     }
                 );
 
-                Add
-                (
-                    new Label(ResGumps.PacketLoss, false, textColor, font: 9)
-                    {
-                        X = 470, Y = 70
-                    }
-                );
-
-                Add
-                (
-                    new Label(ResGumps.SortBy, false, textColor, font: 9)
-                    {
-                        X = 153, Y = 368
-                    }
-                );
             }
 
             // Sever Scroll Area
@@ -167,6 +146,16 @@ namespace ClassicUO.Game.UI.Gumps.Login
             Add(scrollArea);
             scrollArea.Add(databox);
 
+            Add
+                (
+                    new Label("Last server is played:", false, 0x0481, font: 9)
+                    {
+                        X = 233,
+                        Y = 620
+                    }
+                );
+
+
             if (loginScene.Servers.Length != 0)
             {
                 int index = loginScene.GetServerIndexFromSettings();
@@ -176,7 +165,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     new Label(loginScene.Servers[index].Name, false, 0x0481, font: 9)
                     {
                         X = 233,
-                        Y = 620
+                        Y = 640
                     }
                 );
             }
@@ -265,7 +254,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
         {
             private readonly int _buttonId;
             private readonly ServerListEntry _entry;
-            private readonly HoveredLabel _server_packet_loss;
             private readonly HoveredLabel _server_ping;
             private readonly HoveredLabel _serverName;
             private uint _pingCheckTime = 0;
@@ -305,31 +293,15 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         font: font
                     )
                     {
-                        X = 250,
+                        X = 540,
                         AcceptMouseInput = false
                     }
                 );
 
-                Add
-                (
-                    _server_packet_loss = new HoveredLabel
-                    (
-                        CUOEnviroment.NoServerPing ? string.Empty : "-",
-                        false,
-                        normal_hue,
-                        selected_hue,
-                        selected_hue,
-                        font: font
-                    )
-                    {
-                        X = 320,
-                        AcceptMouseInput = false
-                    }
-                );
 
 
                 AcceptMouseInput = true;
-                Width = 370;
+                Width = 620;
                 Height = 25;
 
                 WantUpdateSize = false;
@@ -340,7 +312,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 base.OnMouseEnter(x, y);
 
                 _serverName.IsSelected = true;
-                _server_packet_loss.IsSelected = true;
                 _server_ping.IsSelected = true;
             }
 
@@ -349,7 +320,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 base.OnMouseExit(x, y);
 
                 _serverName.IsSelected = false;
-                _server_packet_loss.IsSelected = false;
                 _server_ping.IsSelected = false;
             }
 
@@ -397,7 +367,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                             break;
                     }
 
-                    _server_packet_loss.Text = $"{_entry.PacketLoss}%";
                 }
             }
         }

@@ -42,6 +42,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
     internal class LoginBackground : Gump
     {
         private Texture2D LoginBackgroundImg = PNGLoader.Instance.GetImageTexture(Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "loginbg.png"));
+       
         public LoginBackground() : base(0, 0)
         {
            
@@ -58,16 +59,15 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     )
                 );
 
-                // UO Flag
-                Add(new GumpPic(0, 4, 0x15A0, 0) { AcceptKeyboardInput = false });
+
 
                 // Quit Button
                 Add
                 (
                     new Button(0, 0x1589, 0x158B, 0x158A)
                     {
-                        X = 555,
-                        Y = 4,
+                        X = 980,
+                        Y = 0,
                         ButtonAction = ButtonAction.Activate,
                         AcceptKeyboardInput = false
                     }

@@ -104,13 +104,13 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             bool unicode = isAsianLang;
             byte font = (byte)(isAsianLang ? 1 : 2);
-            ushort hue = (ushort)(isAsianLang ? 0xFFFF : 0x0386);
+            ushort hue = (ushort)(isAsianLang ? 0x0386 : 0x0386);
 
             Add
             (
                 new Label(ClilocLoader.Instance.GetString(3000050, "Character Selection"), unicode, hue, font: font)
                 {
-                    X = 267, Y = listTitleY
+                    X = 367, Y = listTitleY
                 },
                 1
             );
@@ -141,7 +141,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     (
                         new CharacterEntryGump((uint) i, character, bodyId, SelectCharacter, LoginCharacter)
                         {
-                            X = 30 + posInList * 200,
+                            X = 30 + posInList * 150,
                             Y = yOffset + posInList * i + 3,
                             Hue = i == _selectedCharacter ? SELECTED_COLOR : NORMAL_COLOR
                         },
@@ -372,7 +372,18 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
                 if (items != null && savePath != null)
                 {
-                    foreach (var item in items.Values)
+                    var customLayerOrder = new Dictionary<Layer, int>
+                    {
+                    { Layer.Robe, 1 },
+                    { Layer.Waist, 2 },
+                    { Layer.OneHanded, 1 },
+                    { Layer.TwoHanded, 1 },
+                    { Layer.Talisman, 1 }
+                    };
+
+                    foreach (var item in items.Values
+                        .OrderBy(i => customLayerOrder.ContainsKey(i.Layer) ? customLayerOrder[i.Layer] : 0)
+                        .ThenBy(i => i.Layer))
                     {
                         if (item.Graphic > 0 && item.Layer != Layer.Bracelet || item.Graphic > 0 && item.Layer != Layer.Ring) // Certifique-se de que o graphic está presente
                         {

@@ -42,6 +42,9 @@ using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using SDL2;
 using System.Collections.Generic;
+using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
@@ -56,6 +59,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
         private readonly StbTextBox _textboxAccount;
 
         private float _time;
+        private Texture2D LogoBackgroundImg = PNGLoader.Instance.GetImageTexture(Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "logolegion.png"));
+
 
         public LoginGump(LoginScene scene) : base(0, 0)
         {
@@ -71,33 +76,31 @@ namespace ClassicUO.Game.UI.Gumps.Login
             _buttonNormal = 0x5CD;
             _buttonOver = 0x5CB;
             UIManager.Add(new LoginBackground());
-            Add
-           (
-              new AlphaBlendControl
-              {
-                  X = 700,
-                  Y = 510,
-                  Width = 300,
-                  Height = 230,
-                  Hue = 0 // Cor preta (0x0000)
-              }
-           );
+            Add(new CustomGumpPic
+                    (
+                        380,
+                        200,
+                        LogoBackgroundImg,
+                        0
+                    ));
+
+               
 
             Add
                (
                    new Label($"UO Version {Settings.GlobalSettings.ClientVersion}.", false, 0x034E, font: 9)
                    {
-                       X = 725,
-                       Y = 685
+                       X = 395,
+                       Y = 700
                    }
                );
 
             Add
             (
-                new Label(string.Format("TazUO Version {0}", CUOEnviroment.Version), false, 0x034E, font: 9)
+                new Label(string.Format("LegionUO Version {0}", CUOEnviroment.Version), false, 0x034E, font: 9)
                 {
-                    X = 725,
-                    Y = 700
+                    X = 395,
+                    Y = 720
                 }
             );
 
@@ -107,14 +110,14 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 _nextArrow0 = new Button((int)Buttons.NextArrow, 0x5CD, 0x5CC, 0x5CB)
                 {
-                    X = 890,
-                    Y = 690,
+                    X = 455,
+                    Y = 570,
                     ButtonAction = ButtonAction.Activate
                 }
             );
 
-            offsetX = 710;
-            offsetY = 530;
+            offsetX = 370;
+            offsetY = 430;
             offtextY = 40;
 
 
@@ -130,8 +133,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     false
                 )
                 {
-                    X = 720,
-                    Y = 670
+                    X = 510,
+                    Y = 510
                 }
             );
 
@@ -147,8 +150,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     false
                 )
                 {
-                    X = 720,
-                    Y = 640
+                    X = 375,
+                    Y = 510
                 }
             );
 
@@ -193,8 +196,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 false
             )
             {
-                X = 720,
-                Y = 610,
+                X = 375,
+                Y = 535,
                 IsChecked = Settings.GlobalSettings.LoginMusic
             };
 
@@ -348,14 +351,14 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             TextBox _;
             HitBox _hit;
-            Add(_ = new TextBox("TazUO Wiki", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 700, AcceptMouseInput = true });
+            Add(_ = new TextBox("LegionUO Wiki", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 700, AcceptMouseInput = true });
             Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
             _hit.MouseUp += (s, e) =>
             {
                 Utility.Platforms.PlatformHelper.LaunchBrowser("https://github.com/bittiez/ClassicUO/wiki");
             };
 
-            Add(_ = new TextBox("TazUO Discord", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 720, AcceptMouseInput = true });
+            Add(_ = new TextBox("LegionUO Discord", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 720, AcceptMouseInput = true });
             Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
             _hit.MouseUp += (s, e) =>
             {
