@@ -265,6 +265,18 @@ Note: `front` is optional, it will be added to the back of the list by default
 Add `!` modifier(`pushlist!`) to only add the item if it is not already in the list  
 
 
+## `clearlist`
+
+Clear a list of it's items  
+`clearlist 'name'`
+
+
+## `removelist`
+
+Remove a list  
+`removelist 'name'`
+
+
 ## `rename`
 
 Rename a pet  
@@ -272,11 +284,19 @@ Rename a pet
 Example: `rename '0x3435345' 'KillMe'`
 
 
-
 ## `logout`
 
 Logout of the game  
 `logout`
+
+
+## `shownames`
+
+Show all names of mobiles  
+`shownames`
+
+
+
 
 
 
@@ -432,6 +452,21 @@ Example: `if not listexists 'pets'`
 Check if a list contains a value  
 `inlist 'name' 'value'`  
 Example: `if inlist 'pets' '0x4532345'`
+
+
+## `nearesthostile`
+
+Find the nearest hostile(Gray, criminal, murderer, enemy)  
+`nearesthostile ['distance']`  
+Example: `if nearesthostile`  
+Note: if a hostile was found, you can use `'found'` to reference it  
+
+
+## `counttype`
+
+Get the count of a type of item in a container  
+`counttype 'graphic' 'source' ['hue'] ['ground range']`  
+Example: `while counttype '0x1bf3' 'backpack' > 3`  
 
 
 

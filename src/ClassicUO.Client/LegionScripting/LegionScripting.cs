@@ -252,11 +252,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("pushlist", PushList);
             Interpreter.RegisterCommandHandler("rename", RenamePet);
             Interpreter.RegisterCommandHandler("logout", Logout);
+            Interpreter.RegisterCommandHandler("shownames", ShowNames);
+            Interpreter.RegisterCommandHandler("clearlist", ClearList);
+            Interpreter.RegisterCommandHandler("removelist", RemoveList);
 
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("shownames", DummyCommand);
             Interpreter.RegisterCommandHandler("togglehands", DummyCommand);
             Interpreter.RegisterCommandHandler("equipitem", DummyCommand);
             Interpreter.RegisterCommandHandler("togglemounted", DummyCommand);
@@ -278,8 +280,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("closegump", DummyCommand);
             Interpreter.RegisterCommandHandler("clearjournal", DummyCommand);
             Interpreter.RegisterCommandHandler("poplist", DummyCommand);
-            Interpreter.RegisterCommandHandler("removelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearlist", DummyCommand);
             Interpreter.RegisterCommandHandler("ping", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
             Interpreter.RegisterCommandHandler("playsound", DummyCommand);
@@ -323,7 +323,6 @@ namespace ClassicUO.LegionScripting
             #endregion
 
             #region Expressions
-            //Finished
             Interpreter.RegisterExpressionHandler("timerexists", TimerExists);
             Interpreter.RegisterExpressionHandler("timerexpired", TimerExpired);
             Interpreter.RegisterExpressionHandler("findtype", FindType);
@@ -343,15 +342,11 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("listcount", ListCount);
             Interpreter.RegisterExpressionHandler("listexists", ListExists);
             Interpreter.RegisterExpressionHandler("inlist", InList);
-
-
-            //Unfinished
-            Interpreter.RegisterExpressionHandler("counttype", DummyExpression);
-            Interpreter.RegisterExpressionHandler("counttypeground", DummyExpression);
+            Interpreter.RegisterExpressionHandler("nearesthostile", NearestHostile);
+            Interpreter.RegisterExpressionHandler("counttype", CountType);
             #endregion
 
             #region Player Values
-            //Finished
             Interpreter.RegisterExpressionHandler("mana", GetPlayerMana);
             Interpreter.RegisterExpressionHandler("maxmana", GetPlayerMaxMana);
             Interpreter.RegisterExpressionHandler("hits", GetPlayerHits);
@@ -367,7 +362,6 @@ namespace ClassicUO.LegionScripting
             #endregion
 
             #region Default aliases
-            //Finished
             Interpreter.RegisterAliasHandler("backpack", DefaultAlias);
             Interpreter.RegisterAliasHandler("bank", DefaultAlias);
             Interpreter.RegisterAliasHandler("lastobject", DefaultAlias);
@@ -380,6 +374,79 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool RemoveList(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: removelist 'name'");
+
+            Interpreter.DestroyList(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool ClearList(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: clearlist 'name'");
+
+            Interpreter.ClearList(args[0].AsString());
+
+            return true;
+        }
+
+        private static bool ShowNames(string command, Argument[] args, bool quiet, bool force)
+        {
+            GameActions.AllNames();
+            return true;
+        }
+
+        private static int CountType(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: counttype 'graphic' 'source' 'hue', 'ground range'");
+
+            uint graphic = args[0].AsUInt();
+            uint source = args[1].AsSerial();
+            if (source == MAX_SERIAL) source = uint.MaxValue;
+
+            ushort hue = args.Length > 2 ? args[2].AsUShort() : ushort.MaxValue;
+
+            int ground = args.Length > 3 ? args[3].AsInt() : int.MaxValue;
+
+            var items = Utility.FindItems(graphic, parOrRootContainer: source, hue: hue, groundRange: ground);
+
+            int count = 0;
+
+            foreach (var item in items)
+                count += item.Amount == 0 ? 1 : item.Amount;
+
+            return count;
+        }
+
+        private static bool NearestHostile(string expression, Argument[] args, bool quiet)
+        {
+            // nearesthostile 'distance'
+            int maxDist = 10;
+
+            if (args.Length > 0)
+            {
+                maxDist = args[0].AsInt();
+            }
+
+            uint m = World.FindNearest(ScanTypeObject.Mobiles);
+
+            if (SerialHelper.IsMobile(m) && World.Mobiles.TryGetValue(m, out var mobile))
+            {
+                if (mobile.Distance <= maxDist)
+                {
+                    Interpreter.SetAlias("found", m);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool Logout(string command, Argument[] args, bool quiet, bool force)
