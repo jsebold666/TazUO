@@ -469,6 +469,16 @@ Get the count of a type of item in a container
 Example: `while counttype '0x1bf3' 'backpack' > 3`  
 
 
+## `dead`
+
+Check if a mobile is dead  
+`dead ['serial']`  
+Example: `if dead`  
+Not: If you don't include serial, it will default to yourself
+
+
+
+
 
 # Aliases
 

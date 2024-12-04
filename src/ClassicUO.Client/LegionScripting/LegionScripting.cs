@@ -359,6 +359,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("name", GetPlayerName);
             Interpreter.RegisterExpressionHandler("true", GetTrue);
             Interpreter.RegisterExpressionHandler("false", GetFalse);
+            Interpreter.RegisterExpressionHandler("dead", IsDead);
             #endregion
 
             #region Default aliases
@@ -374,6 +375,15 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool IsDead(string expression, Argument[] args, bool quiet)
+        {
+            Mobile m = World.Player;
+
+            if (args.Length > 0) World.Mobiles.TryGetValue(args[0].AsSerial(), out m);
+
+            return m.IsDead;
         }
 
         private static bool RemoveList(string command, Argument[] args, bool quiet, bool force)

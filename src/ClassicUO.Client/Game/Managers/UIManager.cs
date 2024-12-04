@@ -436,6 +436,8 @@ namespace ClassicUO.Game.Managers
                 }
 
                 _needSort = Gumps.Count > 1;
+
+                gump.SetInScreen(); //Solve issue of gumps being out of screen permanetly 
             }
         }
 
