@@ -1,4 +1,6 @@
-﻿using ClassicUO.Assets;
+﻿using System;
+using System.IO;
+using ClassicUO.Assets;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
@@ -11,18 +13,58 @@ namespace ClassicUO.LegionScripting
     {
         private AlphaBlendControl background;
         private ScrollArea scrollArea;
+        private NiceButton refresh, add;
 
         public ScriptManagerGump() : base(300, 400, 200, 300, 0, 0)
         {
             CanCloseWithRightClick = true;
             AcceptMouseInput = true;
             CanMove = true;
+            AnchorType = ANCHOR_TYPE.DISABLED;
 
             LegionScripting.LoadScriptsFromFile();
 
             Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize });
 
-            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2), true));
+            Add(refresh = new NiceButton(BorderControl.BorderSize, BorderControl.BorderSize, 150, 50, ButtonAction.Default, "Refresh") { IsSelectable = false });
+
+            refresh.MouseDown += (s, e) =>
+            {
+                Dispose();
+                ScriptManagerGump g = new ScriptManagerGump() { X = X, Y = Y };
+                g.ResizeWindow(new Point(Width, Height));
+                UIManager.Add(g);
+            };
+
+            Add(add = new NiceButton(0, BorderControl.BorderSize, 150, 50, ButtonAction.Default, "New") { IsSelectable = false });
+
+            add.MouseDown += (s, e) =>
+            {
+                InputRequest r = new InputRequest("Enter a name for this script. Do not include any file extensions.", "Create", "Cancel", (r, s) =>
+                {
+                    if (r == InputRequest.Result.BUTTON1 && !string.IsNullOrEmpty(s))
+                    {
+                        int p = s.IndexOf('.');
+                        if (p != -1)
+                            s = s.Substring(0, p);
+
+                        try
+                        {
+                            if (!File.Exists(Path.Combine(LegionScripting.ScriptPath, s + ".lscript")))
+                            {
+                                File.WriteAllText(Path.Combine(LegionScripting.ScriptPath, s + ".lscript"), "// My script");
+                                refresh.InvokeMouseDown(Point.Zero, MouseButtonType.Left);
+                            }
+                        }
+                        catch (Exception e) { Console.WriteLine(e.ToString()); }
+                    }
+                });
+                r.CenterXInScreen();
+                r.CenterYInScreen();
+                UIManager.Add(r);
+            };
+
+            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize + 50, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 50, true));
             scrollArea.ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways;
 
             int y = 0;
@@ -47,8 +89,12 @@ namespace ClassicUO.LegionScripting
                 background.Width = Width - (BorderControl.BorderSize * 2);
                 background.Height = Height - (BorderControl.BorderSize * 2);
 
+                refresh.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
+                add.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
+                add.X = refresh.X + refresh.Width;
+
                 scrollArea.Width = Width - (BorderControl.BorderSize * 2);
-                scrollArea.Height = Height - (BorderControl.BorderSize * 2);
+                scrollArea.Height = Height - (BorderControl.BorderSize * 2) - 50;
                 scrollArea.UpdateScrollbarPosition();
 
                 foreach (Control c in scrollArea.Children)
@@ -71,6 +117,7 @@ namespace ClassicUO.LegionScripting
             {
                 Width = w;
                 Height = 50;
+                Script = script;
 
                 Add(background = new AlphaBlendControl(0.35f) { Height = Height, Width = Width });
 
@@ -87,13 +134,43 @@ namespace ClassicUO.LegionScripting
                 Add(menu = new NiceButton(w - 25, 0, 25, Height, ButtonAction.Default, "+"));
                 menu.MouseDown += (s, e) => { ContextMenu?.Show(); };
 
+                SetMenuColor();
+
                 UpdateSize(w);
-                Script = script;
+                SlowUpdate(); //Set background colors
 
                 ContextMenu = new ContextMenuControl();
 
                 ContextMenu.Add(new ContextMenuItemEntry("Edit", () => { UIManager.Add(new ScriptEditor(Script)); }));
                 ContextMenu.Add(new ContextMenuItemEntry("Autostart", () => { GenAutostartContext().Show(); }));
+                ContextMenu.Add(new ContextMenuItemEntry("Delete", () =>
+                {
+                    QuestionGump g = new QuestionGump("Are you sure?", (r) =>
+                    {
+                        if (r)
+                        {
+                            try
+                            {
+                                File.Delete(Script.FullPath);
+                                LegionScripting.LoadedScripts.Remove(Script);
+                                Dispose();
+                            }
+                            catch (Exception) { }
+                        }
+                    });
+                    UIManager.Add(g);
+                }));
+            }
+
+            private void SetMenuColor()
+            {
+                bool global = LegionScripting.AutoLoadEnabled(Script, true);
+                bool chara = LegionScripting.AutoLoadEnabled(Script, false);
+
+                if (global || chara)
+                    menu.TextLabel.Hue = 1970;
+                else
+                    menu.TextLabel.Hue = ushort.MaxValue;
             }
 
             private ContextMenuControl GenAutostartContext()
@@ -102,8 +179,8 @@ namespace ClassicUO.LegionScripting
                 bool global = LegionScripting.AutoLoadEnabled(Script, true);
                 bool chara = LegionScripting.AutoLoadEnabled(Script, false);
 
-                context.Add(new ContextMenuItemEntry("All characters", () => { LegionScripting.SetAutoPlay(Script, true, !global); }, true, global));
-                context.Add(new ContextMenuItemEntry("This character", () => { LegionScripting.SetAutoPlay(Script, false, !chara); }, true, chara));
+                context.Add(new ContextMenuItemEntry("All characters", () => { LegionScripting.SetAutoPlay(Script, true, !global); SetMenuColor(); }, true, global));
+                context.Add(new ContextMenuItemEntry("This character", () => { LegionScripting.SetAutoPlay(Script, false, !chara); SetMenuColor(); }, true, chara));
 
                 return context;
             }
@@ -125,18 +202,19 @@ namespace ClassicUO.LegionScripting
             public override void SlowUpdate()
             {
                 base.SlowUpdate();
-                if (Script.GetScript.IsPlaying)
-                {
-                    background.BaseColor = Color.DarkGreen;
-                    play.IsSelected = true;
-                    stop.IsSelected = false;
-                }
-                else
-                {
-                    background.BaseColor = Color.DarkRed;
-                    stop.IsSelected = true;
-                    play.IsSelected = false;
-                }
+                if (Script.GetScript != null)
+                    if (Script.GetScript.IsPlaying)
+                    {
+                        background.BaseColor = Color.DarkGreen;
+                        play.IsSelected = true;
+                        stop.IsSelected = false;
+                    }
+                    else
+                    {
+                        background.BaseColor = Color.DarkRed;
+                        stop.IsSelected = true;
+                        play.IsSelected = false;
+                    }
             }
 
             public void UpdateSize(int w)

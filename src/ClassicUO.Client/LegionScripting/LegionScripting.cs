@@ -20,7 +20,7 @@ namespace ClassicUO.LegionScripting
     {
         private const uint MAX_SERIAL = 2147483647;
         private static bool _enabled, _loaded;
-        private static string scriptPath;
+        public static string ScriptPath;
 
         private static List<ScriptFile> runningScripts = new List<ScriptFile>();
         private static List<ScriptFile> removeRunningScripts = new List<ScriptFile>();
@@ -31,7 +31,7 @@ namespace ClassicUO.LegionScripting
 
         public static void Init()
         {
-            scriptPath = Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts");
+            ScriptPath = Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts");
 
             CommandManager.Register("lscript", (args) =>
             {
@@ -88,8 +88,8 @@ namespace ClassicUO.LegionScripting
 
         public static void LoadScriptsFromFile()
         {
-            if (!Directory.Exists(scriptPath))
-                Directory.CreateDirectory(scriptPath);
+            if (!Directory.Exists(ScriptPath))
+                Directory.CreateDirectory(ScriptPath);
 
             string[] loadedScripts = new string[LoadedScripts.Count];
             int i = 0;
@@ -100,7 +100,7 @@ namespace ClassicUO.LegionScripting
                 i++;
             }
 
-            foreach (string file in Directory.EnumerateFiles(scriptPath))
+            foreach (string file in Directory.EnumerateFiles(ScriptPath))
             {
                 if (file.EndsWith(".lscript"))
                 {
@@ -150,6 +150,9 @@ namespace ClassicUO.LegionScripting
 
         public static bool AutoLoadEnabled(ScriptFile script, bool global)
         {
+            if (!_enabled)
+                return false;
+
             if (global)
                 return lScriptSettings.GlobalAutoStartScripts.Contains(script.FileName);
             else
@@ -233,7 +236,7 @@ namespace ClassicUO.LegionScripting
 
         public static void OnUpdate()
         {
-            if (!_enabled)
+            if (!_enabled || !World.InGame)
                 return;
 
             foreach (ScriptFile script in runningScripts)
