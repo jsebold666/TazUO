@@ -121,7 +121,7 @@ namespace ClassicUO.LegionScripting
 
                 Add(background = new AlphaBlendControl(0.35f) { Height = Height, Width = Width });
 
-                Add(label = new TextBox(script.FileName, TrueTypeLoader.EMBEDDED_FONT, 18, w - 130, Color.White, strokeEffect: false));
+                Add(label = new TextBox(script.FileName.Substring(0, script.FileName.IndexOf('.')), TrueTypeLoader.EMBEDDED_FONT, 18, w - 130, Color.White, strokeEffect: false));
                 label.Y = (Height - label.MeasuredSize.Y) / 2;
                 label.X = 5;
 

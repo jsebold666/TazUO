@@ -444,6 +444,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("nearesthostile", NearestHostile);
             Interpreter.RegisterExpressionHandler("counttype", CountType);
             Interpreter.RegisterExpressionHandler("ping", Ping);
+
             #endregion
 
             #region Player Values
@@ -651,7 +652,11 @@ namespace ClassicUO.LegionScripting
         {
             Mobile m = World.Player;
 
-            if (args.Length > 0) World.Mobiles.TryGetValue(args[0].AsSerial(), out m);
+            if (args.Length > 0)
+                if (World.Mobiles.TryGetValue(args[0].AsSerial(), out m))                
+                    return m.IsDead;                
+                else
+                    return true;
 
             return m.IsDead;
         }
@@ -715,7 +720,7 @@ namespace ClassicUO.LegionScripting
                 maxDist = args[0].AsInt();
             }
 
-            uint m = World.FindNearest(ScanTypeObject.Mobiles);
+            uint m = World.FindNearest(ScanTypeObject.Hostile);
 
             if (SerialHelper.IsMobile(m) && World.Mobiles.TryGetValue(m, out var mobile))
             {
@@ -991,6 +996,11 @@ namespace ClassicUO.LegionScripting
                 }
                 else
                     return true;
+            }
+            else
+            if (World.Mobiles.TryGetValue(args[0].AsSerial(), out var m))
+            {
+                return true;
             }
 
             return false;
