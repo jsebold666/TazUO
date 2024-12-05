@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
@@ -25,6 +26,8 @@ namespace ClassicUO.LegionScripting
         private static List<ScriptFile> removeRunningScripts = new List<ScriptFile>();
 
         public static List<ScriptFile> LoadedScripts = new List<ScriptFile>();
+
+        private static LScriptSettings lScriptSettings;
 
         public static void Init()
         {
@@ -69,6 +72,9 @@ namespace ClassicUO.LegionScripting
             }
 
             LoadScriptsFromFile();
+            LoadLScriptSettings();
+            AutoPlayGlobal();
+            AutoPlayChar();
             _enabled = true;
         }
 
@@ -107,12 +113,121 @@ namespace ClassicUO.LegionScripting
             }
         }
 
+        public static void SetAutoPlay(ScriptFile script, bool global, bool enabled)
+        {
+            if (global)
+            {
+                if (enabled)
+                {
+                    if (!lScriptSettings.GlobalAutoStartScripts.Contains(script.FileName))
+                        lScriptSettings.GlobalAutoStartScripts.Add(script.FileName);
+                }
+                else
+                {
+                    lScriptSettings.GlobalAutoStartScripts.Remove(script.FileName);
+                }
+
+            }
+            else
+            {
+                if (lScriptSettings.CharAutoStartScripts.ContainsKey(GetAccountCharName()))
+                {
+                    if (enabled)
+                    {
+                        if (!lScriptSettings.CharAutoStartScripts[GetAccountCharName()].Contains(script.FileName))
+                            lScriptSettings.CharAutoStartScripts[GetAccountCharName()].Add(script.FileName);
+                    }
+                    else
+                        lScriptSettings.CharAutoStartScripts[GetAccountCharName()].Remove(script.FileName);
+                }
+                else
+                {
+                    if (enabled)
+                        lScriptSettings.CharAutoStartScripts.Add(GetAccountCharName(), new List<string> { script.FileName });
+                }
+            }
+        }
+
+        public static bool AutoLoadEnabled(ScriptFile script, bool global)
+        {
+            if (global)
+                return lScriptSettings.GlobalAutoStartScripts.Contains(script.FileName);
+            else
+            {
+                if (lScriptSettings.CharAutoStartScripts.TryGetValue(GetAccountCharName(), out var scripts))
+                {
+                    return scripts.Contains(script.FileName);
+                }
+            }
+
+            return false;
+        }
+
+        private static void AutoPlayGlobal()
+        {
+            foreach (string script in lScriptSettings.GlobalAutoStartScripts)
+            {
+                foreach (ScriptFile f in LoadedScripts)
+                    if (f.FileName == script)
+                        PlayScript(f);
+            }
+        }
+
+        private static string GetAccountCharName()
+        {
+            return ProfileManager.CurrentProfile.Username + ProfileManager.CurrentProfile.CharacterName;
+        }
+
+        private static void AutoPlayChar()
+        {
+            if (World.Player == null)
+                return;
+
+            if (lScriptSettings.CharAutoStartScripts.TryGetValue(GetAccountCharName(), out var scripts))
+                foreach (ScriptFile f in LoadedScripts)
+                    if (scripts.Contains(f.FileName))
+                        PlayScript(f);
+
+        }
+
+        private static void LoadLScriptSettings()
+        {
+            string path = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "lscript.json");
+
+            try
+            {
+                if (File.Exists(path))
+                {
+                    lScriptSettings = JsonSerializer.Deserialize<LScriptSettings>(File.ReadAllText(path));
+                    return;
+                }
+            }
+            catch (Exception e) { }
+
+            lScriptSettings = new LScriptSettings();
+        }
+
+        private static void SaveScriptSettings()
+        {
+            string path = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "lscript.json");
+
+            string json = JsonSerializer.Serialize(lScriptSettings);
+            try
+            {
+                File.WriteAllText(path, json);
+            }
+            catch (Exception e) { }
+        }
+
         public static void Unload()
         {
-            foreach (ScriptFile script in runningScripts)
-                StopScript(script);
+            while (runningScripts.Count > 0)
+                StopScript(runningScripts[0]);
 
             Interpreter.ClearAllLists();
+
+            SaveScriptSettings();
+
             _enabled = false;
         }
 
@@ -150,6 +265,9 @@ namespace ClassicUO.LegionScripting
         {
             if (script != null)
             {
+                if (runningScripts.Contains(script)) //Already playing
+                    return;
+
                 script.GenerateScript();
                 runningScripts.Add(script);
                 script.GetScript.IsPlaying = true;
@@ -600,7 +718,7 @@ namespace ClassicUO.LegionScripting
             {
                 if (mobile.Distance <= maxDist)
                 {
-                    Interpreter.SetAlias("found", m);
+                    Interpreter.SetAlias(Constants.FOUND, m);
                     return true;
                 }
             }
@@ -717,7 +835,7 @@ namespace ClassicUO.LegionScripting
                 Item item = World.Player.FindItemByLayer(finalLayer);
                 if (item != null)
                 {
-                    Interpreter.SetAlias("found", item);
+                    Interpreter.SetAlias(Constants.FOUND, item);
                     return true;
                 }
             }
@@ -949,14 +1067,14 @@ namespace ClassicUO.LegionScripting
 
             if (foundVal != uint.MaxValue)
             {
-                Interpreter.SetAlias("found", foundVal);
+                Interpreter.SetAlias(Constants.FOUND, foundVal);
                 return true;
             }
             try
             {
                 if (World.Items.TryGetValue(args[0].AsSerial(), out Item i))
                 {
-                    Interpreter.SetAlias("found", i);
+                    Interpreter.SetAlias(Constants.FOUND, i);
                     return true;
                 }
             }
@@ -985,7 +1103,7 @@ namespace ClassicUO.LegionScripting
             List<Item> items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
 
             if (items.Count > 0)
-                Interpreter.SetAlias("found", items[0]);
+                Interpreter.SetAlias(Constants.FOUND, items[0]);
 
             return (uint)items.Count;
         }
@@ -1248,7 +1366,7 @@ namespace ClassicUO.LegionScripting
 
             var items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue);
 
-            if(items.Count > 0)
+            if (items.Count > 0)
             {
                 GameActions.DoubleClick(items[0]);
             }

@@ -20,7 +20,7 @@ namespace ClassicUO.LegionScripting
 
             LegionScripting.LoadScriptsFromFile();
 
-            Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize});
+            Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize });
 
             Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2), true));
             scrollArea.ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways;
@@ -63,7 +63,7 @@ namespace ClassicUO.LegionScripting
         {
             private AlphaBlendControl background;
             private TextBox label;
-            private NiceButton play, stop, edit;
+            private NiceButton play, stop, menu;
 
             public ScriptFile Script { get; }
 
@@ -72,28 +72,40 @@ namespace ClassicUO.LegionScripting
                 Width = w;
                 Height = 50;
 
-                Add(background = new AlphaBlendControl(0.35f) {  Height = Height, Width = Width });
+                Add(background = new AlphaBlendControl(0.35f) { Height = Height, Width = Width });
 
-                Add(label = new TextBox(script.FileName, TrueTypeLoader.EMBEDDED_FONT, 18, w - 155, Color.White, strokeEffect: false));
+                Add(label = new TextBox(script.FileName, TrueTypeLoader.EMBEDDED_FONT, 18, w - 130, Color.White, strokeEffect: false));
                 label.Y = (Height - label.MeasuredSize.Y) / 2;
                 label.X = 5;
 
-                Add(edit = new NiceButton(w - 150, 0, 50, Height, ButtonAction.Default, "Edit"));
-                edit.MouseUp += Edit_MouseUp;
-
-                Add(play = new NiceButton(w - 100, 0, 50, Height, ButtonAction.Default, "Play"));
+                Add(play = new NiceButton(w - 125, 0, 50, Height, ButtonAction.Default, "Play"));
                 play.MouseUp += Play_MouseUp;
 
-                Add(stop = new NiceButton(w - 50, 0, 50, Height, ButtonAction.Default, "Stop"));
+                Add(stop = new NiceButton(w - 75, 0, 50, Height, ButtonAction.Default, "Stop"));
                 stop.MouseUp += Stop_MouseUp;
+
+                Add(menu = new NiceButton(w - 25, 0, 25, Height, ButtonAction.Default, "+"));
+                menu.MouseDown += (s, e) => { ContextMenu?.Show(); };
 
                 UpdateSize(w);
                 Script = script;
+
+                ContextMenu = new ContextMenuControl();
+
+                ContextMenu.Add(new ContextMenuItemEntry("Edit", () => { UIManager.Add(new ScriptEditor(Script)); }));
+                ContextMenu.Add(new ContextMenuItemEntry("Autostart", () => { GenAutostartContext().Show(); }));
             }
 
-            private void Edit_MouseUp(object sender, MouseEventArgs e)
+            private ContextMenuControl GenAutostartContext()
             {
-                UIManager.Add(new ScriptEditor(Script));
+                ContextMenuControl context = new ContextMenuControl();
+                bool global = LegionScripting.AutoLoadEnabled(Script, true);
+                bool chara = LegionScripting.AutoLoadEnabled(Script, false);
+
+                context.Add(new ContextMenuItemEntry("All characters", () => { LegionScripting.SetAutoPlay(Script, true, !global); }, true, global));
+                context.Add(new ContextMenuItemEntry("This character", () => { LegionScripting.SetAutoPlay(Script, false, !chara); }, true, chara));
+
+                return context;
             }
 
             private void Stop_MouseUp(object sender, Input.MouseEventArgs e)
@@ -131,9 +143,10 @@ namespace ClassicUO.LegionScripting
             {
                 Width = w;
                 background.Width = w;
-                label.Width = w - 155;
-                play.X = w - 100;
-                stop.X = w - 50;
+                label.Width = w - 130;
+                play.X = label.X + label.Width + 5;
+                stop.X = play.X + play.Width;
+                menu.X = stop.X + stop.Width;
             }
         }
     }

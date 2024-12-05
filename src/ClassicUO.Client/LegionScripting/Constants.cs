@@ -10,5 +10,6 @@ namespace ClassicUO.LegionScripting
     {
         public const string LASTITEMINHAND = "lasthanditem";
         public const string LASTMOUNT = "lastmount";
+        public const string FOUND = "found";
     }
 }
