@@ -330,12 +330,47 @@ Example: `waitforgump '1234' '5000'`
 Gumpid and timeout are both optional. Can use 'lastgump' to get the last gump id after using this command.
 
 
+## `replygump`  
+
+Reply to a gump with a specific button ID.  
+`replygump 'buttonid' 'gumpid'`  
+Example: `replygump '12' '1234'`  
+Gumpid is optional
+
+
+## `closegump`  
+
+Close a gump.  
+`closegump 'gumpid'`  
+Example: `closegump '1234'`  
+This command closes a gump by its ID. If no ID is provided, it defaults to the last gump ID.
+
+
+## `clearjournal`  
+
+Clear the journal.  
+`clearjournal`  
+Example: `clearjournal`
+
+
+## `poplist`  
+
+Remove an item from a list.  
+`poplist 'name' 'value'`  
+Example: `poplist 'myList' 'item1'`
+
 
 
 
 
 
 # Expressions
+
+## `ping`  
+Get the current network ping.  
+`ping`  
+Example: `if ping > 300`
+
 
 ## `timerexists`
 

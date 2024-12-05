@@ -253,16 +253,16 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("togglemounted", ToggleMounted);
             Interpreter.RegisterCommandHandler("promptalias", PromptAlias);
             Interpreter.RegisterCommandHandler("waitforgump", WaitForGump);
+            Interpreter.RegisterCommandHandler("replygump", ReplyGump);
+            Interpreter.RegisterCommandHandler("closegump", CloseGump);
+            Interpreter.RegisterCommandHandler("clearjournal", ClearJournal);
+            Interpreter.RegisterCommandHandler("poplist", PopList);
+
 
 
             //Unfinished below
             Interpreter.RegisterCommandHandler("dress", DummyCommand);
             Interpreter.RegisterCommandHandler("undress", DummyCommand);
-            Interpreter.RegisterCommandHandler("replygump", DummyCommand);
-            Interpreter.RegisterCommandHandler("closegump", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearjournal", DummyCommand);
-            Interpreter.RegisterCommandHandler("poplist", DummyCommand);
-            Interpreter.RegisterCommandHandler("ping", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
             Interpreter.RegisterCommandHandler("playsound", DummyCommand);
             Interpreter.RegisterCommandHandler("resync", DummyCommand);
@@ -287,13 +287,10 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("timermsg", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforprompt", DummyCommand);
             Interpreter.RegisterCommandHandler("cancelprompt", DummyCommand);
-            Interpreter.RegisterCommandHandler("addfriend", DummyCommand);
-            Interpreter.RegisterCommandHandler("removefriend", DummyCommand);
             Interpreter.RegisterCommandHandler("contextmenu", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
             Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
             Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitforproperties", DummyCommand);
             Interpreter.RegisterCommandHandler("autocolorpick", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
             Interpreter.RegisterCommandHandler("targettype", DummyCommand);
@@ -301,7 +298,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("targettile", DummyCommand);
             Interpreter.RegisterCommandHandler("targettileoffset", DummyCommand);
             Interpreter.RegisterCommandHandler("targettilerelative", DummyCommand);
-            Interpreter.RegisterCommandHandler("cleartargetqueue", DummyCommand);
             #endregion
 
             #region Expressions
@@ -326,6 +322,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("inlist", InList);
             Interpreter.RegisterExpressionHandler("nearesthostile", NearestHostile);
             Interpreter.RegisterExpressionHandler("counttype", CountType);
+            Interpreter.RegisterExpressionHandler("ping", Ping);
             #endregion
 
             #region Player Values
@@ -357,6 +354,52 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static uint Ping(string expression, Argument[] args, bool quiet)
+        {
+            return NetClient.Socket.Statistics.Ping;
+        }
+
+        private static bool PopList(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: poplist 'name' 'value'");
+
+            Interpreter.PopList(args[0].AsString(), args[1]);
+
+            return true;
+        }
+
+        private static bool ClearJournal(string command, Argument[] args, bool quiet, bool force)
+        {
+            Interpreter.ClearJournal();
+            return true;
+        }
+
+        private static bool CloseGump(string command, Argument[] args, bool quiet, bool force)
+        {
+            uint gump = args.Length > 0 ? args[0].AsUInt() : World.Player.LastGumpID;
+
+            UIManager.GetGumpServer(gump)?.Dispose();
+
+            return true;
+        }
+
+        private static bool ReplyGump(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: replygump 'buttonid' 'gumpid'");
+
+            int buttonID = args[0].AsInt();
+            uint gumpID = args.Length > 1 ? args[1].AsUInt() : World.Player.LastGumpID;
+
+            Gump g = UIManager.GetGumpServer(gumpID);
+
+            if (g != null)
+                GameActions.ReplyGump(g.LocalSerial, gumpID, buttonID);
+
+            return true;
         }
 
         private static bool WaitForGump(string command, Argument[] args, bool quiet, bool force)

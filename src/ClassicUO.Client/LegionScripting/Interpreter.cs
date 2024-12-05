@@ -308,6 +308,11 @@ namespace LScript
             return false;
         }
 
+        public void ClearJournal()
+        {
+            _journalEntries.Clear();
+        }
+
         private void PushScope(ASTNode node)
         {
             _scope = new Scope(_scope, node);
@@ -1171,6 +1176,14 @@ namespace LScript
             return expression;
         }
 
+        public static void ClearJournal()
+        {
+            if (ActiveScript == null)
+                return;
+
+            ActiveScript.ClearJournal();
+        }
+
         public static bool IsTargetRequested()
         {
             if(ActiveScript != null)
@@ -1297,7 +1310,7 @@ namespace LScript
         public static bool PopList(string name, Argument arg)
         {
             if (!_lists.ContainsKey(name))
-                throw new RunTimeError(null, "List does not exist");
+                return true;
 
             return _lists[name].Remove(arg);
         }
