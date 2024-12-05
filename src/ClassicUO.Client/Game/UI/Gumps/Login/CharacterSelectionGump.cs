@@ -59,8 +59,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
 {
     internal class CharacterSelectionGump : Gump
     {
-        private const ushort SELECTED_COLOR = 0x0021;
-        private const ushort NORMAL_COLOR = 0x034F;
+        private const ushort SELECTED_COLOR = 0x0481;
+        private const ushort NORMAL_COLOR = 0x0481;
         private uint _selectedCharacter;
         private static Art art { get; set; } 
 
@@ -69,7 +69,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             CanCloseWithRightClick = false;
 
             int posInList = 0;
-            int yOffset = 150;
+            int yOffset = 320;
             int yBonus = 0;
             int listTitleY = 106;
 
@@ -84,7 +84,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             if (Client.Version >= ClientVersion.CV_6040 || Client.Version >= ClientVersion.CV_5020 && loginScene.Characters.Length > 5)
             {
                 listTitleY = 96;
-                yOffset = 125;
+                yOffset = 320;
                 yBonus = 45;
             }
 
@@ -104,17 +104,29 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             bool unicode = isAsianLang;
             byte font = (byte)(isAsianLang ? 1 : 2);
-            ushort hue = (ushort)(isAsianLang ? 0x0386 : 0x0386);
+            ushort hue = (ushort)(isAsianLang ? 0 : 0);
 
             Add
             (
                 new Label(ClilocLoader.Instance.GetString(3000050, "Character Selection"), unicode, hue, font: font)
                 {
-                    X = 367, Y = listTitleY
+                    X = 447, Y = listTitleY
                 },
                 1
             );
-            
+
+            Add
+              (
+                 new AlphaBlendControl
+                 {
+                     X = 0,
+                     Y = 300,
+                     Width = 1024,
+                     Height = 300,
+                     Hue = 0 // Cor preta (0x0000)
+                 }
+              );
+
             for (int i = 0, valid = 0; i < loginScene.Characters.Length; i++)
             {
                 string character = loginScene.Characters[i];
@@ -158,7 +170,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     new Button((int) Buttons.New, 0x159D, 0x159F, 0x159E)
                     {
-                        X = 224, Y = 350 + yBonus, ButtonAction = ButtonAction.Activate
+                        X = 30, Y = 210 + yBonus, ButtonAction = ButtonAction.Activate
                     },
                     1
                 );
@@ -168,8 +180,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Button((int) Buttons.Delete, 0x159A, 0x159C, 0x159B)
                 {
-                    X = 442,
-                    Y = 350 + yBonus,
+                    X = 940,
+                    Y = 210 + yBonus,
                     ButtonAction = ButtonAction.Activate
                 },
                 1
@@ -179,7 +191,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Button((int) Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
                 {
-                    X = 586, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 30, Y = 680, ButtonAction = ButtonAction.Activate
                 },
                 1
             );
@@ -188,7 +200,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Button((int) Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
                 {
-                    X = 610, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 980,
+                    Y = 680, ButtonAction = ButtonAction.Activate
                 },
                 1
             );
@@ -329,7 +342,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
         private class CharacterEntryGump : Control
         {
-            private readonly Label _label;
+            private readonly CustomLabelControl _label;
             private readonly Action<uint> _loginFn;
             private readonly Action<uint> _selectedFn;
             private readonly uint _bodyID;
@@ -374,10 +387,13 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 {
                     var customLayerOrder = new Dictionary<Layer, int>
                     {
-                    { Layer.Robe, 1 },
-                    { Layer.Waist, 2 },
-                    { Layer.OneHanded, 1 },
-                    { Layer.TwoHanded, 1 },
+                    { Layer.Helmet, 7 },
+                    { Layer.Robe, 6},
+                    { Layer.Hair, 5 },
+                    { Layer.Beard, 4 },
+                    { Layer.Waist, 3 },
+                    { Layer.OneHanded, 2},
+                    { Layer.TwoHanded, 2 },
                     { Layer.Talisman, 1 }
                     };
 
@@ -398,7 +414,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                                0,
                                0,
                                id,
-                               (ushort)(item.Hue & 0x3FFF),
+                               (ushort)(item.Hue & 0xFFFF),
                                 item.Layer
                             )
                             {
@@ -422,7 +438,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 // Char Name
                 Add
                 (
-                    _label = new Label
+                    _label = new CustomLabelControl
                     (
                         character,
                         false,

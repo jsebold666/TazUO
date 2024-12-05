@@ -42,6 +42,10 @@ using ClassicUO.Resources;
 using ClassicUO.Utility;
 using ClassicUO.Utility.Logging;
 using SDL2;
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using ClassicUO.Game.Managers;
+
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
@@ -52,7 +56,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
         public ServerSelectionGump() : base(0, 0)
         {
-            //AddChildren(new LoginBackground(true));
+            // Background
+            UIManager.Add(new LoginBackground());
 
             Add
             (
@@ -88,7 +93,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     (
                         new Label(ClilocLoader.Instance.GetString(1044577), true, textColor, font: 1)
                         {
-                            X = 640, Y = 70
+                            X = 680, Y = 70
                         }
                     ); // "Latency:"
 
@@ -147,11 +152,38 @@ namespace ClassicUO.Game.UI.Gumps.Login
             scrollArea.Add(databox);
 
             Add
+              (
+                 new SquareBlendControl
+                 {
+                     X = 193,
+                     Y = 620,
+                     Width = 620,
+                     Height = 70,
+                     Hue = 0x1AF // Cor preta (0x0000)
+                 }
+              );
+
+
+
+            Add(new GumpPic(233, 620, 0x0589, 0));
+
+            // Earth
+            Add
+            (
+                new Button((int)Buttons.Earth, 0x15E8, 0x15EA, 0x15E9)
+                {
+                    X = 243,
+                    Y = 630,
+                    ButtonAction = ButtonAction.Activate
+                }
+            );
+
+            Add
                 (
-                    new Label("Last server is played:", false, 0x0481, font: 9)
+                    new Label("Last server is played:", false, 0xFFFF, font: 9)
                     {
-                        X = 233,
-                        Y = 620
+                        X = 330,
+                        Y = 640
                     }
                 );
 
@@ -162,10 +194,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
                 Add
                 (
-                    new Label(loginScene.Servers[index].Name, false, 0x0481, font: 9)
+                    new Label(loginScene.Servers[index].Name, false, 0xFFFF, font: 9)
                     {
-                        X = 233,
-                        Y = 640
+                        X = 330,
+                        Y = 660
                     }
                 );
             }
@@ -265,6 +297,17 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 _buttonId = entry.Index;
 
                 Add
+               (
+                  new AlphaBlendControl
+                  {
+                      X = 0,
+                      Width = 620,
+                      Height = 30,
+                      Hue = 0 // Cor preta (0x0000)
+                  }
+               );
+
+                Add
                 (
                     _serverName = new HoveredLabel
                     (
@@ -302,7 +345,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
                 AcceptMouseInput = true;
                 Width = 620;
-                Height = 25;
+                Height = 31;
 
                 WantUpdateSize = false;
             }

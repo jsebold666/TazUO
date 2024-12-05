@@ -554,5 +554,7 @@ namespace ClassicUO.Game.UI.Controls
                 SelectedObject.Object = World.Get(LocalSerial);
             }
         }
+
+
     }
 }
