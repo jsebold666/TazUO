@@ -1240,46 +1240,18 @@ namespace ClassicUO.LegionScripting
             if (args.Length < 2)
                 throw new RunTimeError(null, "Usage: usetype 'container' 'graphic' 'hue'");
 
-            Item container = World.Items.Get(args[0].AsSerial());
+            uint source = args[0].AsSerial();
+            uint gfx = args[1].AsUInt();
+            ushort hue = args.Length > 2 ? args[2].AsUShort() : ushort.MaxValue;
 
-            if (container == null && args[0].AsSerial() != MAX_SERIAL) return true;
+            if (gfx == MAX_SERIAL) gfx = uint.MaxValue;
 
-            uint objType = args[1].AsUInt();
+            var items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue);
 
-            uint hue = uint.MaxValue;
-
-            if (args.Length >= 3)
-                hue = args[2].AsUInt();
-
-            if (container == null)
-                foreach (Item it in World.Items.Values)
-                {
-                    if (it == null) continue;
-
-                    if (it.Graphic == objType || it.DisplayedGraphic == objType)
-                    {
-                        if (hue != uint.MaxValue)
-                            if (it.Hue == hue)
-                                GameActions.DoubleClickQueued(it);
-                            else
-                                GameActions.DoubleClickQueued(it);
-                    }
-                }
-            else
-                for (LinkedObject i = container.Items; i != null; i = i.Next)
-                {
-                    Item it = (Item)i;
-                    if (it == null) continue;
-
-                    if (it.Graphic == objType || it.DisplayedGraphic == objType)
-                    {
-                        if (hue != uint.MaxValue)
-                            if (it.Hue == hue)
-                                GameActions.DoubleClickQueued(it);
-                            else
-                                GameActions.DoubleClickQueued(it);
-                    }
-                }
+            if(items.Count > 0)
+            {
+                GameActions.DoubleClick(items[0]);
+            }
 
             return true;
         }
