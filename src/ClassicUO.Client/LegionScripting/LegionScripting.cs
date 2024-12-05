@@ -164,13 +164,6 @@ namespace ClassicUO.LegionScripting
             script.GetScript.IsPlaying = false;
         }
 
-        private static IComparable DummyExpression(string expression, Argument[] args, bool quiet)
-        {
-            Console.WriteLine("Executing expression {0} {1}", expression, args);
-
-            return 0;
-        }
-
         private static bool DummyCommand(string command, Argument[] args, bool quiet, bool force)
         {
             Console.WriteLine("Executing command {0} {1}", command, args);
@@ -255,27 +248,16 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("shownames", ShowNames);
             Interpreter.RegisterCommandHandler("clearlist", ClearList);
             Interpreter.RegisterCommandHandler("removelist", RemoveList);
+            Interpreter.RegisterCommandHandler("togglehands", ToggleHands);
+            Interpreter.RegisterCommandHandler("equipitem", EquipItem);
+            Interpreter.RegisterCommandHandler("togglemounted", ToggleMounted);
+            Interpreter.RegisterCommandHandler("promptalias", PromptAlias);
+            Interpreter.RegisterCommandHandler("waitforgump", WaitForGump);
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("movetypeoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("togglehands", DummyCommand);
-            Interpreter.RegisterCommandHandler("equipitem", DummyCommand);
-            Interpreter.RegisterCommandHandler("togglemounted", DummyCommand);
-            Interpreter.RegisterCommandHandler("equipwand", DummyCommand);
-            Interpreter.RegisterCommandHandler("buy", DummyCommand);
-            Interpreter.RegisterCommandHandler("sell", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearbuy", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearsell", DummyCommand);
-            Interpreter.RegisterCommandHandler("organizer", DummyCommand);
             Interpreter.RegisterCommandHandler("dress", DummyCommand);
             Interpreter.RegisterCommandHandler("undress", DummyCommand);
-            Interpreter.RegisterCommandHandler("dressconfig", DummyCommand);
-            Interpreter.RegisterCommandHandler("toggleautoloot", DummyCommand);
-            Interpreter.RegisterCommandHandler("togglescavenger", DummyCommand);
-            Interpreter.RegisterCommandHandler("counter", DummyCommand);
-            Interpreter.RegisterCommandHandler("promptalias", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitforgump", DummyCommand);
             Interpreter.RegisterCommandHandler("replygump", DummyCommand);
             Interpreter.RegisterCommandHandler("closegump", DummyCommand);
             Interpreter.RegisterCommandHandler("clearjournal", DummyCommand);
@@ -375,6 +357,130 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool WaitForGump(string command, Argument[] args, bool quiet, bool force)
+        {
+            uint gumpID = uint.MaxValue;
+            int timeout = 5000;
+
+            if (args.Length > 0) gumpID = args[0].AsUInt();
+            if (args.Length > 1) timeout = args[1].AsInt();
+
+            Interpreter.Timeout(timeout, ReturnTrue);
+
+            if (World.Player.HasGump && (World.Player.LastGumpID == gumpID || gumpID == uint.MaxValue))
+            {
+                Interpreter.ClearTimeout();
+                Interpreter.SetAlias("lastgump", World.Player.LastGumpID);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool PromptAlias(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: promptalias 'name'");
+
+            if (Interpreter.IsTargetRequested())
+            {
+                if (TargetManager.IsTargeting && TargetManager.TargetingState == CursorTarget.Internal)
+                    return false;
+
+                if (TargetManager.LastTargetInfo.IsEntity)
+                {
+                    Interpreter.SetAlias(args[0].AsString(), TargetManager.LastTargetInfo.Serial);
+                    Interpreter.SetTargetRequested(false);
+                    return true;
+                }
+
+                LScriptWarning("Warning: Targeted object only supports items and mobiles.");
+                Interpreter.SetTargetRequested(false);
+                return true;
+            }
+
+            TargetManager.SetTargeting(CursorTarget.Internal, CursorType.Target, TargetType.Neutral);
+            Interpreter.SetTargetRequested(true);
+
+            return false;
+        }
+
+        private static bool ToggleMounted(string command, Argument[] args, bool quiet, bool force)
+        {
+            //No params
+            Item mount = World.Player.FindItemByLayer(Layer.Mount);
+
+            if (mount != null)
+            {
+                Interpreter.SetAlias(Constants.LASTMOUNT + World.Player.Serial.ToString(), mount);
+                GameActions.DoubleClick(World.Player.Serial);
+                return true;
+            }
+            else
+            {
+                uint serial = Interpreter.GetAlias(Constants.LASTMOUNT + World.Player.Serial.ToString());
+                if (serial != uint.MaxValue)
+                {
+                    GameActions.DoubleClick(serial);
+                    return true;
+                }
+            }
+
+            return true;
+        }
+
+        private static bool EquipItem(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: equipitem 'serial'");
+
+            uint serial = args[0].AsSerial();
+
+            if (SerialHelper.IsItem(serial))
+            {
+                GameActions.PickUp(serial, 0, 0, 1);
+                GameActions.Equip(serial);
+            }
+
+            return true;
+        }
+
+        private static bool ToggleHands(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: togglehands 'left/right'");
+
+            Layer hand = args[0].AsString() switch
+            {
+                "left" => Layer.OneHanded,
+                "right" => Layer.TwoHanded,
+                _ => Layer.Invalid
+            };
+
+            if (hand != Layer.Invalid)
+            {
+                Item i = World.Player.FindItemByLayer(hand);
+                if (i != null) //Item is in hand, lets unequip and save it
+                {
+                    GameActions.GrabItem(i, 0, World.Player.FindItemByLayer(Layer.Backpack));
+                    Interpreter.SetAlias(Constants.LASTITEMINHAND + hand.ToString(), i);
+                    return true;
+                }
+                else //No item in hand, lets see if we have a saved item for this slot
+                {
+                    uint serial = Interpreter.GetAlias(Constants.LASTITEMINHAND + hand.ToString());
+                    if (SerialHelper.IsItem(serial))
+                    {
+                        GameActions.PickUp(serial, 0, 0, 1);
+                        GameActions.Equip();
+                        return true;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private static bool IsDead(string expression, Argument[] args, bool quiet)
@@ -1078,7 +1184,7 @@ namespace ClassicUO.LegionScripting
         private static bool PauseCommand(string command, Argument[] args, bool quiet, bool force)
         {
             if (args.Length < 1)
-                throw new RunTimeError(null, "Usage: pause 'durtion'");
+                throw new RunTimeError(null, "Usage: pause 'duration'");
 
             int ms = args[0].AsInt();
 
@@ -1240,9 +1346,13 @@ namespace ClassicUO.LegionScripting
 
         private static void LScriptError(string msg)
         {
-            GameActions.Print("[LScript Error]" + msg);
+            GameActions.Print($"[{Interpreter.ActiveScript.CurrentLine}][LScript Error]" + msg);
         }
 
+        private static void LScriptWarning(string msg)
+        {
+            GameActions.Print($"[{Interpreter.ActiveScript.CurrentLine}][LScript Warning]" + msg);
+        }
         private static bool CommandFly(string command, Argument[] args, bool quiet, bool force)
         {
             if (World.Player.Race == RaceType.GARGOYLE)

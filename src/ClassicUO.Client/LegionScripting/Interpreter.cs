@@ -246,6 +246,8 @@ namespace LScript
 
         public long PauseTimeout = long.MaxValue;
 
+        public bool TargetRequested = false;
+
         public TimeoutCallback TimeoutCallback = null;
 
         public bool IsPaused
@@ -260,6 +262,14 @@ namespace LScript
         private List<JournalEntry> _journalEntries = new List<JournalEntry>();
 
         public ASTNode Root { get; private set; }
+
+        public int CurrentLine
+        {
+            get
+            {
+                return _statement == null ? 0 : _statement.LineNumber;
+            }
+        }
 
         public Argument Lookup(string name)
         {
@@ -358,13 +368,14 @@ namespace LScript
             _statement = root.FirstChild();
             _scope = new Scope(null, _statement);
             Root = root;
-
+            TargetRequested = false;
         }
 
         public void Reset()
         {
             _statement = Root.FirstChild();
             _journalEntries.Clear();
+            TargetRequested = false;
         }
 
         public bool ExecuteNext()
@@ -1158,6 +1169,22 @@ namespace LScript
             _exprHandlers.TryGetValue(keyword, out var expression);
 
             return expression;
+        }
+
+        public static bool IsTargetRequested()
+        {
+            if(ActiveScript != null)
+                return ActiveScript.TargetRequested;
+
+            return false;
+        }
+
+        public static void SetTargetRequested(bool targetRequested)
+        {
+            if (ActiveScript == null)
+                return;
+
+            ActiveScript.TargetRequested = targetRequested;
         }
 
         public static void RegisterCommandHandler(string keyword, CommandHandler handler)

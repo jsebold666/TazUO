@@ -296,6 +296,40 @@ Show all names of mobiles
 `shownames`
 
 
+## `togglehands`
+
+Equip/Unequip items in hand  
+`togglehands 'left|right`  
+Example: `togglehands 'left'`
+
+
+## `equipitem`
+
+Equip an item using its serial number.  
+`equipitem 'serial'`  
+Example: `equipitem '0x40001234'`
+
+
+## `togglemounted` 
+
+Toggle mounted state for the player.  
+`togglemounted`  
+Example: `togglemounted`  
+
+
+## `promptalias` 
+Prompt the user to set an alias for a targeted object.  
+`promptalias 'name'`  
+Example: `promptalias 'myAlias'`
+
+
+## `waitforgump` 
+Wait for a gump to appear.  
+`waitforgump 'gumpID' 'timeout'`  
+Example: `waitforgump '1234' '5000'`  
+Gumpid and timeout are both optional. Can use 'lastgump' to get the last gump id after using this command.
+
+
 
 
 
