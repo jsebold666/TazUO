@@ -15,7 +15,7 @@ namespace ClassicUO.LegionScripting
     {
         private AlphaBlendControl background;
         private ScrollArea scrollArea;
-        private NiceButton refresh, add;
+        private NiceButton refresh, add, browser;
 
         public ScriptManagerGump() : base(300, 400, 200, 300, 0, 0)
         {
@@ -28,7 +28,7 @@ namespace ClassicUO.LegionScripting
 
             Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize });
 
-            Add(refresh = new NiceButton(BorderControl.BorderSize, BorderControl.BorderSize, 150, 50, ButtonAction.Default, "Refresh") { IsSelectable = false });
+            Add(refresh = new NiceButton(BorderControl.BorderSize, BorderControl.BorderSize, 100, 50, ButtonAction.Default, "Refresh") { IsSelectable = false });
 
             refresh.MouseDown += (s, e) =>
             {
@@ -38,7 +38,7 @@ namespace ClassicUO.LegionScripting
                 UIManager.Add(g);
             };
 
-            Add(add = new NiceButton(0, BorderControl.BorderSize, 150, 50, ButtonAction.Default, "New") { IsSelectable = false });
+            Add(add = new NiceButton(0, BorderControl.BorderSize, 100, 50, ButtonAction.Default, "New") { IsSelectable = false });
 
             add.MouseDown += (s, e) =>
             {
@@ -66,6 +66,10 @@ namespace ClassicUO.LegionScripting
                 UIManager.Add(r);
             };
 
+            Add(browser = new NiceButton(0, BorderControl.BorderSize, 100, 50, ButtonAction.Default, "Public Scripts") { IsSelectable = false });
+
+            browser.MouseDown += (s, e) => { UIManager.Add(new ScriptBrowser()); };
+
             Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize + 50, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 50, true));
             scrollArea.ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways;
 
@@ -91,9 +95,11 @@ namespace ClassicUO.LegionScripting
                 background.Width = Width - (BorderControl.BorderSize * 2);
                 background.Height = Height - (BorderControl.BorderSize * 2);
 
-                refresh.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
-                add.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
+                refresh.Width = (Width - (BorderControl.BorderSize * 2)) / 3;
+                add.Width = (Width - (BorderControl.BorderSize * 2)) / 3;
                 add.X = refresh.X + refresh.Width;
+                browser.Width = (Width - (BorderControl.BorderSize * 2)) / 3;
+                browser.X = add.X + add.Width;
 
                 scrollArea.Width = Width - (BorderControl.BorderSize * 2);
                 scrollArea.Height = Height - (BorderControl.BorderSize * 2) - 50;

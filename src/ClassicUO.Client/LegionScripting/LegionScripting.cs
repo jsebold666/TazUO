@@ -1630,13 +1630,24 @@ namespace ClassicUO.LegionScripting
         public string FileName;
         public string FullPath;
         public Script GetScript;
+        public string[] FileContents;
 
         public ScriptFile(string path, string fileName)
         {
             Path = path;
             FileName = fileName;
             FullPath = System.IO.Path.Combine(Path, FileName);
+            FileContents = File.ReadAllLines(FullPath);
             GenerateScript();
+        }
+
+        public ScriptFile(string path, string source, string fileName)
+        {
+            Path = path;
+            FileName = fileName;
+            FullPath = System.IO.Path.Combine(Path, FileName);
+            FileContents = source.Split(new[] { '\n' }, StringSplitOptions.None);
+            GetScript = new Script(Lexer.Lex(FileContents));
         }
 
         public void GenerateScript()

@@ -1,0 +1,154 @@
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Threading.Tasks;
+using ClassicUO.Assets;
+using ClassicUO.Game.Managers;
+using ClassicUO.Game.UI.Controls;
+using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Input;
+
+namespace ClassicUO.LegionScripting
+{
+    internal class ScriptBrowser : Gump
+    {
+        private const int WIDTH = 400;
+        private const int HEIGHT = 600;
+        private const string REPO = "bittiez/PublicLegionScripts";
+
+        public static readonly HttpClient client = new HttpClient();
+        private ScrollArea scrollArea;
+        public ScriptBrowser() : base(0, 0)
+        {
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Mozilla", "5.0"));
+
+            CanMove = true;
+            CanCloseWithRightClick = true;
+
+            Width = WIDTH;
+            Height = HEIGHT;
+
+            Add(new AlphaBlendControl() { Width = Width, Height = Height });
+            Add(scrollArea = new ScrollArea(0, 0, WIDTH, HEIGHT, true) { ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways });
+
+            GetFilesAsync().ContinueWith((r) => {
+                SetFiles(r.Result);
+            });
+
+            CenterXInViewPort();
+            CenterYInViewPort();
+        }
+
+        public void SetFiles(List<GHFileObject> files)
+        {
+            while (scrollArea.Children.Count > 1)
+                scrollArea.Children[1].Dispose();
+
+            foreach (GHFileObject file in files)
+            {
+                if (file.type == "file" && !file.name.EndsWith(".lscript"))
+                    continue;
+
+                scrollArea.Add(new ItemControl(file, this));
+            }
+
+            int y = 0;
+            foreach (Control c in scrollArea.Children)
+            {
+                if (c is not ItemControl)
+                    continue;
+
+                c.Y = y;
+                y += c.Height + 3;
+            }
+        }
+
+        private static async Task<List<GHFileObject>> GetFilesAsync(string path = "")
+        {
+            var files = new List<GHFileObject>();
+            var url = $"https://api.github.com/repos/{REPO}/contents{path}";
+            var response = await client.GetStringAsync(url);
+
+            return JsonSerializer.Deserialize<List<GHFileObject>>(response);
+        }
+
+
+        internal class GHFileObject
+        {
+            public string name { get; set; }
+            public string path { get; set; }
+            public string sha { get; set; }
+            public int size { get; set; }
+            public string url { get; set; }
+            public string html_url { get; set; }
+            public string git_url { get; set; }
+            public string download_url { get; set; }
+            public string type { get; set; }
+            public _Links _links { get; set; }
+        }
+
+        internal class _Links
+        {
+            public string self { get; set; }
+            public string git { get; set; }
+            public string html { get; set; }
+        }
+
+
+        internal class ItemControl : Control
+        {
+            public ItemControl(GHFileObject gHFileObject, ScriptBrowser scriptBrowser)
+            {
+                Width = WIDTH - 18;
+                Height = 50;
+
+                Add(new AlphaBlendControl() { Width = Width, Height = Height });
+
+                GHFileObject = gHFileObject;
+                ScriptBrowser = scriptBrowser;
+                if (gHFileObject.type == "dir")
+                {
+                    Add(GenTextBox("Directory", 12));
+                    MouseDown += DirectoryMouseDown;
+                }
+                else if (gHFileObject.type == "file" && gHFileObject.name.EndsWith(".lscript"))
+                {
+                    Add(GenTextBox("Script", 12));
+                    MouseDown += FileMouseDown;
+                }
+
+                var tb = GenTextBox(gHFileObject.name, 16);
+                tb.X = Width - tb.MeasuredSize.X - 5;
+                tb.Y = (Height - tb.MeasuredSize.Y) / 2;
+                Add(tb);
+            }
+
+            private void FileMouseDown(object sender, MouseEventArgs e)
+            {
+                var t = ScriptBrowser.client.GetStringAsync(GHFileObject.download_url);
+                t.Wait();
+
+                ScriptFile f = new ScriptFile(LegionScripting.ScriptPath, t.Result, GHFileObject.name);
+                UIManager.Add(new ScriptEditor(f));
+            }
+
+            private void DirectoryMouseDown(object sender, MouseEventArgs e)
+            {
+                ScriptBrowser.GetFilesAsync(GHFileObject.path).ContinueWith((r) => {
+                    ScriptBrowser.SetFiles(r.Result);
+                });
+            }
+
+            private TextBox GenTextBox(string text, int fontsize)
+            {
+
+                TextBox tb = new TextBox(text, TrueTypeLoader.EMBEDDED_FONT, fontsize, null, Microsoft.Xna.Framework.Color.White, strokeEffect: false);
+                return tb;
+            }
+
+            public GHFileObject GHFileObject { get; }
+            public ScriptBrowser ScriptBrowser { get; }
+        }
+    }
+}
