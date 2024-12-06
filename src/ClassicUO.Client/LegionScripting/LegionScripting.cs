@@ -428,6 +428,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("timerexists", TimerExists);
             Interpreter.RegisterExpressionHandler("timerexpired", TimerExpired);
             Interpreter.RegisterExpressionHandler("findtype", FindType);
+            Interpreter.RegisterExpressionHandler("findtypelist", FindTypeList);
             Interpreter.RegisterExpressionHandler("findalias", FindAlias);
             Interpreter.RegisterExpressionHandler("skill", SkillValue);
             Interpreter.RegisterExpressionHandler("poisoned", PoisonedStatus);
@@ -465,6 +466,14 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("true", GetTrue);
             Interpreter.RegisterExpressionHandler("false", GetFalse);
             Interpreter.RegisterExpressionHandler("dead", IsDead);
+            Interpreter.RegisterExpressionHandler("diffhits", DiffHits);
+            Interpreter.RegisterExpressionHandler("str", GetStr);
+            Interpreter.RegisterExpressionHandler("dex", GetDex);
+            Interpreter.RegisterExpressionHandler("int", GetInt);
+            Interpreter.RegisterExpressionHandler("followers", GetFollowers);
+            Interpreter.RegisterExpressionHandler("maxfollowers", GetMaxFollowers);
+            Interpreter.RegisterExpressionHandler("gold", GetGold);
+            Interpreter.RegisterExpressionHandler("hidden", IsHidden);
             #endregion
 
             #region Default aliases
@@ -480,6 +489,55 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool IsHidden(string expression, Argument[] args, bool quiet) => World.Player.IsHidden;
+
+        private static int GetGold(string expression, Argument[] args, bool quiet) => (int)World.Player.Gold;
+
+        private static int GetMaxFollowers(string expression, Argument[] args, bool quiet) => World.Player.FollowersMax;
+
+        private static int GetFollowers(string expression, Argument[] args, bool quiet) => World.Player.Followers;
+
+        private static int GetInt(string expression, Argument[] args, bool quiet) => World.Player.Intelligence;
+
+        private static int GetDex(string expression, Argument[] args, bool quiet) => World.Player.Dexterity;
+
+        private static int GetStr(string expression, Argument[] args, bool quiet) => World.Player.Strength;
+
+        private static int DiffHits(string expression, Argument[] args, bool quiet)
+        {
+            return World.Player.HitsMax - World.Player.Hits;
+        }
+
+        private static bool FindTypeList(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: findtypelist 'listname' 'source' [color] [range]");
+
+            List<Argument> list = Interpreter.GetList(args[0].AsString());
+
+            if (list == null)
+                throw new RunTimeError(null, $"List '{args[0].AsString()}' does not exist!");
+
+            uint source = args[1].AsSerial();
+
+            if (source == MAX_SERIAL) source = uint.MaxValue;
+
+            ushort hue = args.Length >= 3 ? args[2].AsUShort() : ushort.MaxValue;
+            int range = args.Length >= 4 ? args[3].AsInt() : int.MaxValue;
+
+            foreach (Argument arg in list)
+            {
+                List<Item> items = Utility.FindItems(arg.AsUInt(), parOrRootContainer: source, hue: hue, groundRange: range);
+                if (items.Count > 0)
+                {
+                    Interpreter.SetAlias(Constants.FOUND, items[0]);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static ushort ItemAmt(string expression, Argument[] args, bool quiet)
@@ -693,8 +751,8 @@ namespace ClassicUO.LegionScripting
             Mobile m = World.Player;
 
             if (args.Length > 0)
-                if (World.Mobiles.TryGetValue(args[0].AsSerial(), out m))                
-                    return m.IsDead;                
+                if (World.Mobiles.TryGetValue(args[0].AsSerial(), out m))
+                    return m.IsDead;
                 else
                     return true;
 

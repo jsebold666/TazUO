@@ -372,6 +372,13 @@ Example: `targettilerel '5' '10'` or `targettilerel '5' '10' '0x1234'`
 
 # Expressions
 
+## `findtypelist`  
+
+Find items of a specific type in a list and set an alias for the found item.  
+`findtypelist 'listname' 'source' [color] [range]`  
+Example: `findtypelist 'myList' '0x40001234'` or `findtypelist 'myList' '0x40001234' '0x1234' '5'`
+
+
 ## `ping`  
 Get the current network ping.  
 `ping`  
@@ -565,11 +572,14 @@ Example: `itemamt '0x40001234'`
 
 ## Values
 
-- `name` <- Char name  
-- `hits`, `maxhits`  
+- `name` 
+- `hits`, `maxhits`, `diffhits`
 - `stam`, `maxstam`  
 - `mana`, `maxmana`  
 - `x`, `y`, `z`  
+- `str`, `dex`, `int`
+- `followers`, `maxfollowers`
+- `gold`, `hidden`
 - `true`, `false`
 - `found` <- Available when using commands like findtype  
 - `count` <- Available when using commands like findtype

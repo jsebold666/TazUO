@@ -1275,6 +1275,14 @@ namespace LScript
             _lists[name].Clear();
         }
 
+        public static List<Argument> GetList(string name)
+        {
+            if(_lists.ContainsKey(name))
+                return _lists[name];
+
+            return null;
+        }
+
         public static bool ListExists(string name)
         {
             return _lists.ContainsKey(name);
