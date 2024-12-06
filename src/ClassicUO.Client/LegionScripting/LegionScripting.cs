@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -279,6 +280,8 @@ namespace ClassicUO.LegionScripting
 
         public static void StopScript(ScriptFile script)
         {
+            //GameActions.Print($"STOPPING {script.FileName} on line {script.GetScript.CurrentLine}");
+
             if (runningScripts.Contains(script))
                 runningScripts.Remove(script);
 
@@ -378,6 +381,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("closegump", CloseGump);
             Interpreter.RegisterCommandHandler("clearjournal", ClearJournal);
             Interpreter.RegisterCommandHandler("poplist", PopList);
+            Interpreter.RegisterCommandHandler("targettilerel", TargetTileRel);
 
 
 
@@ -418,7 +422,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("targetground", DummyCommand);
             Interpreter.RegisterCommandHandler("targettile", DummyCommand);
             Interpreter.RegisterCommandHandler("targettileoffset", DummyCommand);
-            Interpreter.RegisterCommandHandler("targettilerelative", DummyCommand);
             #endregion
 
             #region Expressions
@@ -444,6 +447,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("nearesthostile", NearestHostile);
             Interpreter.RegisterExpressionHandler("counttype", CountType);
             Interpreter.RegisterExpressionHandler("ping", Ping);
+            Interpreter.RegisterExpressionHandler("itemamt", ItemAmt);
 
             #endregion
 
@@ -476,6 +480,42 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static ushort ItemAmt(string expression, Argument[] args, bool quiet)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: itemamt 'serial'");
+
+            if (World.Items.TryGetValue(args[0].AsSerial(), out var item))
+                return item.Amount < 1 ? (ushort)1 : item.Amount;
+
+            return 0;
+        }
+
+        private static bool TargetTileRel(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: targettilerel 'x' 'y' ['graphic']");
+
+            if (!TargetManager.IsTargeting)
+                return true;
+
+            ushort x = (ushort)(World.Player.X + args[0].AsInt());
+            ushort y = (ushort)(World.Player.Y + args[1].AsInt());
+
+            GameObject g = World.Map.GetTile(x, y);
+
+            if (args.Length > 3)
+            {
+                ushort gfx = args[4].AsUShort();
+
+                if (g.Graphic != gfx)
+                    return true;
+            }
+
+            TargetManager.Target(g.Graphic, x, y, g.Z);
+            return true;
         }
 
         private static uint Ping(string expression, Argument[] args, bool quiet)
@@ -1077,15 +1117,12 @@ namespace ClassicUO.LegionScripting
                 throw new RunTimeError(null, "Usage: findalias 'name'");
 
             uint foundVal = Interpreter.GetAlias(args[0].AsString());
+            if (foundVal == uint.MaxValue)
+                foundVal = args[0].AsSerial();
 
-            if (foundVal != uint.MaxValue)
-            {
-                Interpreter.SetAlias(Constants.FOUND, foundVal);
-                return true;
-            }
             try
             {
-                if (World.Items.TryGetValue(args[0].AsSerial(), out Item i))
+                if (World.Items.TryGetValue(foundVal, out Item i))
                 {
                     Interpreter.SetAlias(Constants.FOUND, i);
                     return true;
@@ -1116,7 +1153,9 @@ namespace ClassicUO.LegionScripting
             List<Item> items = Utility.FindItems(gfx, parOrRootContainer: source, hue: hue, groundRange: range);
 
             if (items.Count > 0)
+            {
                 Interpreter.SetAlias(Constants.FOUND, items[0]);
+            }
 
             return (uint)items.Count;
         }

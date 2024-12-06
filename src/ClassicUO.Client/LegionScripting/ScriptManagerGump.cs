@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using ClassicUO.Assets;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
@@ -142,6 +144,7 @@ namespace ClassicUO.LegionScripting
                 ContextMenu = new ContextMenuControl();
 
                 ContextMenu.Add(new ContextMenuItemEntry("Edit", () => { UIManager.Add(new ScriptEditor(Script)); }));
+                ContextMenu.Add(new ContextMenuItemEntry("Edit Externally", () => { OpenFileWithDefaultApp(Script.FullPath); }));
                 ContextMenu.Add(new ContextMenuItemEntry("Autostart", () => { GenAutostartContext().Show(); }));
                 ContextMenu.Add(new ContextMenuItemEntry("Delete", () =>
                 {
@@ -173,6 +176,28 @@ namespace ClassicUO.LegionScripting
                     menu.TextLabel.Hue = ushort.MaxValue;
             }
 
+            private static void OpenFileWithDefaultApp(string filePath)
+            {
+                try
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    {
+                        Process.Start("xdg-open", filePath);
+                    }
+                    else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    {
+                        Process.Start("open", filePath);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
             private ContextMenuControl GenAutostartContext()
             {
                 ContextMenuControl context = new ContextMenuControl();

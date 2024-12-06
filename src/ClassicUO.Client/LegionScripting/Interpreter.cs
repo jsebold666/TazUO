@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using static LScript.Interpreter;
 
@@ -397,6 +398,8 @@ namespace LScript
                 throw new RunTimeError(_statement, "Invalid statement");
 
             int depth = 0;
+
+            //GameActions.Print($"Executing: [{CurrentLine}]{node.Lexeme}");
 
             switch (node.Type)
             {

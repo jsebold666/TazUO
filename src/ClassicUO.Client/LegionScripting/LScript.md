@@ -127,7 +127,7 @@ Clear a target cursor if there is one
 Display a message in your system messages(Not sent to the server)  
 
 | `sysmsg` | msg | hue |
-| - |
+| - | - | - |
 | | required | optional |
 
 Example: `sysmsg 'No more tools!' '33'`
@@ -148,7 +148,7 @@ Example: `moveitem '0x23553221' 'backpack'`
 Move an item to the ground near you  
 
 | `moveitemoffset` | 'item' | 'amt' | 'x offset' | 'y offset' | 'z offset' |
-| - |
+| - | - | - | - | - |
 | | | Use 0 to grab the full stack | | | |
 
 Example: `moveitemoffset '0x32323535' '0' '1' '0' '0'`
@@ -360,6 +360,12 @@ Remove an item from a list.
 Example: `poplist 'myList' 'item1'`
 
 
+## `targettilerel`  
+
+Target a tile relative to the player's position.  
+`targettilerel 'x' 'y' ['graphic']`  
+Example: `targettilerel '5' '10'` or `targettilerel '5' '10' '0x1234'`
+
 
 
 
@@ -546,6 +552,12 @@ Example: `if dead`
 Not: If you don't include serial, it will default to yourself
 
 
+## `itemamt`  
+
+Get the amount of an item by its serial number.  
+`itemamt 'serial'`  
+Example: `itemamt '0x40001234'`
+
 
 
 
@@ -560,6 +572,7 @@ Not: If you don't include serial, it will default to yourself
 - `x`, `y`, `z`  
 - `true`, `false`
 - `found` <- Available when using commands like findtype  
+- `count` <- Available when using commands like findtype
 
 
 ## Objects
