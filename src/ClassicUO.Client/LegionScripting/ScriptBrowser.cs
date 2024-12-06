@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -19,6 +20,7 @@ namespace ClassicUO.LegionScripting
 
         public static readonly HttpClient client = new HttpClient();
         private ScrollArea scrollArea;
+        private string lastPath = "";
         public ScriptBrowser() : base(0, 0)
         {
             client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Mozilla", "5.0"));
@@ -32,7 +34,8 @@ namespace ClassicUO.LegionScripting
             Add(new AlphaBlendControl() { Width = Width, Height = Height });
             Add(scrollArea = new ScrollArea(0, 0, WIDTH, HEIGHT, true) { ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways });
 
-            GetFilesAsync().ContinueWith((r) => {
+            GetFilesAsync().ContinueWith((r) =>
+            {
                 SetFiles(r.Result);
             });
 
@@ -44,6 +47,14 @@ namespace ClassicUO.LegionScripting
         {
             while (scrollArea.Children.Count > 1)
                 scrollArea.Children[1].Dispose();
+
+            string lastP = lastPath;
+            if (lastPath.Length > 0)
+            {
+                lastP = Path.GetDirectoryName(lastPath);
+                scrollArea.Add(new ItemControl(new GHFileObject() { type = "dir", name = "BACK", path = lastP }, this));
+
+            }
 
             foreach (GHFileObject file in files)
             {
@@ -64,8 +75,10 @@ namespace ClassicUO.LegionScripting
             }
         }
 
-        private static async Task<List<GHFileObject>> GetFilesAsync(string path = "")
+        private async Task<List<GHFileObject>> GetFilesAsync(string path = "")
         {
+            lastPath = path;
+
             var files = new List<GHFileObject>();
             var url = $"https://api.github.com/repos/{REPO}/contents{path}";
             var response = await client.GetStringAsync(url);
@@ -135,7 +148,8 @@ namespace ClassicUO.LegionScripting
 
             private void DirectoryMouseDown(object sender, MouseEventArgs e)
             {
-                ScriptBrowser.GetFilesAsync(GHFileObject.path).ContinueWith((r) => {
+                ScriptBrowser.GetFilesAsync(GHFileObject.path).ContinueWith((r) =>
+                {
                     ScriptBrowser.SetFiles(r.Result);
                 });
             }
