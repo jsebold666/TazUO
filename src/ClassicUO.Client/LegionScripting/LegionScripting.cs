@@ -351,33 +351,25 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("poplist", PopList);
             Interpreter.RegisterCommandHandler("targettilerel", TargetTileRel);
             Interpreter.RegisterCommandHandler("virtue", Virtue);
+            Interpreter.RegisterCommandHandler("playmacro", PlayMacro);
+            Interpreter.RegisterCommandHandler("headmsg", HeadMsg);
+            Interpreter.RegisterCommandHandler("partymsg", PartyMsg);
+            Interpreter.RegisterCommandHandler("guildmsg", GuildMsg);
+            Interpreter.RegisterCommandHandler("allymsg", AllyMsg);
+            Interpreter.RegisterCommandHandler("whispermsg", WhisperMsg);
+            Interpreter.RegisterCommandHandler("yellmsg", YellMsg);
+            Interpreter.RegisterCommandHandler("emotemsg", EmoteMsg);
+            Interpreter.RegisterCommandHandler("waitforprompt", WaitForPrompt);
 
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
-            Interpreter.RegisterCommandHandler("playsound", DummyCommand);
-            Interpreter.RegisterCommandHandler("headmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("partymsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("guildmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("allymsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("whispermsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("yellmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("chatmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("emotemsg", DummyCommand);
             Interpreter.RegisterCommandHandler("promptmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("timermsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitforprompt", DummyCommand);
             Interpreter.RegisterCommandHandler("cancelprompt", DummyCommand);
             Interpreter.RegisterCommandHandler("contextmenu", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
             Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
             Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
-            Interpreter.RegisterCommandHandler("targettype", DummyCommand);
-            Interpreter.RegisterCommandHandler("targetground", DummyCommand);
-            Interpreter.RegisterCommandHandler("targettile", DummyCommand);
-            Interpreter.RegisterCommandHandler("targettileoffset", DummyCommand);
             #endregion
 
             #region Expressions
@@ -452,6 +444,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
         }
+
+
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
         {
             return true;

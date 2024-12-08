@@ -374,6 +374,71 @@ Invoke a specific virtue.
 Example: `virtue 'honor'`
 
 
+## `playmacro`  
+
+Play a specified macro.  
+`playmacro 'macroname'`  
+Example: `playmacro 'myMacro'`
+
+
+## `headmsg`  
+
+Display a message above an entity's head.  
+`headmsg 'serial' 'msg'`
+Example: `headmsg 'self' 'Hello, world!'`
+
+
+## `partymsg`  
+
+Send a message to the party chat.  
+`partymsg 'msg'`  
+Example: `partymsg 'Hello, party!'`
+
+
+## `guildmsg`  
+
+Send a message to the guild chat.  
+`guildmsg 'msg'`  
+Example: `guildmsg 'Hello, guild!'`
+
+
+## `allymsg`  
+
+Send a message to the alliance chat.  
+`allymsg 'msg'`  
+Example: `allymsg 'Hello, allies!'`
+
+
+## `whispermsg`  
+
+Send a whisper message.  
+`whispermsg 'msg'`  
+Example: `whispermsg 'Hello, this is a secret!'`
+
+
+## `yellmsg`  
+
+Send a yell message.  
+`yellmsg 'msg'`  
+Example: `yellmsg 'Hello, everyone!'`
+
+
+## `emotemsg`  
+
+Send an emote message.  
+`emotemsg 'msg'`  
+Example: `emotemsg 'Hello, everyone!'`
+
+
+## `waitforprompt`  
+
+Wait for a prompt to appear within a specified timeout.  
+`waitforprompt 'duration'`  
+Example: `waitforprompt '5000'`  
+Note: The duration is optional and defaults to 10,000 milliseconds (10 seconds) if not provided.
+
+
+
 
 
 

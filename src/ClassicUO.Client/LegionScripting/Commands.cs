@@ -699,6 +699,93 @@ namespace ClassicUO.LegionScripting
 
             return true;
         }
+        public static bool PlayMacro(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: playmacro 'macroname'");
 
+            var mm = MacroManager.TryGetMacroManager();
+
+            if (mm != null)
+            {
+                var macro = mm.FindMacro(args[0].AsString());
+                if (macro != null)
+                    mm.SetMacroToExecute(macro.Items as MacroObject);
+            }
+
+            return true;
+        }
+        public static bool HeadMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: headmsg 'serial' 'msg'");
+
+            World.Get(args[0].AsSerial())?.AddMessage(MessageType.Regular, args[1].AsString(), TextType.CLIENT);
+
+            return true;
+        }
+        public static bool PartyMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: partymsg 'msg'");
+
+            GameActions.SayParty(args[0].AsString());
+
+            return true;
+        }
+        public static bool GuildMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: guildmsg 'msg'");
+
+            GameActions.Say(args[0].AsString(), ProfileManager.CurrentProfile.GuildMessageHue, MessageType.Guild);
+
+            return true;
+        }
+        public static bool AllyMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: allymsg 'msg'");
+
+            GameActions.Say(args[0].AsString(), ProfileManager.CurrentProfile.AllyMessageHue, MessageType.Alliance);
+
+            return true;
+        }
+        public static bool WhisperMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: whispermsg 'msg'");
+
+            GameActions.Say(args[0].AsString(), ProfileManager.CurrentProfile.WhisperHue, MessageType.Whisper);
+
+            return true;
+        }
+        public static bool YellMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: yellmsg 'msg'");
+
+            GameActions.Say(args[0].AsString(), ProfileManager.CurrentProfile.YellHue, MessageType.Yell);
+
+            return true;
+        }
+        public static bool EmoteMsg(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: emotemsg 'msg'");
+
+            GameActions.Say(args[0].AsString(), ProfileManager.CurrentProfile.EmoteHue, MessageType.Emote);
+
+            return true;
+        }
+        public static bool WaitForPrompt(string command, Argument[] args, bool quiet, bool force)
+        {
+            //timeout optional
+            long duration = args.Length > 0 ? args[0].AsInt() : 10000;
+
+            Interpreter.Timeout(duration, LegionScripting.ReturnTrue);
+
+            return MessageManager.PromptData.Prompt != ConsolePrompt.None;
+        }
     }
 }
