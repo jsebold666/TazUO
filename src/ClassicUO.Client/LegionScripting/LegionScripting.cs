@@ -8,9 +8,6 @@ using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
-using ClassicUO.Game.UI.Controls;
-using ClassicUO.Game.UI.Gumps;
-using ClassicUO.Network;
 using LScript;
 using static ClassicUO.LegionScripting.Commands;
 using static ClassicUO.LegionScripting.Expressions;
@@ -270,6 +267,7 @@ namespace ClassicUO.LegionScripting
             if (runningScripts.Contains(script))
                 runningScripts.Remove(script);
 
+            script.GetScript.Reset();
             script.GetScript.IsPlaying = false;
         }
         public static bool DummyCommand(string command, Argument[] args, bool quiet, bool force)
@@ -363,13 +361,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("cancelprompt", CancelPrompt);
             Interpreter.RegisterCommandHandler("promptresponse", PromptResponse);
             Interpreter.RegisterCommandHandler("contextmenu", ContextMenu);
-
-
-
-            //Unfinished below
-            Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
-            Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
-            Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
+            Interpreter.RegisterCommandHandler("ignoreobject", IgnoreObject);
+            Interpreter.RegisterCommandHandler("clearignorelist", ClearIgnoreList);
             #endregion
 
             #region Expressions
@@ -399,7 +392,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("itemamt", ItemAmt);
             Interpreter.RegisterExpressionHandler("primaryabilityactive", PrimaryAbilityActive);
             Interpreter.RegisterExpressionHandler("secondaryabilityactive", SecondaryAbilityActive);
-
             #endregion
 
             #region Player Values
@@ -443,6 +435,21 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool ClearIgnoreList(string command, Argument[] args, bool quiet, bool force)
+        {
+            Interpreter.ClearIgnoreList();
+            return true;
+        }
+
+        private static bool IgnoreObject(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: ignoreobject 'serial'");
+
+            Interpreter.IgnoreSerial(args[0].AsSerial());
+            return true;
         }
 
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed

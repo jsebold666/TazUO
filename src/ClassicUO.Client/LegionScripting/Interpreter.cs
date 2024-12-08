@@ -250,6 +250,8 @@ namespace LScript
 
         public TimeoutCallback TimeoutCallback = null;
 
+        public HashSet<uint> IgnoreList = new HashSet<uint>();
+
         public bool IsPaused
         {
             get
@@ -290,14 +292,14 @@ namespace LScript
 
         public void JournalEntryAdded(JournalEntry e)
         {
-            if(_journalEntries.Count >= 50)
+            if (_journalEntries.Count >= 50)
             {
                 _journalEntries.RemoveAt(0);
             }
 
             _journalEntries.Add(e);
         }
-        
+
         public bool SearchJournalEntries(string text)
         {
             foreach (var entry in _journalEntries)
@@ -381,6 +383,7 @@ namespace LScript
             _statement = Root.FirstChild();
             _journalEntries.Clear();
             TargetRequested = false;
+            IgnoreList.Clear();
         }
 
         public bool ExecuteNext()
@@ -1177,7 +1180,24 @@ namespace LScript
 
             return expression;
         }
+        public static bool InIgnoreList(uint serial)
+        {
+            if (ActiveScript == null) return false;
 
+            return ActiveScript.IgnoreList.Contains(serial);
+        }
+        public static void IgnoreSerial(uint serial)
+        {
+            if (ActiveScript == null) return;
+
+            ActiveScript.IgnoreList.Add(serial);
+        }
+        public static void ClearIgnoreList()
+        {
+            if (ActiveScript == null) return;
+
+            ActiveScript.IgnoreList.Clear();
+        }
         public static void ClearJournal()
         {
             if (ActiveScript == null)
@@ -1188,7 +1208,7 @@ namespace LScript
 
         public static bool IsTargetRequested()
         {
-            if(ActiveScript != null)
+            if (ActiveScript != null)
                 return ActiveScript.TargetRequested;
 
             return false;
@@ -1244,7 +1264,7 @@ namespace LScript
 
         public static void RemoveAlias(string alias)
         {
-            if( _aliases.ContainsKey(alias))
+            if (_aliases.ContainsKey(alias))
                 _aliases.Remove(alias);
         }
 
@@ -1276,7 +1296,7 @@ namespace LScript
 
         public static List<Argument> GetList(string name)
         {
-            if(_lists.ContainsKey(name))
+            if (_lists.ContainsKey(name))
                 return _lists[name];
 
             return null;
@@ -1365,7 +1385,7 @@ namespace LScript
             if (!_timers.ContainsKey(name))
                 return true; //Timer doesn't exist
 
-            if( _timers[name] <= DateTime.UtcNow)
+            if (_timers[name] <= DateTime.UtcNow)
             {
                 //Timer expired
                 _timers.Remove(name);

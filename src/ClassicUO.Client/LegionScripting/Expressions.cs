@@ -110,7 +110,13 @@ namespace ClassicUO.LegionScripting
 
             if (items.Count > 0)
             {
-                Interpreter.SetAlias(Constants.FOUND, items[0]);
+                foreach (Item item in items)
+                {
+                    if (Interpreter.InIgnoreList(item)) continue;
+
+                    Interpreter.SetAlias(Constants.FOUND, item);
+                    break;
+                }
             }
 
             return (uint)items.Count;
@@ -316,7 +322,11 @@ namespace ClassicUO.LegionScripting
             int count = 0;
 
             foreach (var item in items)
+            {
+                if(Interpreter.InIgnoreList(item)) continue;
+
                 count += item.Amount == 0 ? 1 : item.Amount;
+            }
 
             return count;
         }
@@ -334,7 +344,7 @@ namespace ClassicUO.LegionScripting
 
             if (SerialHelper.IsMobile(m) && World.Mobiles.TryGetValue(m, out var mobile))
             {
-                if (mobile.Distance <= maxDist)
+                if (mobile.Distance <= maxDist && !Interpreter.InIgnoreList(m))
                 {
                     Interpreter.SetAlias(Constants.FOUND, m);
                     return true;
@@ -400,8 +410,13 @@ namespace ClassicUO.LegionScripting
                 List<Item> items = Utility.FindItems(arg.AsUInt(), parOrRootContainer: source, hue: hue, groundRange: range);
                 if (items.Count > 0)
                 {
-                    Interpreter.SetAlias(Constants.FOUND, items[0]);
-                    return true;
+                    foreach (Item item in items)
+                    {
+                        if (Interpreter.InIgnoreList(item)) continue;
+
+                        Interpreter.SetAlias(Constants.FOUND, item);
+                        return true;
+                    }
                 }
             }
 

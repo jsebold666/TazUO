@@ -7,8 +7,6 @@ using ClassicUO.Network;
 using ClassicUO.Configuration;
 using ClassicUO.Utility;
 using ClassicUO.Game.UI.Gumps;
-using System;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicUO.LegionScripting
 {
@@ -327,12 +325,18 @@ namespace ClassicUO.LegionScripting
                     if (source == Constants.MAX_SERIAL && item.Distance > range)
                         continue;
 
+                    if (!Interpreter.InIgnoreList(item))
+                        continue;
+
                     if (hue != ushort.MaxValue)
                     {
-                        if (item.Hue == hue && GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
+                        if (item.Hue == hue)
                         {
-                            GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
-                            return true;
+                            if (GameActions.PickUp(item, 0, 0, amount < 1 ? item.Amount : amount))
+                            {
+                                GameActions.DropItem(item, 0xFFFF, 0xFFFF, 0, target);
+                                return true;
+                            }
                         }
                     }
                     else

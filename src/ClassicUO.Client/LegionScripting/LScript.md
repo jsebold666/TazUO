@@ -459,6 +459,17 @@ Send a context menu request and select an option for a specific entity.
 Example: `contextmenu '0x40001234' '1'`
 
 
+## `clearignorelist`
+
+Clear the ignore list  
+`clearignorelist`  
+
+## `ignoreobject`
+
+Ignore an object  
+`ignoreobject 'serial`  
+Example: `ignoreobject 'self'`
+
 
 
 # Expressions
