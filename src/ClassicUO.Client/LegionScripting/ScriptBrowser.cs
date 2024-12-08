@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ClassicUO.Assets;
+using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
@@ -32,7 +34,7 @@ namespace ClassicUO.LegionScripting
             Height = HEIGHT;
 
             Add(new AlphaBlendControl() { Width = Width, Height = Height });
-            Add(scrollArea = new ScrollArea(0, 0, WIDTH, HEIGHT, true) { ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways });
+            Add(scrollArea = new ScrollArea(0, 0, Width, Height, true) { ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways });
 
             GetFilesAsync().ContinueWith((r) =>
             {
@@ -52,7 +54,7 @@ namespace ClassicUO.LegionScripting
             if (lastPath.Length > 0)
             {
                 lastP = Path.GetDirectoryName(lastPath);
-                scrollArea.Add(new ItemControl(new GHFileObject() { type = "dir", name = "BACK", path = lastP }, this));
+                scrollArea.Add(new ItemControl(new GHFileObject() { type = "dir", name = $"<- Back{(string.IsNullOrEmpty(lastP)? "" : $" ({lastP})")}", path = lastP }, this));
 
             }
 
@@ -77,13 +79,23 @@ namespace ClassicUO.LegionScripting
 
         private async Task<List<GHFileObject>> GetFilesAsync(string path = "")
         {
-            lastPath = path;
+            try
+            {
+                lastPath = path;
 
-            var files = new List<GHFileObject>();
-            var url = $"https://api.github.com/repos/{REPO}/contents{path}";
-            var response = await client.GetStringAsync(url);
+                var files = new List<GHFileObject>();
+                var url = $"https://api.github.com/repos/{REPO}/contents{path}";
+                var response = await client.GetStringAsync(url);
 
-            return JsonSerializer.Deserialize<List<GHFileObject>>(response);
+                return JsonSerializer.Deserialize<List<GHFileObject>>(response);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                GameActions.Print("There was an error trying to load public scripts. You can browse them manually at: https://github.com/bittiez/PublicLegionScripts");
+            }
+
+            return new List<GHFileObject>();
         }
 
 
@@ -122,16 +134,16 @@ namespace ClassicUO.LegionScripting
                 ScriptBrowser = scriptBrowser;
                 if (gHFileObject.type == "dir")
                 {
-                    Add(GenTextBox("Directory", 12));
+                    Add(GenTextBox("Directory", 14, 5, 5));
                     MouseDown += DirectoryMouseDown;
                 }
                 else if (gHFileObject.type == "file" && gHFileObject.name.EndsWith(".lscript"))
                 {
-                    Add(GenTextBox("Script", 12));
+                    Add(GenTextBox("Script", 14, 5, 5));
                     MouseDown += FileMouseDown;
                 }
 
-                var tb = GenTextBox(gHFileObject.name, 16);
+                var tb = GenTextBox(gHFileObject.name, 20);
                 tb.X = Width - tb.MeasuredSize.X - 5;
                 tb.Y = (Height - tb.MeasuredSize.Y) / 2;
                 Add(tb);
@@ -154,10 +166,13 @@ namespace ClassicUO.LegionScripting
                 });
             }
 
-            private TextBox GenTextBox(string text, int fontsize)
+            private TextBox GenTextBox(string text, int fontsize, int x = 0, int y = 0)
             {
 
                 TextBox tb = new TextBox(text, TrueTypeLoader.EMBEDDED_FONT, fontsize, null, Microsoft.Xna.Framework.Color.White, strokeEffect: false);
+                tb.X = x;
+                tb.Y = y;
+                tb.AcceptMouseInput = false;
                 return tb;
             }
 
