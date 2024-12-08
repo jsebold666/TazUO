@@ -8,6 +8,7 @@ using ClassicUO.Configuration;
 using ClassicUO.Utility;
 using ClassicUO.Game.UI.Gumps;
 using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicUO.LegionScripting
 {
@@ -786,6 +787,56 @@ namespace ClassicUO.LegionScripting
             Interpreter.Timeout(duration, LegionScripting.ReturnTrue);
 
             return MessageManager.PromptData.Prompt != ConsolePrompt.None;
+        }
+        public static bool CancelPrompt(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (MessageManager.PromptData.Prompt == ConsolePrompt.ASCII)
+            {
+                NetClient.Socket.Send_ASCIIPromptResponse(string.Empty, true);
+            }
+            else if (MessageManager.PromptData.Prompt == ConsolePrompt.Unicode)
+            {
+                NetClient.Socket.Send_UnicodePromptResponse(string.Empty, Settings.GlobalSettings.Language, true);
+            }
+
+            MessageManager.PromptData = default;
+            return true;
+        }
+        public static bool PromptResponse(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: promptresponse 'msg'");
+
+            string text = args[0].AsString();
+
+            if (MessageManager.PromptData.Prompt != ConsolePrompt.None)
+            {
+                if (MessageManager.PromptData.Prompt == ConsolePrompt.ASCII)
+                {
+                    NetClient.Socket.Send_ASCIIPromptResponse(text, text.Length < 1);
+                }
+                else if (MessageManager.PromptData.Prompt == ConsolePrompt.Unicode)
+                {
+                    NetClient.Socket.Send_UnicodePromptResponse(text, Settings.GlobalSettings.Language, text.Length < 1);
+                }
+
+                MessageManager.PromptData = default;
+            }
+
+            return true;
+        }
+        public static bool ContextMenu(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: contextmenu 'serial' 'option'");
+
+            uint serial = args[0].AsSerial();
+
+            PopupMenuGump.CloseNext = serial;
+            NetClient.Socket.Send_RequestPopupMenu(serial);
+            NetClient.Socket.Send_PopupMenuSelection(serial, args[1].AsUShort());
+
+            return true;
         }
     }
 }

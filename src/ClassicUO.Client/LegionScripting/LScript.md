@@ -438,8 +438,25 @@ Example: `waitforprompt '5000'`
 Note: The duration is optional and defaults to 10,000 milliseconds (10 seconds) if not provided.
 
 
+## `cancelprompt`  
+
+Cancel the current prompt.  
+`cancelprompt`  
+Example: `cancelprompt`
 
 
+## `promptresponse`  
+
+Send a response to the current prompt.  
+`promptresponse 'msg'`  
+Example: `promptresponse 'This is a response'`
+
+
+## `contextmenu`  
+
+Send a context menu request and select an option for a specific entity.  
+`contextmenu 'serial' 'option'`  
+Example: `contextmenu '0x40001234' '1'`
 
 
 

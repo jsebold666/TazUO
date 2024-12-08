@@ -360,13 +360,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("yellmsg", YellMsg);
             Interpreter.RegisterCommandHandler("emotemsg", EmoteMsg);
             Interpreter.RegisterCommandHandler("waitforprompt", WaitForPrompt);
+            Interpreter.RegisterCommandHandler("cancelprompt", CancelPrompt);
+            Interpreter.RegisterCommandHandler("promptresponse", PromptResponse);
+            Interpreter.RegisterCommandHandler("contextmenu", ContextMenu);
 
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("promptmsg", DummyCommand);
-            Interpreter.RegisterCommandHandler("cancelprompt", DummyCommand);
-            Interpreter.RegisterCommandHandler("contextmenu", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
             Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
             Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
@@ -444,7 +444,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
         }
-
 
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
         {
