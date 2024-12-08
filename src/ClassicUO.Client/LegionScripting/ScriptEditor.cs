@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using ClassicUO.Assets;
 using ClassicUO.Game;
 using ClassicUO.Game.UI.Controls;

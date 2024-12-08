@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using static LScript.Interpreter;
 
