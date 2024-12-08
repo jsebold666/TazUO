@@ -381,24 +381,13 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("clearjournal", ClearJournal);
             Interpreter.RegisterCommandHandler("poplist", PopList);
             Interpreter.RegisterCommandHandler("targettilerel", TargetTileRel);
+            Interpreter.RegisterCommandHandler("virtue", Virtue);
 
 
 
             //Unfinished below
-            Interpreter.RegisterCommandHandler("dress", DummyCommand);
-            Interpreter.RegisterCommandHandler("undress", DummyCommand);
             Interpreter.RegisterCommandHandler("playmacro", DummyCommand);
             Interpreter.RegisterCommandHandler("playsound", DummyCommand);
-            Interpreter.RegisterCommandHandler("resync", DummyCommand);
-            Interpreter.RegisterCommandHandler("snapshot", DummyCommand);
-            Interpreter.RegisterCommandHandler("hotkeys", DummyCommand);
-            Interpreter.RegisterCommandHandler("where", DummyCommand);
-            Interpreter.RegisterCommandHandler("clickscreen", DummyCommand);
-            Interpreter.RegisterCommandHandler("paperdoll", DummyCommand);
-            Interpreter.RegisterCommandHandler("helpbutton", DummyCommand);
-            Interpreter.RegisterCommandHandler("guildbutton", DummyCommand);
-            Interpreter.RegisterCommandHandler("questsbutton", DummyCommand);
-            Interpreter.RegisterCommandHandler("virtue", DummyCommand);
             Interpreter.RegisterCommandHandler("headmsg", DummyCommand);
             Interpreter.RegisterCommandHandler("partymsg", DummyCommand);
             Interpreter.RegisterCommandHandler("guildmsg", DummyCommand);
@@ -415,7 +404,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("waitforcontext", DummyCommand);
             Interpreter.RegisterCommandHandler("ignoreobject", DummyCommand);
             Interpreter.RegisterCommandHandler("clearignorelist", DummyCommand);
-            Interpreter.RegisterCommandHandler("autocolorpick", DummyCommand);
             Interpreter.RegisterCommandHandler("waitforcontents", DummyCommand);
             Interpreter.RegisterCommandHandler("targettype", DummyCommand);
             Interpreter.RegisterCommandHandler("targetground", DummyCommand);
@@ -448,6 +436,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("counttype", CountType);
             Interpreter.RegisterExpressionHandler("ping", Ping);
             Interpreter.RegisterExpressionHandler("itemamt", ItemAmt);
+            Interpreter.RegisterExpressionHandler("primaryabilityactive", PrimaryAbilityActive);
+            Interpreter.RegisterExpressionHandler("secondaryabilityactive", SecondaryAbilityActive);
 
             #endregion
 
@@ -465,6 +455,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("true", GetTrue);
             Interpreter.RegisterExpressionHandler("false", GetFalse);
             Interpreter.RegisterExpressionHandler("dead", IsDead);
+            Interpreter.RegisterExpressionHandler("paralyzed", IsParalyzed);
+            Interpreter.RegisterExpressionHandler("mounted", IsMounted);
             Interpreter.RegisterExpressionHandler("diffhits", DiffHits);
             Interpreter.RegisterExpressionHandler("str", GetStr);
             Interpreter.RegisterExpressionHandler("dex", GetDex);
@@ -473,6 +465,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("maxfollowers", GetMaxFollowers);
             Interpreter.RegisterExpressionHandler("gold", GetGold);
             Interpreter.RegisterExpressionHandler("hidden", IsHidden);
+            Interpreter.RegisterExpressionHandler("weight", GetPlayerWeight);
+            Interpreter.RegisterExpressionHandler("maxweight", GetPlayerMaxWeight);
             #endregion
 
             #region Default aliases
@@ -488,6 +482,57 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("any", DefaultAlias);
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
+        }
+
+        private static bool IsMounted(string expression, Argument[] args, bool quiet)
+        {
+            return World.Player.FindItemByLayer(Layer.Mount) != null;
+        }
+
+        private static bool IsParalyzed(string expression, Argument[] args, bool quiet)
+        {
+            uint serial = World.Player;
+
+            if (args.Length > 0) serial = args[0].AsSerial();
+
+            if (World.Mobiles.TryGetValue(serial, out var m)) return m.IsParalyzed;
+
+            return false;
+        }
+
+        private static int GetPlayerWeight(string expression, Argument[] args, bool quiet) => World.Player.Weight;
+
+        private static int GetPlayerMaxWeight(string expression, Argument[] args, bool quiet) => World.Player.WeightMax;
+
+        private static bool Virtue(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: virtue 'honor|sacrifice|valor'");
+
+            switch (args[0].AsString())
+            {
+                case "honor":
+                    NetClient.Socket.Send_InvokeVirtueRequest(0x01);
+                    break;
+                case "sacrifice":
+                    NetClient.Socket.Send_InvokeVirtueRequest(0x02);
+                    break;
+                case "valor":
+                    NetClient.Socket.Send_InvokeVirtueRequest(0x03);
+                    break;
+            }
+
+            return true;
+        }
+
+        private static bool SecondaryAbilityActive(string expression, Argument[] args, bool quiet)
+        {
+            return ((byte)World.Player.SecondaryAbility & 0x80) != 0;
+        }
+
+        private static bool PrimaryAbilityActive(string expression, Argument[] args, bool quiet)
+        {
+            return ((byte)World.Player.PrimaryAbility & 0x80) != 0;
         }
 
         private static bool IsHidden(string expression, Argument[] args, bool quiet) => World.Player.IsHidden;

@@ -19,6 +19,8 @@ namespace ClassicUO.LegionScripting
 
         public ScriptManagerGump() : base(300, 400, 200, 300, 0, 0)
         {
+            UIManager.GetGump<ScriptManagerGump>()?.Dispose();
+
             CanCloseWithRightClick = true;
             AcceptMouseInput = true;
             CanMove = true;

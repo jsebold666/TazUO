@@ -175,7 +175,7 @@ Example: `waitforjournal 'you begin' '15000'` <- this waits for up to 15 seconds
 Create a timer. If the timer already exists, this is ignored until the timer expires.  
 `settimer` 'name' 'duration'  
 Note: Timers are shared between scripts so make sure to name them uniquely.  
-Example: `createtimer '123bandage' '10000'`   //Create a timer named 123bandage with a duration of 10 seconds
+Example: `settimer '123bandage' '10000'`   //Create a timer named 123bandage with a duration of 10 seconds
 
 
 ## `removetimer`
@@ -365,6 +365,15 @@ Example: `poplist 'myList' 'item1'`
 Target a tile relative to the player's position.  
 `targettilerel 'x' 'y' ['graphic']`  
 Example: `targettilerel '5' '10'` or `targettilerel '5' '10' '0x1234'`
+
+
+## `virtue`  
+
+Invoke a specific virtue.  
+`virtue 'honor|sacrifice|valor'`  
+Example: `virtue 'honor'`
+
+
 
 
 
@@ -566,6 +575,32 @@ Get the amount of an item by its serial number.
 Example: `itemamt '0x40001234'`
 
 
+## `primaryabilityactive`
+
+Check if primary ability is active  
+`primaryabilityactive`  
+Example: `if primaryabilityactive`  
+
+
+## `secondaryabilityactive`
+
+Check if secondary ability is active  
+`secondaryabilityactive`  
+Example: `if secondaryabilityactive`  
+
+## `mounted`  
+
+Check if the player is mounted.  
+`mounted`  
+Example: `if mounted`
+
+
+## `paralyzed`  
+
+Check if a player or mobile is paralyzed.  
+`paralyzed 'serial'`  
+Example: `if paralyzed`  
+Note: `serial` is optional, if omitted it will check yourself.
 
 
 # Aliases
@@ -580,6 +615,8 @@ Example: `itemamt '0x40001234'`
 - `str`, `dex`, `int`
 - `followers`, `maxfollowers`
 - `gold`, `hidden`
+- `weight`, `maxweight`
+- `mounted`
 - `true`, `false`
 - `found` <- Available when using commands like findtype  
 - `count` <- Available when using commands like findtype
