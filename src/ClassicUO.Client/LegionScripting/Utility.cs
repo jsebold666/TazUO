@@ -3,6 +3,7 @@ using System.ComponentModel;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
+using LScript;
 
 namespace ClassicUO.LegionScripting
 {
@@ -24,7 +25,8 @@ namespace ClassicUO.LegionScripting
             uint rootContainer = uint.MaxValue,
             uint parOrRootContainer = uint.MaxValue,
             ushort hue = ushort.MaxValue,
-            int groundRange = int.MaxValue
+            int groundRange = int.MaxValue,
+            bool skipIgnoreCheck = false
             )
         {
             List<Item> list = new List<Item>();
@@ -47,6 +49,9 @@ namespace ClassicUO.LegionScripting
                     continue;
 
                 if (groundRange != int.MaxValue && item.Distance > groundRange)
+                    continue;
+
+                if (!skipIgnoreCheck && Interpreter.InIgnoreList(item))
                     continue;
 
                 list.Add(item);

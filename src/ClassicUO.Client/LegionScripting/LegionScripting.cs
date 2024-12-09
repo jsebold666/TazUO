@@ -16,14 +16,18 @@ namespace ClassicUO.LegionScripting
 {
     internal static class LegionScripting
     {
-        private static bool _enabled, _loaded;
         public static string ScriptPath;
+
+        private static bool _enabled, _loaded;
 
         private static List<ScriptFile> runningScripts = new List<ScriptFile>();
         private static List<ScriptFile> removeRunningScripts = new List<ScriptFile>();
         private static LScriptSettings lScriptSettings;
 
         public static List<ScriptFile> LoadedScripts = new List<ScriptFile>();
+
+        public static event EventHandler<ScriptInfoEvent> ScriptStartedEvent;
+        public static event EventHandler<ScriptInfoEvent> ScriptStoppedEvent;
 
         public static void Init()
         {
@@ -258,17 +262,23 @@ namespace ClassicUO.LegionScripting
                 script.GenerateScript();
                 runningScripts.Add(script);
                 script.GetScript.IsPlaying = true;
+
+                ScriptStartedEvent?.Invoke(null, new ScriptInfoEvent(script));
             }
         }
         public static void StopScript(ScriptFile script)
         {
             //GameActions.Print($"STOPPING {script.FileName} on line {script.GetScript.CurrentLine}");
+            if (script != null)
+            {
+                if (runningScripts.Contains(script))
+                    runningScripts.Remove(script);
 
-            if (runningScripts.Contains(script))
-                runningScripts.Remove(script);
+                script.GetScript.Reset();
+                script.GetScript.IsPlaying = false;
 
-            script.GetScript.Reset();
-            script.GetScript.IsPlaying = false;
+                ScriptStoppedEvent?.Invoke(null, new ScriptInfoEvent(script));
+            }
         }
         public static bool DummyCommand(string command, Argument[] args, bool quiet, bool force)
         {
@@ -437,20 +447,7 @@ namespace ClassicUO.LegionScripting
             #endregion
         }
 
-        private static bool ClearIgnoreList(string command, Argument[] args, bool quiet, bool force)
-        {
-            Interpreter.ClearIgnoreList();
-            return true;
-        }
 
-        private static bool IgnoreObject(string command, Argument[] args, bool quiet, bool force)
-        {
-            if (args.Length < 1)
-                throw new RunTimeError(null, "Usage: ignoreobject 'serial'");
-
-            Interpreter.IgnoreSerial(args[0].AsSerial());
-            return true;
-        }
 
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
         {
@@ -463,6 +460,16 @@ namespace ClassicUO.LegionScripting
         public static void LScriptWarning(string msg)
         {
             GameActions.Print($"[{Interpreter.ActiveScript.CurrentLine}][LScript Warning]" + msg);
+        }
+    }
+
+    internal class ScriptInfoEvent
+    {
+        public ScriptFile GetScript;
+
+        public ScriptInfoEvent(ScriptFile getScript)
+        {
+            GetScript = getScript;
         }
     }
 

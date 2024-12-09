@@ -725,7 +725,9 @@ namespace ClassicUO.LegionScripting
             if (args.Length < 2)
                 throw new RunTimeError(null, "Usage: headmsg 'serial' 'msg'");
 
-            World.Get(args[0].AsSerial())?.AddMessage(MessageType.Regular, args[1].AsString(), TextType.CLIENT);
+            Entity e = World.Get(args[0].AsSerial());
+
+            MessageManager.HandleMessage(e, args[1].AsString(), "", ProfileManager.CurrentProfile.SpeechHue, MessageType.Label, 3, TextType.OBJECT);
 
             return true;
         }
@@ -840,6 +842,19 @@ namespace ClassicUO.LegionScripting
             NetClient.Socket.Send_RequestPopupMenu(serial);
             NetClient.Socket.Send_PopupMenuSelection(serial, args[1].AsUShort());
 
+            return true;
+        }
+        public static bool ClearIgnoreList(string command, Argument[] args, bool quiet, bool force)
+        {
+            Interpreter.ClearIgnoreList();
+            return true;
+        }
+        public static bool IgnoreObject(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: ignoreobject 'serial'");
+
+            Interpreter.IgnoreSerial(args[0].AsSerial());
             return true;
         }
     }

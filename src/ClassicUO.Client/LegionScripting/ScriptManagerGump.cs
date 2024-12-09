@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using ClassicUO.Assets;
+using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
@@ -15,9 +16,10 @@ namespace ClassicUO.LegionScripting
     {
         private AlphaBlendControl background;
         private ScrollArea scrollArea;
-        private NiceButton refresh, add;//, browser;
+        private NiceButton refresh, add;
+        private TextBox title;
 
-        public ScriptManagerGump() : base(300, 400, 200, 300, 0, 0)
+        public ScriptManagerGump() : base(300, 400, 300, 200, 0, 0)
         {
             UIManager.GetGump<ScriptManagerGump>()?.Dispose();
 
@@ -25,12 +27,13 @@ namespace ClassicUO.LegionScripting
             AcceptMouseInput = true;
             CanMove = true;
             AnchorType = ANCHOR_TYPE.DISABLED;
-
             LegionScripting.LoadScriptsFromFile();
 
             Add(background = new AlphaBlendControl(0.77f) { X = BorderControl.BorderSize, Y = BorderControl.BorderSize });
 
-            Add(refresh = new NiceButton(BorderControl.BorderSize, BorderControl.BorderSize, Width / 2, 50, ButtonAction.Default, "Refresh") { IsSelectable = false });
+            Add(title = new TextBox("Script Manager", TrueTypeLoader.EMBEDDED_FONT, 18, Width, Color.DarkOrange, FontStashSharp.RichText.TextHorizontalAlignment.Center, false) { Y = BorderControl.BorderSize, AcceptMouseInput = false });
+
+            Add(refresh = new NiceButton(BorderControl.BorderSize, title.MeasuredSize.Y + BorderControl.BorderSize, Width / 2, 25, ButtonAction.Default, "Refresh") { IsSelectable = false });
 
             refresh.MouseDown += (s, e) =>
             {
@@ -40,7 +43,7 @@ namespace ClassicUO.LegionScripting
                 UIManager.Add(g);
             };
 
-            Add(add = new NiceButton(0, BorderControl.BorderSize, Width / 2, 50, ButtonAction.Default, "New") { IsSelectable = false });
+            Add(add = new NiceButton(0, title.MeasuredSize.Y + BorderControl.BorderSize, Width / 2, 25, ButtonAction.Default, "New") { IsSelectable = false });
 
             add.MouseDown += (s, e) =>
             {
@@ -68,18 +71,14 @@ namespace ClassicUO.LegionScripting
                 UIManager.Add(r);
             };
 
-            //Add(browser = new NiceButton(0, BorderControl.BorderSize, 100, 50, ButtonAction.Default, "Public Scripts") { IsSelectable = false });
-
-            //browser.MouseDown += (s, e) => { UIManager.Add(new ScriptBrowser()); };
-
-            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, BorderControl.BorderSize + 50, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 50, true));
+            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, title.MeasuredSize.Y + BorderControl.BorderSize + 25, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 25, true));
             scrollArea.ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways;
 
             int y = 0;
             foreach (ScriptFile sf in LegionScripting.LoadedScripts)
             {
                 scrollArea.Add(new ScriptControl(scrollArea.Width - scrollArea.ScrollBarWidth(), sf) { Y = y });
-                y += 52;
+                y += 27;
             }
 
             CenterXInViewPort();
@@ -97,14 +96,14 @@ namespace ClassicUO.LegionScripting
                 background.Width = Width - (BorderControl.BorderSize * 2);
                 background.Height = Height - (BorderControl.BorderSize * 2);
 
+                title.Width = Width - (BorderControl.BorderSize * 2);
+
                 refresh.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
                 add.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
                 add.X = refresh.X + refresh.Width;
-                //browser.Width = (Width - (BorderControl.BorderSize * 2)) / 3;
-                //browser.X = add.X + add.Width;
 
                 scrollArea.Width = Width - (BorderControl.BorderSize * 2);
-                scrollArea.Height = Height - (BorderControl.BorderSize * 2) - 50;
+                scrollArea.Height = Height - (BorderControl.BorderSize * 2) - (add.Y + add.Height);
                 scrollArea.UpdateScrollbarPosition();
 
                 foreach (Control c in scrollArea.Children)
@@ -119,38 +118,47 @@ namespace ClassicUO.LegionScripting
         {
             private AlphaBlendControl background;
             private TextBox label;
-            private NiceButton play, stop, menu;
+            private NiceButton playstop, menu;
 
             public ScriptFile Script { get; }
+
+            private string playStopText
+            {
+                get
+                {
+                    if (Script != null && Script.GetScript != null)
+                        return Script.GetScript.IsPlaying ? "Stop" : "Play";
+                    return "Play";
+                }
+            }
 
             public ScriptControl(int w, ScriptFile script)
             {
                 Width = w;
-                Height = 50;
+                Height = 25;
                 Script = script;
+                CanMove = true;
 
                 Add(background = new AlphaBlendControl(0.35f) { Height = Height, Width = Width });
 
-                Add(label = new TextBox(script.FileName.Substring(0, script.FileName.IndexOf('.')), TrueTypeLoader.EMBEDDED_FONT, 18, w - 130, Color.White, strokeEffect: false));
+                Add(label = new TextBox(script.FileName.Substring(0, script.FileName.IndexOf('.')), TrueTypeLoader.EMBEDDED_FONT, 16, w - 130, Color.White, strokeEffect: false) { AcceptMouseInput = false });
                 label.Y = (Height - label.MeasuredSize.Y) / 2;
                 label.X = 5;
 
-                Add(play = new NiceButton(w - 125, 0, 50, Height, ButtonAction.Default, "Play"));
-                play.MouseUp += Play_MouseUp;
+                Add(playstop = new NiceButton(w - 75, 0, 50, Height, ButtonAction.Default, playStopText) { IsSelectable = false });
+                playstop.MouseUp += Play_MouseUp;
 
-                Add(stop = new NiceButton(w - 75, 0, 50, Height, ButtonAction.Default, "Stop"));
-                stop.MouseUp += Stop_MouseUp;
-
-                Add(menu = new NiceButton(w - 25, 0, 25, Height, ButtonAction.Default, "+"));
+                Add(menu = new NiceButton(w - 25, 0, 25, Height, ButtonAction.Default, "+") { IsSelectable = false });
                 menu.MouseDown += (s, e) => { ContextMenu?.Show(); };
 
                 SetMenuColor();
 
                 UpdateSize(w);
-                SlowUpdate(); //Set background colors
+                SetBGColors();
 
                 ContextMenu = new ContextMenuControl();
 
+                ContextMenu.Add(new ContextMenuItemEntry(Script.FileName) { IsSelected = true });
                 ContextMenu.Add(new ContextMenuItemEntry("Edit", () => { UIManager.Add(new ScriptEditor(Script)); }));
                 ContextMenu.Add(new ContextMenuItemEntry("Edit Externally", () => { OpenFileWithDefaultApp(Script.FullPath); }));
                 ContextMenu.Add(new ContextMenuItemEntry("Autostart", () => { GenAutostartContext().Show(); }));
@@ -171,6 +179,26 @@ namespace ClassicUO.LegionScripting
                     });
                     UIManager.Add(g);
                 }));
+
+                LegionScripting.ScriptStartedEvent += ScriptStarted;
+                LegionScripting.ScriptStoppedEvent += ScriptStopped;
+            }
+
+            public override void Dispose()
+            {
+                base.Dispose();
+                LegionScripting.ScriptStoppedEvent -= ScriptStopped;
+                LegionScripting.ScriptStartedEvent -= ScriptStarted;
+            }
+
+            private void ScriptStopped(object sender, ScriptInfoEvent e)
+            {
+                SetBGColors();
+            }
+
+            private void ScriptStarted(object sender, ScriptInfoEvent e)
+            {
+                SetBGColors();
             }
 
             private void SetMenuColor()
@@ -218,46 +246,34 @@ namespace ClassicUO.LegionScripting
                 return context;
             }
 
-            private void Stop_MouseUp(object sender, Input.MouseEventArgs e)
+            private void Play_MouseUp(object sender, MouseEventArgs e)
             {
-                LegionScripting.StopScript(Script);
-                stop.IsSelected = true;
-                play.IsSelected = false;
-            }
-
-            private void Play_MouseUp(object sender, Input.MouseEventArgs e)
-            {
-                LegionScripting.PlayScript(Script);
-                play.IsSelected = true;
-                stop.IsSelected = false;
-            }
-
-            public override void SlowUpdate()
-            {
-                base.SlowUpdate();
-                if (Script.GetScript != null)
+                if (Script != null && Script.GetScript != null)
+                {
                     if (Script.GetScript.IsPlaying)
-                    {
-                        background.BaseColor = Color.DarkGreen;
-                        play.IsSelected = true;
-                        stop.IsSelected = false;
-                    }
+                        LegionScripting.StopScript(Script);
                     else
-                    {
-                        background.BaseColor = Color.DarkRed;
-                        stop.IsSelected = true;
-                        play.IsSelected = false;
-                    }
+                        LegionScripting.PlayScript(Script);
+                }
+            }
+
+            private void SetBGColors()
+            {
+                if (Script.GetScript != null && Script.GetScript.IsPlaying)
+                    background.BaseColor = Color.DarkGreen;
+                else
+                    background.BaseColor = Color.DarkRed;
+
+                playstop.TextLabel.Text = playStopText;
             }
 
             public void UpdateSize(int w)
             {
                 Width = w;
                 background.Width = w;
-                label.Width = w - 130;
-                play.X = label.X + label.Width + 5;
-                stop.X = play.X + play.Width;
-                menu.X = stop.X + stop.Width;
+                label.Width = w - 80;
+                playstop.X = label.X + label.Width + 5;
+                menu.X = playstop.X + playstop.Width;
             }
         }
     }

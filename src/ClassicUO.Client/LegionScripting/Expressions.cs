@@ -101,6 +101,7 @@ namespace ClassicUO.LegionScripting
             uint source = args[1].AsSerial();
 
             if (source == Constants.MAX_SERIAL) source = uint.MaxValue;
+            if (gfx == 0) gfx = uint.MaxValue;
 
             ushort hue = args.Length >= 3 ? args[2].AsUShort() : ushort.MaxValue;
             int range = args.Length >= 4 ? args[3].AsInt() : int.MaxValue;
@@ -112,8 +113,6 @@ namespace ClassicUO.LegionScripting
             {
                 foreach (Item item in items)
                 {
-                    if (Interpreter.InIgnoreList(item)) continue;
-
                     Interpreter.SetAlias(Constants.FOUND, item);
                     break;
                 }
@@ -323,8 +322,6 @@ namespace ClassicUO.LegionScripting
 
             foreach (var item in items)
             {
-                if(Interpreter.InIgnoreList(item)) continue;
-
                 count += item.Amount == 0 ? 1 : item.Amount;
             }
 
@@ -412,8 +409,6 @@ namespace ClassicUO.LegionScripting
                 {
                     foreach (Item item in items)
                     {
-                        if (Interpreter.InIgnoreList(item)) continue;
-
                         Interpreter.SetAlias(Constants.FOUND, item);
                         return true;
                     }

@@ -384,6 +384,8 @@ namespace LScript
             _journalEntries.Clear();
             TargetRequested = false;
             IgnoreList.Clear();
+            PauseTimeout = long.MaxValue;
+            ExecutionState = ExecutionState.RUNNING;
         }
 
         public bool ExecuteNext()
