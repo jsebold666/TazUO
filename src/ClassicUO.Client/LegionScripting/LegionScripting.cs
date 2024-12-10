@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
-using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using LScript;
 using static ClassicUO.LegionScripting.Commands;
@@ -31,7 +29,7 @@ namespace ClassicUO.LegionScripting
 
         public static void Init()
         {
-            ScriptPath = Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts");
+            ScriptPath = Path.GetFullPath(Path.Combine(CUOEnviroment.ExecutablePath, "LegionScripts"));
 
             CommandManager.Register("lscript", (args) =>
             {
@@ -40,7 +38,6 @@ namespace ClassicUO.LegionScripting
                     UIManager.Add(new ScriptManagerGump());
                 }
             });
-
 
             CommandManager.Register("lscriptfile", (args) =>
             {
@@ -89,26 +86,54 @@ namespace ClassicUO.LegionScripting
             if (!Directory.Exists(ScriptPath))
                 Directory.CreateDirectory(ScriptPath);
 
-            string[] loadedScripts = new string[LoadedScripts.Count];
-            int i = 0;
+            LoadedScripts.RemoveAll(ls => !ls.FileExists());
+
+            List<string> groups = [ScriptPath, .. HandleScriptsInDirectory(ScriptPath)];
+            
+            List<string> subgroups = new List<string>();
+
+            //First level directory(groups)
+            foreach (string file in groups)
+                subgroups.AddRange(HandleScriptsInDirectory(file));
+
+            foreach (string file in subgroups)
+                HandleScriptsInDirectory(file); //No third level supported, ignore directories
+        }
+        private static void AddScriptFromFile(string path)
+        {
+            string p = Path.GetDirectoryName(path);
+            string fname = Path.GetFileName(path);
+
+            LoadedScripts.Add(new ScriptFile(p, fname));
+        }
+        /// <summary>
+        /// Returns a list of sub directories
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private static List<string> HandleScriptsInDirectory(string path)
+        {
+            HashSet<string> loadedScripts = new HashSet<string>();
 
             foreach (ScriptFile script in LoadedScripts)
-            {
-                loadedScripts[i] = script.FullPath;
-                i++;
-            }
+                loadedScripts.Add(script.FullPath);
 
-            foreach (string file in Directory.EnumerateFiles(ScriptPath))
+            List<string> groups = new List<string>();
+            foreach (string file in Directory.EnumerateFileSystemEntries(path))
             {
                 if (file.EndsWith(".lscript"))
                 {
-                    string p = Path.GetDirectoryName(file);
-                    string fname = Path.GetFileName(file);
-
-                    if (!loadedScripts.Contains(file)) //Only add files not already loaded
-                        LoadedScripts.Add(new ScriptFile(p, fname));
+                    if (loadedScripts.Contains(file)) continue;
+                    AddScriptFromFile(file);
+                    loadedScripts.Add(file);
+                }
+                else if (Directory.Exists(file))
+                {
+                    groups.Add(file);
                 }
             }
+
+            return groups;
         }
         public static void SetAutoPlay(ScriptFile script, bool global, bool enabled)
         {
@@ -170,10 +195,6 @@ namespace ClassicUO.LegionScripting
                         PlayScript(f);
             }
         }
-        private static string GetAccountCharName()
-        {
-            return ProfileManager.CurrentProfile.Username + ProfileManager.CurrentProfile.CharacterName;
-        }
         private static void AutoPlayChar()
         {
             if (World.Player == null)
@@ -184,6 +205,29 @@ namespace ClassicUO.LegionScripting
                     if (scripts.Contains(f.FileName))
                         PlayScript(f);
 
+        }
+        private static string GetAccountCharName()
+        {
+            return ProfileManager.CurrentProfile.Username + ProfileManager.CurrentProfile.CharacterName;
+        }
+        public static bool IsGroupCollapsed(string group, string subgroup = "")
+        {
+            var path = group;
+            if (!string.IsNullOrEmpty(subgroup))
+                path += "/" + subgroup;
+
+            if (lScriptSettings.GroupCollapsed.ContainsKey(path))
+                return lScriptSettings.GroupCollapsed[path];
+
+            return false;
+        }
+        public static void SetGroupCollapsed(string group, string subgroup = "", bool expanded = false)
+        {
+            var path = group;
+            if (!string.IsNullOrEmpty(subgroup))
+                path += "/" + subgroup;
+
+            lScriptSettings.GroupCollapsed[path] = expanded;
         }
         private static void LoadLScriptSettings()
         {
@@ -268,7 +312,6 @@ namespace ClassicUO.LegionScripting
         }
         public static void StopScript(ScriptFile script)
         {
-            //GameActions.Print($"STOPPING {script.FileName} on line {script.GetScript.CurrentLine}");
             if (script != null)
             {
                 if (runningScripts.Contains(script))
@@ -279,12 +322,6 @@ namespace ClassicUO.LegionScripting
 
                 ScriptStoppedEvent?.Invoke(null, new ScriptInfoEvent(script));
             }
-        }
-        public static bool DummyCommand(string command, Argument[] args, bool quiet, bool force)
-        {
-            Console.WriteLine("Executing command {0} {1}", command, args);
-
-            return true;
         }
         private static uint DefaultAlias(string alias)
         {
@@ -446,9 +483,6 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
         }
-
-
-
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
         {
             return true;
@@ -478,12 +512,28 @@ namespace ClassicUO.LegionScripting
         public string Path;
         public string FileName;
         public string FullPath;
+        public string Group = string.Empty;
+        public string SubGroup = string.Empty;
         public Script GetScript;
         public string[] FileContents;
 
         public ScriptFile(string path, string fileName)
         {
             Path = path;
+
+            var cleanPath = path.Replace(System.IO.Path.DirectorySeparatorChar, '/');
+            var cleanBasePath = LegionScripting.ScriptPath.Replace(System.IO.Path.DirectorySeparatorChar, '/');
+            cleanPath = cleanPath.Substring(cleanPath.IndexOf(cleanBasePath) + cleanBasePath.Length);
+
+            if (cleanPath.Length > 0)
+            {
+                var paths = cleanPath.Split(['/'], StringSplitOptions.RemoveEmptyEntries);
+                if (paths.Length > 0)
+                    Group = paths[0];
+                if (paths.Length > 1)
+                    SubGroup = paths[1];
+            }
+
             FileName = fileName;
             FullPath = System.IO.Path.Combine(Path, FileName);
             FileContents = File.ReadAllLines(FullPath);
@@ -512,6 +562,11 @@ namespace ClassicUO.LegionScripting
             {
                 Console.WriteLine(e.ToString());
             }
+        }
+
+        public bool FileExists()
+        {
+            return File.Exists(FullPath);
         }
     }
 }

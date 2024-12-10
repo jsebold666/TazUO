@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ClassicUO.LegionScripting
 {
@@ -10,5 +6,6 @@ namespace ClassicUO.LegionScripting
     {
         public List<string> GlobalAutoStartScripts { get; set; } = new List<string>();
         public Dictionary<string, List<string>> CharAutoStartScripts { get; set; } = new Dictionary<string, List<string>>();
+        public Dictionary<string, bool> GroupCollapsed { get; set; } = new Dictionary<string, bool>();
     }
 }
