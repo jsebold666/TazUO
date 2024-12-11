@@ -1,12 +1,12 @@
-﻿using ClassicUO.Game.GameObjects;
-using ClassicUO.Game.Managers;
+﻿using ClassicUO.Configuration;
 using ClassicUO.Game;
-using LScript;
 using ClassicUO.Game.Data;
-using ClassicUO.Network;
-using ClassicUO.Configuration;
-using ClassicUO.Utility;
+using ClassicUO.Game.GameObjects;
+using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Network;
+using ClassicUO.Utility;
+using LScript;
 
 namespace ClassicUO.LegionScripting
 {
@@ -855,6 +855,19 @@ namespace ClassicUO.LegionScripting
                 throw new RunTimeError(null, "Usage: ignoreobject 'serial'");
 
             Interpreter.IgnoreSerial(args[0].AsSerial());
+            return true;
+        }
+        public static bool Goto(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: goto 'linenum'");
+
+            return !Interpreter.GotoLine(args[0].AsInt());
+        }
+        public static bool Return(string command, Argument[] args, bool quiet, bool force)
+        {
+            Interpreter.ReturnFromGoto();
+
             return true;
         }
     }

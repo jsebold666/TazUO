@@ -758,4 +758,24 @@ Note: `serial` is optional, if omitted it will check yourself.
 
 
 `stop` <- Stop the script  
-`replay` <- Start the script over  
+`replay` <- Start the script over   
+
+`goto 'line'` and `return`  
+These should work together, if you don't have an equal amount of goto and returns it will end up causing you issues with your script.  
+Lines start at 0, if your editor starts at line 1 remember to -1.  
+Here is an example to demonstrate using them nest:  
+```
+sysmsg 'This is a test of the goto functionality'
+
+for 3
+    goto '7'
+endfor
+stop
+
+sysmsg 'Oo test is worky!'
+goto '11'
+return
+
+headmsg 'self' 'This works too!'
+return
+```  

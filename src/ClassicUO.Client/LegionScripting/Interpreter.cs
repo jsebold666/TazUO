@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using ClassicUO.Game.Managers;
+using ClassicUO.Utility.Collections;
 using static LScript.Interpreter;
 
 namespace LScript
@@ -242,6 +243,9 @@ namespace LScript
 
         private Scope _scope;
 
+        private Dictionary<int, ASTNode> lineNodes = new Dictionary<int, ASTNode>();
+        private Deque<ASTNode> returnPoints = new Deque<ASTNode>();
+
         public ExecutionState ExecutionState = ExecutionState.RUNNING;
 
         public long PauseTimeout = long.MaxValue;
@@ -368,6 +372,8 @@ namespace LScript
             // Create a default scope
             _scope = new Scope(null, _statement);
             Root = root;
+
+            GenlineNodes();
         }
 
         public void UpdateScript(ASTNode root)
@@ -376,8 +382,19 @@ namespace LScript
             _scope = new Scope(null, _statement);
             Root = root;
             TargetRequested = false;
+            returnPoints.Clear();
+            GenlineNodes();
         }
 
+        private void GenlineNodes()
+        {
+            ASTNode n = _statement;
+            while (n != null)
+            {
+                lineNodes[n.LineNumber] = n;
+                n = n.Next();
+            }
+        }
         public void Reset()
         {
             _statement = Root.FirstChild();
@@ -386,6 +403,7 @@ namespace LScript
             IgnoreList.Clear();
             PauseTimeout = long.MaxValue;
             ExecutionState = ExecutionState.RUNNING;
+            returnPoints.Clear();
         }
 
         public bool ExecuteNext()
@@ -888,6 +906,23 @@ namespace LScript
             _statement = _statement.Next();
         }
 
+        public bool GotoLine(int line)
+        {
+            if (lineNodes.ContainsKey(line))
+            {
+                returnPoints.AddToBack(_statement);
+                _statement = lineNodes[line];
+                return true;
+            }
+            return false;
+        }
+
+        public void ReturnFromGoto()
+        {
+            if (returnPoints.Count > 0)
+                _statement = returnPoints.RemoveFromFront();
+        }
+
         private ASTNode EvaluateModifiers(ASTNode node, out bool quiet, out bool force, out bool not)
         {
             quiet = false;
@@ -1181,6 +1216,16 @@ namespace LScript
             _exprHandlers.TryGetValue(keyword, out var expression);
 
             return expression;
+        }
+        public static bool GotoLine(int line)
+        {
+            if (ActiveScript == null) return false;
+            return ActiveScript.GotoLine(line);
+        }
+        public static void ReturnFromGoto()
+        {
+            if (ActiveScript == null) return;
+            ActiveScript.ReturnFromGoto();
         }
         public static bool InIgnoreList(uint serial)
         {

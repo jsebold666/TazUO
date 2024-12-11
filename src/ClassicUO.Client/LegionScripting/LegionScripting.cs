@@ -89,7 +89,7 @@ namespace ClassicUO.LegionScripting
             LoadedScripts.RemoveAll(ls => !ls.FileExists());
 
             List<string> groups = [ScriptPath, .. HandleScriptsInDirectory(ScriptPath)];
-            
+
             List<string> subgroups = new List<string>();
 
             //First level directory(groups)
@@ -410,6 +410,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("contextmenu", ContextMenu);
             Interpreter.RegisterCommandHandler("ignoreobject", IgnoreObject);
             Interpreter.RegisterCommandHandler("clearignorelist", ClearIgnoreList);
+            Interpreter.RegisterCommandHandler("goto", Goto);
+            Interpreter.RegisterCommandHandler("return", Return);
             #endregion
 
             #region Expressions
@@ -483,6 +485,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterAliasHandler("anycolor", DefaultAlias);
             #endregion
         }
+
         public static bool ReturnTrue() //Avoids creating a bunch of functions that need to be GC'ed
         {
             return true;
