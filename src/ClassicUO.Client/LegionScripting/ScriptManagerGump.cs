@@ -5,12 +5,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Xml;
 using ClassicUO.Assets;
-using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Gumps;
 using ClassicUO.Input;
-using LScript;
 using Microsoft.Xna.Framework;
 
 namespace ClassicUO.LegionScripting
@@ -19,7 +17,7 @@ namespace ClassicUO.LegionScripting
     {
         private AlphaBlendControl background;
         private ScrollArea scrollArea;
-        private NiceButton refresh, add;
+        private NiceButton refresh;
         private TextBox title;
         internal const int GROUPINDENT = 10;
         internal const int V_SPACING = 2;
@@ -44,7 +42,9 @@ namespace ClassicUO.LegionScripting
 
             Add(title = new TextBox("Script Manager", TrueTypeLoader.EMBEDDED_FONT, 18, Width, Color.DarkOrange, FontStashSharp.RichText.TextHorizontalAlignment.Center, false) { Y = BorderControl.BorderSize, AcceptMouseInput = false });
 
-            Add(refresh = new NiceButton(BorderControl.BorderSize, title.MeasuredSize.Y + BorderControl.BorderSize, Width / 2, 25, ButtonAction.Default, "Refresh") { IsSelectable = false });
+            Add(refresh = new NiceButton(Width - 75 - BorderControl.BorderSize, BorderControl.BorderSize, 75, 25, ButtonAction.Default, "Refresh") { 
+                IsSelectable = false
+            });
 
             refresh.MouseDown += (s, e) =>
             {
@@ -56,37 +56,7 @@ namespace ClassicUO.LegionScripting
                 UIManager.Add(g);
             };
 
-            Add(add = new NiceButton(0, title.MeasuredSize.Y + BorderControl.BorderSize, Width / 2, 25, ButtonAction.Default, "New") { IsSelectable = false });
-
-            add.MouseDown += (s, e) =>
-            {
-                if (e.Button != MouseButtonType.Left) return;
-
-                InputRequest r = new InputRequest("Enter a name for this script. Do not include any file extensions.", "Create", "Cancel", (r, s) =>
-                {
-                    if (r == InputRequest.Result.BUTTON1 && !string.IsNullOrEmpty(s))
-                    {
-                        int p = s.IndexOf('.');
-                        if (p != -1)
-                            s = s.Substring(0, p);
-
-                        try
-                        {
-                            if (!File.Exists(Path.Combine(LegionScripting.ScriptPath, s + ".lscript")))
-                            {
-                                File.WriteAllText(Path.Combine(LegionScripting.ScriptPath, s + ".lscript"), "// My script");
-                                refresh.InvokeMouseDown(Point.Zero, MouseButtonType.Left);
-                            }
-                        }
-                        catch (Exception e) { Console.WriteLine(e.ToString()); }
-                    }
-                });
-                r.CenterXInScreen();
-                r.CenterYInScreen();
-                UIManager.Add(r);
-            };
-
-            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, title.MeasuredSize.Y + BorderControl.BorderSize + 25, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 25, true));
+            Add(scrollArea = new ScrollArea(BorderControl.BorderSize, refresh.Height + refresh.Y, Width - (BorderControl.BorderSize * 2), Height - (BorderControl.BorderSize * 2) - 25, true));
             scrollArea.ScrollbarBehaviour = ScrollbarBehaviour.ShowAlways;
 
             BuildGump();
@@ -182,12 +152,10 @@ namespace ClassicUO.LegionScripting
 
                 title.Width = Width - (BorderControl.BorderSize * 2);
 
-                refresh.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
-                add.Width = (Width - (BorderControl.BorderSize * 2)) / 2;
-                add.X = refresh.X + refresh.Width;
+                refresh.X = Width - BorderControl.BorderSize - refresh.Width;
 
                 scrollArea.Width = Width - (BorderControl.BorderSize * 2);
-                scrollArea.Height = Height - (BorderControl.BorderSize * 2) - (add.Y + add.Height);
+                scrollArea.Height = Height - BorderControl.BorderSize - (refresh.Y + refresh.Height);
                 scrollArea.UpdateScrollbarPosition();
 
                 RepositionChildren();
