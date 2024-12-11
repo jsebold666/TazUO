@@ -7333,6 +7333,12 @@ namespace ClassicUO.Network
                 }
             }
 
+            if (World.Player != null)
+            {
+                World.Player.HasGump = true;
+                World.Player.LastGumpID = gumpID;
+            }
+
             return gump;
         }
 

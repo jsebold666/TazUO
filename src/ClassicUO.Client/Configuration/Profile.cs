@@ -947,6 +947,9 @@ namespace ClassicUO.Configuration
                                 case GumpType.DurabilityGump:
                                     gump = new DurabilitysGump();
                                     break;
+                                case GumpType.ScriptManager:
+                                    gump = new LegionScripting.ScriptManagerGump();
+                                    break;
                             }
 
                             if (gump == null)

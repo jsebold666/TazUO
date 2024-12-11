@@ -212,7 +212,7 @@ namespace ClassicUO.Game
         /// <returns>False if no status gump open</returns>
         public static bool CloseStatusBar()
         {
-            Gump g =             StatusGumpBase.GetStatusGump();
+            Gump g = StatusGumpBase.GetStatusGump();
             if (g != null)
             {
                 g.Dispose();
@@ -929,6 +929,23 @@ namespace ClassicUO.Game
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name">Can be a partial match</param>
+        public static bool CastSpellByName(string name)
+        {
+            name = name.Trim();
+
+            if (!string.IsNullOrEmpty(name) && SpellDefinition.TryGetSpellFromName(name, out var spellDef))
+            {
+                CastSpell(spellDef.ID);
+                return true;
+            }
+
+            return false;
+        }
+
         public static void OpenGuildGump()
         {
             Socket.Send_GuildMenuRequest();
@@ -942,6 +959,20 @@ namespace ClassicUO.Game
         public static void Rename(uint serial, string name)
         {
             Socket.Send_RenameRequest(serial, name);
+        }
+
+        public static void Logout()
+        {
+            if ((World.ClientFeatures.Flags & CharacterListFlags.CLF_OWERWRITE_CONFIGURATION_BUTTON) != 0)
+            {
+                Client.Game.GetScene<GameScene>().DisconnectionRequested = true;
+                NetClient.Socket.Send_LogoutNotification();
+            }
+            else
+            {
+                NetClient.Socket.Disconnect();
+                Client.Game.SetScene(new LoginScene());
+            }
         }
 
         public static void UseSkill(int index)
@@ -1090,7 +1121,7 @@ namespace ClassicUO.Game
             Socket.Send_ClickQuestArrow(rightClick);
         }
 
-        public static void GrabItem(uint serial, ushort amount, uint bag = 0)
+        public static void GrabItem(uint serial, ushort amount, uint bag = 0, bool stack = true)
         {
             //Socket.Send(new PPickUpRequest(serial, amount));
 
@@ -1115,14 +1146,24 @@ namespace ClassicUO.Game
 
             PickUp(serial, 0, 0, amount);
 
-            DropItem
-            (
-                serial,
-                0xFFFF,
-                0xFFFF,
-                0,
-                bag
-            );
+            if (stack)
+                DropItem
+                (
+                    serial,
+                    0xFFFF,
+                    0xFFFF,
+                    0,
+                    bag
+                );
+            else
+                DropItem
+                (
+                    serial,
+                    0,
+                    0,
+                    0,
+                    bag
+                );
         }
     }
 }

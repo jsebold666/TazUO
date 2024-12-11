@@ -1348,6 +1348,9 @@ namespace ClassicUO.Network
 
             socket.Send(writer.BufferWritten);
             writer.Dispose();
+
+            if (World.Player != null)            
+                World.Player.HasGump = false;            
         }
 
         public static void Send_VirtueGumpResponse(this NetClient socket, uint serial, uint code)
