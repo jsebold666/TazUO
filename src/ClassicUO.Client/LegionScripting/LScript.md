@@ -472,6 +472,12 @@ Example: `ignoreobject 'self'`
 Ignorelists are reset when you stop the script. They are only available to that specific script, they are not global.
 
 
+## `follow`
+
+Follow a mobile  
+`follow 'serial'`  
+Example: `follow 'enemy'`
+
 
 # Expressions
 

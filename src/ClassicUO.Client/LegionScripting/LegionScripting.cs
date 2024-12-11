@@ -412,6 +412,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("clearignorelist", ClearIgnoreList);
             Interpreter.RegisterCommandHandler("goto", Goto);
             Interpreter.RegisterCommandHandler("return", Return);
+            Interpreter.RegisterCommandHandler("follow", Follow);
             #endregion
 
             #region Expressions

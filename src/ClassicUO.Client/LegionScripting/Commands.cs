@@ -870,5 +870,15 @@ namespace ClassicUO.LegionScripting
 
             return true;
         }
+        public static bool Follow(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 1)
+                throw new RunTimeError(null, "Usage: follow 'serial'");
+
+            ProfileManager.CurrentProfile.FollowingMode = true;
+            ProfileManager.CurrentProfile.FollowingTarget = args[0].AsSerial();
+
+            return true;
+        }
     }
 }
