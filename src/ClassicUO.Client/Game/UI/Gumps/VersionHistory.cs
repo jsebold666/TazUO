@@ -9,13 +9,23 @@ namespace ClassicUO.Game.UI.Gumps
     {
         private static string[] updateTexts = {
             "/c[white][3.24.2]/cd\n" +
+                "- Fix Invisible itens in Osi New Legacy Server\n" +
+                "- Fix added more slots for show itens layer in paperdoll \n" +
+                "- Add scrollbar to cooldowns in options  \n" +
+                "- Created progress bar for auto loot \n" +
+                "- Fix skill progress bars \n" +
+                "- Fix scroll area in autoloot options \n" +
+                "- Create toogle and controller gumps for play in steam deck \n" +
+                "- Save position of durability gump while in game \n" +
+
+            "/c[white][3.24.2]/cd\n" +
                 "- Fix Render Maps for Server Osi New Legacy\n" +
                 "- Fix Ignore List \n" +
                 "- Fix Big Tags in Weapons props \n" +
                 "- Fix Pathfinding algorithm using Z more efficiently from ghzatomic \n" +
 
              "/c[white][3.24.1]/cd\n" +
-                "- Fix for not load Modern Paperdoll\n" +
+                "- Fix for not load Modern  Paperdoll\n" +
                 "- Fix Using Weapons Abilitys\n" +
 
             "/c[white][3.24.0]/cd\n" +

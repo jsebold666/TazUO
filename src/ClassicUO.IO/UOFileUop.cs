@@ -35,6 +35,12 @@ using System.Collections.Generic;
 
 namespace ClassicUO.IO
 {
+    public enum CompressionType : ushort
+    {
+        None,
+        Zlib,
+        ZlibBwt = 3
+    }
     public class UOFileUop : UOFile
     {
         private const uint UOP_MAGIC_NUMBER = 0x50594D;
@@ -120,6 +126,7 @@ namespace ClassicUO.IO
                                 offset + 8,
                                 compressedLength - 8,
                                 decompressedLength,
+                                (CompressionType)flag,
                                 extra1,
                                 extra2
                             )
@@ -139,6 +146,7 @@ namespace ClassicUO.IO
                                 offset,
                                 compressedLength,
                                 decompressedLength,
+                                (CompressionType)flag,
                                 flag == 3 ? 1 : 0,
                                 flag == 3 ? 1 : 0
                             )

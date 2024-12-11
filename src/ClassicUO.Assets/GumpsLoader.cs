@@ -82,7 +82,7 @@ namespace ClassicUO.Assets
                         pathidx = UOFileManager.GetUOFilePath("Gumpidx.mul");
                     }
 
-                    _file = new UOFileMul(path, pathidx, MAX_GUMP_DATA_INDEX_COUNT, 12);
+                    _file = new UOFileMul(path, pathidx);
 
                     UseUOPGumps = false;
                 }

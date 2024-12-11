@@ -7225,6 +7225,16 @@ namespace ClassicUO.Network
                     //This gump is null terminated: Breaking
                     break;
                 }
+                else if (string.Equals(entry, "gumppichued", StringComparison.InvariantCultureIgnoreCase) ||
+                         string.Equals(entry, "gumppicphued", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (gparams.Count >= 3)
+                        gump.Add(new GumpPic(gparams));
+                }
+                else if (string.Equals(entry, "togglelimitgumpscale", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // ??
+                }
                 else
                 {
                     Log.Warn($"Invalid Gump Command: \"{gparams[0]}\"");
