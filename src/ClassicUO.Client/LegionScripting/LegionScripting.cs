@@ -346,7 +346,6 @@ namespace ClassicUO.LegionScripting
         private static void RegisterCommands()
         {
             #region Commands
-            //Finished
             Interpreter.RegisterCommandHandler("togglefly", CommandFly);
             Interpreter.RegisterCommandHandler("useprimaryability", UsePrimaryAbility);
             Interpreter.RegisterCommandHandler("usesecondaryability", UseSecondaryAbility);
@@ -413,6 +412,8 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("goto", Goto);
             Interpreter.RegisterCommandHandler("return", Return);
             Interpreter.RegisterCommandHandler("follow", Follow);
+            Interpreter.RegisterCommandHandler("pathfind", Pathfind);
+            Interpreter.RegisterCommandHandler("cancelpathfind", CancelPathfind);
             #endregion
 
             #region Expressions
@@ -442,6 +443,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterExpressionHandler("itemamt", ItemAmt);
             Interpreter.RegisterExpressionHandler("primaryabilityactive", PrimaryAbilityActive);
             Interpreter.RegisterExpressionHandler("secondaryabilityactive", SecondaryAbilityActive);
+            Interpreter.RegisterExpressionHandler("pathfinding", IsPathfinding);
             #endregion
 
             #region Player Values

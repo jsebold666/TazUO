@@ -431,5 +431,6 @@ namespace ClassicUO.LegionScripting
         {
             return NetClient.Socket.Statistics.Ping;
         }
+        public static bool IsPathfinding(string expression, Argument[] args, bool quiet) => Pathfinder.AutoWalking;
     }
 }

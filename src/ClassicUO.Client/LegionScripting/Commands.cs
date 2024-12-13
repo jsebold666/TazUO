@@ -1,4 +1,5 @@
-﻿using ClassicUO.Configuration;
+﻿using System;
+using ClassicUO.Configuration;
 using ClassicUO.Game;
 using ClassicUO.Game.Data;
 using ClassicUO.Game.GameObjects;
@@ -878,6 +879,20 @@ namespace ClassicUO.LegionScripting
             ProfileManager.CurrentProfile.FollowingMode = true;
             ProfileManager.CurrentProfile.FollowingTarget = args[0].AsSerial();
 
+            return true;
+        }
+        public static bool Pathfind(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 3)
+                throw new RunTimeError(null, "Usage: pathfind 'x' 'y' 'z'");
+
+            Pathfinder.WalkTo(args[0].AsInt(), args[1].AsInt(), args[2].AsInt(), 0);
+
+            return true;
+        }
+        public static bool CancelPathfind(string command, Argument[] args, bool quiet, bool force)
+        {
+            Pathfinder.StopAutoWalk();
             return true;
         }
     }

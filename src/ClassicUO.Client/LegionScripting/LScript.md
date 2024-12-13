@@ -479,6 +479,22 @@ Follow a mobile
 Example: `follow 'enemy'`
 
 
+## `pathfind`
+
+Pathfind to a position  
+`pathfind 'x' 'y' 'z'`  
+Example: `pathfind '1235' '2367' '45'`
+
+
+## `cancelpathfind`
+
+Cancel pathfinding or auto follow  
+`cancelpathfind`
+
+
+
+
+
 # Expressions
 
 ## `findtypelist`  
@@ -701,6 +717,13 @@ Check if a player or mobile is paralyzed.
 `paralyzed 'serial'`  
 Example: `if paralyzed`  
 Note: `serial` is optional, if omitted it will check yourself.
+
+## `pathfinding`
+
+Check if you are actively pathfinding or following  
+`pathfinding`  
+Example: `if pathfinding`  
+
 
 
 # Aliases
