@@ -15,8 +15,30 @@ namespace ClassicUO.LegionScripting
     {
         public static int GetPlayerMaxStam(string expression, Argument[] args, bool quiet) => World.Player.StaminaMax;
         public static int GetPlayerStam(string expression, Argument[] args, bool quiet) => World.Player.Stamina;
-        public static int GetPlayerMaxHits(string expression, Argument[] args, bool quiet) => World.Player.HitsMax;
-        public static int GetPlayerHits(string expression, Argument[] args, bool quiet) => World.Player.Hits;
+        public static int GetPlayerMaxHits(string expression, Argument[] args, bool quiet)
+        {
+            uint serial = World.Player.Serial;
+
+            if (args.Length > 0)
+                serial = args[0].AsSerial();
+
+            if (World.Mobiles.TryGetValue(serial, out var m))
+                return m.HitsMax;
+
+            return 0;
+        }
+        public static int GetPlayerHits(string expression, Argument[] args, bool quiet)
+        {
+            uint serial = World.Player.Serial;
+
+            if (args.Length > 0)
+                serial = args[0].AsSerial();
+
+            if (World.Mobiles.TryGetValue(serial, out var m))
+                return m.Hits;
+
+            return 0;
+        }
         public static int GetPlayerMaxMana(string expression, Argument[] args, bool quiet) => World.Player.ManaMax;
         public static int GetPlayerMana(string expression, Argument[] args, bool quiet) => World.Player.Mana;
         public static int GetPosX(string expression, Argument[] args, bool quiet) => World.Player.X;
@@ -380,7 +402,15 @@ namespace ClassicUO.LegionScripting
         public static int GetStr(string expression, Argument[] args, bool quiet) => World.Player.Strength;
         public static int DiffHits(string expression, Argument[] args, bool quiet)
         {
-            return World.Player.HitsMax - World.Player.Hits;
+            uint serial = World.Player.Serial;
+
+            if (args.Length > 0)
+                serial = args[0].AsSerial();
+
+            if (World.Mobiles.TryGetValue(serial, out var m))
+                return m.HitsMax - m.Hits;
+
+            return 0;
         }
         public static bool FindTypeList(string expression, Argument[] args, bool quiet)
         {

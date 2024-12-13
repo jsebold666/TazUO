@@ -731,7 +731,7 @@ Example: `if pathfinding`
 ## Values
 
 - `name` 
-- `hits`, `maxhits`, `diffhits`
+- `hits`, `maxhits`, `diffhits` <-- These support a 'serial' parameter
 - `stam`, `maxstam`  
 - `mana`, `maxmana`  
 - `x`, `y`, `z`  
