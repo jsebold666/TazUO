@@ -73,21 +73,16 @@ namespace ClassicUO.LegionScripting
             if (args.Length < 1)
                 throw new RunTimeError(null, "Usage: findalias 'name'");
 
-            uint foundVal = Interpreter.GetAlias(args[0].AsString());
+            uint foundVal = Interpreter.GetAlias(args[0].GetLexeme());
+
             if (foundVal == uint.MaxValue)
                 foundVal = args[0].AsSerial();
 
-            try
+            Entity e = World.Get(foundVal);
+            if (e != null)
             {
-                if (World.Items.TryGetValue(foundVal, out Item i))
-                {
-                    Interpreter.SetAlias(Constants.FOUND, i);
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
+                Interpreter.SetAlias(Constants.FOUND, e);
+                return true;
             }
 
             return false;
@@ -181,6 +176,8 @@ namespace ClassicUO.LegionScripting
         {
             if (args.Length < 1)
                 throw new RunTimeError(null, "Usage: findobject 'serial' [container]");
+
+
 
             if (World.Items.TryGetValue(args[0].AsSerial(), out var obj))
             {

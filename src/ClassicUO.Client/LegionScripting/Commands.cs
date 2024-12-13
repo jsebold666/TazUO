@@ -468,7 +468,10 @@ namespace ClassicUO.LegionScripting
             if (args.Length > 2 && args[2].AsString().ToLower() == "front")
                 front = true;
 
-            Interpreter.PushList(args[0].AsString(), args[1], front, force);
+            if (args[1].IsSerial())                     
+                Interpreter.PushList(args[0].AsString(), new Argument(Interpreter.ActiveScript, new ASTNode(ASTNodeType.SERIAL, args[1].AsSerial().ToString(), null, 0)), front, force);
+            else
+                Interpreter.PushList(args[0].AsString(), args[1], front, force);
 
             return true;
         }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using ClassicUO;
+using ClassicUO.Game;
 using ClassicUO.Game.Managers;
 using ClassicUO.Utility.Collections;
 using static LScript.Interpreter;
@@ -46,7 +48,7 @@ namespace LScript
             else if (uint.TryParse(token, out val))
                 return val;
 
-            throw new RunTimeError(null, "Cannot convert argument to uint");
+            throw new RunTimeError(null, $"Cannot convert argument to uint({token})");
         }
 
         public static ushort ToUShort(string token)
@@ -130,6 +132,14 @@ namespace LScript
             _script = script;
         }
 
+        public string GetLexeme()
+        {
+            if(_node.Lexeme == null)
+                throw new RunTimeError(_node, "No lexeme found.");
+
+            return _node.Lexeme;
+        }
+
         // Treat the argument as an integer
         public int AsInt()
         {
@@ -171,6 +181,21 @@ namespace LScript
             return TypeConverter.ToUShort(_node.Lexeme);
         }
 
+        public bool IsSerial()
+        {
+            if (_node.Lexeme == null)
+                return false;
+
+            var arg = _script.Lookup(_node.Lexeme);
+            if (arg != null)
+                return arg.IsSerial();
+
+            uint serial = Interpreter.GetAlias(_node.Lexeme);
+            if (serial != uint.MaxValue)
+                return true;
+
+            return false;
+        }
         // Treat the argument as a serial or an alias. Aliases will
         // be automatically resolved to serial numbers.
         public uint AsSerial()
@@ -421,7 +446,8 @@ namespace LScript
 
             int depth = 0;
 
-            //GameActions.Print($"Executing: [{CurrentLine}]{node.Lexeme}");
+            if(CUOEnviroment.Debug)
+                ClassicUO.Game.GameActions.Print($"Executing: [{CurrentLine}]{node.Lexeme}");
 
             switch (node.Type)
             {
