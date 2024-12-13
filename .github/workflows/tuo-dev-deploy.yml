@@ -43,7 +43,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-       os: [  windows-latest, ubuntu-latest, macos-latest]
+       os: [  windows-latest ]
 
     steps:
     - uses: actions/checkout@v4
@@ -78,12 +78,12 @@ jobs:
         exclusions: '*.zip manifest.xml'
             
     - name: Move output
-      run: mv "${{ env.CUO_OUTPUT_PATH }}/${{ runner.os }}${{ env.CUO_ZIP_NAME }}" upload
+      run: mv "${{ env.CUO_OUTPUT_PATH }}/${{ env.CUO_ZIP_NAME }}" upload
               
     - name: Upload Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "upload/${{ runner.os }}${{ env.CUO_ZIP_NAME }}"
+        artifacts: "upload/${{ env.CUO_ZIP_NAME }}"
         name: 'TazUO Bleeding Edge'
         body: 'These are built automatically on the dev branch. These may include features that are still being worked on/not complete.'
         makeLatest: false
