@@ -42,6 +42,7 @@ using ClassicUO.Assets;
 using ClassicUO.Resources;
 using ClassicUO.Utility;
 using SDL2;
+using System.Collections.Generic;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
@@ -50,6 +51,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
         private const ushort SELECTED_COLOR = 0x0021;
         private const ushort NORMAL_COLOR = 0x034F;
         private uint _selectedCharacter;
+        private CharacterEntryGump[] chars;
 
         public CharacterSelectionGump() : base(0, 0)
         {
@@ -61,7 +63,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             int listTitleY = 106;
 
             LoginScene loginScene = Client.Game.GetScene<LoginScene>();
-            
+
             string lastCharName = LastCharacterManager.GetLastCharacter(LoginScene.Account, World.ServerName);
             string lastSelected = loginScene.Characters.FirstOrDefault(o => o == lastCharName);
 
@@ -77,7 +79,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             if (!string.IsNullOrEmpty(lastSelected))
             {
-                _selectedCharacter = (uint) Array.IndexOf(loginScene.Characters, lastSelected);
+                _selectedCharacter = (uint)Array.IndexOf(loginScene.Characters, lastSelected);
             }
             else if (loginScene.Characters.Length > 0)
             {
@@ -88,12 +90,15 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new ResizePic(0x0A28)
                 {
-                    X = 160, Y = 70, Width = 408, Height = 343 + yBonus
+                    X = 160,
+                    Y = 70,
+                    Width = 408,
+                    Height = 343 + yBonus
                 },
                 1
             );
-            
-            bool isAsianLang = string.Compare(Settings.GlobalSettings.Language, "CHT", StringComparison.InvariantCultureIgnoreCase) == 0 || 
+
+            bool isAsianLang = string.Compare(Settings.GlobalSettings.Language, "CHT", StringComparison.InvariantCultureIgnoreCase) == 0 ||
                 string.Compare(Settings.GlobalSettings.Language, "KOR", StringComparison.InvariantCultureIgnoreCase) == 0 ||
                 string.Compare(Settings.GlobalSettings.Language, "JPN", StringComparison.InvariantCultureIgnoreCase) == 0;
 
@@ -105,11 +110,14 @@ namespace ClassicUO.Game.UI.Gumps.Login
             (
                 new Label(ClilocLoader.Instance.GetString(3000050, "Character Selection"), unicode, hue, font: font)
                 {
-                    X = 267, Y = listTitleY
+                    X = 267,
+                    Y = listTitleY
                 },
                 1
             );
-            
+
+            List<CharacterEntryGump> gumps = new List<CharacterEntryGump>();
+
             for (int i = 0, valid = 0; i < loginScene.Characters.Length; i++)
             {
                 string character = loginScene.Characters[i];
@@ -130,10 +138,11 @@ namespace ClassicUO.Game.UI.Gumps.Login
                             break;
                         }
                     }
-                    
+
+                    CharacterEntryGump g;
                     Add
-                    (
-                        new CharacterEntryGump((uint) i, character, SelectCharacter, LoginCharacter)
+                    (g =
+                        new CharacterEntryGump((uint)i, character, SelectCharacter, LoginCharacter)
                         {
                             X = 224,
                             Y = yOffset + posInList * 40,
@@ -141,18 +150,22 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         },
                         1
                     );
+                    gumps.Add(g);
 
                     posInList++;
                 }
             }
+            chars = gumps.ToArray();
 
             if (CanCreateChar(loginScene))
             {
                 Add
                 (
-                    new Button((int) Buttons.New, 0x159D, 0x159F, 0x159E)
+                    new Button((int)Buttons.New, 0x159D, 0x159F, 0x159E)
                     {
-                        X = 224, Y = 350 + yBonus, ButtonAction = ButtonAction.Activate
+                        X = 224,
+                        Y = 350 + yBonus,
+                        ButtonAction = ButtonAction.Activate
                     },
                     1
                 );
@@ -160,7 +173,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             Add
             (
-                new Button((int) Buttons.Delete, 0x159A, 0x159C, 0x159B)
+                new Button((int)Buttons.Delete, 0x159A, 0x159C, 0x159B)
                 {
                     X = 442,
                     Y = 350 + yBonus,
@@ -171,18 +184,22 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             Add
             (
-                new Button((int) Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
+                new Button((int)Buttons.Prev, 0x15A1, 0x15A3, 0x15A2)
                 {
-                    X = 586, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 586,
+                    Y = 445,
+                    ButtonAction = ButtonAction.Activate
                 },
                 1
             );
 
             Add
             (
-                new Button((int) Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
+                new Button((int)Buttons.Next, 0x15A4, 0x15A6, 0x15A5)
                 {
-                    X = 610, Y = 445, ButtonAction = ButtonAction.Activate
+                    X = 610,
+                    Y = 445,
+                    ButtonAction = ButtonAction.Activate
                 },
                 1
             );
@@ -210,7 +227,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
         {
             base.OnControllerButtonUp(button);
 
-            if(button == SDL.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_A)
+            if (button == SDL.SDL_GameControllerButton.SDL_CONTROLLER_BUTTON_A)
             {
                 LoginCharacter(_selectedCharacter);
             }
@@ -224,11 +241,39 @@ namespace ClassicUO.Game.UI.Gumps.Login
             }
         }
 
+        protected override void OnMouseWheel(MouseEventType delta)
+        {
+            base.OnMouseWheel(delta);
+
+            int i = 0;
+            foreach (CharacterEntryGump characterGump in chars)
+            {
+                if (characterGump.CharacterIndex == _selectedCharacter)
+                    break;
+                i++;
+            }
+
+            if (MouseEventType.WheelScrollUp == delta)
+            {
+                if (i == 0)
+                    _selectedCharacter = chars[chars.Length - 1].CharacterIndex;
+                else
+                    _selectedCharacter = chars[i - 1].CharacterIndex;
+            }
+            else
+            {
+                if (i == chars.Length - 1)
+                    _selectedCharacter = chars[0].CharacterIndex;
+                else
+                    _selectedCharacter = chars[i + 1].CharacterIndex;
+            }
+            SelectCharacter(_selectedCharacter);
+        }
         public override void OnButtonClick(int buttonID)
         {
             LoginScene loginScene = Client.Game.GetScene<LoginScene>();
 
-            switch ((Buttons) buttonID)
+            switch ((Buttons)buttonID)
             {
                 case Buttons.Delete:
                     DeleteCharacter(loginScene);
@@ -275,7 +320,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         LoginButtons.OK | LoginButtons.Cancel,
                         buttonID =>
                         {
-                            if (buttonID == (int) LoginButtons.OK)
+                            if (buttonID == (int)LoginButtons.OK)
                             {
                                 loginScene.DeleteCharacter(_selectedCharacter);
                             }
@@ -337,7 +382,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     new ResizePic(0x0BB8)
                     {
-                        X = 0, Y = 0, Width = 280, Height = 30
+                        X = 0,
+                        Y = 0,
+                        Width = 280,
+                        Height = 30
                     }
                 );
 
