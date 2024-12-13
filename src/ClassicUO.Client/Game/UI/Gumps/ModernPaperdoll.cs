@@ -23,7 +23,7 @@ namespace ClassicUO.Game.UI.Gumps
         #region CONST
         private const int WIDTH = 250, HEIGHT = 380;
         private const int CELL_SPACING = 2, TOP_SPACING = 40;
-        private Texture2D MordernPaperdollGump = PNGLoader.Instance.GetImageTexture(Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "modern-paperdollgump.png"));
+        private Texture2D MordernPaperdollGump = PNGLoader.Instance.EmbeddedArt["modern-paperdollgump.png"];
         #endregion
 
         #region VARS
