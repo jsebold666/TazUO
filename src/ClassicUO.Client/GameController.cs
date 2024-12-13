@@ -462,6 +462,7 @@ namespace ClassicUO
             }
 
             UIManager.Update();
+            LegionScripting.LegionScripting.OnUpdate();
 
             if (Time.Ticks >= _nextSlowUpdate)
             {
