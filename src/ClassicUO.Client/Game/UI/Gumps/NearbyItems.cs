@@ -38,10 +38,13 @@ namespace ClassicUO.Game.UI.Gumps
                 if (!i.OnGround) continue;
 
                 if (i.Distance > Constants.DRAG_ITEMS_DISTANCE) continue;
+
+                if (i.IsLocked && !i.ItemData.IsContainer) continue;
+
                 items.Add(new NearbyItemDisplay(i));
             }
 
-            if(items.Count == 0)
+            if (items.Count == 0)
             {
                 Dispose();
                 return;
