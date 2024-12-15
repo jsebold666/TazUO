@@ -2432,6 +2432,8 @@ namespace ClassicUO.Game.UI.Gumps
             }), true, page);
             content.BlankLine();
             content.AddToRight(new InputFieldWithLabel(lang.GetTazUO.SOSGumpID, Theme.INPUT_WIDTH, profile.SOSGumpID.ToString(), true, (s, e) => { if (uint.TryParse(((InputField.StbTextBox)s).Text, out uint id)) { profile.SOSGumpID = id; } }), true, page);
+            content.BlankLine();
+            content.AddToRight(new CheckboxWithLabel(lang.GetTazUO.NearbyItemGump, isChecked: profile.EnableNearbyItemGump, valueChanged: (e) => { profile.EnableNearbyItemGump = e; }), true, page);
             #endregion
 
             #region Tooltips

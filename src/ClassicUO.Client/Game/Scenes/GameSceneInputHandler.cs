@@ -1332,6 +1332,11 @@ namespace ClassicUO.Game.Scenes
                 TargetManager.CancelTarget();
             }
 
+            if(e.keysym.sym == SDL.SDL_Keycode.SDLK_LCTRL && UIManager.IsMouseOverWorld && !Client.Game.GameCursor.ItemHold.Enabled && ProfileManager.CurrentProfile.EnableNearbyItemGump && NearbyItems.NearbyItemGump == null )
+            {
+                UIManager.Add(new NearbyItems());
+            }
+
             if (UIManager.KeyboardFocusControl != UIManager.SystemChat.TextBoxControl)
             {
                 return;
