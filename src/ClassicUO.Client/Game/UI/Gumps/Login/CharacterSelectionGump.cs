@@ -60,13 +60,26 @@ namespace ClassicUO.Game.UI.Gumps.Login
 {
     internal class CharacterSelectionGump : Gump
     {
-        private const ushort SELECTED_COLOR = 0xAAF;
-        private const ushort NORMAL_COLOR = 0xAAF;
+
+        private static ushort ConvertToRGB565(Color color)
+        {
+            ushort r = (ushort)((color.R >> 3) & 0x1F); // 5 bits para R
+            ushort g = (ushort)((color.G >> 2) & 0x3F); // 6 bits para G
+            ushort b = (ushort)((color.B >> 3) & 0x1F); // 5 bits para B
+
+            return (ushort)((r << 11) | (g << 5) | b);
+        }
+
+        //private const ushort SELECTED_COLOR = 0xAAF;
+        private static readonly ushort SELECTED_COLOR = 0x4E9;
+        private static readonly ushort NORMAL_COLOR = 0x4EB;
         private uint _selectedCharacter;
         private ImageButton button;
         private CharacterEntryGump _characterEntryGump;
         private CharacterEntryGump _lastSelectedGumpPic;
         private static Art art { get; set; }
+
+
 
         public CharacterSelectionGump() : base(0, 0)
         {
@@ -144,7 +157,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         _characterEntryGump = new CharacterEntryGump((uint)i, character, bodyId, SelectCharacter, LoginCharacter, SelectCharacterHover)
                         {
                             X = 30 + posInList * 150,
-                            Y = yOffset + posInList * i + 3
+                            Y = yOffset + posInList * 3
                         },
                         1
                     );
@@ -229,12 +242,12 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
         private void OnGumpPicMouseEnter(object sender, EventArgs e)
         {
-            _characterEntryGump.Alpha = 0.5f; // Set opacity to 50% on hover
+           // _characterEntryGump.Alpha = 0.5f; // Set opacity to 50% on hover
         }
 
         private void OnGumpPicMouseExit(object sender, EventArgs e)
         {
-            _characterEntryGump.Alpha = 1.0f; // Reset opacity to 100% when not hovered
+            //_characterEntryGump.Alpha = 1.0f; // Reset opacity to 100% when not hovered
         }
 
         private bool CanCreateChar(LoginScene scene)
@@ -341,13 +354,25 @@ namespace ClassicUO.Game.UI.Gumps.Login
             }
         }
 
+        private CharacterEntryGump _lastSelectedGump;
+
         private void SelectCharacter(uint index)
         {
             _selectedCharacter = index;
 
             foreach (CharacterEntryGump characterGump in FindControls<CharacterEntryGump>())
             {
-                characterGump.Hue = characterGump.CharacterIndex == index ? SELECTED_COLOR : NORMAL_COLOR;
+                if (characterGump.CharacterIndex == index)
+                {
+                    characterGump.Hue = SELECTED_COLOR;
+                    characterGump.Alpha = 0.1f; // Mantém a opacidade reduzida no item selecionado
+                    _lastSelectedGump = characterGump;
+                }
+                else
+                {
+                    characterGump.Hue = NORMAL_COLOR;
+                    characterGump.Alpha = 0.1f; // Restaura a opacidade dos demais itens
+                }
             }
         }
 
@@ -357,21 +382,12 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             foreach (CharacterEntryGump characterGump in FindControls<CharacterEntryGump>())
             {
-                characterGump.Hue = characterGump.CharacterIndex == index ? SELECTED_COLOR : NORMAL_COLOR;
-                characterGump.Alpha = 0.5f; // Set opacity to 50% on hover
+                characterGump.Hue = characterGump._indexCharacter == index ? SELECTED_COLOR : NORMAL_COLOR;
+                characterGump._label.Hue = characterGump._indexCharacter == index ? SELECTED_COLOR : NORMAL_COLOR;
+                characterGump.Alpha = 0.1f;
             }
         }
 
-        private void SelectCharacterUnHover(uint index)
-        {
-            _selectedCharacter = index;
-
-            foreach (CharacterEntryGump characterGump in FindControls<CharacterEntryGump>())
-            {
-                characterGump.Hue = characterGump.CharacterIndex == index ? SELECTED_COLOR : NORMAL_COLOR;
-                characterGump.Alpha = 0.5f; // Set opacity to 50% on hover
-            }
-        }
 
         private void LoginCharacter(uint index)
         {
@@ -394,9 +410,9 @@ namespace ClassicUO.Game.UI.Gumps.Login
             Prev
         }
 
-        private class CharacterEntryGump : Control
+        public class CharacterEntryGump : Control
         {
-            private readonly TextBox _label;
+            public TextBox _label;
             private readonly Action<uint> _loginFn;
             private readonly Action<uint> _selectedFn;
             private readonly Action<uint> _hoverFn;
@@ -405,6 +421,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             private static PlayerMobile _character;
             private PaperDollInteractable _paperDoll;
             private readonly string savePath;
+            public uint _indexCharacter;
 
             public Dictionary<string, PaperdollItem> Load()
             {
@@ -428,6 +445,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             public CharacterEntryGump(uint index, string character, uint bodyID, Action<uint> selectedFn, Action<uint> loginFn, Action<uint> hoverFn)
             {
                 CharacterIndex = index;
+                _indexCharacter = index;
                 _bodyID = bodyID;
                 _selectedFn = selectedFn;
                 _hoverFn = hoverFn;
@@ -495,8 +513,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 }
 
                 // Char Name
-
-
                 Add
                (
                    _label = new TextBox(character, TrueTypeLoader.EMBEDDED_FONT, 16, 190, Color.Orange, align: TextHorizontalAlignment.Center, strokeEffect: true) { AcceptMouseInput = true }
@@ -542,7 +558,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             protected override void OnMouseExit(int x, int y)
             {
-                _hoverFn(CharacterIndex);
+               _hoverFn(CharacterIndex);
             }
 
         }

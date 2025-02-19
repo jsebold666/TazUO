@@ -50,7 +50,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
         private readonly List<CityControl> _cityControls = new List<CityControl>();
         private readonly string[] _cityNames = { "Felucca", "Trammel", "Ilshenar", "Malas", "Tokuno", "Ter Mur" };
         private readonly Label _facetName;
-        private readonly HtmlControl _htmlControl;
+    
         private readonly LoginScene _scene;
         private CityInfo _selectedCity;
         private readonly byte _selectedProfession;
@@ -173,26 +173,6 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 OnButtonClick(1);
             };
 
-
-            _htmlControl = new HtmlControl
-            (
-                475,
-                475,
-                200,
-                400,
-                true,
-                true,
-                ishtml: true,
-                text: city.Description
-            );
-
-            Add(_htmlControl);
-
-            if (CUOEnviroment.IsOutlands)
-            {
-                _htmlControl.IsVisible = false;
-            }
-
             for (int i = 0; i < scene.Cities.Length; i++)
             {
                 CityInfo c = scene.GetCity(i);
@@ -251,7 +231,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             }
 
             _selectedCity = city;
-            _htmlControl.Text = city.Description;
+           
             SetFacet(city.Map);
         }
 

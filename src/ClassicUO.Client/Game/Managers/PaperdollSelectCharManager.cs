@@ -39,7 +39,9 @@ namespace ClassicUO.Game.Managers
 
         public Dictionary<string, PaperdollItem> items = new Dictionary<string, PaperdollItem>();
 
-        private string savePath = Path.Combine(ProfileManager.ProfilePath, "paperdollSelectCharManager.json");
+        //private string savePath = Path.Combine(ProfileManager.ProfilePath, "paperdollSelectCharManager.json");
+
+        private string savePath = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Profiles", Settings.GlobalSettings.Username, World.ServerName, World.Player.Name, "paperdollSelectCharManager.json");
 
         private static PaperdollSelectCharManager instance;
 
@@ -51,30 +53,34 @@ namespace ClassicUO.Game.Managers
         public void AddItem(string key, Layer layer, ushort graphic, ushort hue, uint serial, ushort animID, bool isPartialHue)
         {
 
-            if (items.ContainsKey(key))
+            if (layer != Layer.Bracelet || layer != Layer.Earrings || layer != Layer.Ring || layer != Layer.Backpack)
             {
-                items[key] = new PaperdollItem
+                if (items.ContainsKey(key))
                 {
-                    Layer = layer,
-                    Graphic = graphic,
-                    Hue = hue,
-                    Serial = serial, 
-                    AnimID = animID,
-                    IsPartialHue = isPartialHue
-                };
-            }
-            else
-            {
-                items.Add(key, new PaperdollItem
+                    items[key] = new PaperdollItem
+                    {
+                        Layer = layer,
+                        Graphic = graphic,
+                        Hue = hue,
+                        Serial = serial,
+                        AnimID = animID,
+                        IsPartialHue = isPartialHue
+                    };
+                }
+                else
                 {
-                    Layer = layer,
-                    Graphic = graphic,
-                    Hue = hue,
-                    Serial = serial,
-                    AnimID = animID,
-                    IsPartialHue = isPartialHue
-                });
+                    items.Add(key, new PaperdollItem
+                    {
+                        Layer = layer,
+                        Graphic = graphic,
+                        Hue = hue,
+                        Serial = serial,
+                        AnimID = animID,
+                        IsPartialHue = isPartialHue
+                    });
+                }
             }
+            
         }
 
         public void Save()
@@ -92,14 +98,18 @@ namespace ClassicUO.Game.Managers
 
                         if (item != null)
                         {
-                            if (mobile.Serial == World.Player.Serial)
+                            if (item.Layer != Layer.Bracelet || item.Layer != Layer.Earrings || item.Layer != Layer.Ring || item.Layer != Layer.Backpack)
                             {
-                                if (layer != Layer.Bracelet || layer != Layer.Earrings || layer != Layer.Ring || layer != Layer.Backpack)
+                                if (mobile.Serial == World.Player.Serial)
                                 {
-                                    AddItem(item.Serial.ToString(), item.Layer, item.Graphic, item.Hue, item.Serial, item.ItemData.AnimID, item.ItemData.IsPartialHue);
+                                    if (layer != Layer.Bracelet || layer != Layer.Earrings || layer != Layer.Ring || layer != Layer.Backpack)
+                                    {
+                                        AddItem(item.Serial.ToString(), item.Layer, item.Graphic, item.Hue, item.Serial, item.ItemData.AnimID, item.ItemData.IsPartialHue);
+                                    }
                                 }
                             }
                         }
+                        
                     }
 
                 }
@@ -115,6 +125,7 @@ namespace ClassicUO.Game.Managers
         {
             try
             {
+                savePath = Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Profiles", Settings.GlobalSettings.Username, World.ServerName, World.Player.Name, "paperdollSelectCharManager.json");
                 string directoryPath = Path.GetDirectoryName(savePath);
                 if (!Directory.Exists(directoryPath))
                 {

@@ -63,7 +63,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
         private readonly Button _humanRadio, _elfRadio, _gargoyleRadio;
         private readonly Button _maleRadio, _femaleRadio;
         private Combobox _hairCombobox, _facialCombobox;
-        private Label _hairLabel, _facialLabel;
+        private TextBox _hairLabel, _facialLabel;
         private readonly StbTextBox _nameTextBox;
         private PaperDollInteractable _paperDoll;
         private readonly ImageButton _nextButton;
@@ -410,7 +410,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 OnButtonClick(6);
             };
 
-            Add(new GumpPic(420, 180, 0x0708, 0), 1);
+
 
             // strength, dexterity, intelligence
 
@@ -801,13 +801,9 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             byte font = (byte)(isAsianLang ? 3 : 9);
             ushort hue = (ushort)(isAsianLang ? 0xFFFF : 0);
 
-            Add
-            (
-                _hairLabel = new Label(ClilocLoader.Instance.GetString(race == RaceType.GARGOYLE ? 1112309 : 3000121), unicode, hue, font: font)
-                {
-                    X = 755, Y = 101
-                },
-                1
+
+            Add(
+                _hairLabel =  new TextBox(ClilocLoader.Instance.GetString(race == RaceType.GARGOYLE ? 1112309 : 3000121), TrueTypeLoader.EMBEDDED_FONT, 16, 300, Color.Orange, strokeEffect: true) { X = 755, Y = 91, AcceptMouseInput = false }
             );
 
             Add
@@ -815,7 +811,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 _hairCombobox = new Combobox
                 (
                     755,
-                    121,
+                    111,
                     120,
                     content.Labels,
                     CurrentOption[Layer.Hair]
@@ -830,13 +826,8 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             {
                 content = CharacterCreationValues.GetFacialHairComboContent(race);
 
-                Add
-                (
-                    _facialLabel = new Label(ClilocLoader.Instance.GetString(race == RaceType.GARGOYLE ? 1112511 : 3000122), unicode, hue, font: font)
-                    {
-                        X = 755, Y = 151
-                    },
-                    1
+                Add(
+                    _facialLabel = new TextBox(ClilocLoader.Instance.GetString(race == RaceType.GARGOYLE ? 1112511 : 3000122), TrueTypeLoader.EMBEDDED_FONT, 16, 300, Color.Orange, strokeEffect: true) { X = 755, Y = 141, AcceptMouseInput = false }
                 );
 
                 Add
@@ -1447,21 +1438,21 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 byte font = (byte)(isAsianLang ? 3 : 9);
                 ushort hue = (ushort)(isAsianLang ? 0xFFFF : 0);
 
-                Add
-                (
-                    new Label(ClilocLoader.Instance.GetString(label), unicode, hue, font: font)
-                    {
-                        X = 0,
-                        Y = 0
-                    }
-                );
+
+
+                 Add
+                 (
+                     new TextBox(ClilocLoader.Instance.GetString(label), TrueTypeLoader.EMBEDDED_FONT, 16, 300, Color.Orange, strokeEffect: true) { X = 0, Y = 0, AcceptMouseInput = false }
+
+                 );
+
 
                 Add
                 (
                     _colorPicker = new ColorBox(121, 23, (ushort) ((pallet?[0] ?? 1) + 1))
                     {
                         X = 1,
-                        Y = 15
+                        Y = 17
                     }
                 );
 
@@ -1514,8 +1505,8 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                     {
                         _colorPickerBox = new ColorPickerBox
                         (
-                            789,
-                            141,
+                            755,
+                            420,
                             _rows,
                             _columns,
                             _cellW,
