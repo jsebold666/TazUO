@@ -13,6 +13,21 @@ namespace ClassicUO.LegionScripting
 {
     internal static class Commands
     {
+        public static bool TargetLandRel(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: targetlandrel 'x' 'y'");
+
+            if (!TargetManager.IsTargeting)
+                return true;
+
+            ushort x = (ushort)(World.Player.X + args[0].AsInt());
+            ushort y = (ushort)(World.Player.Y + args[1].AsInt());
+
+            World.Map.GetMapZ(x, y, out sbyte gZ, out sbyte sZ);
+            TargetManager.Target(0, x, y, gZ);
+            return true;
+        }
         public static bool TargetTileRel(string command, Argument[] args, bool quiet, bool force)
         {
             if (args.Length < 2)

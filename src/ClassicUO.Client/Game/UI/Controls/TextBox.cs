@@ -311,6 +311,7 @@ namespace ClassicUO.Game.UI.Controls
             finalString = finalString.Replace("</p>", "").Replace("<p>", "");
             finalString = finalString.Replace("</BIG>", "").Replace("<BIG>", "");
             finalString = finalString.Replace("</big>", "").Replace("<big>", "");
+            finalString = finalString.Replace("<basefont>", "").Replace("<BASEFONT>", "");
             return finalString;
         }
 

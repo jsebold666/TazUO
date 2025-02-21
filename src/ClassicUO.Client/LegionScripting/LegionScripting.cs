@@ -394,6 +394,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("clearjournal", ClearJournal);
             Interpreter.RegisterCommandHandler("poplist", PopList);
             Interpreter.RegisterCommandHandler("targettilerel", TargetTileRel);
+            Interpreter.RegisterCommandHandler("targetlandrel", TargetLandRel);
             Interpreter.RegisterCommandHandler("virtue", Virtue);
             Interpreter.RegisterCommandHandler("playmacro", PlayMacro);
             Interpreter.RegisterCommandHandler("headmsg", HeadMsg);

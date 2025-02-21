@@ -364,7 +364,14 @@ Example: `poplist 'myList' 'item1'`
 
 Target a tile relative to the player's position.  
 `targettilerel 'x' 'y' ['graphic']`  
-Example: `targettilerel '5' '10'` or `targettilerel '5' '10' '0x1234'`
+Example: `targettilerel '1' '2'` or `targettilerel '1' '2' '0x1234'`
+
+
+## `targetlandrel`  
+
+Target the land relative to the player's position.  
+`targettilerel 'x' 'y'`  
+Example: `targetlandrel '1' '1'`
 
 
 ## `virtue`  

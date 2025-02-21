@@ -172,7 +172,7 @@ namespace ClassicUO.Game.UI.Gumps
                 a.Y = startY;
 
                 Label name;
-                a.Add(name = new Label($"{(string.IsNullOrWhiteSpace(item.Name) ? item.Layer : item.Name)}", true, 0xFFFF));
+                a.Add(name = new Label($"{(string.IsNullOrWhiteSpace(item.Name) ? item.Layer : item.Name)}", true, 0xFFFF, ishtml: true));
                 GumpPic red;
                 a.Add(red = new GumpPic(0, name.Y + name.Height + 5, (ushort)DurabilityColors.RED, 0));
 
