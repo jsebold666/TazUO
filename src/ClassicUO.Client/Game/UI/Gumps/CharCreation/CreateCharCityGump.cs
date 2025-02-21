@@ -50,7 +50,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
         private readonly List<CityControl> _cityControls = new List<CityControl>();
         private readonly string[] _cityNames = { "Felucca", "Trammel", "Ilshenar", "Malas", "Tokuno", "Ter Mur" };
         private readonly Label _facetName;
-    
+        private readonly HtmlControl _htmlControl;
         private readonly LoginScene _scene;
         private CityInfo _selectedCity;
         private readonly byte _selectedProfession;
@@ -80,8 +80,6 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             _selectedProfession = profession;
 
             CityInfo city;
-
-            CharCreationGump charCreationGump = UIManager.GetGump<CharCreationGump>();
 
             if (Client.Version >= ClientVersion.CV_70130)
             {
@@ -128,8 +126,8 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
 
             if (Client.Version >= ClientVersion.CV_70130)
             {
-                Add(new GumpPic(62, 54, (ushort) (0x15D9 + map), 0));
-               
+                Add(new GumpPic(62, 54, (ushort)(0x15D9 + map), 0));
+                Add(new GumpPic(57, 49, 0x15DF, 0));
                 _facetName.Text = _cityNames[map];
             }
             else
@@ -148,17 +146,18 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
 
             // Prev/Next
             Add(_nextButton = new ImageButton(
-               30,
-               680,
-               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_normal_prev.png"),
-               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_pressed_prev.png"),
-               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_hover_prev.png")
-           ));
+                30,
+                680,
+                Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_normal_prev.png"),
+                Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_pressed_prev.png"),
+                Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_hover_prev.png")
+            ));
 
             _nextButton.OnButtonClick += () =>
             {
                 OnButtonClick(0);
             };
+
 
             Add(button = new ImageButton(
                920,
@@ -172,6 +171,26 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             {
                 OnButtonClick(1);
             };
+
+
+            _htmlControl = new HtmlControl
+            (
+                452,
+                60,
+                175,
+                367,
+                true,
+                true,
+                ishtml: true,
+                text: city.Description
+            );
+
+            Add(_htmlControl);
+
+            if (CUOEnviroment.IsOutlands)
+            {
+                _htmlControl.IsVisible = false;
+            }
 
             for (int i = 0; i < scene.Cities.Length; i++)
             {
@@ -231,7 +250,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
             }
 
             _selectedCity = city;
-           
+            _htmlControl.Text = city.Description;
             SetFacet(city.Map);
         }
 
@@ -244,7 +263,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
 
             if (index >= _cityNames.Length)
             {
-                index = (uint) (_cityNames.Length - 1);
+                index = (uint)(_cityNames.Length - 1);
             }
 
             _facetName.Text = _cityNames[index];
@@ -260,11 +279,10 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 return;
             }
 
-            switch ((Buttons) buttonID)
+            switch ((Buttons)buttonID)
             {
                 case Buttons.PreviousScreen:
-                    charCreationGump.StepBack(3);
-
+                    charCreationGump.StepBack(_selectedProfession > 0 ? 2 : 1);
 
                     return;
 
@@ -349,7 +367,7 @@ namespace ClassicUO.Game.UI.Gumps.CharCreation
                 _label.MouseUp += (sender, e) =>
                 {
                     _label.IsSelected = true;
-                    int idx = (int) _label.Tag;
+                    int idx = (int)_label.Tag;
                     OnButtonClick(idx + 2);
                 };
 

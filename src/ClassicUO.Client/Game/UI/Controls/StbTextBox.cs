@@ -100,6 +100,8 @@ namespace ClassicUO.Game.UI.Controls
                 maxWidth
             );
 
+
+
             _rendererCaret = RenderedText.Create
             (
                 "_",

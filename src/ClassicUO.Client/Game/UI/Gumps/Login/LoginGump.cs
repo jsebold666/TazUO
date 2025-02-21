@@ -54,7 +54,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
         private readonly ushort _buttonOver;
         private readonly Checkbox _checkboxAutologin;
         private readonly Checkbox _checkboxSaveAccount;
-        private readonly Button _nextArrow0;
+        private readonly ImageButton _nextArrow0;
         private readonly PasswordStbTextBox _passwordFake;
         private readonly StbTextBox _textboxAccount;
 
@@ -106,6 +106,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
 
             // Arrow Button
+            /*
             Add
             (
                 _nextArrow0 = new Button((int)Buttons.NextArrow, 0x5CD, 0x5CC, 0x5CB)
@@ -115,6 +116,20 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     ButtonAction = ButtonAction.Activate
                 }
             );
+            */
+
+            Add(_nextArrow0 = new ImageButton(
+               455,
+               570,
+               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_normal_login.png"),
+               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_pressed_login.png"),
+               Path.Combine(CUOEnviroment.ExecutablePath, "ExternalImages", "btn_hover_login.png")
+           ));
+
+            _nextArrow0.OnButtonClick += () =>
+            {
+                OnButtonClick(0);
+            };
 
             offsetX = 370;
             offsetY = 430;
@@ -314,14 +329,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 Utility.Platforms.PlatformHelper.LaunchBrowser("https://discord.gg/SqwtB5g95H");
             };
 
-            Add(_ = new TextBox("Donate to LegionUO", TrueTypeLoader.EMBEDDED_FONT, 15, 200, Color.Orange, strokeEffect: false) { X = 30, Y = 720, AcceptMouseInput = true });
-            Add(_hit = new HitBox(_.X, _.Y, _.MeasuredSize.X, _.MeasuredSize.Y));
-            _hit.MouseUp += (s, e) =>
-            {
-                Utility.Platforms.PlatformHelper.LaunchBrowser("https://discord.gg/SqwtB5g95H");
-            };
-
-
 
             if (!string.IsNullOrEmpty(_textboxAccount.Text))
             {
@@ -390,7 +397,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             {
                 _time = (float)Time.Ticks + 1000;
 
-                _nextArrow0.ButtonGraphicNormal = _nextArrow0.ButtonGraphicNormal == _buttonNormal ? _buttonOver : _buttonNormal;
+               // _nextArrow0.ButtonGraphicNormal = _nextArrow0.ButtonGraphicNormal == _buttonNormal ? _buttonOver : _buttonNormal;
             }
 
             if (_passwordFake.HasKeyboardFocus)
