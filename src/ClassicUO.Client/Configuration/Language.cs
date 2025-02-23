@@ -522,6 +522,7 @@ namespace ClassicUO.Configuration
             public string UseLandTexturesWhereAvailable { get; set; } = "Use land textures where available(Experimental)";
             public string SOSGumpID { get; set; } = "SOS Gump ID";
             public string NearbyItemGump { get; set; } = "Enable nearby item gump";
+            public string UseWASDMovement { get; set; } = "Use WASD movement instead of arrow keys";
             #endregion
 
             #region Tooltips

@@ -1332,7 +1332,7 @@ namespace ClassicUO.Game.Scenes
                 TargetManager.CancelTarget();
             }
 
-            if(e.keysym.sym == SDL.SDL_Keycode.SDLK_LCTRL && UIManager.IsMouseOverWorld && !Client.Game.GameCursor.ItemHold.Enabled && ProfileManager.CurrentProfile.EnableNearbyItemGump && NearbyItems.NearbyItemGump == null )
+            if (e.keysym.sym == SDL.SDL_Keycode.SDLK_LCTRL && UIManager.IsMouseOverWorld && !Client.Game.GameCursor.ItemHold.Enabled && ProfileManager.CurrentProfile.EnableNearbyItemGump && NearbyItems.NearbyItemGump == null)
             {
                 UIManager.Add(new NearbyItems());
             }
@@ -1533,27 +1533,20 @@ namespace ClassicUO.Game.Scenes
                 {
                     if (string.IsNullOrEmpty(UIManager.SystemChat.TextBoxControl.Text))
                     {
-                        switch (e.keysym.sym)
+                        bool wasd = ProfileManager.CurrentProfile.UseWASDInsteadArrowKeys && !UIManager.SystemChat.IsActive;
+
+                        SDL.SDL_Keycode[] wasdKeys = { SDL.SDL_Keycode.SDLK_w, SDL.SDL_Keycode.SDLK_a, SDL.SDL_Keycode.SDLK_s, SDL.SDL_Keycode.SDLK_d };
+                        SDL.SDL_Keycode[] arrowKeys = { SDL.SDL_Keycode.SDLK_UP, SDL.SDL_Keycode.SDLK_LEFT, SDL.SDL_Keycode.SDLK_DOWN, SDL.SDL_Keycode.SDLK_RIGHT };
+
+                        SDL.SDL_Keycode[] keys = wasd ? wasdKeys : arrowKeys;
+
+                        for (int i = 0; i < keys.Length; i++)
                         {
-                            case SDL.SDL_Keycode.SDLK_UP:
-                                _flags[0] = true;
-
+                            if (e.keysym.sym == keys[i])
+                            {
+                                _flags[i] = true;
                                 break;
-
-                            case SDL.SDL_Keycode.SDLK_LEFT:
-                                _flags[1] = true;
-
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_DOWN:
-                                _flags[2] = true;
-
-                                break;
-
-                            case SDL.SDL_Keycode.SDLK_RIGHT:
-                                _flags[3] = true;
-
-                                break;
+                            }
                         }
                     }
                 }
@@ -1671,27 +1664,20 @@ namespace ClassicUO.Game.Scenes
                 }
             }
 
-            switch (e.keysym.sym)
+            bool wasd = ProfileManager.CurrentProfile.UseWASDInsteadArrowKeys && !UIManager.SystemChat.IsActive;
+
+            SDL.SDL_Keycode[] wasdKeys = { SDL.SDL_Keycode.SDLK_w, SDL.SDL_Keycode.SDLK_a, SDL.SDL_Keycode.SDLK_s, SDL.SDL_Keycode.SDLK_d };
+            SDL.SDL_Keycode[] arrowKeys = { SDL.SDL_Keycode.SDLK_UP, SDL.SDL_Keycode.SDLK_LEFT, SDL.SDL_Keycode.SDLK_DOWN, SDL.SDL_Keycode.SDLK_RIGHT };
+
+            SDL.SDL_Keycode[] keys = wasd ? wasdKeys : arrowKeys;
+
+            for (int i = 0; i < keys.Length; i++)
             {
-                case SDL.SDL_Keycode.SDLK_UP:
-                    _flags[0] = false;
-
+                if (e.keysym.sym == keys[i])
+                {
+                    _flags[i] = false;
                     break;
-
-                case SDL.SDL_Keycode.SDLK_LEFT:
-                    _flags[1] = false;
-
-                    break;
-
-                case SDL.SDL_Keycode.SDLK_DOWN:
-                    _flags[2] = false;
-
-                    break;
-
-                case SDL.SDL_Keycode.SDLK_RIGHT:
-                    _flags[3] = false;
-
-                    break;
+                }
             }
 
             if (

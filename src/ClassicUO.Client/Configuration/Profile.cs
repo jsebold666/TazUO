@@ -603,6 +603,8 @@ namespace ClassicUO.Configuration
         public bool EnableAutoLootProgressBar { get; set; } = true;
         public bool EnableNearbyItemGump {  get; set; } = true;
 
+        public bool UseWASDInsteadArrowKeys { get; set; } = false;
+
 
         public void Save(string path, bool saveGumps = true)
         {
