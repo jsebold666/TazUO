@@ -13,6 +13,22 @@ namespace ClassicUO.LegionScripting
 {
     internal static class Commands
     {
+        public static bool AddCoolDown(string command, Argument[] args, bool quiet, bool force)
+        {
+            if (args.Length < 2)
+                throw new RunTimeError(null, "Usage: addcooldown 'text' 'duration milliseconds' 'hue'");
+
+            string text = args[0].AsString();
+            if(string.IsNullOrEmpty(text))
+                throw new RunTimeError(null, "Cooldown text cannot be empty.");
+
+            ushort hue = 7;
+            if(args.Length >= 3)
+                hue = args[2].AsUShort();
+
+            CoolDownBarManager.AddCoolDownBar(TimeSpan.FromMilliseconds(args[1].AsUInt()), text, hue, false);
+            return true;
+        }
         public static bool TargetLandRel(string command, Argument[] args, bool quiet, bool force)
         {
             if (args.Length < 2)

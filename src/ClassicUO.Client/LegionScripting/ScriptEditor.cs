@@ -17,15 +17,17 @@ namespace ClassicUO.LegionScripting
         private TextBox title;
         private bool built;
         private TTFTextInputField textArea;
+
         public ScriptEditor(ScriptFile scriptFile) : base(600, 400, 600, 400, 0, 0)
         {
+            AnchorType = ANCHOR_TYPE.DISABLED;
             ScriptFile = scriptFile;
             AcceptMouseInput = true;
             CanMove = true;
 
             Add(background = new AlphaBlendControl());
 
-            Add(title = new TextBox(scriptFile.FileName, TrueTypeLoader.EMBEDDED_FONT, 24, Width - 100, color: Color.White, strokeEffect: false));
+            Add(title = new TextBox(scriptFile.FileName, TrueTypeLoader.EMBEDDED_FONT, 24, Width - 100, color: Color.White, strokeEffect: false) { AcceptMouseInput = false });
 
             Add(save = new NiceButton(Width - 50, 0, 50, 50, ButtonAction.Default, "Save"));
             save.MouseUp += Save_MouseUp;
@@ -44,6 +46,9 @@ namespace ClassicUO.LegionScripting
             };
             built = true;
             OnResize();
+
+            CenterXInViewPort();
+            CenterYInViewPort();
         }
 
         public override void OnResize()

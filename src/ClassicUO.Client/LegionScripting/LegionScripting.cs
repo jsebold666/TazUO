@@ -415,6 +415,7 @@ namespace ClassicUO.LegionScripting
             Interpreter.RegisterCommandHandler("follow", Follow);
             Interpreter.RegisterCommandHandler("pathfind", Pathfind);
             Interpreter.RegisterCommandHandler("cancelpathfind", CancelPathfind);
+            Interpreter.RegisterCommandHandler("addcooldown", AddCoolDown);
             #endregion
 
             #region Expressions

@@ -499,6 +499,12 @@ Cancel pathfinding or auto follow
 `cancelpathfind`
 
 
+## `addcooldown`
+
+Add a cooldown bar with custom text and duration  
+`addcooldown 'text' 'duration ms'`  
+Example: `addcooldown 'My Cooldown' '5000'`
+
 
 
 
