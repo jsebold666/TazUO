@@ -710,6 +710,9 @@ namespace ClassicUO.Game.UI.Gumps
                             case MessageType.Party:
                                 entryName = "Party";
                                 break;
+                            case MessageType.Damage:
+                                entryName = "Damage";
+                                break;
                         }
 
                         Add(entryName,

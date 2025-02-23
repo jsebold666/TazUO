@@ -38,6 +38,7 @@ using ClassicUO.Game.Map;
 using ClassicUO.Utility;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace ClassicUO.Game.GameObjects
@@ -47,11 +48,19 @@ namespace ClassicUO.Game.GameObjects
         public Point RealScreenPosition;
     }
 
+    internal class DamageEvent
+    {
+        public int Damage { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+
     public abstract partial class GameObject : BaseGameObject
     {
         public bool IsDestroyed { get; protected set; }
         public bool IsPositionChanged { get; protected set; }
         public TextContainer TextContainer { get; private set; }
+
+        private List<DamageEvent> _damageEvents = new List<DamageEvent>();
 
         public int Distance
         {
@@ -102,6 +111,29 @@ namespace ClassicUO.Game.GameObjects
             Y;
         public sbyte Z;
         public GameObject RenderListNext;
+
+        public void AddDamage(int damage)
+        {
+            _damageEvents.Add(new DamageEvent { Damage = damage, Timestamp = DateTime.UtcNow });
+        }
+        public double GetCurrentDPS(int seconds = 15)
+        {
+            double totalDamage = 0;
+            int timestart = -1;
+            foreach (DamageEvent damageEvent in _damageEvents)
+            {
+                if (damageEvent.Timestamp < DateTime.UtcNow - TimeSpan.FromSeconds(seconds))
+                {
+                    continue;
+                }
+                if(timestart == -1)
+                    timestart = (int)(DateTime.UtcNow - damageEvent.Timestamp).TotalSeconds;
+
+                totalDamage += damageEvent.Damage;
+            }
+            timestart = timestart <= 0 ? seconds : timestart;
+            return Math.Round(totalDamage / (double)timestart, 1);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2 GetScreenPosition()
@@ -364,7 +396,7 @@ namespace ClassicUO.Game.GameObjects
             Next = null;
             Previous = null;
             RenderListNext = null;
-
+            _damageEvents.Clear();
             Clear();
             RemoveFromTile();
             TextContainer?.Clear();

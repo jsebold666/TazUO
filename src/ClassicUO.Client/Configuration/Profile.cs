@@ -420,6 +420,8 @@ namespace ClassicUO.Configuration
         public ushort DamageHueAlly { get; set; } = 0x0030;
         public ushort DamageHueLastAttck { get; set; } = 0x1F;
         public ushort DamageHueOther { get; set; } = 0x0021;
+
+        public bool ShowDPS { get; set; } = true;
         #endregion
 
         #region GridHighlightingProps

@@ -1262,6 +1262,16 @@ namespace ClassicUO.Game.UI.Gumps
 
             PositionHelper.BlankLine();
 
+            options.Add(s = new SettingsOption(
+                "",
+                new CheckboxWithLabel(lang.GetCombatSpells.EnableDPSCounter, 0, profile.ShowDPS, (b) => { profile.ShowDPS = b; }),
+                mainContent.RightWidth,
+                PAGE.CombatSpells
+            ));
+            PositionHelper.PositionControl(s.FullControl);
+
+            PositionHelper.BlankLine();
+
             SettingsOption ss;
             options.Add(s = new SettingsOption(
                 "",

@@ -320,6 +320,7 @@ namespace ClassicUO.Configuration
             public string SingleClickForSpellIcons { get; set; } = "Single click for spell icons";
             public string ShowBuffDurationOnOldStyleBuffBar { get; set; } = "Show buff duration on old style buff bar";
             public string EnableFastSpellHotkeyAssigning { get; set; } = "Enable fast spell hotkey assigning";
+            public string EnableDPSCounter { get; set; } = "Enable damage-taken DPS counter with damage numbers";
             public string TooltipFastSpellAssign { get; set; } = "Ctrl + Alt + Click a spell icon the open a gump to set a hotkey";
             public string InnocentColor { get; set; } = "Innocent color";
             public string BeneficialSpell { get; set; } = "Beneficial spell";
