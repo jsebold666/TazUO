@@ -2620,6 +2620,16 @@ namespace ClassicUO.Game.UI.Gumps
                     GameActions.Print(string.Format(lang.GetTazUO.OverrideSuccess, sameServerLocations.Count - 1), 32, Data.MessageType.System);
                 }
             };
+
+            content.AddToRight(c = new ModernButton(0, 0, content.RightWidth - 20, 40, ButtonAction.Activate, lang.GetTazUO.SetAsDefault, Theme.BUTTON_FONT_COLOR) { IsSelectable = true, IsSelected = true }, true, page);
+            c.MouseUp += (s, e) =>
+            {
+                if (e.Button == MouseButtonType.Left)
+                {
+                    ProfileManager.SetProfileAsDefault(ProfileManager.CurrentProfile);
+                    GameActions.Print(lang.GetTazUO.SetAsDefaultSuccess, 32, Data.MessageType.System);
+                }
+            };
             #endregion
 
             #region Gump scaling

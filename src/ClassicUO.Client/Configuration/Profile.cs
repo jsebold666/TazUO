@@ -618,6 +618,11 @@ namespace ClassicUO.Configuration
             Log.Trace("Saving done!");
         }
 
+        public void SaveAsFile(string path, string filename)
+        {
+            ConfigurationResolver.Save(this, Path.Combine(path, filename), ProfileJsonContext.DefaultToUse);
+        }
+
         private void SaveGumps(string path)
         {
             string gumpsXmlPath = Path.Combine(path, "gumps.xml");

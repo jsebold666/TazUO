@@ -560,6 +560,9 @@ namespace ClassicUO.Configuration
             public string OverrideAll { get; set; } = "Override {0} other profiles with this one.";
             public string OverrideSuccess { get; set; } = "{0} profiles overriden.";
             public string OverrideSame { get; set; } = "Override {0} other profiles on this same server with this one.";
+            public string SetAsDefault { get; set; } = "Set this profile as the default for new characters.";
+            public string SetAsDefaultSuccess { get; set; } = "This profile is now the default for new characters.";
+
             #endregion
 
             #region GumpScaling

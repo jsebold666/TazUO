@@ -43,6 +43,35 @@ namespace ClassicUO.Configuration
 
         public static void Load(string servername, string username, string charactername)
         {
+            string rootpath = ProfileRootPath();
+
+            string path = FileSystemHelper.CreateFolderIfNotExists(rootpath, username, servername, charactername);
+            string fileToLoad = Path.Combine(path, "profile.json");
+
+            ProfilePath = path;
+            CurrentProfile = ConfigurationResolver.Load<Profile>(fileToLoad, ProfileJsonContext.DefaultToUse) ?? NewFromDefault();
+
+            CurrentProfile.Username = username;
+            CurrentProfile.ServerName = servername;
+            CurrentProfile.CharacterName = charactername;
+
+            ValidateFields(CurrentProfile);
+
+            ClassicUO.Game.Managers.IgnoreManager.Initialize();
+        }
+
+        public static void SetProfileAsDefault(Profile profile)
+        {
+            profile.SaveAsFile(ProfileRootPath(), "default.json");
+        }
+
+        public static Profile NewFromDefault()
+        {
+            return ConfigurationResolver.Load<Profile>(Path.Combine(ProfileRootPath(), "default.json"), ProfileJsonContext.DefaultToUse) ?? new Profile();
+        }
+
+        private static string ProfileRootPath()
+        {
             string rootpath;
 
             if (string.IsNullOrWhiteSpace(Settings.GlobalSettings.ProfilesPath))
@@ -54,21 +83,8 @@ namespace ClassicUO.Configuration
                 rootpath = Settings.GlobalSettings.ProfilesPath;
             }
 
-            string path = FileSystemHelper.CreateFolderIfNotExists(rootpath, username, servername, charactername);
-            string fileToLoad = Path.Combine(path, "profile.json");
-
-            ProfilePath = path;
-            CurrentProfile = ConfigurationResolver.Load<Profile>(fileToLoad, ProfileJsonContext.DefaultToUse) ?? new Profile();
-
-            CurrentProfile.Username = username;
-            CurrentProfile.ServerName = servername;
-            CurrentProfile.CharacterName = charactername;
-
-            ValidateFields(CurrentProfile);
-
-            ClassicUO.Game.Managers.IgnoreManager.Initialize();
+            return rootpath;
         }
-
 
         private static void ValidateFields(Profile profile)
         {
